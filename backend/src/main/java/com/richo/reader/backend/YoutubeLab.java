@@ -48,7 +48,6 @@ public class YoutubeLab
 				String nextPageToken = "";
 				do
 				{
-					youtube.channels().list("snippet").setKey(apiKey).setId(playListId).execute();
 					final PlaylistItemListResponse playlistItemListResponse = youtube.playlistItems()
 							.list("snippet")
 							.setKey(apiKey)
