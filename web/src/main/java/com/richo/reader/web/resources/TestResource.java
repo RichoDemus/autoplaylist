@@ -8,18 +8,21 @@ import javax.ws.rs.Path;
 import java.util.Set;
 
 @Path("/test")
-public class TestResource {
-    private final InjectMe injectable;
-    private final Set<Bot> allBots;
+public class TestResource
+{
+	private final InjectMe injectable;
+	private final Set<Bot> allBots;
 
-    @Inject
-    public TestResource(InjectMe injectable, Set<Bot> allBots) {
-        this.injectable = injectable;
-        this.allBots = allBots;
-    }
+	@Inject
+	public TestResource(InjectMe injectable, Set<Bot> allBots)
+	{
+		this.injectable = injectable;
+		this.allBots = allBots;
+	}
 
-    @GET
-    public String get() {
-        return injectable.getString() + " there are " + allBots.size() + " bots";
-    }
+	@GET
+	public String get()
+	{
+		return injectable.getString() + " there are " + allBots.size() + " bots";
+	}
 }

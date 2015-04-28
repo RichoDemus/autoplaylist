@@ -9,26 +9,30 @@ import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.List;
 
-public class GuiceModule extends AbstractModule {
+public class GuiceModule extends AbstractModule
+{
 
-    @Override
-    public void configure() {
-        //binds here
-        bindBots();
-    }
+	@Override
+	public void configure()
+	{
+		//binds here
+		bindBots();
+	}
 
-    private void bindBots() {
-        //use cool reflection instead
-        final Multibinder<Bot> filterBinder = Multibinder.newSetBinder(binder(), Bot.class);
+	private void bindBots()
+	{
+		//use cool reflection instead
+		final Multibinder<Bot> filterBinder = Multibinder.newSetBinder(binder(), Bot.class);
 
-        final List<Class<? extends Bot>> bots = Collections.singletonList(AlwaysBetsMaxBot.class);
+		final List<Class<? extends Bot>> bots = Collections.singletonList(AlwaysBetsMaxBot.class);
 
-        bots.stream()
-                .filter(this::botImplementations)
-                .forEach(filterClass -> filterBinder.addBinding().to(filterClass));
-    }
+		bots.stream()
+				.filter(this::botImplementations)
+				.forEach(filterClass -> filterBinder.addBinding().to(filterClass));
+	}
 
-    private boolean botImplementations(Class<? extends Bot> botClass) {
-        return !Modifier.isAbstract(botClass.getModifiers()) && !Modifier.isInterface(botClass.getModifiers());
-    }
+	private boolean botImplementations(Class<? extends Bot> botClass)
+	{
+		return !Modifier.isAbstract(botClass.getModifiers()) && !Modifier.isInterface(botClass.getModifiers());
+	}
 }

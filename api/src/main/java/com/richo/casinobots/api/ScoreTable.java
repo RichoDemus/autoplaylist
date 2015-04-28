@@ -1,4 +1,5 @@
 package com.richo.casinobots.api;
 
-public class ScoreTable {
+public class ScoreTable
+{
 }

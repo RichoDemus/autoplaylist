@@ -1,4 +1,5 @@
 package com.richo.casinobots.api;
 
-public enum Action {
+public enum Action
+{
 }

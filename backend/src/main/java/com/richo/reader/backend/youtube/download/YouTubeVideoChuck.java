@@ -1,4 +1,4 @@
-package com.richo.reader.backend.youtube;
+package com.richo.reader.backend.youtube.download;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItem;
@@ -30,7 +30,7 @@ public class YouTubeVideoChuck
 
 	public List<PlaylistItem> getNextVideoChunk()
 	{
-		if(!nextPageToken.isPresent())
+		if (!nextPageToken.isPresent())
 		{
 			logger.debug("No more channels for playlistId {}", playlistId);
 			return new ArrayList<>();
