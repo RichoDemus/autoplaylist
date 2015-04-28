@@ -3,6 +3,7 @@ package com.richo.reader.backend.youtube.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -12,18 +13,26 @@ public class YoutubeVideo implements Comparable<YoutubeVideo>
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	public YoutubeVideo(String title, String description, URL url, LocalDateTime uploadDate)
+	private final String title;
+
+	private final String description;
+	private final String videoId;
+	private final LocalDateTime uploadDate;
+	private final URL url;
+
+	public YoutubeVideo(String title, String description, String videoId, LocalDateTime uploadDate) throws MalformedURLException
 	{
 		this.title = title;
 		this.description = description;
-		this.url = url;
+		this.videoId = videoId;
 		this.uploadDate = uploadDate;
+		this.url = createUrl(videoId);
 	}
 
-	private final String title;
-	private final String description;
-	private final URL url;
-	private final LocalDateTime uploadDate;
+	private URL createUrl(String videoId) throws MalformedURLException
+	{
+		return new URL("https://www.youtube.com/watch?v=" + videoId);
+	}
 
 	@Override
 	public int compareTo(YoutubeVideo youtubeVideo)
@@ -39,6 +48,11 @@ public class YoutubeVideo implements Comparable<YoutubeVideo>
 	public String getDescription()
 	{
 		return description;
+	}
+
+	public String getVideoId()
+	{
+		return videoId;
 	}
 
 	public URL getUrl()

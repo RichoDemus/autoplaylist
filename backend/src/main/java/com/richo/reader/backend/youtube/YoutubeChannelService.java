@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -59,11 +58,16 @@ public class YoutubeChannelService
 			items.addAll(nextVideoChunk);
 		}
 
-		final Set<YoutubeVideo> videos = items.stream().map(this::toVideo).collect(Collectors.toSet());
+		final Set<YoutubeVideo> videos = items.stream().map(this::toVideo).filter(this::nullItems).collect(Collectors.toSet());
 		final YoutubeChannel youtubeChannel = new YoutubeChannel(channelName, videos);
 		cache.updateChannel(youtubeChannel);
 		return Optional.of(youtubeChannel);
 
+	}
+
+	private boolean nullItems(YoutubeVideo youtubeVideo)
+	{
+		return youtubeVideo != null;
 	}
 
 	private Optional<YoutubeChannel> getChannelFromCacheIfNotOutdated(String channelName, YoutubeChannelCache cache)
@@ -79,18 +83,15 @@ public class YoutubeChannelService
 	private YoutubeVideo toVideo(PlaylistItem playlistItem)
 	{
 		final String videoId = playlistItem.getSnippet().getResourceId().getVideoId();
-		final String urlString = "https://www.youtube.com/watch?v=" + videoId;
-		final URL url;
 		try
 		{
-			url = new URL(urlString);
+			return new YoutubeVideo(playlistItem.getSnippet().getTitle(), playlistItem.getSnippet().getDescription(), videoId, convertDate(playlistItem.getSnippet().getPublishedAt()));
 		}
 		catch (MalformedURLException e)
 		{
-			logger.error("{} is not a valid url", urlString, e);
+			e.printStackTrace();
 			return null;
 		}
-		return new YoutubeVideo(playlistItem.getSnippet().getTitle(), playlistItem.getSnippet().getDescription(), url, convertDate(playlistItem.getSnippet().getPublishedAt()));
 	}
 
 	private LocalDateTime convertDate(DateTime publishedAt)

@@ -31,12 +31,14 @@ import java.util.Set;
 public class YoutubeChannelServiceTest
 {
 	private static final String CHANNEL_NAME = "channel_name";
+	private static final String VIDEO_ID = "_0S1jebDBzk";
+
 	private URL url;
 
 	@Before
 	public void setUp() throws Exception
 	{
-		url = new URL("https://www.youtube.com/watch?v=_0S1jebDBzk");
+		url = new URL("https://www.youtube.com/watch?v=" + VIDEO_ID);
 	}
 
 	@Test
@@ -53,6 +55,7 @@ public class YoutubeChannelServiceTest
 		Assert.assertNotNull(result);
 		Assert.assertEquals(CHANNEL_NAME, result.getName());
 
+		Assert.assertEquals(1, result.getVideos().size());
 		result.getVideos().forEach((video) ->
 		{
 			Assert.assertEquals("title1", video.getTitle());
@@ -69,7 +72,7 @@ public class YoutubeChannelServiceTest
 		final PlaylistItem playlistItem = new PlaylistItem().setSnippet(new PlaylistItemSnippet()
 				.setTitle("title1")
 				.setDescription("description1")
-				.setResourceId(new ResourceId().setVideoId("_0S1jebDBzk"))
+				.setResourceId(new ResourceId().setVideoId(VIDEO_ID))
 				.setPublishedAt(new DateTime(1409920676000L, 0)));
 		final Queue<List<PlaylistItem>> items = new LinkedList<>();
 		items.add(Collections.singletonList(playlistItem));
@@ -83,7 +86,7 @@ public class YoutubeChannelServiceTest
 	{
 		final YoutubeChannelCache cache = new YoutubeChannelCache();
 		final Set<YoutubeVideo> videos = Sets.newTreeSet();
-		videos.add(new YoutubeVideo("title1", "description1", url, LocalDateTime.of(2014, 9, 5, 12, 37, 56)));
+		videos.add(new YoutubeVideo("title1", "description1", VIDEO_ID, LocalDateTime.of(2014, 9, 5, 12, 37, 56)));
 		final YoutubeChannel channel = new YoutubeChannel(CHANNEL_NAME, videos);
 		cache.updateChannel(channel);
 
@@ -94,6 +97,7 @@ public class YoutubeChannelServiceTest
 
 		final YoutubeChannel result = target.getChannelByName(CHANNEL_NAME).get();
 
+		Assert.assertEquals(1, result.getVideos().size());
 		result.getVideos().forEach((video) ->
 		{
 			Assert.assertEquals("title1", video.getTitle());
@@ -109,7 +113,7 @@ public class YoutubeChannelServiceTest
 	{
 		final YoutubeChannelCache cache = new YoutubeChannelCache();
 		final Set<YoutubeVideo> videos = Sets.newTreeSet();
-		videos.add(new YoutubeVideo("title1", "description_to_be_replaced", url, LocalDateTime.of(2014, 9, 5, 12, 37, 56)));
+		videos.add(new YoutubeVideo("title1", "description_to_be_replaced", VIDEO_ID, LocalDateTime.of(2014, 9, 5, 12, 37, 56)));
 		final YoutubeChannel channel = new YoutubeChannel(CHANNEL_NAME, videos, Instant.ofEpochSecond(100));
 		cache.updateChannel(channel);
 
@@ -119,6 +123,7 @@ public class YoutubeChannelServiceTest
 
 		final YoutubeChannel result = target.getChannelByName(CHANNEL_NAME).get();
 
+		Assert.assertEquals(1, result.getVideos().size());
 		result.getVideos().forEach((video) ->
 		{
 			Assert.assertEquals("title1", video.getTitle());
@@ -127,6 +132,7 @@ public class YoutubeChannelServiceTest
 			Assert.assertEquals(LocalDateTime.of(2014, 9, 5, 12, 37, 56), video.getUploadDate());
 		});
 
+		Assert.assertEquals(1, cache.getChannel(CHANNEL_NAME).get().getVideos().size());
 		cache.getChannel(CHANNEL_NAME).get().getVideos().forEach((video) ->
 		{
 			Assert.assertEquals("title1", video.getTitle());
