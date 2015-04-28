@@ -1,7 +1,7 @@
 package com.richo.reader.web.dropwizard;
 
 import com.hubspot.dropwizard.guice.GuiceBundle;
-import com.richo.reader.web.resources.TestResource;
+import com.richo.reader.web.resources.FeedResource;
 import io.dropwizard.ConfiguredBundle;
 import io.dropwizard.assets.AssetsBundle;
 import io.dropwizard.java8.Java8Bundle;
@@ -26,7 +26,7 @@ public class MyBundle implements ConfiguredBundle<ReaderConfiguration>
 	public void run(ReaderConfiguration configuration, Environment environment) throws Exception
 	{
 		logger.info("Registering Testresouce");
-		environment.jersey().register(TestResource.class);
+		environment.jersey().register(FeedResource.class);
 	}
 
 	private GuiceBundle getGuiceBundle(Bootstrap<?> bootstrap)
