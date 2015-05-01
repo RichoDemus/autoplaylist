@@ -1,9 +1,8 @@
 package com.richo.reader.web.resources;
 
 import com.richo.reader.backend.Backend;
-import com.richo.reader.web.model.Feed;
+import com.richo.reader.web.FeedConverter;
 import com.richo.reader.web.model.FeedResult;
-import com.richo.reader.web.model.Item;
 import com.richo.reader.web.model.ItemOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.Arrays;
+import java.util.Set;
 
 @Path("/feed")
 @Produces(MediaType.APPLICATION_JSON)
@@ -25,18 +24,24 @@ public class FeedResource
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final Backend backend;
+	private final FeedConverter feedConverter;
 
 	@Inject
-	public FeedResource(Backend injectable)
+	public FeedResource(Backend injectable, FeedConverter feedConverter)
 	{
 		this.backend = injectable;
+		this.feedConverter = feedConverter;
 	}
 
 	@GET
 	public FeedResult get()
 	{
-		backend.getFeeds("RichoDemus");
-		final Feed firstChannel = new Feed("First Channel",
+		final Set<com.richo.reader.backend.model.Feed> feeds = backend.getFeeds("RichoDemus");
+
+
+		return new FeedResult(feedConverter.convert(feeds));
+
+/*		final Feed firstChannel = new Feed("First Channel",
 				Arrays.asList(
 						new Item("zbdvogFyZZM", "Dark Lord Funk - Harry Potter Parody of \"Uptown Funk\"", "Description1", "date1", "https://www.youtube.com/watch?v=zbdvogFyZZM"),
 						new Item("id2", "Title2", "Description2", "date2", "https://www.youtube.com/watch?v=zbdvogFyZZM")));
@@ -45,7 +50,7 @@ public class FeedResource
 						new Item("id3", "Title3", "Description3", "date3", "https://www.youtube.com/watch?v=zbdvogFyZZM"),
 						new Item("id4", "Title4", "Description4", "date4", "https://www.youtube.com/watch?v=zbdvogFyZZM")));
 
-		return new FeedResult(Arrays.asList(firstChannel, secondChannel));
+		return new FeedResult(Arrays.asList(firstChannel, secondChannel));*/
 	}
 
 	@POST
@@ -55,10 +60,10 @@ public class FeedResource
 		switch (operation.getAction())
 		{
 			case "MARK_READ":
-				backend.markAsRead("RichoDemus",operation.getId());
+				backend.markAsRead("RichoDemus", operation.getId());
 				break;
 			case "MARK_UNREAD":
-				backend.markAsUnread("RichoDemus",operation.getId());
+				backend.markAsUnread("RichoDemus", operation.getId());
 				break;
 			default:
 				logger.error("Unknown action {}", operation.getAction());

@@ -10,6 +10,7 @@ import com.richo.reader.backend.youtube.model.YoutubeVideo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.net.MalformedURLException;
 import java.time.Duration;
 import java.time.Instant;
@@ -23,11 +24,12 @@ import java.util.stream.Collectors;
 
 public class YoutubeChannelService
 {
-	private final Duration channelAgeUntilFrefresh;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Duration channelAgeUntilFrefresh;
 	private final YoutubeChannelDownloader youtubeChannelDownloader;
 	private final YoutubeChannelCache cache;
 
+	@Inject
 	public YoutubeChannelService(YoutubeChannelDownloader youtubeChannelDownloader, YoutubeChannelCache cache, Duration channelAgeUntilFrefresh)
 	{
 		this.channelAgeUntilFrefresh = channelAgeUntilFrefresh;
@@ -57,7 +59,7 @@ public class YoutubeChannelService
 		{
 			items.addAll(nextVideoChunk);
 		}
-
+		logger.debug("Downloaded {} videos from the channel {}", items.size(), channelName);
 		final Set<YoutubeVideo> videos = items.stream().map(this::toVideo).filter(this::nullItems).collect(Collectors.toSet());
 		final YoutubeChannel youtubeChannel = new YoutubeChannel(channelName, videos);
 		cache.updateChannel(youtubeChannel);

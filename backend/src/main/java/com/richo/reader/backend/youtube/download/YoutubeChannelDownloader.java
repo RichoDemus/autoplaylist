@@ -7,6 +7,8 @@ import com.google.api.services.youtube.model.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +20,8 @@ public class YoutubeChannelDownloader
 	private final YouTube youtube;
 	private final String apiKey;
 
-	public YoutubeChannelDownloader(String apiKey)
+	@Inject
+	public YoutubeChannelDownloader(@Named("apiKey") String apiKey)
 	{
 		this.apiKey = apiKey;
 		youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), request -> {
