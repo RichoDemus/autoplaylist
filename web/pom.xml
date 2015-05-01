@@ -14,16 +14,7 @@
 	<name>Web</name>
 
 	<dependencies>
-		<dependency>
-			<groupId>com.richo.casinobots</groupId>
-			<artifactId>api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.richo.casinobots</groupId>
-			<artifactId>casino-bots-bots</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+
 
 		<dependency>
 			<groupId>io.dropwizard</groupId>
@@ -55,10 +46,6 @@
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.google.inject.extensions</groupId>
-			<artifactId>guice-multibindings</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>javax.inject</groupId>

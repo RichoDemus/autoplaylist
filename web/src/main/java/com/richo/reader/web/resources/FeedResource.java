@@ -1,6 +1,5 @@
 package com.richo.reader.web.resources;
 
-import com.richo.casinobots.api.Bot;
 import com.richo.reader.web.model.Feed;
 import com.richo.reader.web.model.FeedResult;
 import com.richo.reader.web.model.Item;
@@ -16,7 +15,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.Arrays;
-import java.util.Set;
 
 @Path("/feed")
 @Produces(MediaType.APPLICATION_JSON)
@@ -25,13 +23,11 @@ public class FeedResource
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final InjectMe injectable;
-	private final Set<Bot> allBots;
 
 	@Inject
-	public FeedResource(InjectMe injectable, Set<Bot> allBots)
+	public FeedResource(InjectMe injectable)
 	{
 		this.injectable = injectable;
-		this.allBots = allBots;
 	}
 
 	@GET
