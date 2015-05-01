@@ -32,7 +32,14 @@ public class User
 		final Feed target = feeds.stream().filter(feed -> feed.getName().equals(channel.getName())).findAny().orElseThrow(() -> new RuntimeException(name + " does not have the feed " + channel.getName()));
 
 		target.addNewItems(channel.getVideos().stream().map(this::videoToItem).collect(Collectors.toSet()));
+	}
 
+	public void addChannel(YoutubeChannel channel)
+	{
+		final String id = channel.getName();
+		final Feed feed = new Feed(id, id);
+		feed.addNewItems(channel.getVideos().stream().map(this::videoToItem).collect(Collectors.toSet()));
+		feeds.add(feed);
 	}
 
 	private Item videoToItem(YoutubeVideo video)

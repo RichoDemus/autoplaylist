@@ -44,6 +44,20 @@ var Api = (function()
         });
     }
 
+    pub.addFeed = function(feedName)
+    {
+        jQuery.ajax ({
+            url: "api/feeds/users/RichoDemus/feeds",
+            type: "POST",
+            data: feedName,
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function(){
+                //
+            }
+        });
+    }
+
     //Private method
     /*
     function privateWay() {

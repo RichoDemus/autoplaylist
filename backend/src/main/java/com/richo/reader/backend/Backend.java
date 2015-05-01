@@ -1,6 +1,7 @@
 package com.richo.reader.backend;
 
 import com.google.common.collect.Sets;
+import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.model.Feed;
 import com.richo.reader.backend.user.User;
 import com.richo.reader.backend.user.UserService;
@@ -47,6 +48,27 @@ public class Backend
 		youtubeChannels.forEach(user::updateChannel);
 
 		return user.getSubscribedFeeds();
+	}
+
+	public void addFeed(final String username, final String feedName) throws NoSuchChannelException
+	{
+		logger.info("Add feed: {} for user {}", feedName, username);
+
+		final Optional<User> userOptional = userService.get(username);
+		if (!userOptional.isPresent())
+		{
+			logger.error("No such user: {}", username);
+		}
+
+		final User user = userOptional.get();
+
+		final YoutubeChannel channelByName = youtubeChannelService.getChannelByName(feedName).orElseThrow(() ->
+		{
+			logger.error("No such channel: {}", feedName);
+			return new NoSuchChannelException("No such channel: " + feedName);
+		});
+
+		user.addChannel(channelByName);
 	}
 
 	public void markAsRead(final String username, final String feedId, String itemId)

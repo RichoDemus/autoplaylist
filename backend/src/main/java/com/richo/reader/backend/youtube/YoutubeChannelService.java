@@ -57,6 +57,7 @@ public class YoutubeChannelService
 		List<PlaylistItem> nextVideoChunk;
 		while ((nextVideoChunk = videoChunk.get().getNextVideoChunk()).size() > 0)
 		{
+			logger.trace("Downloaded a chunk of {} for channel {}", nextVideoChunk.size(), channelName);
 			items.addAll(nextVideoChunk);
 		}
 		logger.debug("Downloaded {} videos from the channel {}", items.size(), channelName);

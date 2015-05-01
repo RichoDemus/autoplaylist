@@ -1,6 +1,7 @@
 package com.richo.reader.web.resources;
 
 import com.richo.reader.backend.Backend;
+import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.web.FeedConverter;
 import com.richo.reader.web.model.FeedResult;
 import com.richo.reader.web.model.ItemOperation;
@@ -46,7 +47,7 @@ public class FeedResource
 	@Path("/users/{username}/feeds/{feed}/items/{item}/")
 	public void performFeedOperation(@PathParam("username") final String username, @PathParam("feed") final String feedId, @PathParam("item") final String itemId, ItemOperation operation)
 	{
-		logger.info("Received item operation {}", operation);
+		logger.info("Received item operation {} for feed {}, item {}", operation, feedId, itemId);
 		switch (operation.getAction())
 		{
 			case "MARK_READ":
@@ -58,6 +59,20 @@ public class FeedResource
 			default:
 				logger.error("Unknown action {}", operation.getAction());
 				throw new BadRequestException("Unknown action: " + operation.getAction());
+		}
+	}
+
+	@POST
+	@Path("/users/{username}/feeds/")
+	public void addFeed(@PathParam("username")final String username, final String feedName)
+	{
+		try
+		{
+			backend.addFeed(username, feedName);
+		}
+		catch (NoSuchChannelException e)
+		{
+			throw new BadRequestException(e.getMessage());
 		}
 	}
 }

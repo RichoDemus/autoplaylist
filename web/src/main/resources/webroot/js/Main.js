@@ -1,8 +1,5 @@
 
 $(function() {
-    console.log( "ready!" );
-    console.log($("#video-1").data("id"));
-
      Api.getAllItems(function(result)
      {
         result.feeds.forEach(function(feed)
@@ -42,7 +39,6 @@ var itemTitleClicked = function(item)
 
 var markAsReadButtonPressed = function(item)
 {
-    console.log("Clicked the mark as read button to video: " + item.getAttribute("data-id"));
     $("#markItemAsReadButton-" + item.getAttribute("data-id")).hide();
     $("#markItemAsUnreadButton-" + item.getAttribute("data-id")).show();
     Api.markAsRead(item.getAttribute("data-feed-id"), item.getAttribute("data-id"));
@@ -50,8 +46,14 @@ var markAsReadButtonPressed = function(item)
 
 var markAsUnreadButtonPressed = function(item)
 {
-    console.log("Clicked the mark as unread button to video: " + item.getAttribute("data-id"));
     $("#markItemAsReadButton-" + item.getAttribute("data-id")).show();
     $("#markItemAsUnreadButton-" + item.getAttribute("data-id")).hide();
     Api.markAsUnread(item.getAttribute("data-feed-id"), item.getAttribute("data-id"));
+}
+
+var addFeed = function()
+{
+    const feedName = $("#addFeedButton").val();
+    console.log("Add feed: " + feedName);
+    Api.addFeed(feedName);
 }
