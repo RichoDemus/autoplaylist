@@ -17,3 +17,5 @@ server:
   adminConnectors:
   - type: http
     port: 81
+  requestLog:
+    appenders: []
