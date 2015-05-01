@@ -14,7 +14,10 @@
 	<name>Web</name>
 
 	<dependencies>
-
+		<dependency>
+			<groupId>com.richo.reader</groupId>
+			<artifactId>backend</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>io.dropwizard</groupId>

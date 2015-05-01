@@ -1,5 +1,6 @@
 package com.richo.reader.web.resources;
 
+import com.richo.reader.backend.Backend;
 import com.richo.reader.web.model.Feed;
 import com.richo.reader.web.model.FeedResult;
 import com.richo.reader.web.model.Item;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -22,17 +24,18 @@ import java.util.Arrays;
 public class FeedResource
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final InjectMe injectable;
+	private final Backend backend;
 
 	@Inject
-	public FeedResource(InjectMe injectable)
+	public FeedResource(Backend injectable)
 	{
-		this.injectable = injectable;
+		this.backend = injectable;
 	}
 
 	@GET
 	public FeedResult get()
 	{
+		backend.getFeeds("RichoDemus");
 		final Feed firstChannel = new Feed("First Channel",
 				Arrays.asList(
 						new Item("zbdvogFyZZM", "Dark Lord Funk - Harry Potter Parody of \"Uptown Funk\"", "Description1", "date1", "https://www.youtube.com/watch?v=zbdvogFyZZM"),
@@ -49,5 +52,17 @@ public class FeedResource
 	public void performFeedOperation(ItemOperation operation)
 	{
 		logger.info("Received item operation {}", operation);
+		switch (operation.getAction())
+		{
+			case "MARK_READ":
+				backend.markAsRead("RichoDemus",operation.getId());
+				break;
+			case "MARK_UNREAD":
+				backend.markAsUnread("RichoDemus",operation.getId());
+				break;
+			default:
+				logger.error("Unknown action {}", operation.getAction());
+				throw new BadRequestException("Unknown action: " + operation.getAction());
+		}
 	}
 }
