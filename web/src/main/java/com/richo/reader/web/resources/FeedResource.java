@@ -13,11 +13,12 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.Set;
 
-@Path("/feed")
+@Path("/feeds")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class FeedResource
@@ -34,36 +35,25 @@ public class FeedResource
 	}
 
 	@GET
-	public FeedResult get()
+	@Path("/users/{username}/feeds/")
+	public FeedResult get(@PathParam("username") final String username)
 	{
-		final Set<com.richo.reader.backend.model.Feed> feeds = backend.getFeeds("RichoDemus");
-
-
+		final Set<com.richo.reader.backend.model.Feed> feeds = backend.getFeeds(username);
 		return new FeedResult(feedConverter.convert(feeds));
-
-/*		final Feed firstChannel = new Feed("First Channel",
-				Arrays.asList(
-						new Item("zbdvogFyZZM", "Dark Lord Funk - Harry Potter Parody of \"Uptown Funk\"", "Description1", "date1", "https://www.youtube.com/watch?v=zbdvogFyZZM"),
-						new Item("id2", "Title2", "Description2", "date2", "https://www.youtube.com/watch?v=zbdvogFyZZM")));
-		final Feed secondChannel = new Feed("Second Channel",
-				Arrays.asList(
-						new Item("id3", "Title3", "Description3", "date3", "https://www.youtube.com/watch?v=zbdvogFyZZM"),
-						new Item("id4", "Title4", "Description4", "date4", "https://www.youtube.com/watch?v=zbdvogFyZZM")));
-
-		return new FeedResult(Arrays.asList(firstChannel, secondChannel));*/
 	}
 
 	@POST
-	public void performFeedOperation(ItemOperation operation)
+	@Path("/users/{username}/feeds/{feed}/items/{item}/")
+	public void performFeedOperation(@PathParam("username") final String username, @PathParam("feed") final String feedId, @PathParam("item") final String itemId, ItemOperation operation)
 	{
 		logger.info("Received item operation {}", operation);
 		switch (operation.getAction())
 		{
 			case "MARK_READ":
-				backend.markAsRead("RichoDemus", operation.getId());
+				backend.markAsRead(username, feedId, itemId);
 				break;
 			case "MARK_UNREAD":
-				backend.markAsUnread("RichoDemus", operation.getId());
+				backend.markAsUnread(username, feedId, itemId);
 				break;
 			default:
 				logger.error("Unknown action {}", operation.getAction());

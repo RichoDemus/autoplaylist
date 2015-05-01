@@ -49,13 +49,13 @@ public class Backend
 		return user.getSubscribedFeeds();
 	}
 
-	public void markAsRead(final String username, final String itemId)
+	public void markAsRead(final String username, final String feedId, String itemId)
 	{
-		logger.info("Marking item {} for user {} as read", itemId, username);
+		logger.info("Marking item {} in feed {} for user {} as read", itemId, feedId, username);
 	}
 
-	public void markAsUnread(final String username, final String itemId)
+	public void markAsUnread(final String username, final String feedId, String itemId)
 	{
-		logger.info("Marking item {} for user {} as unread", itemId, username);
+		logger.info("Marking item {} in feed {} for user {} as unread", itemId, feedId, username);
 	}
 }

@@ -10,16 +10,17 @@ var Api = (function()
     //Public method
     pub.getAllItems = function(callback)
     {
-        $.getJSON( "api/feed/", callback);
+    console.log("Calling");
+        $.getJSON( "api/feeds/users/RichoDemus/feeds", callback);
     };
 
-    pub.markAsRead = function(itemId)
+    pub.markAsRead = function(feedId, itemId)
     {
-        console.log("Marking item " + itemId + " as read");
+        console.log("Marking item " + itemId + " in feed " + feedId + "  as read");
         jQuery.ajax ({
-            url: "api/feed/",
+            url: "api/feeds/users/RichoDemus/feeds/" + feedId + "/items/" + itemId + "/",
             type: "POST",
-            data: JSON.stringify({ id: itemId, action: "MARK_READ" }),
+            data: JSON.stringify({ action: "MARK_READ" }),
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             success: function(){
@@ -28,13 +29,13 @@ var Api = (function()
         });
     }
 
-    pub.markAsUnread = function(itemId)
+    pub.markAsUnread = function(feedId, itemId)
     {
-        console.log("Marking item " + itemId + " as unread");
+        console.log("Marking item " + itemId + " in feed " + feedId + " as unread");
         jQuery.ajax ({
-            url: "api/feed/",
+            url: "api/feeds/users/RichoDemus/feeds/" + feedId + "/items/" + itemId + "/",
             type: "POST",
-            data: JSON.stringify({ id: itemId, action: "MARK_UNREAD" }),
+            data: JSON.stringify({ action: "MARK_UNREAD" }),
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             success: function(){

@@ -21,7 +21,7 @@ public class FeedConverter
 	private Feed toWebFeed(com.richo.reader.backend.model.Feed feed)
 	{
 		List<Item> items = feed.getItems().stream().map(this::toWebItem).collect(Collectors.toList());
-		return new Feed(feed.getName(), items);
+		return new Feed(feed.getName(), feed.getName(), items);
 	}
 
 	private Item toWebItem(com.richo.reader.backend.model.Item item)
