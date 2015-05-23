@@ -2,7 +2,7 @@ package com.richo.reader.backend.youtube;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.PlaylistItem;
-import com.richo.reader.backend.youtube.cache.YoutubeChannelCache;
+import com.richo.reader.backend.persistence.YoutubeChannelPersistence;
 import com.richo.reader.backend.youtube.download.YouTubeVideoChuck;
 import com.richo.reader.backend.youtube.download.YoutubeChannelDownloader;
 import com.richo.reader.backend.youtube.model.YoutubeChannel;
@@ -27,10 +27,10 @@ public class YoutubeChannelService
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final Duration channelAgeUntilFrefresh;
 	private final YoutubeChannelDownloader youtubeChannelDownloader;
-	private final YoutubeChannelCache cache;
+	private final YoutubeChannelPersistence cache;
 
 	@Inject
-	public YoutubeChannelService(YoutubeChannelDownloader youtubeChannelDownloader, YoutubeChannelCache cache, Duration channelAgeUntilFrefresh)
+	public YoutubeChannelService(YoutubeChannelDownloader youtubeChannelDownloader, YoutubeChannelPersistence cache, Duration channelAgeUntilFrefresh)
 	{
 		this.channelAgeUntilFrefresh = channelAgeUntilFrefresh;
 		this.youtubeChannelDownloader = youtubeChannelDownloader;
@@ -73,7 +73,7 @@ public class YoutubeChannelService
 		return youtubeVideo != null;
 	}
 
-	private Optional<YoutubeChannel> getChannelFromCacheIfNotOutdated(String channelName, YoutubeChannelCache cache)
+	private Optional<YoutubeChannel> getChannelFromCacheIfNotOutdated(String channelName, YoutubeChannelPersistence cache)
 	{
 		return cache.getChannel(channelName).filter(this::outdatedChannel);
 	}

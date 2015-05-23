@@ -1,11 +1,15 @@
 package com.richo.reader.backend.youtube.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Objects;
 
 
@@ -20,12 +24,28 @@ public class YoutubeVideo implements Comparable<YoutubeVideo>
 	private final LocalDateTime uploadDate;
 	private final URL url;
 
-	public YoutubeVideo(String title, String description, String videoId, LocalDateTime uploadDate) throws MalformedURLException
+	public YoutubeVideo(String title,
+						String description,
+						String videoId,
+						LocalDateTime uploadDate) throws MalformedURLException
 	{
 		this.title = title;
 		this.description = description;
 		this.videoId = videoId;
 		this.uploadDate = uploadDate;
+		this.url = createUrl(videoId);
+	}
+
+	@JsonCreator
+	public YoutubeVideo(@JsonProperty("title") String title,
+						@JsonProperty("description") String description,
+						@JsonProperty("videoId") String videoId,
+						@JsonProperty("uploadDate") long uploadDate) throws MalformedURLException
+	{
+		this.title = title;
+		this.description = description;
+		this.videoId = videoId;
+		this.uploadDate = LocalDateTime.ofEpochSecond(uploadDate, 0, ZoneOffset.UTC);
 		this.url = createUrl(videoId);
 	}
 
@@ -60,9 +80,16 @@ public class YoutubeVideo implements Comparable<YoutubeVideo>
 		return url;
 	}
 
+	@JsonIgnore
 	public LocalDateTime getUploadDate()
 	{
 		return uploadDate;
+	}
+
+	@JsonProperty("uploadDate")
+	public long getUploadDateAsLong()
+	{
+		return uploadDate.toEpochSecond(ZoneOffset.UTC);
 	}
 
 	@Override
@@ -79,13 +106,12 @@ public class YoutubeVideo implements Comparable<YoutubeVideo>
 		YoutubeVideo that = (YoutubeVideo) o;
 		return Objects.equals(title, that.title) &&
 				Objects.equals(description, that.description) &&
-				Objects.equals(url, that.url) &&
-				Objects.equals(uploadDate, that.uploadDate);
+				Objects.equals(url, that.url);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(title, description, url, uploadDate);
+		return Objects.hash(title, description, url);
 	}
 }

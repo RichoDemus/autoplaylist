@@ -5,7 +5,8 @@ import com.google.api.client.util.Sets;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import com.google.api.services.youtube.model.ResourceId;
-import com.richo.reader.backend.youtube.cache.YoutubeChannelCache;
+import com.richo.reader.backend.persistence.InMemoryPersistence;
+import com.richo.reader.backend.persistence.YoutubeChannelPersistence;
 import com.richo.reader.backend.youtube.download.YouTubeVideoChuck;
 import com.richo.reader.backend.youtube.download.YoutubeChannelDownloader;
 import com.richo.reader.backend.youtube.model.YoutubeChannel;
@@ -46,7 +47,7 @@ public class YoutubeChannelServiceTest
 	{
 		final YoutubeChannelDownloader channelDownloaderMock = getYoutubeChannelDownloaderMock();
 
-		final YoutubeChannelCache cacheMock = Mockito.mock(YoutubeChannelCache.class);
+		final YoutubeChannelPersistence cacheMock = Mockito.mock(YoutubeChannelPersistence.class);
 		Mockito.when(cacheMock.getChannel(Matchers.anyString())).thenReturn(Optional.empty());
 
 		final YoutubeChannelService target = new YoutubeChannelService(channelDownloaderMock, cacheMock, Duration.of(1, ChronoUnit.HOURS));
@@ -84,7 +85,7 @@ public class YoutubeChannelServiceTest
 	@Test
 	public void testShouldNotFetchChannelIfAlreadyCachedAndRefreshIntervallNotPassed() throws Exception
 	{
-		final YoutubeChannelCache cache = new YoutubeChannelCache();
+		final YoutubeChannelPersistence cache = new YoutubeChannelPersistence(new InMemoryPersistence(), new InMemoryPersistence());
 		final Set<YoutubeVideo> videos = Sets.newTreeSet();
 		videos.add(new YoutubeVideo("title1", "description1", VIDEO_ID, LocalDateTime.of(2014, 9, 5, 12, 37, 56)));
 		final YoutubeChannel channel = new YoutubeChannel(CHANNEL_NAME, videos);
@@ -111,7 +112,7 @@ public class YoutubeChannelServiceTest
 	@Test
 	public void testShouldFetchChannelIfRefreshIntervallHasPassed() throws Exception
 	{
-		final YoutubeChannelCache cache = new YoutubeChannelCache();
+		final YoutubeChannelPersistence cache = new YoutubeChannelPersistence(new InMemoryPersistence(), new InMemoryPersistence());
 		final Set<YoutubeVideo> videos = Sets.newTreeSet();
 		videos.add(new YoutubeVideo("title1", "description_to_be_replaced", VIDEO_ID, LocalDateTime.of(2014, 9, 5, 12, 37, 56)));
 		final YoutubeChannel channel = new YoutubeChannel(CHANNEL_NAME, videos, Instant.ofEpochSecond(100));
