@@ -4,15 +4,23 @@ $(function() {
      {
         result.feeds.forEach(function(feed)
         {
-            feed.items.forEach(function(item)
+            const items = feed.items;
+            items.sort(comparator);
+            items.reverse();
+            items.forEach(function(item)
             {
                 addItemToTable(feed.id, item);
             });
         });
      });
-
-
 });
+
+const comparator = function(a,b)
+{
+	const a_date = new Date(a.uploadDate);
+	const b_date = new Date(b.uploadDate);
+	return a_date - b_date;
+}
 
 var addItemToTable = function(feedId, item)
 {
