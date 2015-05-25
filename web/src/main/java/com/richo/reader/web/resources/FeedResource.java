@@ -64,7 +64,7 @@ public class FeedResource
 
 	@POST
 	@Path("/users/{username}/feeds/")
-	public void addFeed(@PathParam("username")final String username, final String feedName)
+	public void addFeed(@PathParam("username") final String username, final String feedName)
 	{
 		try
 		{

@@ -8,6 +8,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Optional;
 
+/**
+ * Facade for the channel persistence, will look in memory first and then on the filesystem
+ */
 public class YoutubeChannelPersistence implements ChannelPersister
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());

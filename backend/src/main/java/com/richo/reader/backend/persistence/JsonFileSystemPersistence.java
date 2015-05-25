@@ -29,7 +29,7 @@ public class JsonFileSystemPersistence implements ChannelPersister
 	{
 		try
 		{
-			return Optional.ofNullable(new ObjectMapper().readValue(new File(saveRoot + "/" + channelName + "/data.json"), YoutubeChannel.class));
+			return Optional.ofNullable(new ObjectMapper().readValue(new File(saveRoot + "/channels/" + channelName + "/data.json"), YoutubeChannel.class));
 		}
 		catch (IOException e)
 		{
@@ -43,9 +43,10 @@ public class JsonFileSystemPersistence implements ChannelPersister
 	{
 		try
 		{
-			final boolean success = new File(saveRoot + "/" + channel.getName()).mkdirs();
-			logger.trace("Creating {} successful: {}", saveRoot + "/" + channel.getName(), success);
-			new ObjectMapper().writeValue(new File(saveRoot + "/" + channel.getName() + "/data.json"), channel);
+			final String path = saveRoot + "/channels/" + channel.getName();
+			final boolean success = new File(path).mkdirs();
+			logger.trace("Creating {} successful: {}", path, success);
+			new ObjectMapper().writeValue(new File(path + "/data.json"), channel);
 		}
 		catch (IOException e)
 		{
