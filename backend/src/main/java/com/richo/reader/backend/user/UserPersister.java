@@ -1,12 +1,11 @@
 package com.richo.reader.backend.user;
 
+import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
-
-import java.util.Optional;
 
 public interface UserPersister
 {
-	Optional<User> get(String username);
+	User get(String username) throws NoSuchUserException;
 
 	void update(User user);
 }

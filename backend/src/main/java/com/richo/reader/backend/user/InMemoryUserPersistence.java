@@ -1,13 +1,13 @@
 package com.richo.reader.backend.user;
 
 import com.google.api.client.util.Maps;
+import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import java.util.Map;
-import java.util.Optional;
 
 @Singleton
 public class InMemoryUserPersistence implements UserPersister
@@ -21,9 +21,13 @@ public class InMemoryUserPersistence implements UserPersister
 	}
 
 	@Override
-	public Optional<User> get(String username)
+	public User get(String username) throws NoSuchUserException
 	{
-		return Optional.ofNullable(users.get(username));
+		if(!users.containsKey(username))
+		{
+			throw new NoSuchUserException("No such user: " + username);
+		}
+		return users.get(username);
 	}
 
 	@Override

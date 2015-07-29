@@ -1,6 +1,7 @@
 package com.richo.reader.backend.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +10,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 
 
 public class JsonFileSystemUserPersistence implements UserPersister
@@ -25,16 +25,16 @@ public class JsonFileSystemUserPersistence implements UserPersister
 	}
 
 	@Override
-	public Optional<User> get(String username)
+	public User get(String username) throws NoSuchUserException
 	{
 		try
 		{
-			return Optional.ofNullable(new ObjectMapper().readValue(new File(saveRoot + "/users/" + username + "/data.json"), User.class));
+			return new ObjectMapper().readValue(new File(saveRoot + "/users/" + username + "/data.json"), User.class);
 		}
 		catch (IOException e)
 		{
-			logger.warn("Unable to load channel: {}", username, e);
-			return Optional.empty();
+			logger.warn("Unable to load user: {}", username, e);
+			throw new NoSuchUserException("Unable to load user: " + username);
 		}
 	}
 
@@ -50,6 +50,7 @@ public class JsonFileSystemUserPersistence implements UserPersister
 		}
 		catch (IOException e)
 		{
+			//todo fix
 			e.printStackTrace();
 		}
 	}

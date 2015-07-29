@@ -2,6 +2,7 @@ package com.richo.reader.web.resources;
 
 import com.richo.reader.backend.Backend;
 import com.richo.reader.backend.exception.NoSuchChannelException;
+import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.web.FeedConverter;
 import com.richo.reader.web.model.FeedResult;
 import com.richo.reader.web.model.ItemOperation;
@@ -39,7 +40,15 @@ public class FeedResource
 	@Path("/users/{username}/feeds/")
 	public FeedResult get(@PathParam("username") final String username)
 	{
-		final Set<com.richo.reader.backend.model.Feed> feeds = backend.getFeeds(username);
+		final Set<com.richo.reader.backend.model.Feed> feeds;
+		try
+		{
+			feeds = backend.getFeeds(username);
+		}
+		catch (NoSuchUserException e)
+		{
+			throw new BadRequestException(e.getMessage());
+		}
 		return new FeedResult(feedConverter.convert(feeds));
 	}
 
@@ -70,7 +79,7 @@ public class FeedResource
 		{
 			backend.addFeed(username, feedName);
 		}
-		catch (NoSuchChannelException e)
+		catch (NoSuchChannelException|NoSuchUserException e)
 		{
 			throw new BadRequestException(e.getMessage());
 		}

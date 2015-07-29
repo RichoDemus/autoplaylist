@@ -1,7 +1,7 @@
 package com.richo.reader.backend;
 
-import com.google.common.collect.Sets;
 import com.richo.reader.backend.exception.NoSuchChannelException;
+import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.Feed;
 import com.richo.reader.backend.model.Item;
 import com.richo.reader.backend.model.User;
@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,18 +29,11 @@ public class Backend
 		this.youtubeChannelService = youtubeChannelService;
 	}
 
-	public Set<Feed> getFeeds(final String username)
+	public Set<Feed> getFeeds(final String username) throws NoSuchUserException
 	{
 		logger.info("Getting feeds for user {}", username);
 
-		final Optional<User> userOptional = userService.get(username);
-		if (!userOptional.isPresent())
-		{
-			logger.error("No such user: {}", username);
-			return Sets.newHashSet();
-		}
-
-		final User user = userOptional.get();
+		final User user = userService.get(username);
 
 		return user.getFeeds().stream().map(this::feedIdToYoutubeChannel).map(this::youtubeChannelToItem).collect(Collectors.toSet());
 	}
@@ -68,17 +60,11 @@ public class Backend
 		return new Item(video.getVideoId(), video.getTitle(), video.getDescription(), video.getUrl(), video.getUploadDate());
 	}
 
-	public void addFeed(final String username, final String feedName) throws NoSuchChannelException
+	public void addFeed(final String username, final String feedName) throws NoSuchChannelException, NoSuchUserException
 	{
 		logger.info("Add feed: {} for user {}", feedName, username);
 
-		final Optional<User> userOptional = userService.get(username);
-		if (!userOptional.isPresent())
-		{
-			logger.error("No such user: {}", username);
-		}
-
-		final User user = userOptional.get();
+		final User user = userService.get(username);
 
 		final YoutubeChannel channelByName = youtubeChannelService.getChannelByName(feedName).orElseThrow(() ->
 		{

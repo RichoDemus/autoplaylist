@@ -1,12 +1,12 @@
 package com.richo.reader.backend.user;
 
+import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Optional;
 
 public class UserService implements UserPersister
 {
@@ -22,19 +22,16 @@ public class UserService implements UserPersister
 	}
 
 	@Override
-	public Optional<User> get(String username)
+	public User get(String username) throws NoSuchUserException
 	{
-		return Optional.ofNullable(inMemoryPersister.get(username).orElseGet(() ->
+		try
 		{
-			final Optional<User> fromFileSystem = fileSystemPersister.get(username);
-			if (!fromFileSystem.isPresent())
-			{
-				return null;
-			}
-
-			inMemoryPersister.update(fromFileSystem.get());
-			return fromFileSystem.get();
-		}));
+			return inMemoryPersister.get(username);
+		}
+		catch (NoSuchUserException e)
+		{
+			return fileSystemPersister.get(username);
+		}
 	}
 
 	@Override
