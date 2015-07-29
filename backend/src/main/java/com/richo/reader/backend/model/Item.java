@@ -71,4 +71,16 @@ public class Item
 	{
 		return Objects.hash(videoId, title, description, url, uploadDate);
 	}
+
+	@Override
+	public String toString()
+	{
+		return com.google.common.base.Objects.toStringHelper(this)
+				.add("videoId", videoId)
+				.add("title", title)
+				.add("description", description)
+				.add("url", url)
+				.add("uploadDate", uploadDate)
+				.toString();
+	}
 }

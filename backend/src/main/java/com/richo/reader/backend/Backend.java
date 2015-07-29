@@ -2,6 +2,7 @@ package com.richo.reader.backend;
 
 import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
+import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richo.reader.backend.model.Feed;
 import com.richo.reader.backend.model.Item;
 import com.richo.reader.backend.model.User;
@@ -35,7 +36,10 @@ public class Backend
 
 		final User user = userService.get(username);
 
-		return user.getFeeds().stream().map(this::feedIdToYoutubeChannel).map(this::youtubeChannelToItem).collect(Collectors.toSet());
+		return user.getFeeds().keySet().stream()
+				.map(this::feedIdToYoutubeChannel)
+				.map(channel -> youtubeChannelToItem(channel, user))
+				.collect(Collectors.toSet());
 	}
 
 	private YoutubeChannel feedIdToYoutubeChannel(String name)
@@ -47,11 +51,15 @@ public class Backend
 		});
 	}
 
-	private Feed youtubeChannelToItem(YoutubeChannel channel)
+	private Feed youtubeChannelToItem(YoutubeChannel channel, User user)
 	{
 		final String id = channel.getName();
 		final Feed feed = new Feed(id, id);
-		feed.addNewItems(channel.getVideos().stream().map(this::videoToItem).collect(Collectors.toSet()));
+		feed.addNewItems(channel.getVideos()
+				.stream()
+				.filter(video -> !user.isRead(channel.getName(), video.getVideoId()))
+				.map(this::videoToItem)
+				.collect(Collectors.toSet()));
 		return feed;
 	}
 
@@ -76,9 +84,12 @@ public class Backend
 		userService.update(user);
 	}
 
-	public void markAsRead(final String username, final String feedId, String itemId)
+	public void markAsRead(final String username, final String feedId, String itemId) throws NoSuchUserException, UserNotSubscribedToThatChannelException
 	{
 		logger.info("Marking item {} in feed {} for user {} as read", itemId, feedId, username);
+		final User user = userService.get(username);
+		user.markAsRead(feedId, itemId);
+		userService.update(user);
 	}
 
 	public void markAsUnread(final String username, final String feedId, String itemId)

@@ -1,10 +1,12 @@
 package com.richo.reader.backend.model;
 
 import com.google.api.client.util.Sets;
+import com.google.common.base.MoreObjects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class Feed
@@ -59,5 +61,40 @@ public class Feed
 	public void markAsRead(String id)
 	{
 		readItems.add(id);
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		Feed feed = (Feed) o;
+		return Objects.equals(id, feed.id) &&
+				Objects.equals(name, feed.name) &&
+				Objects.equals(items, feed.items) &&
+				Objects.equals(readItems, feed.readItems);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(id, name, items, readItems);
+	}
+
+	@Override
+	public String toString()
+	{
+		return MoreObjects.toStringHelper(this)
+				.add("id", id)
+				.add("name", name)
+				.add("items", items)
+				.add("readItems", readItems)
+				.toString();
 	}
 }

@@ -3,6 +3,7 @@ package com.richo.reader.web.resources;
 import com.richo.reader.backend.Backend;
 import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
+import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richo.reader.web.FeedConverter;
 import com.richo.reader.web.model.FeedResult;
 import com.richo.reader.web.model.ItemOperation;
@@ -57,17 +58,24 @@ public class FeedResource
 	public void performFeedOperation(@PathParam("username") final String username, @PathParam("feed") final String feedId, @PathParam("item") final String itemId, ItemOperation operation)
 	{
 		logger.info("Received item operation {} for feed {}, item {}", operation, feedId, itemId);
-		switch (operation.getAction())
+		try
 		{
-			case "MARK_READ":
-				backend.markAsRead(username, feedId, itemId);
-				break;
-			case "MARK_UNREAD":
-				backend.markAsUnread(username, feedId, itemId);
-				break;
-			default:
-				logger.error("Unknown action {}", operation.getAction());
-				throw new BadRequestException("Unknown action: " + operation.getAction());
+			switch (operation.getAction())
+			{
+				case "MARK_READ":
+					backend.markAsRead(username, feedId, itemId);
+					break;
+				case "MARK_UNREAD":
+					backend.markAsUnread(username, feedId, itemId);
+					break;
+				default:
+					logger.error("Unknown action {}", operation.getAction());
+					throw new BadRequestException("Unknown action: " + operation.getAction());
+			}
+		}
+		catch (NoSuchUserException|UserNotSubscribedToThatChannelException e)
+		{
+			throw new BadRequestException(e.getMessage());
 		}
 	}
 
