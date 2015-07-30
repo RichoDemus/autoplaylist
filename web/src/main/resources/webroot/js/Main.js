@@ -1,20 +1,43 @@
+var feeds = null;
+var filteredFeed = null;
 
 $(function() {
      Api.getAllItems(function(result)
      {
-        result.feeds.forEach(function(feed)
-        {
-            addFeedToTable(feed);
-            const items = feed.items;
-            items.sort(comparator);
-            items.reverse();
-            items.forEach(function(item)
-            {
-                addItemToTable(feed.id, item);
-            });
-        });
+     	feeds = result.feeds;
+     	updateEverything();
      });
 });
+
+const updateEverything = function()
+{
+	clearTables();
+	feeds.forEach(function(feed)
+	{
+		addFeedToTable(feed);
+		if((filteredFeed && feed.id === filteredFeed) || !filteredFeed)
+		{
+			const items = feed.items;
+			items.sort(comparator);
+			items.reverse();
+			items.forEach(function(item)
+			{
+				addItemToTable(feed.id, item);
+			});
+		}
+		else
+		{
+			console.log("filter is [" + filteredFeed + "] will not add [" + feed.name + "]");
+		}
+
+	});
+}
+
+const clearTables = function()
+{
+	$("#feedListTable tbody tr").remove();
+	$("#itemListTable tbody tr").remove();
+}
 
 const comparator = function(a,b)
 {
@@ -25,7 +48,7 @@ const comparator = function(a,b)
 
 const addFeedToTable = function(feed)
 {
-    $('#feedListTable > tbody:last').append("<tr data-feed-id=\"" + feed.id + "\"><th>" + feed.name + "</th></tr>");
+    $('#feedListTable > tbody:last').append("<tr data-feed-id=\"" + feed.id + "\" onclick=\"filterFeedButtonClicked(this)\"><th>" + feed.name + "</th></tr>");
 }
 
 var addItemToTable = function(feedId, item)
@@ -63,6 +86,20 @@ var markAsUnreadButtonPressed = function(item)
     $("#markItemAsReadButton-" + item.getAttribute("data-id")).show();
     $("#markItemAsUnreadButton-" + item.getAttribute("data-id")).hide();
     Api.markAsUnread(item.getAttribute("data-feed-id"), item.getAttribute("data-id"));
+}
+
+const filterFeedButtonClicked = function(feed)
+{
+	const newFilteredFeed = feed.getAttribute("data-feed-id");
+	if(filteredFeed === newFilteredFeed)
+	{
+		filteredFeed = null;
+	}
+	else
+	{
+		filteredFeed = newFilteredFeed;
+	}
+	updateEverything();
 }
 
 var addFeed = function()
