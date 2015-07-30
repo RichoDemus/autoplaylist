@@ -92,8 +92,11 @@ public class Backend
 		userService.update(user);
 	}
 
-	public void markAsUnread(final String username, final String feedId, String itemId)
+	public void markAsUnread(final String username, final String feedId, String itemId) throws NoSuchUserException
 	{
 		logger.info("Marking item {} in feed {} for user {} as unread", itemId, feedId, username);
+		final User user = userService.get(username);
+		user.markAsUnRead(feedId, itemId);
+		userService.update(user);
 	}
 }

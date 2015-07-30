@@ -23,7 +23,7 @@ public class InMemoryUserPersistence implements UserPersister
 	@Override
 	public User get(String username) throws NoSuchUserException
 	{
-		if(!users.containsKey(username))
+		if (!users.containsKey(username))
 		{
 			throw new NoSuchUserException("No such user: " + username);
 		}

@@ -54,14 +54,6 @@ public class BackendTest
 		))));
 	}
 
-	@Test(expected = NoSuchUserException.class)
-	public void getFeedsShouldThrowNoSuchUserExceptionIfUserDoesntExist() throws Exception
-	{
-		when(userService.get(NON_EXISTING_USER)).thenThrow(new NoSuchUserException(""));
-
-		target.getFeeds(NON_EXISTING_USER);
-	}
-
 	@Test
 	public void getFeedsShouldReturnAllSubscribedFeeds() throws Exception
 	{
@@ -69,6 +61,14 @@ public class BackendTest
 
 		assertNotNull("getFeeds returned null", result);
 		assertEquals("getFeeds did not return the expected feeds", expectedFeeds, result);
+	}
+
+	@Test(expected = NoSuchUserException.class)
+	public void getFeedsShouldThrowNoSuchUserExceptionIfUserDoesntExist() throws Exception
+	{
+		when(userService.get(NON_EXISTING_USER)).thenThrow(new NoSuchUserException(""));
+
+		target.getFeeds(NON_EXISTING_USER);
 	}
 
 	@Test
@@ -80,6 +80,17 @@ public class BackendTest
 		), ImmutableSet.of()));
 
 		target.markAsRead(EXISTING_USER, EXISTING_FEED_ID, EXISTING_FEED_FIRST_ITEM_ID);
+		final Set<Feed> result = target.getFeeds(EXISTING_USER);
+
+		assertNotNull("getFeeds returned null", result);
+		assertEquals("getFeeds did not return the expected feeds", expectedFeeds, result);
+	}
+
+	@Test
+	public void markAsUnreadShouldLeadToThatItemBeingReturnedAgain() throws Exception
+	{
+		target.markAsRead(EXISTING_USER, EXISTING_FEED_ID, EXISTING_FEED_FIRST_ITEM_ID);
+		target.markAsUnread(EXISTING_USER, EXISTING_FEED_ID, EXISTING_FEED_FIRST_ITEM_ID);
 		final Set<Feed> result = target.getFeeds(EXISTING_USER);
 
 		assertNotNull("getFeeds returned null", result);

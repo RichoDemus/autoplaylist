@@ -61,4 +61,9 @@ public class User
 	{
 		return feeds.get(feedId).contains(videoId);
 	}
+
+	public void markAsUnRead(String feedId, String itemId)
+	{
+		feeds.get(feedId).remove(itemId);
+	}
 }
