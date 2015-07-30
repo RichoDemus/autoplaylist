@@ -4,6 +4,7 @@ $(function() {
      {
         result.feeds.forEach(function(feed)
         {
+            addFeedToTable(feed);
             const items = feed.items;
             items.sort(comparator);
             items.reverse();
@@ -22,10 +23,15 @@ const comparator = function(a,b)
 	return a_date - b_date;
 }
 
+const addFeedToTable = function(feed)
+{
+    $('#feedListTable > tbody:last').append("<tr data-feed-id=\"" + feed.id + "\"><th>" + feed.name + "</th></tr>");
+}
+
 var addItemToTable = function(feedId, item)
 {
 	$('#itemListTable > tbody:last').append(
-	    "<tr data-feed-id=\"" + feedId + "\" data-item-id=\"" + item.id + "\" id=\"video-" + item.id + "\"><th>" + getMarkAsReadToggleButton(feedId, item) + "</th><th>" + getTitle(feedId, item) + "</th><th>" + item.description + "</th><th>" + item.uploadDate + "</th></th>");
+	    "<tr data-feed-id=\"" + feedId + "\" data-item-id=\"" + item.id + "\" id=\"video-" + item.id + "\"><th>" + getMarkAsReadToggleButton(feedId, item) + "</th><th>" + getTitle(feedId, item) + "</th><th>" + item.description.substring(0,10) + "</th><th>" + item.uploadDate + "</th></tr>");
 }
 
 var getTitle = function(feedId, item)
