@@ -9,12 +9,21 @@ import com.richo.reader.backend.persistence.JsonFileSystemPersistence;
 import com.richo.reader.backend.user.InMemoryUserPersistence;
 import com.richo.reader.backend.user.JsonFileSystemUserPersistence;
 import com.richo.reader.backend.user.UserPersister;
+import com.richo.reader.backend.youtube.OfflineChannelService;
+import com.richo.reader.backend.youtube.YoutubeChannelService;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 public class BackendModule extends AbstractModule
 {
+	private final boolean offlineMode;
+
+	public BackendModule(final boolean offlineMode)
+	{
+		this.offlineMode = offlineMode;
+	}
+
 	@Override
 	protected void configure()
 	{
@@ -28,5 +37,10 @@ public class BackendModule extends AbstractModule
 
 		bind(UserPersister.class).annotatedWith(Names.named("InMemory")).to(InMemoryUserPersistence.class);
 		bind(UserPersister.class).annotatedWith(Names.named("FileSystem")).to(JsonFileSystemUserPersistence.class);
+
+		if (offlineMode)
+		{
+			bind(YoutubeChannelService.class).to(OfflineChannelService.class);
+		}
 	}
 }
