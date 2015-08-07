@@ -4,7 +4,7 @@ jmsPort: 1234
 logging:
   level: INFO
   loggers:
-    com.richo.casinobots.web: INFO
+    com.richo.reader: ALL
     io.dropwizard: INFO
   appenders:
     - type: console

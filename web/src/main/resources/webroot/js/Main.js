@@ -1,13 +1,14 @@
 var feeds = null;
 var filteredFeed = null;
 
-$(function() {
-     Api.getAllItems(function(result)
+const getAllItems = function()
+{
+     Api.getAllItems(username, token, function(result)
      {
      	feeds = result.feeds;
      	updateEverything();
      });
-});
+}
 
 const updateEverything = function()
 {
@@ -29,7 +30,6 @@ const updateEverything = function()
 		{
 			console.log("filter is [" + filteredFeed + "] will not add [" + feed.name + "]");
 		}
-
 	});
 }
 

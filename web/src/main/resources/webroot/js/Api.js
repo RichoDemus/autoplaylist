@@ -8,10 +8,15 @@ var Api = (function()
     //pub.ingredient = "Bacon Strips";
 
     //Public method
-    pub.getAllItems = function(callback)
+    pub.getAllItems = function(username, token, callback)
     {
-    console.log("Calling");
-        $.getJSON( "api/feeds/users/RichoDemus/feeds", callback);
+    	console.log("Getting all feeds for " + username + " using token " + token);
+    	$.ajax(
+    	{
+    		url: "api/feeds/users/" + username + "/feeds",
+    		type: "GET",
+        	headers: { 'x-token-jwt': token.raw }
+    	}).done(callback);
     };
 
     pub.markAsRead = function(feedId, itemId)
@@ -47,7 +52,7 @@ var Api = (function()
     pub.addFeed = function(feedName)
     {
         jQuery.ajax ({
-            url: "api/feeds/users/RichoDemus/feeds",
+            url: "api/feeds/users/" + username + "/feeds",
             type: "POST",
             data: feedName,
             dataType: "json",
@@ -56,6 +61,22 @@ var Api = (function()
                 //
             }
         });
+    }
+
+    pub.login = function(username, password, callback)
+    {
+    	console.log("Attempting to log in user " + username);
+    	$.post("api/sessions", username, callback).fail(function(data)
+    	{
+    	    alert("Unable to login");
+    	    console.log(data);
+    	});
+    }
+
+    pub.signup = function(username, password, callback)
+    {
+    	console.log("Attempting to sign up user " + username);
+    	$.post("api/users", username, callback);
     }
 
     //Private method

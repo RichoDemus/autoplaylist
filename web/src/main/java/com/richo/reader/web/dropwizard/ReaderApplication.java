@@ -18,7 +18,7 @@ public class ReaderApplication extends Application<ReaderConfiguration>
 	@Override
 	public String getName()
 	{
-		return "Casino Bots";
+		return "Reader";
 	}
 
 	@Override
@@ -31,7 +31,5 @@ public class ReaderApplication extends Application<ReaderConfiguration>
 	public void run(ReaderConfiguration configuration,
 					Environment environment)
 	{
-		// nothing to do yet
-
 	}
 }

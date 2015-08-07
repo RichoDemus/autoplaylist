@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Theme Template for Bootstrap</title>
+    <title>Reader</title>
 
     <!-- Bootstrap core CSS -->
     <link href="js/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -39,7 +39,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Bootstrap theme</a>
+            <a class="navbar-brand" href="#">Reader</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -67,45 +67,69 @@
 
 
 <div class="container theme-showcase" role="main">
+    <div class="mainDiv" id="loginDiv">
+        <div class="jumbotron">
+            <h1>Welcome to Reader</h1>
 
-    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron">
-        <h1>Theme example</h1>
-
-        <p>This is a template showcasing the optional theme stylesheet included in Bootstrap. Use it as a starting point
-            to create something more unique by building on or modifying it.</p>
-    </div>
-
-
-    <div class="page-header">
-        <h1>Tables</h1>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            Add Feed: <input id="addFeedButton" type="text" name="feed">
-            <button type="button" class="btn btn-xs btn-default" onclick="addFeed()">Add</button>
+            <p>A youtube subscription service</p>
         </div>
+
+        <h3>Please login</h3>
+
+        <form id="loginForm">
+            Username: <input type="text" name="username" id="nameInput"/> <br/>
+            Password: <input type="password" name="password" id="passwordInput"/> <br/>
+            <input type="submit" id="loginSubmit" value="Login"/>
+        </form>
     </div>
-    <div class="row">
-        <div class="col-md-3">
-            <table class="table" id="feedListTable">
-                <thead>Feed</thead>
-                <tbody></tbody>
-            </table>
+    <div class="mainDiv" id="signupDiv">
+        <form id="signupForm">
+            Username: <input type="text" name="username" id="signupNameInput"/> <br/>
+            Password: <input type="password" name="password" id="signupPasswordInput"/> <br/>
+            Password: <input type="password" name="password2" id="signupPasswordInput2"/> <br/>
+            <input type="submit" id="signupSubmit" value="Login"/>
+        </form>
+    </div>
+    <div class="mainDiv" id="mainPageDiv" style="display:none">
+        <!-- Main jumbotron for a primary marketing message or call to action -->
+        <div class="jumbotron">
+            <h1>Welcome to Reader</h1>
+
+            <p>This is a template showcasing the optional theme stylesheet included in Bootstrap. Use it as a starting
+                point
+                to create something more unique by building on or modifying it.</p>
         </div>
-        <div class="col-md-9">
-            <table class="table" id="itemListTable">
-                <thead>
-                <tr>
-                    <th>Action</th>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Date</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+
+        <div class="page-header">
+            <h1>Tables</h1>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                Add Feed: <input id="addFeedButton" type="text" name="feed">
+                <button type="button" class="btn btn-xs btn-default" onclick="addFeed()">Add</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <table class="table" id="feedListTable">
+                    <thead>Feed</thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="col-md-9">
+                <table class="table" id="itemListTable">
+                    <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -117,5 +141,7 @@
 <script src="js/lib/bootstrap/js/bootstrap.min.js"></script>
 <script src="js/Main.js"></script>
 <script src="js/Api.js"></script>
+<script src="js/Authentication.js"></script>
+<script src="js/Navigation.js"></script>
 </body>
 </html>
