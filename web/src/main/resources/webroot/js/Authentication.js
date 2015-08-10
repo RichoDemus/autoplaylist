@@ -16,7 +16,7 @@ const setLoginFormBehaviour = function()
 		login();
 		event.preventDefault();
 	});
-}
+};
 
 const setSignupFormBehaviour = function()
 {
@@ -27,7 +27,7 @@ const setSignupFormBehaviour = function()
 		signup();
 		event.preventDefault();
 	});
-}
+};
 
 const login = function()
 {
@@ -38,7 +38,7 @@ const login = function()
 		//todo username should come from server response
 		loggedIn(username, token);
 	});
-}
+};
 
 const loggedIn = function(username_param, token_param)
 {
@@ -46,11 +46,11 @@ const loggedIn = function(username_param, token_param)
 	//Makes the token more compatible with future JWT
 	token.raw = token_param;
 	username = username_param;
-	token.toString = function(){return this.raw;}
+	token.toString = function(){return this.raw;};
 	console.log("Logged in as " + username + ", got token: " + token);
 	switchToDiv("#mainPageDiv");
 	getAllItems();
-}
+};
 
 const signup = function()
 {
@@ -66,7 +66,7 @@ const signup = function()
 	{
 		signedUp(token);
 	});
-}
+};
 
 const signedUp = function(data)
 {
@@ -74,4 +74,4 @@ const signedUp = function(data)
 	console.log(data);
 	$("#signupDiv").hide();
 	//todo prompt user to sign in
-}
+};

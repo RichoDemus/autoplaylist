@@ -32,7 +32,7 @@ var Api = (function()
                 //
             }
         });
-    }
+    };
 
     pub.markAsUnread = function(feedId, itemId)
     {
@@ -47,7 +47,7 @@ var Api = (function()
                 //
             }
         });
-    }
+    };
 
     pub.addFeed = function(feedName)
     {
@@ -61,7 +61,7 @@ var Api = (function()
                 //
             }
         });
-    }
+    };
 
     pub.login = function(username, password, callback)
     {
@@ -71,13 +71,13 @@ var Api = (function()
     	    alert("Unable to login");
     	    console.log(data);
     	});
-    }
+    };
 
     pub.signup = function(username, password, callback)
     {
     	console.log("Attempting to sign up user " + username);
     	$.post("api/users", username, callback);
-    }
+    };
 
     //Private method
     /*
