@@ -1,5 +1,5 @@
 var feeds = null;
-var filteredFeed = null;
+var selectedFeed = null;
 
 const getAllItems = function()
 {
@@ -16,7 +16,7 @@ const updateEverything = function()
 	feeds.forEach(function(feed)
 	{
 		addFeedToTable(feed);
-		if((filteredFeed && feed.id === filteredFeed) || !filteredFeed)
+		if((selectedFeed && feed.id === selectedFeed) || !selectedFeed)
 		{
 			const items = feed.items;
 			items.sort(comparator);
@@ -28,7 +28,7 @@ const updateEverything = function()
 		}
 		else
 		{
-			console.log("filter is [" + filteredFeed + "] will not add [" + feed.name + "]");
+			console.log("filter is [" + selectedFeed + "] will not add [" + feed.name + "]");
 		}
 	});
 };
@@ -48,7 +48,8 @@ const comparator = function(a,b)
 
 const addFeedToTable = function(feed)
 {
-    $('#feedListTable').find('> tbody:last').append("<tr data-feed-id=\"" + feed.id + "\" onclick=\"filterFeedButtonClicked(this)\"><th>" + feed.name + "</th></tr>");
+    $('#feedListTable').find('> tbody:last')
+    	.append("<tr data-feed-id=\"" + feed.id + "\" onclick=\"filterFeedButtonClicked(this)\"><th>" + feed.name + "(" + feed.items.length + ")</th></tr>");
 };
 
 var addItemToTable = function(feedId, item)
@@ -90,14 +91,14 @@ var markAsUnreadButtonPressed = function(item)
 
 const filterFeedButtonClicked = function(feed)
 {
-	const newFilteredFeed = feed.getAttribute("data-feed-id");
-	if(filteredFeed === newFilteredFeed)
+	const newselectedFeed = feed.getAttribute("data-feed-id");
+	if(selectedFeed === newselectedFeed)
 	{
-		filteredFeed = null;
+		selectedFeed = null;
 	}
 	else
 	{
-		filteredFeed = newFilteredFeed;
+		selectedFeed = newselectedFeed;
 	}
 	updateEverything();
 };

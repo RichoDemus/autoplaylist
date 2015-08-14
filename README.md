@@ -10,5 +10,6 @@
     * Google reader
     * feedly
     * The old reader
-* Show number of unread items after feed name in list
 * ability to put feeds in different categories
+* option/checkbox to hide empty feeds
+* mechanism to detect dead feeds
