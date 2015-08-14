@@ -5,30 +5,17 @@ import io.dropwizard.Configuration;
 
 public class ReaderConfiguration extends Configuration
 {
-	private String temp;
-	private int jmsPort;
+	private boolean offlineMode;
 
 	@JsonProperty
-	public String getTemp()
+	public void setOfflineMode(boolean offlineMode)
 	{
-		return temp;
+		this.offlineMode = offlineMode;
 	}
 
 	@JsonProperty
-	public void setTemp(String temp)
+	public boolean isOfflineMode()
 	{
-		this.temp = temp;
-	}
-
-	@JsonProperty
-	public void setJmsPort(int jmsPort)
-	{
-		this.jmsPort = jmsPort;
-	}
-
-	@JsonProperty
-	public int getJmsPort()
-	{
-		return jmsPort;
+		return offlineMode;
 	}
 }

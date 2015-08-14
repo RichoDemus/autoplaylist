@@ -39,6 +39,7 @@ public class YoutubeChannelService
 
 	public Optional<YoutubeChannel> getChannelByName(String channelName)
 	{
+		logger.info("Channel {} requested", channelName);
 		final Optional<YoutubeChannel> channelFromCache = getChannelFromCacheIfNotOutdated(channelName, cache);
 		if (channelFromCache.isPresent())
 		{
@@ -75,12 +76,18 @@ public class YoutubeChannelService
 
 	private Optional<YoutubeChannel> getChannelFromCacheIfNotOutdated(String channelName, YoutubeChannelPersistence cache)
 	{
-		return cache.getChannel(channelName).filter(this::outdatedChannel);
+		return cache.getChannel(channelName)
+				.filter(this::outdatedChannel);
 	}
 
 	private boolean outdatedChannel(YoutubeChannel channel)
 	{
-		return Duration.between(channel.getLastUpdated(), Instant.now()).compareTo(channelAgeUntilFrefresh) < 0;
+		if (Duration.between(channel.getLastUpdated(), Instant.now()).compareTo(channelAgeUntilFrefresh) < 0)
+		{
+			return true;
+		}
+		logger.debug("Channel {} is outdated", channel.getName());
+		return false;
 	}
 
 	private YoutubeVideo toVideo(PlaylistItem playlistItem)

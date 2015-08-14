@@ -35,11 +35,7 @@ public class MyBundle implements ConfiguredBundle<ReaderConfiguration>
 
 	private GuiceBundle getGuiceBundle(Bootstrap<?> bootstrap)
 	{
-		/*
-		TODO do this in a nicer way, prefferably from the config-file
-		but I don't know how to get access to the configuration object from initialize
-		 */
-		final GuiceModule gcpWebModule = new GuiceModule(true);
+		final GuiceModule gcpWebModule = new GuiceModule();
 		return GuiceBundle.<ReaderConfiguration>newBuilder().addModule(gcpWebModule)
 				.setConfigClass(ReaderConfiguration.class)
 				.build();

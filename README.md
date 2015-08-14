@@ -1,6 +1,6 @@
 #Richo Reader
 
-## TODO
+## Features TODO
 * Add JWT Authentication
 * Use my classpath scanner
 * add a captcha for signups
@@ -13,3 +13,6 @@
 * ability to put feeds in different categories
 * option/checkbox to hide empty feeds
 * mechanism to detect dead feeds
+
+## Bugs
+* Currently downloads all items in a feed if it's outdated, could perhaps only download new items
