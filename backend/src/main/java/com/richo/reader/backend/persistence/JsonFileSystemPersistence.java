@@ -29,7 +29,13 @@ public class JsonFileSystemPersistence implements ChannelPersister
 	{
 		try
 		{
-			return Optional.ofNullable(new ObjectMapper().readValue(new File(saveRoot + "/channels/" + channelName + "/data.json"), YoutubeChannel.class));
+			final File file = new File(saveRoot + "/channels/" + channelName + "/data.json");
+			if(!file.exists())
+			{
+				logger.debug("Channel {} not on disk", channelName);
+				return Optional.empty();
+			}
+			return Optional.ofNullable(new ObjectMapper().readValue(file, YoutubeChannel.class));
 		}
 		catch (IOException e)
 		{
