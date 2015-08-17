@@ -1,14 +1,17 @@
 package com.richo.reader.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableMap;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,18 +20,23 @@ public class User
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final String name;
 	private final Map<String, Set<String>> feeds;
+	private final List<Label> labels;
+	private long nextLabelId;
 
 	@JsonCreator
-	public User(@JsonProperty("name") String username, @JsonProperty("feeds") Map<String, Set<String>> feedsIds)
+	public User(@JsonProperty("name") String username, @JsonProperty("nextLabelId") long nextLabelId, @JsonProperty("feeds") Map<String, Set<String>> feedsIds, @JsonProperty("labels") List<Label> labels)
 	{
 		this.name = username;
+		this.nextLabelId = nextLabelId;
 		this.feeds = feedsIds;
+		this.labels = labels;
 	}
 
 	public User(String username, Set<String> feedIds)
 	{
 		this.name = username;
 		this.feeds = new HashMap<>();
+		this.labels = Collections.emptyList();
 		feedIds.forEach(id -> feeds.put(id, new HashSet<>()));
 	}
 
@@ -65,5 +73,27 @@ public class User
 	public void markAsUnRead(String feedId, String itemId)
 	{
 		feeds.get(feedId).remove(itemId);
+	}
+
+	public long getNextLabelId()
+	{
+		return nextLabelId;
+	}
+
+	@JsonIgnore
+	public synchronized long incrementAndGetNextLabelId()
+	{
+		return nextLabelId++;
+	}
+
+	public List<Label> getLabels()
+	{
+		return labels;
+	}
+
+	@JsonIgnore
+	public void addLabel(Label label)
+	{
+		labels.add(label);
 	}
 }

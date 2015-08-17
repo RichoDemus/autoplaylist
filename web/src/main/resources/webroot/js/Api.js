@@ -79,6 +79,23 @@ var Api = (function()
     	$.post("api/users", username, callback);
     };
 
+    pub.createLabel = function(label, callback)
+    {
+       console.log("Attepmting to create label " + label);
+       $.post("api/users/" + username + "/labels", label, callback);
+    }
+
+    pub.addFeedToLabel = function(feed, label, callback)
+    {
+        console.log("Attempting to add feed " + feed + " to label " + label);
+        $.ajax({
+            url: "api/users/" + username + "/labels/" + label,
+            data: feed,
+            type: "PUT",
+            success: callback
+        });
+    }
+
     //Private method
     /*
     function privateWay() {
@@ -89,3 +106,4 @@ var Api = (function()
     return pub;
 
 }());
+

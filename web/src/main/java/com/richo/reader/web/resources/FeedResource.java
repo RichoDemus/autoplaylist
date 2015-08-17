@@ -1,12 +1,15 @@
 package com.richo.reader.web.resources;
 
 import com.richo.reader.backend.Backend;
+import com.richo.reader.backend.LabelManager;
 import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
+import com.richo.reader.backend.model.Label;
 import com.richo.reader.web.FeedConverter;
-import com.richo.reader.web.model.FeedResult;
+import com.richo.reader.web.LabelConverter;
 import com.richo.reader.web.model.ItemOperation;
+import com.richo.reader.web.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 import java.util.Set;
 
 @Path("/users/{username}/feeds/")
@@ -28,28 +32,34 @@ public class FeedResource
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final Backend backend;
+	private final LabelManager labelManager;
 	private final FeedConverter feedConverter;
+	private final LabelConverter labelConverter;
 
 	@Inject
-	public FeedResource(Backend injectable, FeedConverter feedConverter)
+	public FeedResource(Backend injectable, LabelManager labelManager, FeedConverter feedConverter, LabelConverter labelConverter)
 	{
 		this.backend = injectable;
+		this.labelManager = labelManager;
 		this.feedConverter = feedConverter;
+		this.labelConverter = labelConverter;
 	}
 
 	@GET
-	public FeedResult get(@PathParam("username") final String username)
+	public User get(@PathParam("username") final String username)
 	{
 		final Set<com.richo.reader.backend.model.Feed> feeds;
+		final List<Label> labels;
 		try
 		{
 			feeds = backend.getFeeds(username);
+			labels = labelManager.getLabels(username);
 		}
 		catch (NoSuchUserException e)
 		{
 			throw new BadRequestException(e.getMessage());
 		}
-		return new FeedResult(feedConverter.convert(feeds));
+		return new User(feedConverter.convert(feeds), labelConverter.convert(labels));
 	}
 
 	@POST
@@ -72,7 +82,7 @@ public class FeedResource
 					throw new BadRequestException("Unknown action: " + operation.getAction());
 			}
 		}
-		catch (NoSuchUserException|UserNotSubscribedToThatChannelException e)
+		catch (NoSuchUserException | UserNotSubscribedToThatChannelException e)
 		{
 			throw new BadRequestException(e.getMessage());
 		}
@@ -85,7 +95,7 @@ public class FeedResource
 		{
 			backend.addFeed(username, feedName);
 		}
-		catch (NoSuchChannelException|NoSuchUserException e)
+		catch (NoSuchChannelException | NoSuchUserException e)
 		{
 			throw new BadRequestException(e.getMessage());
 		}

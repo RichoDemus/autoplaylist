@@ -107,13 +107,25 @@
         <div class="row">
             <div class="col-md-6">
                 Add Feed: <input id="addFeedButton" type="text" name="feed">
-                <button type="button" class="btn btn-xs btn-default" onclick="addFeed()">Add</button>
+                <button type="button" class="btn btn-xs btn-default" onclick="addFeed()">Add</button> <br/>
+                Create label: <input id="createLabelInput" type="text" name="label">
+                <button type="button" class="btn btn-xs btn-default" onclick="createLabel()">Add</button> <br/>
+                Add Feed <input id="feedToBeAddedToLabelInput" type="text" name="feedToAddToLabel"> to Label: <input id="labelForFeedToBeAddedTo" type="text" name="labelForFeedToBeAddedTo">
+                <button type="button" class="btn btn-xs btn-default" onclick="addFeedToLabel()">Add</button> <br/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <table class="table" id="labelListTable">
+                    <thead>Labels</thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
         <div class="row">
             <div class="col-md-3">
                 <table class="table" id="feedListTable">
-                    <thead>Feed</thead>
+                    <thead>Feeds</thead>
                     <tbody></tbody>
                 </table>
             </div>
