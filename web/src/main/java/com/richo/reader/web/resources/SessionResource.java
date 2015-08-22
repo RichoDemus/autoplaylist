@@ -9,8 +9,9 @@ import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
-@Path("/sessions")
+@Path("/users/{username}/sessions")
 public class SessionResource
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -23,7 +24,7 @@ public class SessionResource
 	}
 
 	@POST
-	public String login(String username)
+	public String login(@PathParam("username") String username)
 	{
 		logger.info("Logging user {}", username);
 		try

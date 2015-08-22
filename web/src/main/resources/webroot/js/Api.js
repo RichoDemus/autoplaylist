@@ -13,7 +13,7 @@ var Api = (function()
     	console.log("Getting all feeds for " + username + " using token " + token);
     	$.ajax(
     	{
-    		url: "api/feeds/users/" + username + "/feeds",
+    		url: "api/users/" + username + "/feeds",
     		type: "GET",
         	headers: { 'x-token-jwt': token.raw }
     	}).done(callback);
@@ -23,7 +23,7 @@ var Api = (function()
     {
         console.log("Marking item " + itemId + " in feed " + feedId + "  as read");
         jQuery.ajax ({
-            url: "api/feeds/users/RichoDemus/feeds/" + feedId + "/items/" + itemId + "/",
+            url: "api/users/RichoDemus/feeds/" + feedId + "/items/" + itemId + "/",
             type: "POST",
             data: JSON.stringify({ action: "MARK_READ" }),
             dataType: "json",
@@ -38,7 +38,7 @@ var Api = (function()
     {
         console.log("Marking item " + itemId + " in feed " + feedId + " as unread");
         jQuery.ajax ({
-            url: "api/feeds/users/RichoDemus/feeds/" + feedId + "/items/" + itemId + "/",
+            url: "api/users/RichoDemus/feeds/" + feedId + "/items/" + itemId + "/",
             type: "POST",
             data: JSON.stringify({ action: "MARK_UNREAD" }),
             dataType: "json",
@@ -52,7 +52,7 @@ var Api = (function()
     pub.addFeed = function(feedName)
     {
         jQuery.ajax ({
-            url: "api/feeds/users/" + username + "/feeds",
+            url: "api/users/" + username + "/feeds",
             type: "POST",
             data: feedName,
             dataType: "json",
@@ -66,7 +66,7 @@ var Api = (function()
     pub.login = function(username, password, callback)
     {
     	console.log("Attempting to log in user " + username);
-    	$.post("api/sessions", username, callback).fail(function(data)
+    	$.post("api/users/" + username + "/sessions", username, callback).fail(function(data)
     	{
     	    alert("Unable to login");
     	    console.log(data);

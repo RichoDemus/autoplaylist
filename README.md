@@ -16,3 +16,4 @@
 
 ## Bugs
 * Currently downloads all items in a feed if it's outdated, could perhaps only download new items
+
