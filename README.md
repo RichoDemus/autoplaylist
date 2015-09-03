@@ -15,6 +15,7 @@
 * ability to put feeds in different categories
 * option/checkbox to hide empty feeds
 * mechanism to detect dead feeds
+* Add 2-factor authentication
 * Add feed name to item list
 
 ## Bugs
