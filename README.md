@@ -17,6 +17,7 @@
 * mechanism to detect dead feeds
 * Add 2-factor authentication
 * Add feed name to item list
+* Split channels into subchannels using keywords/regex
 
 ## Bugs
 * Currently downloads all items in a feed if it's outdated, could perhaps only download new items

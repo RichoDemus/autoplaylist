@@ -59,10 +59,10 @@ const addFeedsToTable = function()
  		{
  			//add feed if it doesnt belong in any label
  			var hasLabel = false;
- 			for(i = 0; i < labels.length; i++)
+			for(var i = 0; i < labels.length; i++)
  			{
- 				var label = labels[i];
- 				console.log(label);
+				var label = labels[i];
+				console.log(label);
  				if(label.feeds.indexOf(feed.id) > -1)
  				{
  					//this feed belong to a label
@@ -118,8 +118,16 @@ const comparator = function(a,b)
 
 const addFeedToTable = function(feed)
 {
-    $('#feedListTable').find('> tbody:last')
-    	.append("<tr data-feed-id=\"" + feed.id + "\" onclick=\"filterFeedButtonClicked(this)\"><th>" + feed.name + "(" + feed.items.length + ")</th></tr>");
+	if(feed.id === selectedFeed)
+	{
+		$('#feedListTable').find('> tbody:last')
+			.append("<tr data-feed-id=\"" + feed.id + "\" onclick=\"filterFeedButtonClicked(this)\"><td bgcolor=\"#FF0000\">" + feed.name + "(" + feed.items.length + ")</td></tr>");
+	}
+	else
+	{
+		$('#feedListTable').find('> tbody:last')
+			.append("<tr data-feed-id=\"" + feed.id + "\" onclick=\"filterFeedButtonClicked(this)\"><td>" + feed.name + "(" + feed.items.length + ")</td></tr>");
+	}
 };
 
 const labelClicked = function(label)
@@ -219,6 +227,5 @@ const addFeedToLabel = function()
     	console.log("Callback from label thing")
     	console.log(result);
     	label.feeds.push(feed);
-
     });
 };
