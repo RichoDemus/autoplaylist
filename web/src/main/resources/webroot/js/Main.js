@@ -45,12 +45,6 @@ const addLabelsToTable = function()
 	});
 };
 
-const addLabelToTable = function(label)
-{
-	$('#labelListTable').find('> tbody:last')
-		.append("<tr data-label-id=\"" + label.id + "\" onclick=\"labelClicked(this)\"><th>" + label.name + "(" + "x" + ")</th></tr>");
-};
-
 const addFeedsToTable = function()
 {
 	feeds.forEach(function(feed)
@@ -81,6 +75,10 @@ const addFeedsToTable = function()
  		{
  			addFeedToTable(feed);
  		}
+		else if(selectedLabel && selectedLabel === ALL_LABEL)
+		{
+			addFeedToTable(feed);
+		}
  		else
  		{
  			console.log("label is [" + selectedLabel.name + "] will not add [" + feed.name + "]")
@@ -130,12 +128,28 @@ const addFeedToTable = function(feed)
 	}
 };
 
+
+const addLabelToTable = function(label)
+{
+	if(selectedLabel && label.id === selectedLabel.id)
+	{
+		$('#labelListTable').find('> tbody:last')
+			.append("<tr data-label-id=\"" + label.id + "\" onclick=\"labelClicked(this)\"><td bgcolor=\"#FF0000\">" + label.name + "(" + "x" + ")</td></tr>");
+	}
+	else
+	{
+		$('#labelListTable').find('> tbody:last')
+			.append("<tr data-label-id=\"" + label.id + "\" onclick=\"labelClicked(this)\"><td>" + label.name + "(" + "x" + ")</td></tr>");
+	}
+
+};
+
 const labelClicked = function(label)
 {
 	const newSelectedLabelLong = label.getAttribute("data-label-id");
 	if(newSelectedLabelLong == ALL_LABEL.id)
 	{
-		selectedLabel = null;
+		selectedLabel = ALL_LABEL;
 		updateEverything();
 		return;
 	}
