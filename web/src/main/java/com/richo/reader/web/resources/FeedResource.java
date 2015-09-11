@@ -57,6 +57,7 @@ public class FeedResource
 		}
 		catch (NoSuchUserException e)
 		{
+			logger.warn("Exception when {} got all feeds", e);
 			throw new BadRequestException(e.getMessage());
 		}
 		return new User(feedConverter.convert(feeds), labelConverter.convert(labels));
@@ -84,6 +85,7 @@ public class FeedResource
 		}
 		catch (NoSuchUserException | UserNotSubscribedToThatChannelException e)
 		{
+			logger.warn("Exception when {} performed operation {} on feed {}", username, operation, feedId, e);
 			throw new BadRequestException(e.getMessage());
 		}
 	}
@@ -97,6 +99,7 @@ public class FeedResource
 		}
 		catch (NoSuchChannelException | NoSuchUserException e)
 		{
+			logger.warn("Exception when {} added feed {}", username, feedName, e);
 			throw new BadRequestException(e.getMessage());
 		}
 	}

@@ -13,7 +13,7 @@ const setLoginFormBehaviour = function()
 	$("#loginForm").submit(function(event)
 	{
 		console.log("logging in");
-		login();
+		Buttons.login();
 		event.preventDefault();
 	});
 };
@@ -24,19 +24,8 @@ const setSignupFormBehaviour = function()
 	$("#signupForm").submit(function(event)
 	{
 		console.log("Signing Up");
-		signup();
+		Buttons.signup();
 		event.preventDefault();
-	});
-};
-
-const login = function()
-{
-	const username = $("#nameInput").val();
-	const password = $("#passwordInput").val();
-	Api.login(username, password, function(token)
-	{
-		//todo username should come from server response
-		loggedIn(username, token);
 	});
 };
 
@@ -48,24 +37,8 @@ const loggedIn = function(username_param, token_param)
 	username = username_param;
 	token.toString = function(){return this.raw;};
 	console.log("Logged in as " + username + ", got token: " + token);
-	switchToDiv("#mainPageDiv");
-	getAllItems();
-};
-
-const signup = function()
-{
-	const username = $("#signupNameInput").val();
-	const password = $("#signupPasswordInput").val();
-	const password2 = $("#signupPasswordInput2").val();
-	if(password != password2)
-	{
-		alert("Passwords do not match");
-		return;
-	}
-	Api.signup(username, password, function(token)
-	{
-		signedUp(token);
-	});
+	Navigation.switchToDiv("#mainPageDiv");
+	Service.getAllItems();
 };
 
 const signedUp = function(data)
