@@ -1,5 +1,6 @@
 package com.richo.reader.web.resources;
 
+import com.google.common.base.Strings;
 import com.richo.reader.backend.LabelManager;
 import com.richo.reader.backend.exception.NoSuchLabelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
@@ -35,6 +36,10 @@ public class LabelResource
 	@POST
 	public Label createLabel(@PathParam("username") String username, String labelName)
 	{
+		if (Strings.isNullOrEmpty(labelName))
+		{
+			throw new BadRequestException("Label name can't be empty");
+		}
 		logger.debug("creating label {} for {}", labelName, username);
 		try
 		{
