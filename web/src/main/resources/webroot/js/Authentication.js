@@ -1,9 +1,3 @@
-$(function()
-{
-	Authentication.setLoginFormBehaviour();
-	Authentication.setSignupFormBehaviour();
-});
-
 var Authentication = (function()
 {
 	var pub = {},

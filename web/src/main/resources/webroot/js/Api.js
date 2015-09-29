@@ -79,6 +79,12 @@ var Api = (function()
 		$.post("api/users", username, callback);
 	};
 
+	pub.refreshSession = function(session, callback)
+	{
+		console.log("refresh session is not implemented");
+		callback(session);
+	};
+
 	pub.createLabel = function(label, callback)
 	{
 		console.log("Attepmting to create label " + label);

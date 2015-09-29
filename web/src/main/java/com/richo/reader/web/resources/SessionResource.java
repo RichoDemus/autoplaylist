@@ -2,6 +2,7 @@ package com.richo.reader.web.resources;
 
 import com.richo.reader.backend.UserManager;
 import com.richo.reader.backend.exception.NoSuchUserException;
+import com.richo.reader.web.model.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,8 +11,12 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.util.Optional;
 
 @Path("/users/{username}/sessions")
+@Produces(MediaType.APPLICATION_JSON)
 public class SessionResource
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -24,12 +29,15 @@ public class SessionResource
 	}
 
 	@POST
-	public String login(@PathParam("username") String username)
+	public Session login(@PathParam("username") String username)
 	{
 		logger.info("Logging user {}", username);
 		try
 		{
-			return userManager.login(username);
+			return Optional.of(username)
+					.map(userManager::login)
+					.map(token -> new Session(username, token))
+					.orElseThrow(() -> new NoSuchUserException("Failed to create session object"));
 		}
 		catch (NoSuchUserException e)
 		{

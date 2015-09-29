@@ -19,11 +19,7 @@ var Buttons = (function()
 	{
 		const username = $("#nameInput").val();
 		const password = $("#passwordInput").val();
-		Api.login(username, password, function(token)
-		{
-			//todo username should come from server response
-			Authentication.loggedIn(username, token);
-		});
+		Service.login(username, password);
 	};
 
 	pub.signup = function()
