@@ -23,7 +23,7 @@ var Api = (function()
 	{
 		console.log("Marking item " + itemId + " in feed " + feedId + "  as read");
 		jQuery.ajax ({
-			url: "api/users/" + username + "/feeds/" + feedId + "/items/" + itemId + "/",
+			url: "api/users/" + Authentication.username + "/feeds/" + feedId + "/items/" + itemId + "/",
 			type: "POST",
 			data: JSON.stringify({ action: "MARK_READ" }),
 			dataType: "json",
@@ -38,7 +38,7 @@ var Api = (function()
 	{
 		console.log("Marking item " + itemId + " in feed " + feedId + " as unread");
 		jQuery.ajax ({
-			url: "api/users/" + username + "/feeds/" + feedId + "/items/" + itemId + "/",
+			url: "api/users/" + Authentication.username + "/feeds/" + feedId + "/items/" + itemId + "/",
 			type: "POST",
 			data: JSON.stringify({ action: "MARK_UNREAD" }),
 			dataType: "json",
@@ -52,7 +52,7 @@ var Api = (function()
 	pub.addFeed = function(feedName)
 	{
 		jQuery.ajax ({
-			url: "api/users/" + username + "/feeds",
+			url: "api/users/" + Authentication.username + "/feeds",
 			type: "POST",
 			data: feedName,
 			dataType: "json",
@@ -82,19 +82,19 @@ var Api = (function()
 	pub.createLabel = function(label, callback)
 	{
 		console.log("Attepmting to create label " + label);
-		$.post("api/users/" + username + "/labels", label, callback);
-	}
+		$.post("api/users/" + Authentication.username + "/labels", label, callback);
+	};
 
 	pub.addFeedToLabel = function(feed, label, callback)
 	{
 		console.log("Attempting to add feed " + feed + " to label " + label);
 		$.ajax({
-			url: "api/users/" + username + "/labels/" + label,
+			url: "api/users/" + Authentication.username + "/labels/" + label,
 			data: feed,
 			type: "PUT",
 			success: callback
 		});
-	}
+	};
 
 	//Private method
 	/*

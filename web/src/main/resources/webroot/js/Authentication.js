@@ -1,50 +1,69 @@
-var username = null;
-var token = null;
-
 $(function()
 {
-	setLoginFormBehaviour();
-	setSignupFormBehaviour();
+	Authentication.setLoginFormBehaviour();
+	Authentication.setSignupFormBehaviour();
 });
 
-const setLoginFormBehaviour = function()
+var Authentication = (function()
 {
-	console.log("setting up login form");
-	$("#loginForm").submit(function(event)
+	var pub = {},
+	//Private property
+	greyFloorTile = null;
+
+	//Public property
+	pub.username = null;
+	pub.token = null;
+
+	//Public method
+	pub.setLoginFormBehaviour = function()
 	{
-		console.log("logging in");
-		Buttons.login();
-		event.preventDefault();
-	});
-};
+		console.log("setting up login form");
+		$("#loginForm").submit(function(event)
+		{
+			console.log("logging in");
+			Buttons.login();
+			event.preventDefault();
+		});
+	};
 
-const setSignupFormBehaviour = function()
-{
-	console.log("setting up signup form");
-	$("#signupForm").submit(function(event)
+	pub.setSignupFormBehaviour = function()
 	{
-		console.log("Signing Up");
-		Buttons.signup();
-		event.preventDefault();
-	});
-};
+		console.log("setting up signup form");
+		$("#signupForm").submit(function(event)
+		{
+			console.log("Signing Up");
+			Buttons.signup();
+			event.preventDefault();
+		});
+	};
 
-const loggedIn = function(username_param, token_param)
-{
-	token = {};
-	//Makes the token more compatible with future JWT
-	token.raw = token_param;
-	username = username_param;
-	token.toString = function(){return this.raw;};
-	console.log("Logged in as " + username + ", got token: " + token);
-	Navigation.switchToDiv("#mainPageDiv");
-	Service.getAllItems();
-};
+	pub.loggedIn = function(username_param, token_param)
+	{
+		Authentication.token = {};
+		//Makes the token more compatible with future JWT
+		Authentication.token.raw = token_param;
+		Authentication.username = username_param;
+		Authentication.token.toString = function(){return this.raw;};
+		console.log("Logged in as " + Authentication.username + ", got token: " + Authentication.token);
+		Navigation.switchToDiv("#mainPageDiv");
+		Service.getAllItems();
+	};
 
-const signedUp = function(data)
-{
-	console.log("signed up");
-	console.log(data);
-	$("#signupDiv").hide();
-	//todo prompt user to sign in
-};
+	pub.signedUp = function(data)
+	{
+		console.log("signed up");
+		console.log(data);
+		$("#signupDiv").hide();
+		//todo prompt user to sign in
+	};
+
+
+	//Private method
+	/*
+	function privateWay() {
+		console.log("private method");
+	}
+	*/
+	//Return just the public parts
+	return pub;
+}());

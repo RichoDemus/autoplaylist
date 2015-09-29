@@ -22,7 +22,7 @@ var Buttons = (function()
 		Api.login(username, password, function(token)
 		{
 			//todo username should come from server response
-			loggedIn(username, token);
+			Authentication.loggedIn(username, token);
 		});
 	};
 
@@ -38,7 +38,7 @@ var Buttons = (function()
 		}
 		Api.signup(username, password, function(token)
 		{
-			signedUp(token);
+			Authentication.signedUp(token);
 		});
 	};
 

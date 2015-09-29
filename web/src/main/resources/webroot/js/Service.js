@@ -10,7 +10,7 @@ var Service = (function()
 	//Public method
 	pub.getAllItems = function()
 	{
-		Api.getAllItems(username, token, function(result)
+		Api.getAllItems(Authentication.username, Authentication.token, function(result)
 		{
 			feeds = result.feeds;
 			labels = result.labels;
