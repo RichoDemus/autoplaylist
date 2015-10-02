@@ -113,6 +113,11 @@ var Buttons = (function()
 		console.log("Clicked link to video: " + item.getAttribute("data-id"));
 		Api.markAsRead(item.getAttribute("data-feed-id"), item.getAttribute("data-id"));
 	};
+
+	pub.toggleSortOrder = function()
+	{
+		Service.toggleSortOrder();
+	};
 	//Private method
 	/*
 	function privateWay() {

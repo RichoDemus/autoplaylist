@@ -5,26 +5,14 @@ var Service = (function()
 	greyFloorTile = null;
 
 	//Public property
-	//pub.ingredient = "Bacon Strips";
+	pub.sortOrder = null;
 
 	//Public method
 	//Loads token from storage, verifies it and goes to the logged-in state, if anything fails, show the login pane
 	pub.init = function()
 	{
-		const session = Persistence.restoreSession();
-		if(!session)
-		{
-			console.log("No session stored");
-			Authentication.username = null;
-			Authentication.token = null;
-			return;
-		}
-		console.log("found session: " + session.username + "/" + session.token);
-		Api.refreshSession(session, function(newSession)
-		{
-			console.log("got new session: " + newSession.username + "/" + newSession.token);
-			loggedIn(session);
-		});
+		restoreSession();
+		initSortOrderToggle();
 	};
 
 	pub.login = function(username, password)
@@ -53,17 +41,71 @@ var Service = (function()
 
 	pub.updateEverything = function()
 	{
+		//todo make better
+		if(!feeds)
+		{
+			Service.getAllItems();
+			return;
+		}
 		Table.clearTables();
 		Table.addLabelsToTable();
 		Table.addFeedsToTable();
 		Table.addItemsToTable();
 	};
 
+	pub.toggleSortOrder = function()
+	{
+		console.log("Toggle sort order, current is: " + Service.sortOrder);
+		if(Service.sortOrder === SortOrder.OLDEST_FIRST)
+		{
+			setSortOrder(SortOrder.NEWEST_FIRST);
+		}
+		else
+		{
+			setSortOrder(SortOrder.OLDEST_FIRST);
+		}
+	};
+
 	//Private method
 
-	function loggedIn(session) {
+	function loggedIn(session)
+	{
 		Authentication.loggedIn(session.username, session.token);
 		Persistence.storeSession(session);
+	}
+
+	function restoreSession()
+	{
+		const session = Persistence.restoreSession();
+		if(!session)
+		{
+			console.log("No session stored");
+			Authentication.username = null;
+			Authentication.token = null;
+			return;
+		}
+		console.log("found session: " + session.username + "/" + session.token);
+		Api.refreshSession(session, function(newSession)
+		{
+			console.log("got new session: " + newSession.username + "/" + newSession.token);
+			loggedIn(session);
+		});
+	}
+
+	function initSortOrderToggle()
+	{
+		//save sort order on the server
+		var sortOrder = SortOrder.OLDEST_FIRST;
+
+		setSortOrder(sortOrder);
+	}
+
+	function setSortOrder(sortOrder)
+	{
+		console.log("Setting sortoder to " + sortOrder);
+		$("#sortOrderSpan").text("Currently sorting by " + SortOrder.properties[sortOrder].name);
+		Service.sortOrder = sortOrder;
+		Service.updateEverything();
 	}
 	//Return just the public parts
 	return pub;

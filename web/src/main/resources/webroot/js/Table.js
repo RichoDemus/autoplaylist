@@ -41,7 +41,10 @@ var Table = (function()
 					const b_date = new Date(b.uploadDate);
 					return a_date - b_date;
 				});
-				items.reverse();
+				if(Service.sortOrder == SortOrder.OLDEST_FIRST)
+					items.sort();
+				else
+					items.reverse();
 				items.forEach(function(item)
 				{
 					Table.addItemToTable(feed.id, item);
