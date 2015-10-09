@@ -1,5 +1,6 @@
 package com.richo.reader.backend;
 
+import com.richo.reader.backend.exception.ItemNotInFeedException;
 import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
@@ -38,7 +39,7 @@ public class Backend
 
 		return user.getFeeds().keySet().stream()
 				.map(this::feedIdToYoutubeChannel)
-				.map(channel -> youtubeChannelToItem(channel, user))
+				.map(channel -> youtubeChannelToFeed(channel, user))
 				.collect(Collectors.toSet());
 	}
 
@@ -51,7 +52,7 @@ public class Backend
 		});
 	}
 
-	private Feed youtubeChannelToItem(YoutubeChannel channel, User user)
+	private Feed youtubeChannelToFeed(YoutubeChannel channel, User user)
 	{
 		final String id = channel.getName();
 		final Feed feed = new Feed(id, id);
@@ -74,13 +75,13 @@ public class Backend
 
 		final User user = userService.get(username);
 
-		final YoutubeChannel channelByName = youtubeChannelService.getChannelByName(feedName).orElseThrow(() ->
+		final Feed namedFeed = youtubeChannelService.getFeedByName(feedName).orElseThrow(() ->
 		{
 			logger.error("No such channel: {}", feedName);
 			return new NoSuchChannelException("No such channel: " + feedName);
 		});
 
-		user.addFeed(channelByName.getName());
+		user.addFeed(namedFeed.getName());
 		userService.update(user);
 	}
 
@@ -97,6 +98,29 @@ public class Backend
 		logger.info("Marking item {} in feed {} for user {} as unread", itemId, feedId, username);
 		final User user = userService.get(username);
 		user.markAsUnRead(feedId, itemId);
+		userService.update(user);
+	}
+
+	public void markOlderItemsAsRead(final String username, final String feedId, final String itemId) throws NoSuchChannelException, ItemNotInFeedException, UserNotSubscribedToThatChannelException
+	{
+		logger.info("Marking items older than {} in feed {} for user {} as read", itemId, feedId, username);
+		final User user = userService.get(username);
+		final Feed feed = youtubeChannelService.getFeedById(feedId).orElseThrow(() ->
+		{
+			logger.error("No such channel: {}", feedId);
+			return new NoSuchChannelException("No such channel: " + feedId);
+		});
+
+		final Item targetItem = feed.getItems().stream()
+				.filter(item -> item.getVideoId().equals(itemId))
+				.findAny()
+				.orElseThrow(() -> new ItemNotInFeedException("Item " + itemId + " is not in feed " + feedId));
+
+		feed.getItems().stream()
+				.filter(item -> item.getUploadDate().isBefore(targetItem.getUploadDate()))
+				.map(Item::getVideoId)
+				.forEach(id -> user.markAsRead(feedId, id));
+
 		userService.update(user);
 	}
 }

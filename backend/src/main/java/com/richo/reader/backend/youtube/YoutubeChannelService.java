@@ -2,6 +2,8 @@ package com.richo.reader.backend.youtube;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.PlaylistItem;
+import com.richo.reader.backend.model.Feed;
+import com.richo.reader.backend.model.Item;
 import com.richo.reader.backend.persistence.YoutubeChannelPersistence;
 import com.richo.reader.backend.youtube.download.YouTubeVideoChuck;
 import com.richo.reader.backend.youtube.download.YoutubeChannelDownloader;
@@ -11,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.net.MalformedURLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -35,6 +36,32 @@ public class YoutubeChannelService
 		this.channelAgeUntilFrefresh = channelAgeUntilFrefresh;
 		this.youtubeChannelDownloader = youtubeChannelDownloader;
 		this.cache = cache;
+	}
+
+	public Optional<Feed>  getFeedById(String feedId)
+	{
+		return getFeedByName(feedId);
+	}
+
+	public Optional<Feed> getFeedByName(final String feedName)
+	{
+		return getChannelByName(feedName).map(this::toFeed);
+	}
+
+	private Feed toFeed(YoutubeChannel channel)
+	{
+		final String id = channel.getName();
+		final Feed feed = new Feed(id, id);
+		feed.addNewItems(channel.getVideos()
+				.stream()
+				.map(this::videoToItem)
+				.collect(Collectors.toSet()));
+		return feed;
+	}
+
+	private Item videoToItem(YoutubeVideo video)
+	{
+		return new Item(video.getVideoId(), video.getTitle(), video.getDescription(), video.getUrl(), video.getUploadDate());
 	}
 
 	public Optional<YoutubeChannel> getChannelByName(String channelName)
@@ -93,15 +120,7 @@ public class YoutubeChannelService
 	private YoutubeVideo toVideo(PlaylistItem playlistItem)
 	{
 		final String videoId = playlistItem.getSnippet().getResourceId().getVideoId();
-		try
-		{
-			return new YoutubeVideo(playlistItem.getSnippet().getTitle(), playlistItem.getSnippet().getDescription(), videoId, convertDate(playlistItem.getSnippet().getPublishedAt()));
-		}
-		catch (MalformedURLException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		return new YoutubeVideo(playlistItem.getSnippet().getTitle(), playlistItem.getSnippet().getDescription(), videoId, convertDate(playlistItem.getSnippet().getPublishedAt()));
 	}
 
 	private LocalDateTime convertDate(DateTime publishedAt)

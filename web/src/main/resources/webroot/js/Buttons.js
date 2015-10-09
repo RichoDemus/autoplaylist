@@ -108,6 +108,11 @@ var Buttons = (function()
 		Api.markAsUnread(item.getAttribute("data-feed-id"), item.getAttribute("data-id"));
 	};
 
+	pub.markOlderItemsAsReadButtonPressed = function(item)
+	{
+		Api.markOlderItemsAsRead(item.getAttribute("data-feed-id"), item.getAttribute("data-id"));
+	};
+
 	pub.itemTitleClicked = function(item)
 	{
 		console.log("Clicked link to video: " + item.getAttribute("data-id"));

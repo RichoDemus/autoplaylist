@@ -21,11 +21,26 @@ var Api = (function()
 
 	pub.markAsRead = function(feedId, itemId)
 	{
-		console.log("Marking item " + itemId + " in feed " + feedId + "  as read");
+		console.log("Marking item " + itemId + " in feed " + feedId + " as read");
 		jQuery.ajax ({
 			url: "api/users/" + Authentication.username + "/feeds/" + feedId + "/items/" + itemId + "/",
 			type: "POST",
 			data: JSON.stringify({ action: "MARK_READ" }),
+			dataType: "json",
+			contentType: "application/json; charset=utf-8",
+			success: function(){
+				//
+			}
+		});
+	};
+
+	pub.markOlderItemsAsRead = function(feedId, itemId)
+	{
+		console.log("Marking items in feed " + feedId + " older than item " + itemId + " as read");
+		jQuery.ajax ({
+			url: "api/users/" + Authentication.username + "/feeds/" + feedId + "/items/" + itemId + "/",
+			type: "POST",
+			data: JSON.stringify({ action: "MARK_OLDER_ITEMS_AS_READ" }),
 			dataType: "json",
 			contentType: "application/json; charset=utf-8",
 			success: function(){

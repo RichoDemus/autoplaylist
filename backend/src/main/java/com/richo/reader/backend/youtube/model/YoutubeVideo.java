@@ -27,7 +27,7 @@ public class YoutubeVideo implements Comparable<YoutubeVideo>
 	public YoutubeVideo(String title,
 						String description,
 						String videoId,
-						LocalDateTime uploadDate) throws MalformedURLException
+						LocalDateTime uploadDate)
 	{
 		this.title = title;
 		this.description = description;
@@ -40,7 +40,7 @@ public class YoutubeVideo implements Comparable<YoutubeVideo>
 	public YoutubeVideo(@JsonProperty("title") String title,
 						@JsonProperty("description") String description,
 						@JsonProperty("videoId") String videoId,
-						@JsonProperty("uploadDate") long uploadDate) throws MalformedURLException
+						@JsonProperty("uploadDate") long uploadDate)
 	{
 		this.title = title;
 		this.description = description;
@@ -49,9 +49,17 @@ public class YoutubeVideo implements Comparable<YoutubeVideo>
 		this.url = createUrl(videoId);
 	}
 
-	private URL createUrl(String videoId) throws MalformedURLException
+	private URL createUrl(String videoId)
 	{
-		return new URL("https://www.youtube.com/watch?v=" + videoId);
+		final String url = "https://www.youtube.com/watch?v=" + videoId;
+		try
+		{
+			return new URL(url);
+		}
+		catch (MalformedURLException e)
+		{
+			throw new IllegalArgumentException(url + " is not a valid url", e);
+		}
 	}
 
 	@Override

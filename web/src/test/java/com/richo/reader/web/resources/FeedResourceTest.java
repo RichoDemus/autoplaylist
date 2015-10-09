@@ -36,14 +36,21 @@ public class FeedResourceTest
 	@Test
 	public void testMarkAsRead() throws Exception
 	{
-		RESOURCES.client().target("/users/" + USERNAME + "/feeds/" + FEED + "/items/" + ITEM + "/").request().post(Entity.entity(new ItemOperation("MARK_READ"), MediaType.APPLICATION_JSON));
+		RESOURCES.client().target("/users/" + USERNAME + "/feeds/" + FEED + "/items/" + ITEM + "/").request().post(Entity.entity(ItemOperation.MARK_AS_READ, MediaType.APPLICATION_JSON));
 		verify(backendMock).markAsRead(USERNAME, FEED, ITEM);
 	}
 
 	@Test
 	public void testMarkAsUnRead() throws Exception
 	{
-		RESOURCES.client().target("/users/" + USERNAME + "/feeds/" + FEED + "/items/" + ITEM + "/").request().post(Entity.entity(new ItemOperation("MARK_UNREAD"), MediaType.APPLICATION_JSON));
+		RESOURCES.client().target("/users/" + USERNAME + "/feeds/" + FEED + "/items/" + ITEM + "/").request().post(Entity.entity(ItemOperation.MARK_AS_UNREAD, MediaType.APPLICATION_JSON));
 		verify(backendMock).markAsUnread(USERNAME, FEED, ITEM);
+	}
+
+	@Test
+	public void testMarkOlderItemsAsRead() throws Exception
+	{
+		RESOURCES.client().target("/users/" + USERNAME + "/feeds/" + FEED + "/items/" + ITEM + "/").request().post(Entity.entity(ItemOperation.MARK_OLDER_ITEMS_AS_READ, MediaType.APPLICATION_JSON));
+		verify(backendMock).markOlderItemsAsRead(USERNAME, FEED, ITEM);
 	}
 }

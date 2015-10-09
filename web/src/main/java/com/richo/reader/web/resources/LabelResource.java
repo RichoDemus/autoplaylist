@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -47,7 +48,13 @@ public class LabelResource
 		}
 		catch (NoSuchUserException e)
 		{
+			logger.error("Exception when {} created label {}", username, labelName, e);
 			throw new BadRequestException(e);
+		}
+		catch (Exception e)
+		{
+			logger.error("Exception when {} created label {}", username, labelName, e);
+			throw new InternalServerErrorException(e);
 		}
 	}
 

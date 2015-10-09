@@ -5,15 +5,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ItemOperation
 {
-	private final String action;
+	public static final ItemOperation MARK_AS_READ = new ItemOperation("MARK_READ");
+	public static final ItemOperation MARK_AS_UNREAD = new ItemOperation("MARK_UNREAD");
+	public static final ItemOperation MARK_OLDER_ITEMS_AS_READ = new ItemOperation("MARK_OLDER_ITEMS_AS_READ");
+	private final Operation action;
 
 	@JsonCreator
 	public ItemOperation(@JsonProperty("action") String action)
 	{
-		this.action = action;
+		this.action = Operation.valueOf(action);
 	}
 
-	public String getAction()
+	public Operation getAction()
 	{
 		return action;
 	}
@@ -21,6 +24,11 @@ public class ItemOperation
 	@Override
 	public String toString()
 	{
-		return action;
+		return action.toString();
+	}
+
+	public enum Operation
+	{
+		MARK_READ, MARK_UNREAD, MARK_OLDER_ITEMS_AS_READ
 	}
 }

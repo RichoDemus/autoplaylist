@@ -2,6 +2,7 @@ package com.richo.reader.web.resources;
 
 import com.richo.reader.backend.Backend;
 import com.richo.reader.backend.LabelManager;
+import com.richo.reader.backend.exception.ItemNotInFeedException;
 import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
@@ -17,6 +18,7 @@ import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -58,7 +60,12 @@ public class FeedResource
 		catch (NoSuchUserException e)
 		{
 			logger.warn("Exception when {} got all feeds", e);
-			throw new BadRequestException(e.getMessage());
+			throw new BadRequestException(e);
+		}
+		catch (Exception e)
+		{
+			logger.warn("Exception when {} got all feeds", e);
+			throw new InternalServerErrorException(e);
 		}
 		return new User(feedConverter.convert(feeds), labelConverter.convert(labels));
 	}
@@ -72,21 +79,29 @@ public class FeedResource
 		{
 			switch (operation.getAction())
 			{
-				case "MARK_READ":
+				case MARK_READ:
 					backend.markAsRead(username, feedId, itemId);
 					break;
-				case "MARK_UNREAD":
+				case MARK_UNREAD:
 					backend.markAsUnread(username, feedId, itemId);
+					break;
+				case MARK_OLDER_ITEMS_AS_READ:
+					backend.markOlderItemsAsRead(username, feedId, itemId);
 					break;
 				default:
 					logger.error("Unknown action {}", operation.getAction());
 					throw new BadRequestException("Unknown action: " + operation.getAction());
 			}
 		}
-		catch (NoSuchUserException | UserNotSubscribedToThatChannelException e)
+		catch (NoSuchUserException | UserNotSubscribedToThatChannelException | NoSuchChannelException | ItemNotInFeedException e)
 		{
 			logger.warn("Exception when {} performed operation {} on feed {}", username, operation, feedId, e);
-			throw new BadRequestException(e.getMessage());
+			throw new BadRequestException(e);
+		}
+		catch (Exception e)
+		{
+			logger.warn("Exception when {} performed operation {} on feed {}", username, operation, feedId, e);
+			throw new InternalServerErrorException(e);
 		}
 	}
 
@@ -100,7 +115,12 @@ public class FeedResource
 		catch (NoSuchChannelException | NoSuchUserException e)
 		{
 			logger.warn("Exception when {} added feed {}", username, feedName, e);
-			throw new BadRequestException(e.getMessage());
+			throw new BadRequestException(e);
+		}
+		catch (Exception e)
+		{
+			logger.warn("Exception when {} added feed {}", username, feedName, e);
+			throw new InternalServerErrorException(e);
 		}
 	}
 }

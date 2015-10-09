@@ -11,7 +11,7 @@ var Table = (function()
 	pub.addItemToTable = function(feedId, item)
 	{
 		$('#itemListTable').find('> tbody:last').append(
-			"<tr data-feed-id=\"" + feedId + "\" data-item-id=\"" + item.id + "\" id=\"video-" + item.id + "\"><th>" + Table.getMarkAsReadToggleButton(feedId, item) + "</th><th>" + Table.getTitle(feedId, item) + "</th><th>" + item.description.substring(0,10) + "</th><th>" + item.uploadDate + "</th></tr>");
+			"<tr data-feed-id=\"" + feedId + "\" data-item-id=\"" + item.id + "\" id=\"video-" + item.id + "\"><th>" + Table.getMarkAsReadToggleButton(feedId, item) + "</th><th>" + Table.getTitle(feedId, item) + "</th><th>" + item.description.substring(0,10) + "</th><th>" + item.uploadDate + "</th><th>" + getMarkOlderItemsAsReadButton(feedId, item) + "</th></tr>");
 	};
 
 	pub.addFeedToTable = function(feed)
@@ -42,7 +42,7 @@ var Table = (function()
 					return a_date - b_date;
 				});
 				if(Service.sortOrder == SortOrder.OLDEST_FIRST)
-					items.sort();
+					console.log("Order is oldest first, already sorted that way");
 				else
 					items.reverse();
 				items.forEach(function(item)
@@ -139,6 +139,10 @@ var Table = (function()
 	};
 
 	//Private method
+	function getMarkOlderItemsAsReadButton(feedId, item)
+	{
+		return "<button id=\"markAllOlderItemsAsReadButton-" + item.id + "\" data-feed-id=\"" + feedId + "\" data-id=\"" + item.id + "\" type=\"button\" class=\"btn btn-xs btn-default\" onClick=\"Buttons.markOlderItemsAsReadButtonPressed(this)\">Mark older as read</button>"
+	}
 	/*
 	function privateWay() {
 		console.log("private method");
