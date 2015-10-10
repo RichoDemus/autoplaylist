@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class YoutubeChannelService
@@ -29,6 +31,7 @@ public class YoutubeChannelService
 	private final Duration channelAgeUntilFrefresh;
 	private final YoutubeChannelDownloader youtubeChannelDownloader;
 	private final YoutubeChannelPersistence cache;
+	private final Lock downloadLock;
 
 	@Inject
 	public YoutubeChannelService(YoutubeChannelDownloader youtubeChannelDownloader, YoutubeChannelPersistence cache, Duration channelAgeUntilFrefresh)
@@ -36,6 +39,7 @@ public class YoutubeChannelService
 		this.channelAgeUntilFrefresh = channelAgeUntilFrefresh;
 		this.youtubeChannelDownloader = youtubeChannelDownloader;
 		this.cache = cache;
+		this.downloadLock =  new ReentrantLock();
 	}
 
 	public Optional<Feed>  getFeedById(String feedId)
@@ -65,6 +69,20 @@ public class YoutubeChannelService
 	}
 
 	public Optional<YoutubeChannel> getChannelByName(String channelName)
+	{
+		//Todo this is a temporary solution, fix
+		downloadLock.lock();
+		try
+		{
+			return getChannelByNameInner(channelName);
+		}
+		finally
+		{
+			downloadLock.unlock();
+		}
+	}
+
+	public Optional<YoutubeChannel> getChannelByNameInner(String channelName)
 	{
 		logger.info("Channel {} requested", channelName);
 		final Optional<YoutubeChannel> channelFromCache = getChannelFromCacheIfNotOutdated(channelName, cache);

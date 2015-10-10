@@ -44,7 +44,7 @@ public class YouTubeVideoChuck
 					.setKey(apiKey)
 					.setPageToken(nextPageToken.get())
 					.setPlaylistId(playlistId)
-					.setMaxResults(25L)
+					.setMaxResults(50L)
 					.execute();
 		}
 		catch (IOException e)

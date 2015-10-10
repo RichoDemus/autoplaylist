@@ -42,13 +42,12 @@ public class YoutubeChannelDownloaderTest
 
 		List<PlaylistItem> videos = chunk.getNextVideoChunk();
 
-		Assert.assertEquals(videos.size(), 25);
+		Assert.assertEquals(videos.size(), 50);
 		videos.stream().map((video) -> video.getSnippet().getTitle()).collect(Collectors.toList()).forEach(System.out::println);
 
-		System.out.println("#########");
 		videos = chunk.getNextVideoChunk();
 
-		Assert.assertEquals(videos.size(), 25);
+		Assert.assertEquals(videos.size(), 50);
 		videos.stream().map((video) -> video.getSnippet().getTitle()).collect(Collectors.toList()).forEach(System.out::println);
 
 
