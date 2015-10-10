@@ -30,7 +30,7 @@ public class FeedConverterTest
 
 		final Set<Feed> feedsToConvert = Arrays.asList(feed1, feed2).stream().collect(Collectors.toSet());
 
-		final List<com.richo.reader.web.model.Feed> result = new FeedConverter().convert(feedsToConvert);
+		final List<com.richo.reader.model.Feed> result = new FeedConverter().convert(feedsToConvert);
 
 		Assert.assertNotNull(result);
 		Assert.assertEquals(2, result.size());

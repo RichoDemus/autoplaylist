@@ -1,4 +1,4 @@
-package com.richo.reader.web.model;
+package com.richo.reader.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

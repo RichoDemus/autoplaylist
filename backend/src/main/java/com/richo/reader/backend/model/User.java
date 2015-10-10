@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableMap;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,7 +15,6 @@ import java.util.Set;
 
 public class User
 {
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final String name;
 	private final Map<String, Set<String>> feeds;
 	private final List<Label> labels;

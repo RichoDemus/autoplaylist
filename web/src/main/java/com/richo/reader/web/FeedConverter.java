@@ -1,9 +1,7 @@
 package com.richo.reader.web;
 
-import com.richo.reader.web.model.Feed;
-import com.richo.reader.web.model.Item;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.richo.reader.model.Feed;
+import com.richo.reader.model.Item;
 
 import java.util.List;
 import java.util.Set;
@@ -11,8 +9,6 @@ import java.util.stream.Collectors;
 
 public class FeedConverter
 {
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-
 	public List<Feed> convert(Set<com.richo.reader.backend.model.Feed> feeds)
 	{
 		return feeds.stream().map(this::toWebFeed).collect(Collectors.toList());

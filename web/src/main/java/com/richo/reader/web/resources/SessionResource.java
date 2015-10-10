@@ -2,7 +2,7 @@ package com.richo.reader.web.resources;
 
 import com.richo.reader.backend.UserManager;
 import com.richo.reader.backend.exception.NoSuchUserException;
-import com.richo.reader.web.model.Session;
+import com.richo.reader.model.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

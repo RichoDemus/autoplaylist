@@ -2,15 +2,12 @@ package com.richo.reader.backend.user;
 
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
 public class UserService implements UserPersister
 {
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final UserPersister inMemoryPersister;
 	private final UserPersister fileSystemPersister;
 

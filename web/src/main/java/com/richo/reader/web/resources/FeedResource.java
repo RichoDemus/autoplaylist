@@ -8,8 +8,8 @@ import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelExceptio
 import com.richo.reader.backend.model.Label;
 import com.richo.reader.web.FeedConverter;
 import com.richo.reader.web.LabelConverter;
-import com.richo.reader.web.model.ItemOperation;
-import com.richo.reader.web.model.User;
+import com.richo.reader.model.ItemOperation;
+import com.richo.reader.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

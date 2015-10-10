@@ -20,6 +20,7 @@
 
 	<modules>
 		<module>api</module>
+		<module>domain</module>
 		<module>backend</module>
 		<module>web</module>
 	</modules>
@@ -43,6 +44,11 @@
 			<dependency>
 				<groupId>com.richo.reader</groupId>
 				<artifactId>web</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.richo.reader</groupId>
+				<artifactId>domain</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 

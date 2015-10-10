@@ -2,7 +2,7 @@ package com.richo.reader.web.resources;
 
 
 import com.richo.reader.backend.Backend;
-import com.richo.reader.web.model.ItemOperation;
+import com.richo.reader.model.ItemOperation;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Before;
 import org.junit.ClassRule;
