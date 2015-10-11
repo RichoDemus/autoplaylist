@@ -176,10 +176,10 @@
 				<version>1.1.3</version>
 			</dependency>
 			<dependency>
-			  <groupId>org.assertj</groupId>
-			  <artifactId>assertj-core</artifactId>
-			  <version>3.2.0</version>
-			  <scope>test</scope>
+				<groupId>org.assertj</groupId>
+				<artifactId>assertj-core</artifactId>
+				<version>3.2.0</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -220,6 +220,18 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.pitest</groupId>
+				<artifactId>pitest-maven</artifactId>
+				<configuration>
+					<targetClasses>
+						<param>com.richo.reader*</param>
+					</targetClasses>
+					<targetTests>
+						<param>com.richo.reader*</param>
+					</targetTests>
+				</configuration>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -227,6 +239,11 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>findbugs-maven-plugin</artifactId>
 					<version>3.0.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.pitest</groupId>
+					<artifactId>pitest-maven</artifactId>
+					<version>1.1.7</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
