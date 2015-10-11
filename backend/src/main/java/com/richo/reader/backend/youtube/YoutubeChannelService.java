@@ -5,8 +5,8 @@ import com.google.api.services.youtube.model.PlaylistItem;
 import com.richo.reader.backend.model.Feed;
 import com.richo.reader.backend.model.Item;
 import com.richo.reader.backend.persistence.YoutubeChannelPersistence;
-import com.richo.reader.backend.youtube.download.YouTubeVideoChuck;
 import com.richo.reader.backend.youtube.download.YoutubeChannelDownloader;
+import com.richo.reader.backend.youtube.download.YoutubeVideoChunk;
 import com.richo.reader.backend.youtube.model.YoutubeChannel;
 import com.richo.reader.backend.youtube.model.YoutubeVideo;
 import org.slf4j.Logger;
@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class YoutubeChannelService
@@ -39,10 +40,10 @@ public class YoutubeChannelService
 		this.channelAgeUntilFrefresh = channelAgeUntilFrefresh;
 		this.youtubeChannelDownloader = youtubeChannelDownloader;
 		this.cache = cache;
-		this.downloadLock =  new ReentrantLock();
+		this.downloadLock = new ReentrantLock();
 	}
 
-	public Optional<Feed>  getFeedById(String feedId)
+	public Optional<Feed> getFeedById(String feedId)
 	{
 		return getFeedByName(feedId);
 	}
@@ -84,45 +85,58 @@ public class YoutubeChannelService
 
 	public Optional<YoutubeChannel> getChannelByNameInner(String channelName)
 	{
+		//todo refactor this method, it's balls
 		logger.info("Channel {} requested", channelName);
-		final Optional<YoutubeChannel> channelFromCache = getChannelFromCacheIfNotOutdated(channelName, cache);
-		if (channelFromCache.isPresent())
+		final Optional<YoutubeChannel> maybeChannelFromCache = cache.getChannel(channelName);
+		final Optional<YoutubeChannel> channelFromCacheUpToDate = maybeChannelFromCache
+				.filter(this::outdatedChannel);
+		if (channelFromCacheUpToDate.isPresent())
 		{
-			return channelFromCache;
+			return channelFromCacheUpToDate;
 		}
-		logger.debug("Channel {} not found in cache, downloading", channelName);
+		logger.debug("Up to date version of channel {} not found in cache, downloading", channelName);
 
-		final Optional<YouTubeVideoChuck> videoChunk = youtubeChannelDownloader.getVideoChunk(channelName);
+		final Optional<YoutubeVideoChunk> videoChunk = youtubeChannelDownloader.getVideoChunk(channelName);
 		if (!videoChunk.isPresent())
 		{
 			logger.debug("No such channel {}", channelName);
 			return Optional.empty();
 		}
 
-		final List<PlaylistItem> items = new ArrayList<>();
+		final List<YoutubeVideo> videos = maybeChannelFromCache
+				.map(YoutubeChannel::getVideos)
+				.map((Function<Set<YoutubeVideo>, ArrayList<YoutubeVideo>>) ArrayList::new)
+				.orElseGet(ArrayList::new);
+
 		List<PlaylistItem> nextVideoChunk;
+		long itemsAddedToList = 0;
 		while ((nextVideoChunk = videoChunk.get().getNextVideoChunk()).size() > 0)
 		{
 			logger.trace("Downloaded a chunk of {} for channel {}", nextVideoChunk.size(), channelName);
-			items.addAll(nextVideoChunk);
+			boolean itemAlreadyInList = false;
+			for (PlaylistItem item : nextVideoChunk)
+			{
+				final YoutubeVideo video = toVideo(item);
+				if (videos.contains(video))
+				{
+					itemAlreadyInList = true;
+				}
+				else
+				{
+					videos.add(video);
+					itemsAddedToList++;
+				}
+			}
+			if (itemAlreadyInList)
+			{
+				break;
+			}
 		}
-		logger.debug("Downloaded {} videos from the channel {}", items.size(), channelName);
-		final Set<YoutubeVideo> videos = items.stream().map(this::toVideo).filter(this::nullItems).collect(Collectors.toSet());
+		logger.debug("Downloaded {} videos from the channel {}", itemsAddedToList, channelName);
 		final YoutubeChannel youtubeChannel = new YoutubeChannel(channelName, videos);
 		cache.updateChannel(youtubeChannel);
 		return Optional.of(youtubeChannel);
 
-	}
-
-	private boolean nullItems(YoutubeVideo youtubeVideo)
-	{
-		return youtubeVideo != null;
-	}
-
-	private Optional<YoutubeChannel> getChannelFromCacheIfNotOutdated(String channelName, YoutubeChannelPersistence cache)
-	{
-		return cache.getChannel(channelName)
-				.filter(this::outdatedChannel);
 	}
 
 	private boolean outdatedChannel(YoutubeChannel channel)

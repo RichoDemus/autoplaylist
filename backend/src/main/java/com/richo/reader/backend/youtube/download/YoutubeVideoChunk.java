@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class YouTubeVideoChuck
+//todo this should use the Iterator-pattern instead,
+// it's pretty much similiar except you can probably do functional stuff or observables on it
+public class YoutubeVideoChunk
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final YouTube youtube;
@@ -20,7 +22,7 @@ public class YouTubeVideoChuck
 
 	private Optional<String> nextPageToken;
 
-	public YouTubeVideoChuck(YouTube youtube, String playlistId, String apiKey)
+	public YoutubeVideoChunk(YouTube youtube, String playlistId, String apiKey)
 	{
 		this.youtube = youtube;
 		this.playlistId = playlistId;

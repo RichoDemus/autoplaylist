@@ -28,7 +28,7 @@ public class YoutubeChannelDownloader
 		}).setApplicationName("Richo-Reader").build();
 	}
 
-	public Optional<YouTubeVideoChuck> getVideoChunk(String channelName)
+	public Optional<YoutubeVideoChunk> getVideoChunk(String channelName)
 	{
 		final List<Channel> channels;
 		try
@@ -66,7 +66,7 @@ public class YoutubeChannelDownloader
 			return Optional.empty();
 		}
 
-		return Optional.of(new YouTubeVideoChuck(youtube, playlistId.get(), apiKey));
+		return Optional.of(new YoutubeVideoChunk(youtube, playlistId.get(), apiKey));
 	}
 
 	private String toPlaylistId(final Channel channel)

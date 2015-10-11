@@ -2,7 +2,7 @@ package com.richo.reader.backend.youtube;
 
 
 import com.google.api.services.youtube.model.PlaylistItem;
-import com.richo.reader.backend.youtube.download.YouTubeVideoChuck;
+import com.richo.reader.backend.youtube.download.YoutubeVideoChunk;
 import com.richo.reader.backend.youtube.download.YoutubeChannelDownloader;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -20,7 +20,7 @@ public class YoutubeChannelDownloaderTest
 
 		final YoutubeChannelDownloader downloader = new YoutubeChannelDownloader("AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
 
-		final YouTubeVideoChuck chunk = downloader.getVideoChunk("RichoDemus").get();
+		final YoutubeVideoChunk chunk = downloader.getVideoChunk("RichoDemus").get();
 
 		List<PlaylistItem> videoChunk = chunk.getNextVideoChunk();
 
@@ -38,7 +38,7 @@ public class YoutubeChannelDownloaderTest
 	{
 		final YoutubeChannelDownloader downloader = new YoutubeChannelDownloader("AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
 
-		final YouTubeVideoChuck chunk = downloader.getVideoChunk("Thunderf00t").get();
+		final YoutubeVideoChunk chunk = downloader.getVideoChunk("Thunderf00t").get();
 
 		List<PlaylistItem> videos = chunk.getNextVideoChunk();
 

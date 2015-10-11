@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -25,6 +27,11 @@ public class YoutubeChannel
 		this.channelName = channelName;
 		this.videos = videos;
 		this.lastUpdated = Instant.now();
+	}
+
+	public YoutubeChannel(String channelName, List<YoutubeVideo> videos)
+	{
+		this(channelName, new HashSet<>(videos));
 	}
 
 	@JsonCreator

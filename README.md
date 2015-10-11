@@ -20,5 +20,3 @@
 * Split channels into subchannels using keywords/regex
 * Some way to bulk-store ranges of read items, like "this item and all older are read"
 
-## Bugs
-* Currently downloads all items in a feed if it's outdated, could perhaps only download new items
