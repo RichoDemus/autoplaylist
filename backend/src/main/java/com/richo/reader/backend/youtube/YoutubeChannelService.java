@@ -132,7 +132,7 @@ public class YoutubeChannelService
 				break;
 			}
 		}
-		logger.debug("Downloaded {} videos from the channel {}", itemsAddedToList, channelName);
+		logger.debug("Downloaded {} new videos from the channel {}", itemsAddedToList, channelName);
 		final YoutubeChannel youtubeChannel = new YoutubeChannel(channelName, videos);
 		cache.updateChannel(youtubeChannel);
 		return Optional.of(youtubeChannel);

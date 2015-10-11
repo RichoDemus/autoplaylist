@@ -30,9 +30,14 @@ var Table = (function()
 
 	pub.addItemsToTable = function()
 	{
+		if(!selectedFeed)
+		{
+			console.log("No feed selected")
+			return;
+		}
 		feeds.forEach(function(feed)
 		{
-			if((selectedFeed && feed.id === selectedFeed) || !selectedFeed)
+			if(feed.id === selectedFeed)
 			{
 				const items = feed.items;
 				items.sort(function(a,b)

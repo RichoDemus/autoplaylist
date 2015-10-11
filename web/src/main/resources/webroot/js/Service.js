@@ -66,6 +66,16 @@ var Service = (function()
 		}
 	};
 
+	pub.selectFeed = function(feedId)
+	{
+		Api.getFeed(feedId, function(feed)
+		{
+			const targetFeed = feeds.filter(function(f) {return f.id == feedId;})[0];
+			targetFeed.items = feed.items;
+			Service.updateEverything();
+		});
+	};
+
 	//Private method
 
 	function loggedIn(session)

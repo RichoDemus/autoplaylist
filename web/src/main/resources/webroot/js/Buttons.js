@@ -91,7 +91,7 @@ var Buttons = (function()
 		{
 			selectedFeed = newselectedFeed;
 		}
-		Service.updateEverything();
+		Service.selectFeed(selectedFeed);
 	};
 
 	pub.markAsReadButtonPressed = function(item)

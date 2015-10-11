@@ -7,10 +7,11 @@ import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richo.reader.backend.model.Label;
-import com.richo.reader.web.FeedConverter;
-import com.richo.reader.web.LabelConverter;
+import com.richo.reader.model.Feed;
 import com.richo.reader.model.ItemOperation;
 import com.richo.reader.model.User;
+import com.richo.reader.web.FeedConverter;
+import com.richo.reader.web.LabelConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +25,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Path("/users/{username}/feeds/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -67,7 +70,28 @@ public class FeedResource
 			logger.warn("Exception when {} got all feeds", e);
 			throw new InternalServerErrorException(e);
 		}
-		return new User(feedConverter.convert(feeds), labelConverter.convert(labels));
+		return removeItems(new User(feedConverter.convert(feeds), labelConverter.convert(labels)));
+	}
+
+	private User removeItems(User user)
+	{
+		final List<Feed> feedsWithoutItems = user.getFeeds().stream()
+				.map(feed -> new Feed(feed.getId(), feed.getName(), new ArrayList<>()))
+				.collect(Collectors.toList());
+
+		return new User(feedsWithoutItems, user.getLabels());
+	}
+
+	@GET
+	@Path("/{feed}/")
+	public Feed getFeed(@PathParam("username") final String username, @PathParam("feed") final String feedId)
+	{
+		//todo rewrite backend... :p
+		return feedConverter.convert(backend.getFeeds(username))
+				.stream()
+				.filter(feed -> feed.getId().equals(feedId))
+				.findAny()
+				.orElseThrow(() -> new BadRequestException("Couldn't find feed " + feedId));
 	}
 
 	@POST

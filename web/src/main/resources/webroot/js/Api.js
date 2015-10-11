@@ -19,6 +19,15 @@ var Api = (function()
 		}).done(callback);
 	};
 
+	pub.getFeed = function(feedId, callback) {
+		console.log("Getting feed " + feedId + " for " + Authentication.username);
+		$.ajax(
+		{
+			url: "api/users/" + Authentication.username + "/feeds/" + feedId,
+			type: "GET"
+		}).done(callback);
+	};
+
 	pub.markAsRead = function(feedId, itemId)
 	{
 		console.log("Marking item " + itemId + " in feed " + feedId + " as read");
