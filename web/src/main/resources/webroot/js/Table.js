@@ -16,15 +16,16 @@ var Table = (function()
 
 	pub.addFeedToTable = function(feed)
 	{
+		const count = getNumberOfItems(feed);
 		if(feed.id === selectedFeed)
 		{
 			$('#feedListTable').find('> tbody:last')
-				.append("<tr data-feed-id=\"" + feed.id + "\" onclick=\"Buttons.filterFeedButtonClicked(this)\"><td bgcolor=\"#FF0000\">" + feed.name + "(" + feed.items.length + ")</td></tr>");
+				.append("<tr data-feed-id=\"" + feed.id + "\" onclick=\"Buttons.filterFeedButtonClicked(this)\"><td bgcolor=\"#FF0000\">" + feed.name + "(" + count + ")</td></tr>");
 		}
 		else
 		{
 			$('#feedListTable').find('> tbody:last')
-				.append("<tr data-feed-id=\"" + feed.id + "\" onclick=\"Buttons.filterFeedButtonClicked(this)\"><td>" + feed.name + "(" + feed.items.length + ")</td></tr>");
+				.append("<tr data-feed-id=\"" + feed.id + "\" onclick=\"Buttons.filterFeedButtonClicked(this)\"><td>" + feed.name + "(" + count + ")</td></tr>");
 		}
 	};
 
@@ -147,6 +148,14 @@ var Table = (function()
 	function getMarkOlderItemsAsReadButton(feedId, item)
 	{
 		return "<button id=\"markAllOlderItemsAsReadButton-" + item.id + "\" data-feed-id=\"" + feedId + "\" data-id=\"" + item.id + "\" type=\"button\" class=\"btn btn-xs btn-default\" onClick=\"Buttons.markOlderItemsAsReadButtonPressed(this)\">Mark older as read</button>"
+	}
+
+	//todo this should be a method of the feed object
+	function getNumberOfItems(feed)
+	{
+		if(feed.items.length > 0)
+			return feed.items.length
+		return feed.numberOfAvailableItems;
 	}
 	/*
 	function privateWay() {
