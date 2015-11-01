@@ -121,6 +121,7 @@ public class YoutubeChannelService
 				if (videos.contains(video))
 				{
 					itemAlreadyInList = true;
+					logger.debug("Video {} is already cached, this channel should be up to date now", video);
 				}
 				else
 				{
