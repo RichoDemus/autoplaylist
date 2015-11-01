@@ -122,4 +122,10 @@ public class YoutubeVideo implements Comparable<YoutubeVideo>
 	{
 		return Objects.hash(title, description, url);
 	}
+
+	@Override
+	public String toString()
+	{
+		return title + "(" + videoId + ", " + uploadDate + ")";
+	}
 }

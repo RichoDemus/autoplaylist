@@ -117,6 +117,7 @@ public class YoutubeChannelService
 			for (PlaylistItem item : nextVideoChunk)
 			{
 				final YoutubeVideo video = toVideo(item);
+				logger.trace("Downloaded video {}", video);
 				if (videos.contains(video))
 				{
 					itemAlreadyInList = true;

@@ -33,19 +33,19 @@ import static org.mockito.Mockito.when;
 public class YoutubeChannelServiceTest
 {
 	private static final String NON_EXISTENT_CHANNEL_NAME = "non existerino";
-	private static final YoutubeVideo CACHED_CHANNEL_FIRST_VIDEO = new YoutubeVideo("title1", "description1", "_0S1jebDBzk", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
+	private static final YoutubeVideo CACHED_CHANNEL_FIRST_VIDEO = new YoutubeVideo("cached_1", "description1", "_0S1jebDBzk", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
 	private static final YoutubeChannel CACHED_CHANNEL = new YoutubeChannel(
 			"cached_channel",
 			new HashSet<>(singletonList(CACHED_CHANNEL_FIRST_VIDEO)));
 
-	private static final YoutubeVideo UNCACHED_CHANNEL_FIRST_VIDEO = new YoutubeVideo("title1", "description1", "_0S1jebDBzk", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
+	private static final YoutubeVideo UNCACHED_CHANNEL_FIRST_VIDEO = new YoutubeVideo("uncached_1", "description1", "_0S1jebDBzk", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
 	private static final YoutubeChannel UNCACHED_CHANNEL = new YoutubeChannel(
 			"uncached_channel",
 			new HashSet<>(singletonList(UNCACHED_CHANNEL_FIRST_VIDEO)));
 
-	private static final YoutubeVideo OUTDATED_CHANNEL_FIRST_VIDEO = new YoutubeVideo("title1", "description1", "_0S1jebDBzk", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
-	private static final YoutubeVideo OUTDATED_CHANNEL_SECOND_VIDEO = new YoutubeVideo("title2", "description2", "_0S1jebdDBzk", LocalDateTime.of(2014, 9, 10, 12, 37, 56));
-	private static final YoutubeVideo OUTDATED_CHANNEL_NOT_CACHED_VIDEO = new YoutubeVideo("title3", "description3", "_0s1jebDBze", LocalDateTime.of(2014, 11, 5, 12, 37, 56));
+	private static final YoutubeVideo OUTDATED_CHANNEL_FIRST_VIDEO = new YoutubeVideo("outdated_1", "description1", "_0S1jebDBzk", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
+	private static final YoutubeVideo OUTDATED_CHANNEL_SECOND_VIDEO = new YoutubeVideo("outdated_2", "description2", "_0S1jebdDBzk", LocalDateTime.of(2014, 9, 10, 12, 37, 56));
+	private static final YoutubeVideo OUTDATED_CHANNEL_NOT_CACHED_VIDEO = new YoutubeVideo("outdated_noncached_3", "description3", "_0s1jebDBze", LocalDateTime.of(2014, 11, 5, 12, 37, 56));
 	private static final YoutubeChannel OUTDATED_CHANNEL_WITH_NEW_ITEM = new YoutubeChannel(
 			"outdated_channel",
 			new HashSet<>(asList(OUTDATED_CHANNEL_FIRST_VIDEO, OUTDATED_CHANNEL_SECOND_VIDEO, OUTDATED_CHANNEL_NOT_CACHED_VIDEO)), Instant.ofEpochSecond(100));
@@ -132,6 +132,9 @@ public class YoutubeChannelServiceTest
 		when(channelDownloaderMock.getVideoChunk(name)).thenReturn(resp);
 	}
 
+	/**
+	 * Convert a channel into a bunch of chunks, each chunk will contain one video and the newest will be retrieved first
+	 */
 	private Optional<YoutubeVideoChunk> createYoutubeVideoChunk(final YoutubeChannel channel)
 	{
 		return Optional.of(channel)
