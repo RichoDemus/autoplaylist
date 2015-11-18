@@ -9,6 +9,7 @@ import com.richo.reader.model.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
@@ -21,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 
 @Path("/users/{username}/labels/")
 @Produces(MediaType.APPLICATION_JSON)
+@RolesAllowed("user")
 public class LabelResource
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());

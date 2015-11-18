@@ -1,11 +1,12 @@
 package com.richo.reader.web.resources;
 
-import com.richo.reader.backend.UserManager;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.model.Session;
+import com.richodemus.dropwizard.jwt.AuthenticationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
@@ -14,30 +15,29 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.Optional;
 
 @Path("/users/{username}/sessions")
 @Produces(MediaType.APPLICATION_JSON)
 public class SessionResource
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final UserManager userManager;
+	private final AuthenticationManager authenticationManager;
 
 	@Inject
-	public SessionResource(UserManager userManager)
+	public SessionResource(AuthenticationManager authenticationManager)
 	{
-		this.userManager = userManager;
+		this.authenticationManager = authenticationManager;
 	}
 
 	@POST
+	@PermitAll
 	public Session login(@PathParam("username") String username)
 	{
 		logger.info("Logging user {}", username);
 		try
 		{
-			return Optional.of(username)
-					.map(userManager::login)
-					.map(token -> new Session(username, token))
+			return authenticationManager.login(username, "password-goes-here")
+					.map(token -> new Session(username, token.getRaw()))
 					.orElseThrow(() -> new NoSuchUserException("Failed to create session object"));
 		}
 		catch (NoSuchUserException e)

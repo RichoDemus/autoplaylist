@@ -1,6 +1,6 @@
 package com.richo.reader.web.resources;
 
-import com.richo.reader.backend.UserManager;
+import com.richo.reader.web.authentication.UserServiceBridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,12 +13,12 @@ import javax.ws.rs.Path;
 public class UserResource
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final UserManager userManager;
+	private final UserServiceBridge userService;
 
 	@Inject
-	public UserResource(UserManager userManager)
+	public UserResource(UserServiceBridge userService)
 	{
-		this.userManager = userManager;
+		this.userService = userService;
 	}
 
 	@POST
@@ -26,7 +26,7 @@ public class UserResource
 	{
 		try
 		{
-			userManager.createUser(username);
+			userService.createUser(username);
 		}
 		catch (Exception e)
 		{

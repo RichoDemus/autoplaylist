@@ -24,6 +24,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.richodemus.dropwizard.jwt</groupId>
+			<artifactId>dropwizard-jwt</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>io.dropwizard</groupId>
 			<artifactId>dropwizard-core</artifactId>
 		</dependency>
@@ -60,6 +65,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-server</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
 		</dependency>
@@ -67,7 +77,10 @@
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>

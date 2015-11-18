@@ -15,6 +15,7 @@ import com.richo.reader.web.LabelConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 @Path("/users/{username}/feeds/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@RolesAllowed("user")
 public class FeedResource
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());

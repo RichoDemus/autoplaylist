@@ -54,6 +54,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>com.richodemus.dropwizard.jwt</groupId>
+				<artifactId>dropwizard-jwt</artifactId>
+				<version>1.0-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
 				<groupId>io.dropwizard</groupId>
 				<artifactId>dropwizard-core</artifactId>
 				<version>${dropwizard.version}</version>
@@ -98,6 +104,23 @@
 				<groupId>javax.inject</groupId>
 				<artifactId>javax.inject</artifactId>
 				<version>1</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>1.2</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.glassfish.jersey.core</groupId>
+				<artifactId>jersey-server</artifactId>
+				<version>2.19</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.glassfish.hk2.external</groupId>
+						<artifactId>javax.inject</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<dependency>
