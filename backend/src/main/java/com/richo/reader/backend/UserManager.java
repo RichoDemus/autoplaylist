@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.Optional;
 
 public class UserManager
 {
@@ -26,9 +27,12 @@ public class UserManager
 		userService.update(new User(username, Sets.newHashSet()));
 	}
 
-	public String login(String username) throws NoSuchUserException
+	public boolean checkCredentials(String username, String password) throws NoSuchUserException
 	{
-		logger.debug("Logging in {}", username);
-		return userService.get(username).getName() + "-token";
+		logger.info("Checking credentials for {}", username);
+		final Optional<User> maybeUser = Optional.ofNullable(userService.get(username));
+
+		//todo real password management
+		return maybeUser.isPresent() && password.equals("funnay");
 	}
 }

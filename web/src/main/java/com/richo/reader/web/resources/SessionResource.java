@@ -31,12 +31,12 @@ public class SessionResource
 
 	@POST
 	@PermitAll
-	public Session login(@PathParam("username") String username)
+	public Session login(@PathParam("username") String username, String password)
 	{
 		logger.info("Logging user {}", username);
 		try
 		{
-			return authenticationManager.login(username, "password-goes-here")
+			return authenticationManager.login(username, password)
 					.map(token -> new Session(username, token.getRaw()))
 					.orElseThrow(() -> new NoSuchUserException("Failed to create session object"));
 		}

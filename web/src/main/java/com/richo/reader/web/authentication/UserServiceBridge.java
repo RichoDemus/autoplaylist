@@ -26,7 +26,11 @@ public class UserServiceBridge implements com.richodemus.dropwizard.jwt.UserServ
 	public Optional<Role> login(String username, String password)
 	{
 		logger.info("Asked to login user {}", username);
-		//todo actually check credentials :p
+		if (!userManager.checkCredentials(username, password))
+		{
+			logger.warn("Invalid username or password for user {}", username);
+			return Optional.empty();
+		}
 		return Optional.of(new Role("user"));
 	}
 

@@ -90,7 +90,7 @@ var Api = (function()
 	pub.login = function(username, password, callback)
 	{
 		console.log("Attempting to log in user " + username);
-		$.post("api/users/" + username + "/sessions", username, callback).fail(function(data)
+		$.post("api/users/" + username + "/sessions", password, callback).fail(function(data)
 		{
 			alert("Unable to login");
 			console.log(data);
