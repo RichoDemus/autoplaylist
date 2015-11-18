@@ -4,7 +4,6 @@
 To generate mutation test reports: mvn org.pitest:pitest-maven:mutationCoverage -T1C
 
 ## Features TODO
-* Add JWT Authentication
 * Use my classpath scanner
 * add a captcha for signups
 * make storing username and password/token a part of Api.js

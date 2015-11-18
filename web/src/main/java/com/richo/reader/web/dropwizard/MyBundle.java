@@ -1,6 +1,7 @@
 package com.richo.reader.web.dropwizard;
 
 import com.hubspot.dropwizard.guice.GuiceBundle;
+import com.richo.reader.web.authentication.UsernameCheckFilter;
 import com.richo.reader.web.resources.FeedResource;
 import com.richo.reader.web.resources.LabelResource;
 import com.richo.reader.web.resources.SessionResource;
@@ -36,6 +37,7 @@ public class MyBundle implements ConfiguredBundle<ReaderConfiguration>
 		environment.jersey().register(UserResource.class);
 		environment.jersey().register(LabelResource.class);
 
+		environment.jersey().register(UsernameCheckFilter.class);
 
 		//Setup dropwizard-jwt
 		environment.jersey().register(AuthenticationRequestFilter.class);
