@@ -15,7 +15,7 @@ var Api = (function()
 		{
 			url: "api/users/" + username + "/feeds",
 			type: "GET",
-			headers: { 'x-token-jwt': token.raw }
+			headers: { 'x-token-jwt': Authentication.token.raw }
 		}).done(callback);
 	};
 
@@ -24,6 +24,7 @@ var Api = (function()
 		$.ajax(
 		{
 			url: "api/users/" + Authentication.username + "/feeds/" + feedId,
+			headers: { 'x-token-jwt': Authentication.token.raw },
 			type: "GET"
 		}).done(callback);
 	};
@@ -37,6 +38,7 @@ var Api = (function()
 			data: JSON.stringify({ action: "MARK_READ" }),
 			dataType: "json",
 			contentType: "application/json; charset=utf-8",
+			headers: { 'x-token-jwt': Authentication.token.raw },
 			success: function(){
 				//
 			}
@@ -52,6 +54,7 @@ var Api = (function()
 			data: JSON.stringify({ action: "MARK_OLDER_ITEMS_AS_READ" }),
 			dataType: "json",
 			contentType: "application/json; charset=utf-8",
+			headers: { 'x-token-jwt': Authentication.token.raw },
 			success: function(){
 				//
 			}
@@ -67,6 +70,7 @@ var Api = (function()
 			data: JSON.stringify({ action: "MARK_UNREAD" }),
 			dataType: "json",
 			contentType: "application/json; charset=utf-8",
+			headers: { 'x-token-jwt': Authentication.token.raw },
 			success: function(){
 				//
 			}
@@ -81,6 +85,7 @@ var Api = (function()
 			data: feedName,
 			dataType: "json",
 			contentType: "application/json; charset=utf-8",
+			headers: { 'x-token-jwt': Authentication.token.raw },
 			success: function(){
 				//
 			}
@@ -122,6 +127,7 @@ var Api = (function()
 			url: "api/users/" + Authentication.username + "/labels/" + label,
 			data: feed,
 			type: "PUT",
+			headers: { 'x-token-jwt': Authentication.token.raw },
 			success: callback
 		});
 	};

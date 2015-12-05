@@ -36,14 +36,14 @@ public class UsernameCheckFilter implements ContainerRequestFilter
 		final String[] split = uri.split("/");
 		if (split.length < 6)
 		{
-			//no username in path
+			logger.debug("No username in path");
 			return;
 		}
 		final String usernameFromURI = split[5];
 		final String rawToken = requestContext.getHeaderString("x-token-jwt");
 		if (Strings.isNullOrEmpty(rawToken))
 		{
-			//no token
+			logger.debug("no token");
 			return;
 		}
 		final String usernameFromToken = new Token(rawToken).getUsername();
