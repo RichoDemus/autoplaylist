@@ -110,8 +110,18 @@ var Api = (function()
 
 	pub.refreshSession = function(session, callback)
 	{
-		console.log("refresh session is not implemented");
-		callback(session);
+		console.log("Refreshing session");
+		$.ajax({
+			url: "api/users/" + session.username + "/sessions/refresh",
+			type: "POST",
+			headers: { 'x-token-jwt': session.token },
+			success: callback,
+			error: function()
+			{
+				console.log("Unable to refresh session");
+				callback(null);
+			}
+		});
 	};
 
 	pub.createLabel = function(label, callback)

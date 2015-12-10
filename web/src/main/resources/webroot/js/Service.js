@@ -98,7 +98,10 @@ var Service = (function()
 		Api.refreshSession(session, function(newSession)
 		{
 			console.log("got new session: " + newSession.username + "/" + newSession.token);
-			loggedIn(session);
+			if(newSession)
+			{
+				loggedIn(session);
+			}
 		});
 	}
 
