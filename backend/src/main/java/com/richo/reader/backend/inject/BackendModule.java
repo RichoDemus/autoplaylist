@@ -26,7 +26,7 @@ public class BackendModule extends AbstractModule
 	protected void configure()
 	{
 		bind(Backend.class);
-		bind(Duration.class).toInstance(Duration.of(1, ChronoUnit.HOURS));
+		bind(Duration.class).toInstance(Duration.of(1, ChronoUnit.DAYS));
 		bind(String.class).annotatedWith(Names.named("apiKey")).toInstance("AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
 		bind(String.class).annotatedWith(Names.named("saveRoot")).toInstance("data/");
 
