@@ -8,4 +8,6 @@ public interface UserPersister
 	User get(String username) throws NoSuchUserException;
 
 	void update(User user);
+
+	boolean isPasswordValid(String username, String password);
 }

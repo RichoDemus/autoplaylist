@@ -38,4 +38,10 @@ public class UserService implements UserPersister
 		fileSystemPersister.update(user);
 	}
 
+	@Override
+	public boolean isPasswordValid(String username, String password)
+	{
+		return fileSystemPersister.isPasswordValid(username, password);
+	}
+
 }

@@ -70,4 +70,35 @@ public class JsonFileSystemUserPersistence implements UserPersister
 			e.printStackTrace();
 		}
 	}
+
+	public void setPassword(String username, String password)
+	{
+		try
+		{
+			final String path = saveRoot + "/users/" + username;
+			final boolean success = new File(path).mkdirs();
+			logger.trace("Creating {} successful: {}", path, success);
+			new ObjectMapper().writeValue(new File(path + "/password.json"), password);
+		}
+		catch (IOException e)
+		{
+			//todo fix
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public boolean isPasswordValid(String username, String password)
+	{
+		try
+		{
+			final String loadedPassword = new ObjectMapper().readValue(new File(saveRoot + "/users/" + username + "/password.json"), String.class);
+			return password.equals(loadedPassword);
+		}
+		catch (IOException e)
+		{
+			logger.warn("Unable to find passowrd for user user: {}", username, e);
+			throw new NoSuchUserException("Unable to find passowrd for user user: " + username);
+		}
+	}
 }

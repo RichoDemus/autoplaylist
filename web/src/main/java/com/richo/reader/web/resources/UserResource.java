@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -26,6 +27,11 @@ public class UserResource
 	{
 		try
 		{
+			//Disabled
+			if (true)
+			{
+				throw new BadRequestException("Not implemented");
+			}
 			userService.createUser(username);
 		}
 		catch (Exception e)

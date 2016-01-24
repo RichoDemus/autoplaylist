@@ -33,6 +33,6 @@ public class UserManager
 		final Optional<User> maybeUser = Optional.ofNullable(userService.get(username));
 
 		//todo real password management
-		return maybeUser.isPresent() && password.equals("funnay");
+		return maybeUser.isPresent() && userService.isPasswordValid(username, password);
 	}
 }

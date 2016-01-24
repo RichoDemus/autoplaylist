@@ -35,4 +35,10 @@ public class InMemoryUserPersistence implements UserPersister
 	{
 		users.put(user.getName(), user);
 	}
+
+	@Override
+	public boolean isPasswordValid(String username, String password)
+	{
+		throw new IllegalStateException("Not implemented");
+	}
 }
