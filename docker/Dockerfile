@@ -1,4 +1,4 @@
-from rpi-java8
+from rpi-java8:8u71
 
 run mkdir /reader
 run mkdir /reader/data
