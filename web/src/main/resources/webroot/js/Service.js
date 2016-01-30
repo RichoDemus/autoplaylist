@@ -2,7 +2,15 @@ var Service = (function()
 {
 	var pub = {},
 	//Private property
-	greyFloorTile = null;
+	sortingAlgorithm = function(a,b)
+	{
+		var nameA=a.name.toLowerCase(), nameB=b.name.toLowerCase();
+		if (nameA < nameB) //sort string ascending
+			return -1;
+		if (nameA > nameB)
+			return 1;
+		return 0; //default return value (no sorting)
+	};
 
 	//Public property
 	pub.sortOrder = null;
@@ -28,6 +36,7 @@ var Service = (function()
 		Api.getAllItems(Authentication.username, Authentication.token, function(result)
 		{
 			feeds = result.feeds;
+			feeds.sort(sortingAlgorithm);
 			labels = result.labels;
 			labels.push(UNLABELED_LABEL);
 			labels.push(ALL_LABEL);
