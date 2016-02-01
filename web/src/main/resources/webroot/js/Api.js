@@ -10,6 +10,11 @@ var Api = (function()
 	//Public method
 	pub.getAllItems = function(username, token, callback)
 	{
+		if(!Authentication.token)
+		{
+			console.log("No token...");
+			return;
+		}
 		console.log("Getting all feeds for " + username + " using token " + token);
 		$.ajax(
 		{
