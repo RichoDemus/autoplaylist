@@ -79,8 +79,16 @@ var Service = (function()
 	pub.selectFeed = function(feedId)
 	{
 		const selectedFeed = feeds.filter(function(f) {return f.id == feedId;})[0];
-		if (selectedFeed.items.length > 0) {
+		if (selectedFeed && selectedFeed.items.length > 0)
+		{
 			console.log("Feed Already downloaded..");
+			Service.updateEverything();
+			return;
+		}
+
+		if(!selectedFeed)
+		{
+			console.log("Deselecting feed");
 			Service.updateEverything();
 			return;
 		}
