@@ -53,6 +53,7 @@ var Service = (function()
 		//todo make better
 		if(!feeds)
 		{
+			console.log("No feeds, fetching from server...")
 			Service.getAllItems();
 			return;
 		}
@@ -77,10 +78,16 @@ var Service = (function()
 
 	pub.selectFeed = function(feedId)
 	{
+		const selectedFeed = feeds.filter(function(f) {return f.id == feedId;})[0];
+		if (selectedFeed.items.length > 0) {
+			console.log("Feed Already downloaded..");
+			Service.updateEverything();
+			return;
+		}
+
 		Api.getFeed(feedId, function(feed)
 		{
-			const targetFeed = feeds.filter(function(f) {return f.id == feedId;})[0];
-			targetFeed.items = feed.items;
+			selectedFeed.items = feed.items;
 			Service.updateEverything();
 		});
 	};

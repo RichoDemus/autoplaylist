@@ -56,10 +56,6 @@ var Table = (function()
 					Table.addItemToTable(feed.id, item);
 				});
 			}
-			else
-			{
-				console.log("filter is [" + selectedFeed + "] will not add [" + feed.name + "]");
-			}
 		});
 	};
 
@@ -96,10 +92,6 @@ var Table = (function()
 			else if(selectedLabel && selectedLabel === ALL_LABEL)
 			{
 				Table.addFeedToTable(feed);
-			}
-			else
-			{
-				console.log("label is [" + selectedLabel.name + "] will not add [" + feed.name + "]")
 			}
 		});
 	};
