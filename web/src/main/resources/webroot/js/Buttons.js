@@ -116,6 +116,8 @@ var Buttons = (function()
 	pub.itemTitleClicked = function(item)
 	{
 		console.log("Clicked link to video: " + item.getAttribute("data-id"));
+		$("#markItemAsReadButton-" + item.getAttribute("data-id")).hide();
+		$("#markItemAsUnreadButton-" + item.getAttribute("data-id")).show();
 		Api.markAsRead(item.getAttribute("data-feed-id"), item.getAttribute("data-id"));
 	};
 
