@@ -46,6 +46,10 @@ var Api = (function()
 			headers: { 'x-token-jwt': Authentication.token.raw },
 			success: function(){
 				//
+			},
+			error: function()
+			{
+				alert("Marking item " + itemId + " as read failed");
 			}
 		});
 	};
