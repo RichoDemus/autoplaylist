@@ -8,6 +8,11 @@ CONFIG_FILE=${DIR}/config.yaml
 CONTENT_DIR=${DIR}/docker/content/
 
 mvn clean install -T1C
+status=$?
+if [ $status -ne 0 ]; then
+  echo "mvn build failed with status $status" >&2
+  exit
+fi
 
 mkdir -p $CONTENT_DIR
 cp $JAR_FILE $CONTENT_DIR
