@@ -35,6 +35,7 @@ public class JsonFileSystemPersistence implements ChannelPersister
 				logger.debug("Channel {} not on disk", channelName);
 				return Optional.empty();
 			}
+			logger.trace("Reading channel {} from disk", channelName);
 			return Optional.ofNullable(new ObjectMapper().readValue(file, YoutubeChannel.class));
 		}
 		catch (IOException e)
