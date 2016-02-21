@@ -38,7 +38,7 @@ public class JsonFileSystemPersistence
 		}
 		catch (Exception e)
 		{
-			logger.warn("Unable to load channel: {}", feedId, e);
+			logger.warn("Unable to load feed: {}", feedId, e);
 			return Optional.empty();
 		}
 	}
