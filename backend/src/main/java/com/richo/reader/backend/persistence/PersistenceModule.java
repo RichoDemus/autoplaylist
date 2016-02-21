@@ -9,7 +9,7 @@ public class PersistenceModule extends AbstractModule
 	protected void configure()
 	{
 		bind(ChannelPersister.class).annotatedWith(Names.named("InMemory")).to(InMemoryPersistence.class);
-		bind(ChannelPersister.class).annotatedWith(Names.named("FileSystem")).to(JsonFileSystemPersistence.class);
-		bind(ChannelPersister.class).annotatedWith(Names.named("YoutubeChannelPersister")).to(JsonFileSystemPersistence.class);
+		//bind(ChannelPersister.class).annotatedWith(Names.named("FileSystem")).to(JsonFileSystemPersistence.class);
+		//bind(ChannelPersister.class).annotatedWith(Names.named("YoutubeChannelPersister")).to(JsonFileSystemPersistence.class);
 	}
 }

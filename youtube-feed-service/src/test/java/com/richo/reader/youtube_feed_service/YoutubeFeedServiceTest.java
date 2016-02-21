@@ -3,6 +3,7 @@ package com.richo.reader.youtube_feed_service;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class YoutubeFeedServiceTest
 {
 	private static final String NON_CACHED_CHANNEL = "foo";
-	private static final Feed CACHED_CHANNEL = new Feed("RichoDemus");
+	private static final Feed CACHED_CHANNEL = new Feed("RichoDemus", new ArrayList<>());
 	private YoutubeFeedService target;
 
 	@Before
