@@ -1,9 +1,9 @@
-package com.richo.reader.backend.youtube;
+package com.richo.reader.youtube_feed_service.youtube;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
-import com.richo.reader.backend.youtube.download.YoutubeVideoChunk;
+import com.richo.reader.youtube_feed_service.youtube.download.YoutubeVideoChunk;
 import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

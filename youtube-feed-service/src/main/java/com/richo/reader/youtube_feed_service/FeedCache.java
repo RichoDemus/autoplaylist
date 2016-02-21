@@ -4,24 +4,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-class FeedCache
+public class FeedCache
 {
 	private final Map<String, Feed> cache;
 	private final JsonFileSystemPersistence fileSystemPersistence;
 
-	FeedCache(JsonFileSystemPersistence fileSystemPersistence)
+	public FeedCache(JsonFileSystemPersistence fileSystemPersistence)
 	{
 		this.fileSystemPersistence = fileSystemPersistence;
 		cache = new HashMap<>();
 	}
 
-	Optional<Feed> get(String channelName)
+	public Optional<Feed> get(String channelName)
 	{
 		return Optional.ofNullable(cache.computeIfAbsent(channelName, name -> fileSystemPersistence.getChannel(channelName).orElse(null)));
 	}
 
-	void add(Feed feed)
+	public void update(Feed feed)
 	{
 		cache.put(feed.getId(), feed);
+		fileSystemPersistence.updateChannel(feed);
 	}
 }

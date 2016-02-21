@@ -11,14 +11,14 @@ import java.io.IOException;
 import java.util.Optional;
 
 
-class JsonFileSystemPersistence
+public class JsonFileSystemPersistence
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final String saveRoot;
 
 	@Inject
-	JsonFileSystemPersistence(@Named("saveRoot") String saveRoot)
+	public JsonFileSystemPersistence(@Named("saveRoot") String saveRoot)
 	{
 		this.saveRoot = saveRoot;
 	}

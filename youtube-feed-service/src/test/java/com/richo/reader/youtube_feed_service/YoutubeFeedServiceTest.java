@@ -3,6 +3,8 @@ package com.richo.reader.youtube_feed_service;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -15,8 +17,8 @@ import static org.mockito.Mockito.when;
 public class YoutubeFeedServiceTest
 {
 	private static final String NON_CACHED_CHANNEL = "foo";
-	private static final Feed CACHED_CHANNEL = new Feed("RichoDemus", new ArrayList<>());
-	private static final Feed CHANNEL_ON_DISK = new Feed("Ylvis", new ArrayList<>());
+	private static final Feed CACHED_CHANNEL = new Feed("RichoDemus", new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC));
+	private static final Feed CHANNEL_ON_DISK = new Feed("Ylvis", new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC));
 	private YoutubeFeedService target;
 
 	@Before
@@ -25,7 +27,7 @@ public class YoutubeFeedServiceTest
 		final JsonFileSystemPersistence fileSystemPersistence = new JsonFileSystemPersistence("target/data");
 		fileSystemPersistence.updateChannel(CHANNEL_ON_DISK);
 		final FeedCache cache = new FeedCache(fileSystemPersistence);
-		cache.add(CACHED_CHANNEL);
+		cache.update(CACHED_CHANNEL);
 		target = new YoutubeFeedService(cache);
 	}
 
@@ -49,7 +51,7 @@ public class YoutubeFeedServiceTest
 		final JsonFileSystemPersistence fileSystemPersistence = mock(JsonFileSystemPersistence.class);
 		when(fileSystemPersistence.getChannel(CHANNEL_ON_DISK.getId())).thenReturn(Optional.of(CHANNEL_ON_DISK));
 		final FeedCache cache = new FeedCache(fileSystemPersistence);
-		cache.add(CACHED_CHANNEL);
+		cache.update(CACHED_CHANNEL);
 		target = new YoutubeFeedService(cache);
 
 		target.getChannel(CHANNEL_ON_DISK.getId());

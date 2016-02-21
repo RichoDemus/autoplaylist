@@ -26,6 +26,14 @@ public class Item
 		this.uploadDate = LocalDateTime.ofEpochSecond(uploadDate, 0, ZoneOffset.UTC);
 	}
 
+	public Item(String id, String title, String description, LocalDateTime uploadDate)
+	{
+		this.id = id;
+		this.title = title;
+		this.description = description;
+		this.uploadDate = uploadDate;
+	}
+
 	public String getId()
 	{
 		return id;

@@ -1,4 +1,4 @@
-package com.richo.reader.backend.youtube.model;
+package com.richo.reader.youtube_feed_service.youtube.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
