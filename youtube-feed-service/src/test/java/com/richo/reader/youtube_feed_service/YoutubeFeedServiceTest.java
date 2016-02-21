@@ -7,17 +7,24 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class YoutubeFeedServiceTest
 {
 	private static final String NON_CACHED_CHANNEL = "foo";
 	private static final Feed CACHED_CHANNEL = new Feed("RichoDemus", new ArrayList<>());
+	private static final Feed CHANNEL_ON_DISK = new Feed("Ylvis", new ArrayList<>());
 	private YoutubeFeedService target;
 
 	@Before
 	public void setUp() throws Exception
 	{
-		final FeedCache cache = new FeedCache();
+		final JsonFileSystemPersistence fileSystemPersistence = new JsonFileSystemPersistence("target/data");
+		fileSystemPersistence.updateChannel(CHANNEL_ON_DISK);
+		final FeedCache cache = new FeedCache(fileSystemPersistence);
 		cache.add(CACHED_CHANNEL);
 		target = new YoutubeFeedService(cache);
 	}
@@ -27,6 +34,28 @@ public class YoutubeFeedServiceTest
 	{
 		final Optional<Feed> result = target.getChannel(CACHED_CHANNEL.getId());
 		assertThat(result.isPresent()).isTrue();
+	}
+
+	@Test
+	public void shouldReturnFeedIfItsWrittenToDisk() throws Exception
+	{
+		final Optional<Feed> result = target.getChannel(CHANNEL_ON_DISK.getId());
+		assertThat(result.isPresent()).isTrue();
+	}
+
+	@Test
+	public void shouldCacheFeedsReadFromDisk() throws Exception
+	{
+		final JsonFileSystemPersistence fileSystemPersistence = mock(JsonFileSystemPersistence.class);
+		when(fileSystemPersistence.getChannel(CHANNEL_ON_DISK.getId())).thenReturn(Optional.of(CHANNEL_ON_DISK));
+		final FeedCache cache = new FeedCache(fileSystemPersistence);
+		cache.add(CACHED_CHANNEL);
+		target = new YoutubeFeedService(cache);
+
+		target.getChannel(CHANNEL_ON_DISK.getId());
+		target.getChannel(CHANNEL_ON_DISK.getId());
+
+		verify(fileSystemPersistence, times(1)).getChannel(CHANNEL_ON_DISK.getId());
 	}
 
 	@Test

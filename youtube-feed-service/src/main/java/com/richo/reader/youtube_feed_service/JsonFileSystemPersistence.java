@@ -11,19 +11,19 @@ import java.io.IOException;
 import java.util.Optional;
 
 
-public class JsonFileSystemPersistence
+class JsonFileSystemPersistence
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final String saveRoot;
 
 	@Inject
-	public JsonFileSystemPersistence(@Named("saveRoot") String saveRoot)
+	JsonFileSystemPersistence(@Named("saveRoot") String saveRoot)
 	{
 		this.saveRoot = saveRoot;
 	}
 
-	public Optional<Feed> getChannel(String feedId)
+	Optional<Feed> getChannel(String feedId)
 	{
 		try
 		{
@@ -43,7 +43,7 @@ public class JsonFileSystemPersistence
 		}
 	}
 
-	public void updateChannel(Feed feed)
+	void updateChannel(Feed feed)
 	{
 		try
 		{
