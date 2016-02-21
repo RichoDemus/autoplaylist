@@ -4,6 +4,13 @@ import java.util.Optional;
 
 public class YoutubeFeedService
 {
+	private final FeedCache cache;
+
+	public YoutubeFeedService(FeedCache cache)
+	{
+		this.cache = cache;
+	}
+
 	public void registerChannel(final String channelName)
 	{
 
@@ -11,6 +18,6 @@ public class YoutubeFeedService
 
 	public Optional<Feed> getChannel(final String channelName)
 	{
-		return Optional.empty();
+		return cache.get(channelName);
 	}
 }
