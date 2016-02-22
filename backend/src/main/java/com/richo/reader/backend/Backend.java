@@ -8,7 +8,7 @@ import com.richo.reader.backend.model.Feed;
 import com.richo.reader.backend.model.Item;
 import com.richo.reader.backend.model.User;
 import com.richo.reader.backend.user.UserService;
-import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelService;
+import com.richo.reader.youtube_feed_service.youtube.YoutubeDownloadManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,13 +20,13 @@ public class Backend
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final UserService userService;
-	private final YoutubeChannelService youtubeChannelService;
+	private final YoutubeDownloadManager youtubeDownloadManager;
 
 	@Inject
-	public Backend(final UserService userService, YoutubeChannelService youtubeChannelService)
+	public Backend(final UserService userService, YoutubeDownloadManager youtubeDownloadManager)
 	{
 		this.userService = userService;
-		this.youtubeChannelService = youtubeChannelService;
+		this.youtubeDownloadManager = youtubeDownloadManager;
 	}
 
 	public Set<Feed> getFeeds(final String username) throws NoSuchUserException
@@ -43,7 +43,7 @@ public class Backend
 
 	private YoutubeChannel feedIdToYoutubeChannel(String name)
 	{
-		return youtubeChannelService.getChannelByName(name).orElseGet(() ->
+		return youtubeDownloadManager.getChannelByName(name).orElseGet(() ->
 		{
 			logger.error("No such feed: {}", name);
 			return null;
@@ -73,7 +73,7 @@ public class Backend
 
 		final User user = userService.get(username);
 
-		final Feed namedFeed = youtubeChannelService.getFeedByName(feedName).orElseThrow(() ->
+		final Feed namedFeed = youtubeDownloadManager.getFeedByName(feedName).orElseThrow(() ->
 		{
 			logger.error("No such channel: {}", feedName);
 			return new NoSuchChannelException("No such channel: " + feedName);
@@ -103,7 +103,7 @@ public class Backend
 	{
 		logger.info("Marking items older than {} in feed {} for user {} as read", itemId, feedId, username);
 		final User user = userService.get(username);
-		final Feed feed = youtubeChannelService.getFeedById(feedId).orElseThrow(() ->
+		final Feed feed = youtubeDownloadManager.getFeedById(feedId).orElseThrow(() ->
 		{
 			logger.error("No such channel: {}", feedId);
 			return new NoSuchChannelException("No such channel: " + feedId);

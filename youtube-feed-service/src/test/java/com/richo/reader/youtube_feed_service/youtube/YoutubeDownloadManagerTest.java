@@ -27,7 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class YoutubeChannelServiceTest
+public class YoutubeDownloadManagerTest
 {
 	private static final String NON_EXISTENT_CHANNEL_NAME = "non existerino";
 	private static final Item CACHED_CHANNEL_FIRST_VIDEO = new Item("_0S1jebDBzk", "cached_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
@@ -54,7 +54,7 @@ public class YoutubeChannelServiceTest
 			asList(OUTDATED_CHANNEL_FIRST_VIDEO, OUTDATED_CHANNEL_SECOND_VIDEO),
 			LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC));
 
-	private YoutubeChannelService target;
+	private YoutubeDownloadManager target;
 	private YoutubeChannelDownloader channelDownloaderMock;
 	private YoutubeVideoChunkMock outdatedChannelWithNewItemDownloadChunk;
 	private FeedCache cache;
@@ -68,7 +68,7 @@ public class YoutubeChannelServiceTest
 		cache = new FeedCache(mock);
 		cache.update(CACHED_CHANNEL);
 		cache.update(OUTDATED_CHANNEL_WITHOUT_NEW_ITEM);
-		target = new YoutubeChannelService(channelDownloaderMock, cache);
+		target = new YoutubeDownloadManager(channelDownloaderMock, cache);
 	}
 
 	@Test

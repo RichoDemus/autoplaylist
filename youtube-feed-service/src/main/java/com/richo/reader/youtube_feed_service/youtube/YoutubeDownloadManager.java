@@ -19,14 +19,14 @@ import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
-public class YoutubeChannelService
+public class YoutubeDownloadManager
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final YoutubeChannelDownloader youtubeChannelDownloader;
 	private final FeedCache cache;
 
 	@Inject
-	public YoutubeChannelService(YoutubeChannelDownloader youtubeChannelDownloader, FeedCache cache)
+	public YoutubeDownloadManager(YoutubeChannelDownloader youtubeChannelDownloader, FeedCache cache)
 	{
 		this.youtubeChannelDownloader = youtubeChannelDownloader;
 		this.cache = cache;
