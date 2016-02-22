@@ -1,4 +1,4 @@
-package com.richo.reader.youtube_feed_service.youtube.download;
+package com.richo.reader.youtube_feed_service.youtube;
 
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;

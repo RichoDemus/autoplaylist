@@ -8,7 +8,7 @@ import com.richo.reader.backend.model.Feed;
 import com.richo.reader.backend.model.Item;
 import com.richo.reader.backend.model.User;
 import com.richo.reader.backend.user.UserService;
-import com.richo.reader.youtube_feed_service.youtube.YoutubeDownloadManager;
+import com.richo.reader.youtube_feed_service.YoutubeDownloadManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

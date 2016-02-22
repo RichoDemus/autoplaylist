@@ -1,12 +1,9 @@
-package com.richo.reader.youtube_feed_service.youtube;
+package com.richo.reader.youtube_feed_service;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.PlaylistItem;
-import com.richo.reader.youtube_feed_service.Feed;
-import com.richo.reader.youtube_feed_service.FeedCache;
-import com.richo.reader.youtube_feed_service.Item;
-import com.richo.reader.youtube_feed_service.youtube.download.YoutubeChannelDownloader;
-import com.richo.reader.youtube_feed_service.youtube.download.YoutubeVideoChunk;
+import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader;
+import com.richo.reader.youtube_feed_service.youtube.YoutubeVideoChunk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

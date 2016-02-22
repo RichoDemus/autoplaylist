@@ -1,4 +1,4 @@
-package com.richo.reader.youtube_feed_service.youtube.download;
+package com.richo.reader.youtube_feed_service.youtube;
 
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItem;

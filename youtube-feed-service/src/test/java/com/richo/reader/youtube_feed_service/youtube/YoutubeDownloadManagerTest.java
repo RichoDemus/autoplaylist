@@ -8,8 +8,7 @@ import com.richo.reader.youtube_feed_service.Feed;
 import com.richo.reader.youtube_feed_service.FeedCache;
 import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.JsonFileSystemPersistence;
-import com.richo.reader.youtube_feed_service.youtube.download.YoutubeChannelDownloader;
-import com.richo.reader.youtube_feed_service.youtube.download.YoutubeVideoChunk;
+import com.richo.reader.youtube_feed_service.YoutubeDownloadManager;
 import org.junit.Before;
 import org.junit.Test;
 
