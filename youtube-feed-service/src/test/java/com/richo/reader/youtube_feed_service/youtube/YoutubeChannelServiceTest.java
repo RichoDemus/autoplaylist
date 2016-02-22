@@ -83,7 +83,7 @@ public class YoutubeChannelServiceTest
 	}
 
 	@Test
-	public void shouldNotFetchAllChannelsIfRrefreshIntervalHasPassed() throws Exception
+	public void shouldOnlyDownloadNewItemsFromYoutube() throws Exception
 	{
 		target.downloadFeed(OUTDATED_CHANNEL_WITH_NEW_ITEM.getId());
 		final Feed result = cache.get(OUTDATED_CHANNEL_WITH_NEW_ITEM.getId()).get();
@@ -91,24 +91,13 @@ public class YoutubeChannelServiceTest
 		assertThat(outdatedChannelWithNewItemDownloadChunk.chunksLeft()).isEqualTo(1);
 	}
 
-	/*
-
-
-
 	@Test
 	public void shouldAppendNewVideosToChannelInCache() throws Exception
 	{
-		target.getChannelByName(OUTDATED_CHANNEL_WITH_NEW_ITEM.getName()).get();
-		final Feed result = cache.getChannel(OUTDATED_CHANNEL_WITH_NEW_ITEM.getName()).get();
-		Assertions.assertThat(result).isEqualTo(OUTDATED_CHANNEL_WITH_NEW_ITEM);
+		target.downloadFeed(OUTDATED_CHANNEL_WITH_NEW_ITEM.getId());
+		final Feed result = cache.get(OUTDATED_CHANNEL_WITH_NEW_ITEM.getId()).get();
+		assertThat(result).isEqualTo(OUTDATED_CHANNEL_WITH_NEW_ITEM);
 	}
-
-	@Test
-	public void shouldReturnEmptyOptionalIfChannelDoesntExist() throws Exception
-	{
-		final Optional<Feed> result = target.getChannelByName(NON_EXISTENT_CHANNEL_NAME);
-		Assertions.assertThat(result.isPresent()).isFalse();
-	}*/
 
 	private YoutubeChannelDownloader getYoutubeChannelDownloaderMock()
 	{
