@@ -23,7 +23,7 @@ public class JsonFileSystemPersistence
 		this.saveRoot = saveRoot;
 	}
 
-	Optional<Feed> getChannel(String feedId)
+	public Optional<Feed> getChannel(String feedId)
 	{
 		try
 		{

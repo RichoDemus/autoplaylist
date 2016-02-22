@@ -10,10 +10,8 @@ import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.JsonFileSystemPersistence;
 import com.richo.reader.youtube_feed_service.youtube.download.YoutubeChannelDownloader;
 import com.richo.reader.youtube_feed_service.youtube.download.YoutubeVideoChunk;
-import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -25,6 +23,11 @@ import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class YoutubeChannelServiceTest
 {
@@ -62,7 +65,9 @@ public class YoutubeChannelServiceTest
 	public void setUp() throws Exception
 	{
 		channelDownloaderMock = getYoutubeChannelDownloaderMock();
-		cache = new FeedCache(new JsonFileSystemPersistence("target/data"));
+		final JsonFileSystemPersistence mock = mock(JsonFileSystemPersistence.class);
+		when(mock.getChannel(anyString())).thenReturn(Optional.empty());
+		cache = new FeedCache(mock);
 		cache.update(CACHED_CHANNEL);
 		cache.update(OUTDATED_CHANNEL_WITHOUT_NEW_ITEM);
 		target = new YoutubeChannelService(channelDownloaderMock, cache, Duration.of(1, ChronoUnit.HOURS));
@@ -73,8 +78,8 @@ public class YoutubeChannelServiceTest
 	{
 		target.downloadFeed(UNCACHED_CHANNEL.getId());
 		final Feed result = cache.get(UNCACHED_CHANNEL.getId()).get();
-		Assertions.assertThat(result).isEqualTo(UNCACHED_CHANNEL);
-		Mockito.verify(channelDownloaderMock).getVideoChunk(UNCACHED_CHANNEL.getId());
+		assertThat(result).isEqualTo(UNCACHED_CHANNEL);
+		verify(channelDownloaderMock).getVideoChunk(UNCACHED_CHANNEL.getId());
 	}
 
 /*	@Test
@@ -118,7 +123,7 @@ public class YoutubeChannelServiceTest
 
 	private YoutubeChannelDownloader getYoutubeChannelDownloaderMock()
 	{
-		final YoutubeChannelDownloader channelDownloaderMock = Mockito.mock(YoutubeChannelDownloader.class);
+		final YoutubeChannelDownloader channelDownloaderMock = mock(YoutubeChannelDownloader.class);
 
 		outdatedChannelWithNewItemDownloadChunk = (YoutubeVideoChunkMock) createYoutubeVideoChunk(OUTDATED_CHANNEL_WITH_NEW_ITEM).get();
 		mockWithResponse(channelDownloaderMock, OUTDATED_CHANNEL_WITH_NEW_ITEM.getId(), Optional.of(outdatedChannelWithNewItemDownloadChunk));
@@ -130,7 +135,7 @@ public class YoutubeChannelServiceTest
 
 	private void mockWithResponse(YoutubeChannelDownloader channelDownloaderMock, String name, Optional<YoutubeVideoChunk> resp)
 	{
-		Mockito.when(channelDownloaderMock.getVideoChunk(name)).thenReturn(resp);
+		when(channelDownloaderMock.getVideoChunk(name)).thenReturn(resp);
 	}
 
 	/**
