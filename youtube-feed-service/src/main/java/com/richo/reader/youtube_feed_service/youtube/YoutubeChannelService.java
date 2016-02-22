@@ -42,7 +42,7 @@ public class YoutubeChannelService
 		final Feed feed = cache.get(channelName).orElse(new Feed(channelName, new ArrayList<>(), LocalDateTime.now()));
 
 		final List<String> itemIds = feed.getItems().stream().map(Item::getId).collect(toList());
-
+		final List<Item> items = new ArrayList<>(feed.getItems());
 		final Optional<YoutubeVideoChunk> videoChunk = youtubeChannelDownloader.getVideoChunk(channelName);
 
 		List<PlaylistItem> nextVideoChunk;
@@ -53,14 +53,14 @@ public class YoutubeChannelService
 			boolean itemAlreadyInList = false;
 			for (PlaylistItem item : nextVideoChunk)
 			{
-				if(itemIds.contains(item.getId()))
+				if(itemIds.contains(item.getSnippet().getResourceId().getVideoId()))
 				{
 					itemAlreadyInList = true;
 					logger.debug("Video {} is already cached, this channel should be up to date now", item);
 				}
 				else
 				{
-					feed.getItems().add(toItem(item));
+					items.add(toItem(item));
 					itemsAddedToList++;
 				}
 			}
@@ -70,7 +70,7 @@ public class YoutubeChannelService
 			}
 		}
 		logger.debug("Downloaded {} new videos from the channel {}", itemsAddedToList, channelName);
-		cache.update(new Feed(feed.getId(), feed.getItems(), LocalDateTime.now()));
+		cache.update(new Feed(feed.getId(), items, LocalDateTime.now()));
 	}
 
 	private Item toItem(PlaylistItem playlistItem)

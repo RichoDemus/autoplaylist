@@ -32,21 +32,21 @@ import static org.mockito.Mockito.when;
 public class YoutubeChannelServiceTest
 {
 	private static final String NON_EXISTENT_CHANNEL_NAME = "non existerino";
-	private static final Item CACHED_CHANNEL_FIRST_VIDEO = new Item("cached_1", "description1", "_0S1jebDBzk", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
+	private static final Item CACHED_CHANNEL_FIRST_VIDEO = new Item("_0S1jebDBzk", "cached_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
 	private static final Feed CACHED_CHANNEL = new Feed(
 			"cached_channel",
 			singletonList(CACHED_CHANNEL_FIRST_VIDEO),
 			LocalDateTime.now());
 
-	private static final Item UNCACHED_CHANNEL_FIRST_VIDEO = new Item("uncached_1", "description1", "_0S1jebDBzk", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
+	private static final Item UNCACHED_CHANNEL_FIRST_VIDEO = new Item("_0S1jebDBzk", "uncached_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
 	private static final Feed UNCACHED_CHANNEL = new Feed(
 			"uncached_channel",
 			singletonList(UNCACHED_CHANNEL_FIRST_VIDEO),
 			LocalDateTime.now());
 
-	private static final Item OUTDATED_CHANNEL_FIRST_VIDEO = new Item("outdated_1", "description1", "_0S1jebDBzk", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
-	private static final Item OUTDATED_CHANNEL_SECOND_VIDEO = new Item("outdated_2", "description2", "_0S1jebdDBzk", LocalDateTime.of(2014, 9, 10, 12, 37, 56));
-	private static final Item OUTDATED_CHANNEL_NOT_CACHED_VIDEO = new Item("outdated_noncached_3", "description3", "_0s1jebDBze", LocalDateTime.of(2014, 11, 5, 12, 37, 56));
+	private static final Item OUTDATED_CHANNEL_FIRST_VIDEO = new Item("_0S1jebDBzk", "outdated_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
+	private static final Item OUTDATED_CHANNEL_SECOND_VIDEO = new Item("_0S1jebdDBzk", "outdated_2", "description2", LocalDateTime.of(2014, 9, 10, 12, 37, 56));
+	private static final Item OUTDATED_CHANNEL_NOT_CACHED_VIDEO = new Item("_0s1jebDBze", "outdated_noncached_3", "description3", LocalDateTime.of(2014, 11, 5, 12, 37, 56));
 	private static final Feed OUTDATED_CHANNEL_WITH_NEW_ITEM = new Feed(
 			"outdated_channel",
 			asList(OUTDATED_CHANNEL_FIRST_VIDEO, OUTDATED_CHANNEL_SECOND_VIDEO, OUTDATED_CHANNEL_NOT_CACHED_VIDEO),
@@ -82,29 +82,18 @@ public class YoutubeChannelServiceTest
 		verify(channelDownloaderMock).getVideoChunk(UNCACHED_CHANNEL.getId());
 	}
 
-/*	@Test
-	public void testShouldNotFetchChannelIfAlreadyCachedAndRefreshIntervalNotPassed() throws Exception
-	{
-		final Feed result = target.getChannelByName(CACHED_CHANNEL.getName()).get();
-		Assertions.assertThat(result).isEqualTo(CACHED_CHANNEL);
-		Mockito.verifyZeroInteractions(channelDownloaderMock);
-	}
-
-	@Test
-	public void testShouldFetchChannelIfRefreshIntervalHasPassed() throws Exception
-	{
-		final Feed result = target.getChannelByName(OUTDATED_CHANNEL_WITH_NEW_ITEM.getName()).get();
-		Assertions.assertThat(result).isEqualTo(OUTDATED_CHANNEL_WITH_NEW_ITEM);
-		Mockito.verify(channelDownloaderMock).getVideoChunk(OUTDATED_CHANNEL_WITH_NEW_ITEM.getName());
-	}
-
 	@Test
 	public void shouldNotFetchAllChannelsIfRrefreshIntervalHasPassed() throws Exception
 	{
-		final Feed result = target.getChannelByName(OUTDATED_CHANNEL_WITH_NEW_ITEM.getName()).get();
-		Assertions.assertThat(result).isEqualTo(OUTDATED_CHANNEL_WITH_NEW_ITEM);
+		target.downloadFeed(OUTDATED_CHANNEL_WITH_NEW_ITEM.getId());
+		final Feed result = cache.get(OUTDATED_CHANNEL_WITH_NEW_ITEM.getId()).get();
+		assertThat(result).isEqualTo(OUTDATED_CHANNEL_WITH_NEW_ITEM);
 		assertThat(outdatedChannelWithNewItemDownloadChunk.chunksLeft()).isEqualTo(1);
 	}
+
+	/*
+
+
 
 	@Test
 	public void shouldAppendNewVideosToChannelInCache() throws Exception
