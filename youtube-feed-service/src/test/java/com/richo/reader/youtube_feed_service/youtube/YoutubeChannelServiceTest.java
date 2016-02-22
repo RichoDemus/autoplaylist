@@ -13,10 +13,8 @@ import com.richo.reader.youtube_feed_service.youtube.download.YoutubeVideoChunk;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,7 +68,7 @@ public class YoutubeChannelServiceTest
 		cache = new FeedCache(mock);
 		cache.update(CACHED_CHANNEL);
 		cache.update(OUTDATED_CHANNEL_WITHOUT_NEW_ITEM);
-		target = new YoutubeChannelService(channelDownloaderMock, cache, Duration.of(1, ChronoUnit.HOURS));
+		target = new YoutubeChannelService(channelDownloaderMock, cache);
 	}
 
 	@Test

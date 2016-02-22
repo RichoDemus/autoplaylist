@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -23,14 +22,12 @@ import static java.util.stream.Collectors.toList;
 public class YoutubeChannelService
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final Duration channelAgeUntilFrefresh;
 	private final YoutubeChannelDownloader youtubeChannelDownloader;
 	private final FeedCache cache;
 
 	@Inject
-	public YoutubeChannelService(YoutubeChannelDownloader youtubeChannelDownloader, FeedCache cache, Duration channelAgeUntilFrefresh)
+	public YoutubeChannelService(YoutubeChannelDownloader youtubeChannelDownloader, FeedCache cache)
 	{
-		this.channelAgeUntilFrefresh = channelAgeUntilFrefresh;
 		this.youtubeChannelDownloader = youtubeChannelDownloader;
 		this.cache = cache;
 	}
