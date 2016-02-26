@@ -8,7 +8,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 public class JsonFileSystemPersistence
@@ -56,5 +59,12 @@ public class JsonFileSystemPersistence
 		{
 			logger.warn("Unable to write feed {} to disk", feed.getId(), e);
 		}
+	}
+
+	public List<String> getAllFeedIds()
+	{
+		return Arrays.asList(new File(saveRoot + "/feeds/").listFiles(File::isDirectory)).stream()
+				.map(File::getName)
+				.collect(Collectors.toList());
 	}
 }

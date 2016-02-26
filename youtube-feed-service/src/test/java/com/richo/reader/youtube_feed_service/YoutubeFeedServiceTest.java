@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -24,7 +25,7 @@ public class YoutubeFeedServiceTest
 	@Before
 	public void setUp() throws Exception
 	{
-		final JsonFileSystemPersistence fileSystemPersistence = new JsonFileSystemPersistence("target/data");
+		final JsonFileSystemPersistence fileSystemPersistence = new JsonFileSystemPersistence("target/data/" + UUID.randomUUID());
 		fileSystemPersistence.updateChannel(CHANNEL_ON_DISK);
 		final FeedCache cache = new FeedCache(fileSystemPersistence);
 		cache.update(CACHED_CHANNEL);
