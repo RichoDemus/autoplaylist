@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Backend
 {
@@ -47,6 +48,24 @@ public class Backend
 				.collect(Collectors.toList());
 
 		return Optional.of(new com.richo.reader.model.Feed(feed.getId(), feed.getId(), unwatchedItems));
+	}
+
+	public List<com.richo.reader.model.Feed> getAllFeedsWithoutItems(String username)
+	{
+		logger.debug("Getting all feeds for user {}", username);
+
+		final User user = userService.get(username);
+
+		return user.getFeeds().keySet().stream()
+				.map(feedService::getChannel)
+				.flatMap(this::toStream)
+				.map(f -> new com.richo.reader.model.Feed(f.getId(), f.getId(), f.getItems().size()))
+				.collect(Collectors.toList());
+	}
+
+	private Stream<Feed> toStream(Optional<Feed> o)
+	{
+		return o.isPresent() ? Stream.of(o.get()) : Stream.empty();
 	}
 
 /*	public Set<Feed> getFeeds(final String username) throws NoSuchUserException
