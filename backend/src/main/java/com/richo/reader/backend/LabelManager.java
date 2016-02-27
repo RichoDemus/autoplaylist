@@ -2,13 +2,14 @@ package com.richo.reader.backend;
 
 import com.richo.reader.backend.exception.NoSuchLabelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
-import com.richo.reader.backend.model.Label;
 import com.richo.reader.backend.model.User;
 import com.richo.reader.backend.user.UserService;
+import com.richo.reader.model.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LabelManager
@@ -34,7 +35,7 @@ public class LabelManager
 
 	private Label createLabel(User user, String labelName)
 	{
-		return new Label(user.incrementAndGetNextLabelId(), labelName);
+		return new Label(user.incrementAndGetNextLabelId(), labelName, new ArrayList<>());
 	}
 
 	public void addFeedToLabel(String username, long labelId, String feedId) throws NoSuchUserException, NoSuchLabelException
@@ -47,7 +48,7 @@ public class LabelManager
 				.orElseThrow(() -> new NoSuchLabelException("User " + user.getName() + " does not have a label with the id " + labelId));
 
 		//todo validate that the feed actually exists
-		label.addFeed(feedId);
+		label.getFeeds().add(feedId);
 		userService.update(user);
 	}
 

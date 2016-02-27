@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Feed
 {
@@ -50,5 +51,39 @@ public class Feed
 	public int getNumberOfAvailableItems()
 	{
 		return numberOfAvailableItems;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		Feed feed = (Feed) o;
+		return numberOfAvailableItems == feed.numberOfAvailableItems &&
+				Objects.equals(id, feed.id) &&
+				Objects.equals(name, feed.name) &&
+				Objects.equals(items, feed.items);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(id, name, items, numberOfAvailableItems);
+	}
+
+	@Override
+	public String toString()
+	{
+		if(items.isEmpty())
+		{
+			return name + ", " + numberOfAvailableItems + " items";
+		}
+		return name + ", " + items.size() + " items";
 	}
 }

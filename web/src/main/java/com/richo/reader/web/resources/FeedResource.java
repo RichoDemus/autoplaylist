@@ -6,9 +6,9 @@ import com.richo.reader.backend.exception.ItemNotInFeedException;
 import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
-import com.richo.reader.backend.model.Label;
 import com.richo.reader.model.Feed;
 import com.richo.reader.model.ItemOperation;
+import com.richo.reader.model.Label;
 import com.richo.reader.model.User;
 import com.richo.reader.web.FeedConverter;
 import com.richo.reader.web.LabelConverter;
@@ -27,7 +27,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Path("/users/{username}/feeds/")
@@ -54,12 +53,11 @@ public class FeedResource
 	@GET
 	public User get(@PathParam("username") final String username)
 	{
-		final Set<com.richo.reader.backend.model.Feed> feeds;
-		final List<Label> labels;
 		try
 		{
-			feeds = backend.getFeeds(username);
-			labels = labelManager.getLabels(username);
+			final List<Feed> feeds = backend.getFeedsWithoutItems(username);
+			final List<Label> labels = labelManager.getLabels(username);
+			return new User(feeds, labels);
 		}
 		catch (NoSuchUserException e)
 		{
@@ -71,7 +69,6 @@ public class FeedResource
 			logger.warn("Exception when {} got all feeds", e);
 			throw new InternalServerErrorException(e);
 		}
-		return removeItems(new User(feedConverter.convert(feeds), labelConverter.convert(labels)));
 	}
 
 	private User removeItems(User user)
@@ -88,11 +85,14 @@ public class FeedResource
 	public Feed getFeed(@PathParam("username") final String username, @PathParam("feed") final String feedId)
 	{
 		//todo rewrite backend... :p
-		return feedConverter.convert(backend.getFeeds(username))
+		return backend.getFeed(username, feedId)
+				.map(feedConverter::convert)
+				.orElseThrow(() -> new BadRequestException("Couldn't find feed " + feedId));
+		/*return feedConverter.convert(backend.getFeeds(username))
 				.stream()
 				.filter(feed -> feed.getId().equals(feedId))
 				.findAny()
-				.orElseThrow(() -> new BadRequestException("Couldn't find feed " + feedId));
+				.orElseThrow(() -> new BadRequestException("Couldn't find feed " + feedId));*/
 	}
 
 	@POST
