@@ -1,6 +1,8 @@
 package com.richo.reader.youtube_feed_service;
 
+import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -14,13 +16,14 @@ import static org.mockito.Mockito.mock;
 public class PeriodicDownloadOrchestratorTest
 {
 	public String saveRoot;
-	public boolean running = true;
+	public boolean running;
 
 	@Before
 	public void setUp() throws Exception
 	{
+		running = true;
 		saveRoot = "target/data/" + UUID.randomUUID();
-		new File(saveRoot + "/feeds/a_feed").mkdirs();
+		new File(saveRoot + "/feeds/richodemus").mkdirs();
 	}
 
 	@Test(timeout = 10000)
@@ -38,6 +41,22 @@ public class PeriodicDownloadOrchestratorTest
 		target.start();
 		System.out.println("Sleeping...");
 		while (running)
+		{
+			Thread.sleep(10L);
+		}
+		System.out.println("Done");
+	}
+
+	@Ignore("This test uses the live youtube api")
+	@Test
+	public void shouldWorkRealDownloader() throws Exception
+	{
+		final FeedCache cache = new FeedCache(new JsonFileSystemPersistence(saveRoot));
+		final YoutubeDownloadManager downloader = new YoutubeDownloadManager(new YoutubeChannelDownloader("AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30"), cache);
+		final PeriodicDownloadOrchestrator target = new PeriodicDownloadOrchestrator(cache, downloader, ZonedDateTime.now());
+		target.start();
+		System.out.println("Sleeping...");
+		while (!new File(saveRoot + "/feeds/richodemus/data.json").exists())
 		{
 			Thread.sleep(10L);
 		}
