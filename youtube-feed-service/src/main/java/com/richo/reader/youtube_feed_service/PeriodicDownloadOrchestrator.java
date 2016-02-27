@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -18,23 +16,34 @@ import java.util.concurrent.TimeUnit;
 
 public class PeriodicDownloadOrchestrator
 {
+	private static final long MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final FeedCache cache;
 	private final YoutubeDownloadManager downloader;
 	private final ScheduledExecutorService executor;
+	final private ZonedDateTime timeToRun;
 
 	@Inject
 	public PeriodicDownloadOrchestrator(FeedCache cache, YoutubeDownloadManager downloader)
 	{
+		this(cache, downloader, ZonedDateTime.now(ZoneOffset.UTC)
+				.toLocalDate()
+				.plusDays(1)
+				.atStartOfDay(ZoneOffset.UTC));
+	}
+
+	PeriodicDownloadOrchestrator(FeedCache cache, YoutubeDownloadManager downloader, ZonedDateTime timeToRun)
+	{
 		this.cache = cache;
 		this.downloader = downloader;
-		executor = new ScheduledThreadPoolExecutor(1, new ThreadFactoryBuilder().setNameFormat("yt-downloader-%s").build());
+		this.executor = new ScheduledThreadPoolExecutor(1, new ThreadFactoryBuilder().setNameFormat("yt-downloader-%s").build());
+		this.timeToRun = timeToRun;
 	}
 
 	public void start()
 	{
 		final long milisecondsUntilMidnight = calculateDelayUntilMidnight();
-		executor.scheduleAtFixedRate(this::addDownloadsTasksToExecutor, milisecondsUntilMidnight, 1, TimeUnit.DAYS);
+		executor.scheduleAtFixedRate(this::addDownloadsTasksToExecutor, milisecondsUntilMidnight, MILLISECONDS_IN_A_DAY, TimeUnit.MILLISECONDS);
 	}
 
 	public void stop()
@@ -44,18 +53,15 @@ public class PeriodicDownloadOrchestrator
 
 	private void addDownloadsTasksToExecutor()
 	{
+		logger.info("Midnight, time to download");
 		final List<String> feedIds = cache.getAllFeedIds();
-		logger.info("Midnight, time to download {} feeds", feedIds.size());
+		logger.debug("{} feeds to download, feedIds.size()");
 
 		feedIds.forEach(downloader::downloadFeed);
 	}
 
 	private long calculateDelayUntilMidnight()
 	{
-		ZoneId zoneId = ZoneOffset.UTC;
-		ZonedDateTime now = ZonedDateTime.now( zoneId );
-		LocalDate tomorrow = now.toLocalDate().plusDays(1);
-		ZonedDateTime tomorrowStart = tomorrow.atStartOfDay( zoneId );
-		return ChronoUnit.MILLIS.between(Instant.now(), tomorrowStart);
+		return ChronoUnit.MILLIS.between(Instant.now(), timeToRun);
 	}
 }

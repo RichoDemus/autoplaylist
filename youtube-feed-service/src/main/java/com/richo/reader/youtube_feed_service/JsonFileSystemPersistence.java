@@ -63,7 +63,8 @@ public class JsonFileSystemPersistence
 
 	public List<String> getAllFeedIds()
 	{
-		return Arrays.asList(new File(saveRoot + "/feeds/").listFiles(File::isDirectory)).stream()
+		final File[] directories = new File(saveRoot + "/feeds/").listFiles(File::isDirectory);
+		return Arrays.asList(directories).stream()
 				.map(File::getName)
 				.collect(Collectors.toList());
 	}
