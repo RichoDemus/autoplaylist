@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +65,10 @@ public class JsonFileSystemPersistence
 	public List<String> getAllFeedIds()
 	{
 		final File[] directories = new File(saveRoot + "/feeds/").listFiles(File::isDirectory);
+		if (directories == null)
+		{
+			return new ArrayList<>();
+		}
 		return Arrays.asList(directories).stream()
 				.map(File::getName)
 				.collect(Collectors.toList());

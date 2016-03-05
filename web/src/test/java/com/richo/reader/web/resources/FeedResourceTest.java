@@ -6,8 +6,6 @@ import com.richo.reader.backend.LabelManager;
 import com.richo.reader.model.Feed;
 import com.richo.reader.model.ItemOperation;
 import com.richo.reader.model.User;
-import com.richo.reader.web.FeedConverter;
-import com.richo.reader.web.LabelConverter;
 import com.richo.reader.web.TestData;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.assertj.core.util.Lists;
@@ -37,7 +35,7 @@ public class FeedResourceTest
 
 	@ClassRule
 	public static final ResourceTestRule TARGET = ResourceTestRule.builder()
-			.addResource(new FeedResource(backendMock, labelManagerMock, new FeedConverter(), new LabelConverter()))
+			.addResource(new FeedResource(backendMock, labelManagerMock))
 			.build();
 
 	@Before
@@ -45,7 +43,7 @@ public class FeedResourceTest
 	{
 		reset(backendMock);
 		reset(labelManagerMock);
-		when(backendMock.getFeeds(USERNAME)).thenReturn(TestData.FEEDS);
+		when(backendMock.getAllFeedsWithoutItems(USERNAME)).thenReturn(TestData.FEEDS);
 		when(labelManagerMock.getLabels(USERNAME)).thenReturn(Lists.emptyList());
 	}
 
@@ -98,7 +96,7 @@ public class FeedResourceTest
 		final Feed feed1 = result.getFeeds().stream().filter(f -> f.getName().equals(FEED1.getName())).findFirst().orElseThrow(() -> new RuntimeException("Couldn't find feed1"));
 		final Feed feed2 = result.getFeeds().stream().filter(f -> f.getName().equals(FEED2.getName())).findFirst().orElseThrow(() -> new RuntimeException("Couldn't find feed2"));
 
-		assertEquals(FEED1.getItems().size(), feed1.getNumberOfAvailableItems());
-		assertEquals(FEED2.getItems().size(), feed2.getNumberOfAvailableItems());
+		assertEquals(TestData.FEED1.getNumberOfAvailableItems(), feed1.getNumberOfAvailableItems());
+		assertEquals(TestData.FEED2.getNumberOfAvailableItems(), feed2.getNumberOfAvailableItems());
 	}
 }

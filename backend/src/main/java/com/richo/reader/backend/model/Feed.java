@@ -1,6 +1,5 @@
 package com.richo.reader.backend.model;
 
-import com.google.api.client.util.Sets;
 import com.google.common.base.MoreObjects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,7 @@ public class Feed
 		this.id = id;
 		this.name = name;
 		this.items = new HashSet<>();
-		readItems = Sets.newHashSet();
+		readItems = new HashSet<>();
 	}
 
 	public String getId()

@@ -1,7 +1,6 @@
 package com.richo.reader.backend.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.util.Lists;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
 import org.slf4j.Logger;
@@ -11,6 +10,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
 
 
@@ -51,7 +51,7 @@ public class JsonFileSystemUserPersistence implements UserPersister
 		{
 			return user;
 		}
-		return new User(user.getName(), user.getNextLabelId(), user.getFeeds(), Lists.newArrayList());
+		return new User(user.getName(), user.getNextLabelId(), user.getFeeds(), new ArrayList<>());
 	}
 
 	@Override

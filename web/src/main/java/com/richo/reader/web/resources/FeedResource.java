@@ -10,8 +10,6 @@ import com.richo.reader.model.Feed;
 import com.richo.reader.model.ItemOperation;
 import com.richo.reader.model.Label;
 import com.richo.reader.model.User;
-import com.richo.reader.web.FeedConverter;
-import com.richo.reader.web.LabelConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +25,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Path("/users/{username}/feeds/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -38,16 +35,12 @@ public class FeedResource
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final Backend backend;
 	private final LabelManager labelManager;
-	private final FeedConverter feedConverter;
-	private final LabelConverter labelConverter;
 
 	@Inject
-	public FeedResource(Backend injectable, LabelManager labelManager, FeedConverter feedConverter, LabelConverter labelConverter)
+	public FeedResource(Backend injectable, LabelManager labelManager)
 	{
 		this.backend = injectable;
 		this.labelManager = labelManager;
-		this.feedConverter = feedConverter;
-		this.labelConverter = labelConverter;
 	}
 
 	@GET
@@ -55,7 +48,7 @@ public class FeedResource
 	{
 		try
 		{
-			final List<Feed> feeds = backend.getFeedsWithoutItems(username);
+			final List<Feed> feeds = backend.getAllFeedsWithoutItems(username);
 			final List<Label> labels = labelManager.getLabels(username);
 			return new User(feeds, labels);
 		}
@@ -71,28 +64,12 @@ public class FeedResource
 		}
 	}
 
-	private User removeItems(User user)
-	{
-		final List<Feed> feedsWithoutItems = user.getFeeds().stream()
-				.map(feed -> new Feed(feed.getId(), feed.getName(), feed.getItems().size()))
-				.collect(Collectors.toList());
-
-		return new User(feedsWithoutItems, user.getLabels());
-	}
-
 	@GET
 	@Path("/{feed}/")
 	public Feed getFeed(@PathParam("username") final String username, @PathParam("feed") final String feedId)
 	{
-		//todo rewrite backend... :p
 		return backend.getFeed(username, feedId)
-				.map(feedConverter::convert)
 				.orElseThrow(() -> new BadRequestException("Couldn't find feed " + feedId));
-		/*return feedConverter.convert(backend.getFeeds(username))
-				.stream()
-				.filter(feed -> feed.getId().equals(feedId))
-				.findAny()
-				.orElseThrow(() -> new BadRequestException("Couldn't find feed " + feedId));*/
 	}
 
 	@POST
