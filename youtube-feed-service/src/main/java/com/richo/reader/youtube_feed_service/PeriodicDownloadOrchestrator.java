@@ -55,7 +55,7 @@ public class PeriodicDownloadOrchestrator
 	{
 		logger.info("Midnight, time to download");
 		final List<String> feedIds = cache.getAllFeedIds();
-		logger.debug("{} feeds to download, feedIds.size()");
+		logger.info("{} feeds to download", feedIds.size());
 
 		feedIds.forEach(downloader::downloadFeed);
 	}

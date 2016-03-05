@@ -112,6 +112,10 @@ public class FeedResource
 	{
 		try
 		{
+			if (true)
+			{
+				throw new InternalServerErrorException("Not implemented");
+			}
 			backend.addFeed(username, feedName);
 		}
 		catch (NoSuchChannelException | NoSuchUserException e)
