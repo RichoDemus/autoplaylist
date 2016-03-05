@@ -1,5 +1,6 @@
 package com.richo.reader.youtube_feed_service;
 
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ public class FeedCache
 	private final Map<String, Feed> cache;
 	private final JsonFileSystemPersistence fileSystemPersistence;
 
+	@Inject
 	public FeedCache(JsonFileSystemPersistence fileSystemPersistence)
 	{
 		this.fileSystemPersistence = fileSystemPersistence;
