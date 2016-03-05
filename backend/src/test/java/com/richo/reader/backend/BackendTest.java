@@ -2,6 +2,7 @@ package com.richo.reader.backend;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
+import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
 import com.richo.reader.backend.user.UserService;
 import com.richo.reader.youtube_feed_service.Feed;
@@ -86,14 +87,33 @@ public class BackendTest
 		assertThat(result).isEqualTo(expected);
 	}
 
+	@Test
+	public void getFeedsShouldNotReturnItems() throws Exception
+	{
+		final List<com.richo.reader.model.Feed> result = target.getAllFeedsWithoutItems(EXISTING_USER.getName());
+
+		final List<com.richo.reader.model.Feed> expected = Arrays.asList(new com.richo.reader.model.Feed(FEED_1.getId(), FEED_1.getId(), FEED_1.getItems().size()),
+				new com.richo.reader.model.Feed(FEED_2.getId(), FEED_2.getId(), FEED_2.getItems().size()));
+
+		assertThat(result).isEqualTo(expected);
+	}
+
+	@Test(expected = NoSuchUserException.class)
+	public void getFeedShouldThrowNoSuchUserExceptionIfUserDoesntExist() throws Exception
+	{
+		when(userService.get(NON_EXISTING_USER)).thenThrow(new NoSuchUserException(""));
+		target.getFeed(NON_EXISTING_USER, FEED_1.getId());
+	}
+
+	@Test(expected = NoSuchUserException.class)
+	public void getAllFeedsWithoutItemsShouldThrowNoSuchUserExceptionIfUserDoesntExist() throws Exception
+	{
+		when(userService.get(NON_EXISTING_USER)).thenThrow(new NoSuchUserException(""));
+		target.getAllFeedsWithoutItems(NON_EXISTING_USER);
+	}
+
 	/*
 
-	@Test
-	public void getFeedsShouldReturnAllSubscribedFeeds() throws Exception
-	{
-		final Set<Feed> result = target.getFeeds(EXISTING_USER_NAME);
-		assertThat(result).isEqualTo(expectedFeeds);
-	}
 
 	@Test(expected = NoSuchUserException.class)
 	public void getFeedsShouldThrowNoSuchUserExceptionIfUserDoesntExist() throws Exception
