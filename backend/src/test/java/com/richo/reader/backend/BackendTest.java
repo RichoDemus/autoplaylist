@@ -28,12 +28,13 @@ import static org.mockito.Mockito.when;
 public class BackendTest
 {
 	private static final String NON_EXISTING_USER = "non_existing_user";
-	private static final String ITEM_THAT_SHOULD_BE_READ = "item-id-1";
+	private static final Item ITEM_THAT_SHOULD_BE_READ = new Item("item-id-1", "item-title-1", "item-desc-1", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC));
+	private static final Item ITEM_TO_MARK_AS_READ = new Item("item-id-2", "item-title-2", "item-desc-2", LocalDateTime.ofEpochSecond(200L, 0, ZoneOffset.UTC));
 	private static final Feed FEED_1 = new Feed(
 			"existing_feed_id",
 			Arrays.asList(
-					new Item(ITEM_THAT_SHOULD_BE_READ, "item-title-1", "item-desc-1", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC)),
-					new Item("item-id-2", "item-title-2", "item-desc-2", LocalDateTime.ofEpochSecond(200L, 0, ZoneOffset.UTC)),
+					ITEM_THAT_SHOULD_BE_READ,
+					ITEM_TO_MARK_AS_READ,
 					new Item("item-id-3", "item-title-3", "item-desc-3", LocalDateTime.ofEpochSecond(300L, 0, ZoneOffset.UTC)),
 					new Item("item-id-4", "item-title-4", "item-desc-4", LocalDateTime.ofEpochSecond(400L, 0, ZoneOffset.UTC))
 			), 0L);
@@ -42,7 +43,7 @@ public class BackendTest
 			Collections.singletonList(new Item("feed2-item1", "title", "desc", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC))), 0L);
 
 
-	public static final User EXISTING_USER = new User("existing_user", 0L, ImmutableMap.of(FEED_1.getId(), Sets.newHashSet(ITEM_THAT_SHOULD_BE_READ), FEED_2.getId(), new HashSet<>()), new ArrayList<>());
+	public static final User EXISTING_USER = new User("existing_user", 0L, ImmutableMap.of(FEED_1.getId(), Sets.newHashSet(ITEM_THAT_SHOULD_BE_READ.getId()), FEED_2.getId(), new HashSet<>()), new ArrayList<>());
 
 	private Backend target;
 	private UserService userService;
@@ -112,57 +113,30 @@ public class BackendTest
 		target.getAllFeedsWithoutItems(NON_EXISTING_USER);
 	}
 
-	/*
-
-
-	@Test(expected = NoSuchUserException.class)
-	public void getFeedsShouldThrowNoSuchUserExceptionIfUserDoesntExist() throws Exception
-	{
-		when(userService.get(NON_EXISTING_USER)).thenThrow(new NoSuchUserException(""));
-		target.getFeeds(NON_EXISTING_USER);
-	}
-
 	@Test
 	public void getFeedsShouldNotReturnFeedsMarkedAsRead() throws Exception
 	{
-		//Standard expected feeds except we have removed ITEM_THAT_SHOULD_BE_READ
-		expectedFeeds = ImmutableSet.of(new Feed(FEED_1_NAME, FEED_1_NAME, ImmutableSet.of(
-				existingFeedSecondItem,
-				new Item("item-id-3", "item-title-3", "item-desc-3", new URL("https://www.youtube.com/watch?v=item-id-3"), LocalDateTime.ofEpochSecond(300L, 0, ZoneOffset.UTC)),
-				new Item("item-id-4", "item-title-4", "item-desc-4", new URL("https://www.youtube.com/watch?v=item-id-4"), LocalDateTime.ofEpochSecond(400L, 0, ZoneOffset.UTC))
-		), ImmutableSet.of()));
+		target.markAsRead(EXISTING_USER.getName(), FEED_1.getId(), ITEM_TO_MARK_AS_READ.getId());
+		final com.richo.reader.model.Feed result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId()).get();
 
-		target.markAsRead(EXISTING_USER_NAME, FEED_1_NAME, ITEM_THAT_SHOULD_BE_READ);
-		final Set<Feed> result = target.getFeeds(EXISTING_USER_NAME);
-
-		assertNotNull("getFeeds returned null", result);
-		assertEquals("getFeeds did not return the expected feeds", expectedFeeds, result);
+		assertThat(result.getItems()).extracting("id").doesNotContain(ITEM_TO_MARK_AS_READ.getId());
 	}
 
 	@Test
 	public void markAsUnreadShouldLeadToThatItemBeingReturnedAgain() throws Exception
 	{
-		target.markAsRead(EXISTING_USER_NAME, FEED_1_NAME, ITEM_THAT_SHOULD_BE_READ);
-		target.markAsUnread(EXISTING_USER_NAME, FEED_1_NAME, ITEM_THAT_SHOULD_BE_READ);
-		final Set<Feed> result = target.getFeeds(EXISTING_USER_NAME);
+		target.markAsUnread(EXISTING_USER.getName(), FEED_1.getId(), ITEM_THAT_SHOULD_BE_READ.getId());
+		final com.richo.reader.model.Feed result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId()).get();
 
-		assertNotNull("getFeeds returned null", result);
-		assertEquals("getFeeds did not return the expected feeds", expectedFeeds, result);
+		assertThat(result.getItems()).extracting("id").contains(ITEM_THAT_SHOULD_BE_READ.getId());
 	}
 
 	@Test
 	public void markOlderItemsAsUnreadShouldLeadToOlderItemsNotBeingReturned() throws Exception
 	{
-		//removed all items older than item 3
-		expectedFeeds = ImmutableSet.of(new Feed(FEED_1_NAME, FEED_1_NAME, ImmutableSet.of(
-				new Item("item-id-3", "item-title-3", "item-desc-3", new URL("https://www.youtube.com/watch?v=item-id-3"), LocalDateTime.ofEpochSecond(300L, 0, ZoneOffset.UTC)),
-				new Item("item-id-4", "item-title-4", "item-desc-4", new URL("https://www.youtube.com/watch?v=item-id-4"), LocalDateTime.ofEpochSecond(400L, 0, ZoneOffset.UTC))
-		), ImmutableSet.of()));
+		target.markOlderItemsAsRead(EXISTING_USER.getName(), FEED_1.getId(), "item-id-4");
+		final com.richo.reader.model.Feed result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId()).get();
 
-		target.markOlderItemsAsRead(EXISTING_USER_NAME, FEED_1_NAME, "item-id-3");
-		final Set<Feed> result = target.getFeeds(EXISTING_USER_NAME);
-
-
-		assertThat(result).isEqualTo(expectedFeeds);
-	}*/
+		assertThat(result.getItems()).extracting("id").containsOnly("item-id-4");
+	}
 }
