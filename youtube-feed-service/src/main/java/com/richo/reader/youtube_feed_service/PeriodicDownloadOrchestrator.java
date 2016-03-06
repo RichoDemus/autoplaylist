@@ -26,10 +26,15 @@ public class PeriodicDownloadOrchestrator
 	@Inject
 	public PeriodicDownloadOrchestrator(FeedCache cache, YoutubeDownloadManager downloader)
 	{
-		this(cache, downloader, ZonedDateTime.now(ZoneOffset.UTC)
+		this(cache, downloader, getMidnight());
+	}
+
+	private static ZonedDateTime getMidnight()
+	{
+		return ZonedDateTime.now(ZoneOffset.UTC)
 				.toLocalDate()
 				.plusDays(1)
-				.atStartOfDay(ZoneOffset.UTC));
+				.atStartOfDay(ZoneOffset.UTC);
 	}
 
 	PeriodicDownloadOrchestrator(FeedCache cache, YoutubeDownloadManager downloader, ZonedDateTime timeToRun)
@@ -44,6 +49,7 @@ public class PeriodicDownloadOrchestrator
 	{
 		final long milisecondsUntilMidnight = calculateDelayUntilMidnight();
 		executor.scheduleAtFixedRate(this::addDownloadsTasksToExecutor, milisecondsUntilMidnight, MILLISECONDS_IN_A_DAY, TimeUnit.MILLISECONDS);
+		logger.info("Started orchestrator, will run at {}", Instant.ofEpochMilli(System.currentTimeMillis() + milisecondsUntilMidnight).toString());
 	}
 
 	public void stop()

@@ -21,6 +21,10 @@
 			<groupId>com.richo.reader</groupId>
 			<artifactId>api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.richo.reader</groupId>
+			<artifactId>youtube-feed-service</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.richodemus.dropwizard.jwt</groupId>
@@ -55,9 +59,14 @@
 		</dependency>
 		<dependency>
 			<groupId>io.dropwizard</groupId>
-			<artifactId>dropwizard-testing</artifactId>
+			<artifactId>dropwizard-lifecycle</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>io.dropwizard</groupId>
+			<artifactId>dropwizard-testing</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
