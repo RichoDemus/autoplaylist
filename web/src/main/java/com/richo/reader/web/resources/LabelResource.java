@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.richo.reader.backend.LabelManager;
 import com.richo.reader.backend.exception.NoSuchLabelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
-import com.richo.reader.web.LabelConverter;
 import com.richo.reader.model.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +26,11 @@ public class LabelResource
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final LabelManager labelManager;
-	private LabelConverter labelConverter;
 
 	@Inject
-	public LabelResource(LabelManager labelManager, LabelConverter labelConverter)
+	public LabelResource(LabelManager labelManager)
 	{
 		this.labelManager = labelManager;
-		this.labelConverter = labelConverter;
 	}
 
 	@POST
@@ -46,7 +43,7 @@ public class LabelResource
 		logger.debug("creating label {} for {}", labelName, username);
 		try
 		{
-			return labelConverter.toWebLabel(labelManager.createLabelForUser(username, labelName));
+			return labelManager.createLabelForUser(username, labelName);
 		}
 		catch (NoSuchUserException e)
 		{

@@ -1,4 +1,4 @@
-package com.richo.reader.backend.youtube;
+package com.richo.reader.youtube_feed_service.youtube;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.PlaylistItem;

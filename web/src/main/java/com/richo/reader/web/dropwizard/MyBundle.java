@@ -38,7 +38,6 @@ public class MyBundle implements ConfiguredBundle<ReaderConfiguration>
 		environment.jersey().register(UserResource.class);
 		environment.jersey().register(LabelResource.class);
 		environment.jersey().register(InfoResource.class);
-
 		environment.jersey().register(UsernameCheckFilter.class);
 
 		//Setup dropwizard-jwt
@@ -50,6 +49,7 @@ public class MyBundle implements ConfiguredBundle<ReaderConfiguration>
 	{
 		final GuiceModule gcpWebModule = new GuiceModule();
 		return GuiceBundle.<ReaderConfiguration>newBuilder().addModule(gcpWebModule)
+				.enableAutoConfig("com.richo.reader.web.dropwizard.managed")
 				.setConfigClass(ReaderConfiguration.class)
 				.build();
 	}

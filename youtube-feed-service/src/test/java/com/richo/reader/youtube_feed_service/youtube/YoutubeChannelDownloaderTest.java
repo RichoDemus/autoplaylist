@@ -1,9 +1,7 @@
-package com.richo.reader.backend.youtube;
+package com.richo.reader.youtube_feed_service.youtube;
 
 
 import com.google.api.services.youtube.model.PlaylistItem;
-import com.richo.reader.backend.youtube.download.YoutubeVideoChunk;
-import com.richo.reader.backend.youtube.download.YoutubeChannelDownloader;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;

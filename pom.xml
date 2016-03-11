@@ -24,6 +24,7 @@
 		<module>domain</module>
 		<module>backend</module>
 		<module>web</module>
+		<module>youtube-feed-service</module>
 	</modules>
 
 	<prerequisites>
@@ -54,6 +55,11 @@
 			<dependency>
 				<groupId>com.richo.reader</groupId>
 				<artifactId>domain</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.richo.reader</groupId>
+				<artifactId>youtube-feed-service</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
@@ -163,6 +169,12 @@
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>1.7.12</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-simple</artifactId>
+				<version>1.7.12</version>
+				<scope>test</scope>
 			</dependency>
 
 			<dependency>

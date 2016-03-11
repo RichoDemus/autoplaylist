@@ -6,12 +6,10 @@ import com.richo.reader.backend.exception.ItemNotInFeedException;
 import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
-import com.richo.reader.backend.model.Label;
 import com.richo.reader.model.Feed;
 import com.richo.reader.model.ItemOperation;
+import com.richo.reader.model.Label;
 import com.richo.reader.model.User;
-import com.richo.reader.web.FeedConverter;
-import com.richo.reader.web.LabelConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +25,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Path("/users/{username}/feeds/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -39,27 +35,22 @@ public class FeedResource
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final Backend backend;
 	private final LabelManager labelManager;
-	private final FeedConverter feedConverter;
-	private final LabelConverter labelConverter;
 
 	@Inject
-	public FeedResource(Backend injectable, LabelManager labelManager, FeedConverter feedConverter, LabelConverter labelConverter)
+	public FeedResource(Backend injectable, LabelManager labelManager)
 	{
 		this.backend = injectable;
 		this.labelManager = labelManager;
-		this.feedConverter = feedConverter;
-		this.labelConverter = labelConverter;
 	}
 
 	@GET
 	public User get(@PathParam("username") final String username)
 	{
-		final Set<com.richo.reader.backend.model.Feed> feeds;
-		final List<Label> labels;
 		try
 		{
-			feeds = backend.getFeeds(username);
-			labels = labelManager.getLabels(username);
+			final List<Feed> feeds = backend.getAllFeedsWithoutItems(username);
+			final List<Label> labels = labelManager.getLabels(username);
+			return new User(feeds, labels);
 		}
 		catch (NoSuchUserException e)
 		{
@@ -71,27 +62,13 @@ public class FeedResource
 			logger.warn("Exception when {} got all feeds", e);
 			throw new InternalServerErrorException(e);
 		}
-		return removeItems(new User(feedConverter.convert(feeds), labelConverter.convert(labels)));
-	}
-
-	private User removeItems(User user)
-	{
-		final List<Feed> feedsWithoutItems = user.getFeeds().stream()
-				.map(feed -> new Feed(feed.getId(), feed.getName(), feed.getItems().size()))
-				.collect(Collectors.toList());
-
-		return new User(feedsWithoutItems, user.getLabels());
 	}
 
 	@GET
 	@Path("/{feed}/")
 	public Feed getFeed(@PathParam("username") final String username, @PathParam("feed") final String feedId)
 	{
-		//todo rewrite backend... :p
-		return feedConverter.convert(backend.getFeeds(username))
-				.stream()
-				.filter(feed -> feed.getId().equals(feedId))
-				.findAny()
+		return backend.getFeed(username, feedId)
 				.orElseThrow(() -> new BadRequestException("Couldn't find feed " + feedId));
 	}
 
@@ -135,6 +112,10 @@ public class FeedResource
 	{
 		try
 		{
+			if (true)
+			{
+				throw new InternalServerErrorException("Not implemented");
+			}
 			backend.addFeed(username, feedName);
 		}
 		catch (NoSuchChannelException | NoSuchUserException e)

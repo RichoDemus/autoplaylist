@@ -3,7 +3,7 @@ offlineMode: false
 logging:
   level: INFO
   loggers:
-    com.richo.reader: ALL
+    com.richo.reader: INFO
     io.dropwizard: INFO
   appenders:
     - type: console

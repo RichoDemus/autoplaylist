@@ -1,12 +1,12 @@
 package com.richo.reader.backend.user;
 
-import com.google.api.client.util.Maps;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
+import java.util.HashMap;
 import java.util.Map;
 
 @Singleton
@@ -17,7 +17,7 @@ public class InMemoryUserPersistence implements UserPersister
 
 	InMemoryUserPersistence()
 	{
-		users = Maps.newHashMap();
+		users = new HashMap<>();
 	}
 
 	@Override

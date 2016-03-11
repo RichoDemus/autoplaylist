@@ -1,0 +1,80 @@
+package com.richo.reader.youtube_feed_service;
+
+import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.io.File;
+import java.time.ZonedDateTime;
+import java.util.UUID;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+
+public class PeriodicDownloadOrchestratorTest
+{
+	public String saveRoot;
+	public boolean running;
+
+	@Before
+	public void setUp() throws Exception
+	{
+		running = true;
+		saveRoot = "target/data/" + UUID.randomUUID();
+		new File(saveRoot + "/feeds/richodemus").mkdirs();
+	}
+
+	@Test(timeout = 10000)
+	public void shouldWorkMockedDownload() throws Exception
+	{
+		final YoutubeDownloadManager downloaderMock = mock(YoutubeDownloadManager.class);
+		doAnswer(a ->
+		{
+			System.out.println("downloadFeed called!");
+			System.out.println(a.getArguments()[0]);
+			running = false;
+			return null;
+		}).when(downloaderMock).downloadFeed(any());
+		final PeriodicDownloadOrchestrator target = new PeriodicDownloadOrchestrator(new FeedCache(new JsonFileSystemPersistence(saveRoot)), downloaderMock, ZonedDateTime.now());
+		target.start();
+		System.out.println("Sleeping...");
+		while (running)
+		{
+			Thread.sleep(10L);
+		}
+		System.out.println("Done");
+	}
+
+	@Ignore("This test uses the live youtube api")
+	@Test
+	public void shouldWorkRealDownloader() throws Exception
+	{
+		final FeedCache cache = new FeedCache(new JsonFileSystemPersistence(saveRoot));
+		final YoutubeDownloadManager downloader = new YoutubeDownloadManager(new YoutubeChannelDownloader("AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30"), cache);
+		final PeriodicDownloadOrchestrator target = new PeriodicDownloadOrchestrator(cache, downloader, ZonedDateTime.now());
+		target.start();
+		System.out.println("Sleeping...");
+		while (!new File(saveRoot + "/feeds/richodemus/data.json").exists())
+		{
+			Thread.sleep(10L);
+		}
+		System.out.println("Done");
+	}
+
+	@Ignore("This test uses the live youtube api")
+	@Test
+	public void actuallyDownloadEverything() throws Exception
+	{
+		final FeedCache cache = new FeedCache(new JsonFileSystemPersistence("../data"));
+		final YoutubeDownloadManager downloader = new YoutubeDownloadManager(new YoutubeChannelDownloader("AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30"), cache);
+		final PeriodicDownloadOrchestrator target = new PeriodicDownloadOrchestrator(cache, downloader, ZonedDateTime.now());
+		target.start();
+		System.out.println("Sleeping...");
+		while (true)
+		{
+			Thread.sleep(10L);
+		}
+	}
+}

@@ -3,6 +3,8 @@ package com.richo.reader.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Objects;
+
 public class Item
 {
 	private final String id;
@@ -44,5 +46,30 @@ public class Item
 	public String getUrl()
 	{
 		return url;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		Item item = (Item) o;
+		return Objects.equals(id, item.id) &&
+				Objects.equals(title, item.title) &&
+				Objects.equals(description, item.description) &&
+				Objects.equals(uploadDate, item.uploadDate) &&
+				Objects.equals(url, item.url);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(id, title, description, uploadDate, url);
 	}
 }
