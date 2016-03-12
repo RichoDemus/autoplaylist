@@ -52,6 +52,11 @@ public class PeriodicDownloadOrchestrator
 		logger.info("Started orchestrator, will run at {}", Instant.ofEpochMilli(System.currentTimeMillis() + milisecondsUntilMidnight).toString());
 	}
 
+	public void downloadEverythingOnce()
+	{
+		executor.execute(this::addDownloadsTasksToExecutor);
+	}
+
 	public void stop()
 	{
 		executor.shutdown();
