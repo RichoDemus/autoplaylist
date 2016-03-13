@@ -68,7 +68,7 @@ public class BackendTest
 		final List<com.richo.reader.model.Item> unwatchedItems = FEED_1.getItems()
 				.stream()
 				.filter(i -> !EXISTING_USER.isRead(FEED_1.getId(), i.getId()))
-				.map(i -> new com.richo.reader.model.Item(i.getId(), i.getTitle(), i.getDescription(), i.getUploadDate().toString(), "fix url in Backend.java"))
+				.map(i -> new com.richo.reader.model.Item(i.getId(), i.getTitle(), i.getDescription(), i.getUploadDate().toString(), "https://youtube.com/watch?v=" + i.getId()))
 				.collect(Collectors.toList());
 		final com.richo.reader.model.Feed expected = new com.richo.reader.model.Feed(FEED_1.getId(), FEED_1.getId(), unwatchedItems);
 		final Optional<com.richo.reader.model.Feed> result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId());
