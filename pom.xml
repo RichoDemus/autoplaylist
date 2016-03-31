@@ -26,6 +26,7 @@
 		<module>backend</module>
 		<module>web</module>
 		<module>youtube-feed-service</module>
+		<module>reader-test</module>
 	</modules>
 
 	<prerequisites>
