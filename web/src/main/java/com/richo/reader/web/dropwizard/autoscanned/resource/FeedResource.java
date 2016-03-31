@@ -1,4 +1,4 @@
-package com.richo.reader.web.resources;
+package com.richo.reader.web.dropwizard.autoscanned.resource;
 
 import com.richo.reader.backend.Backend;
 import com.richo.reader.backend.LabelManager;
@@ -37,7 +37,7 @@ public class FeedResource
 	private final LabelManager labelManager;
 
 	@Inject
-	public FeedResource(Backend injectable, LabelManager labelManager)
+	FeedResource(Backend injectable, LabelManager labelManager)
 	{
 		this.backend = injectable;
 		this.labelManager = labelManager;

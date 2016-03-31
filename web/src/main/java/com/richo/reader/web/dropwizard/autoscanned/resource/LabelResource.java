@@ -1,4 +1,4 @@
-package com.richo.reader.web.resources;
+package com.richo.reader.web.dropwizard.autoscanned.resource;
 
 import com.google.common.base.Strings;
 import com.richo.reader.backend.LabelManager;
@@ -28,7 +28,7 @@ public class LabelResource
 	private final LabelManager labelManager;
 
 	@Inject
-	public LabelResource(LabelManager labelManager)
+	LabelResource(LabelManager labelManager)
 	{
 		this.labelManager = labelManager;
 	}

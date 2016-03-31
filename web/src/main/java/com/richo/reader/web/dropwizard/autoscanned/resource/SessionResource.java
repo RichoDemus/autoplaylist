@@ -1,4 +1,4 @@
-package com.richo.reader.web.resources;
+package com.richo.reader.web.dropwizard.autoscanned.resource;
 
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.model.Session;
@@ -28,7 +28,7 @@ public class SessionResource
 	private final AuthenticationManager authenticationManager;
 
 	@Inject
-	public SessionResource(AuthenticationManager authenticationManager)
+	SessionResource(AuthenticationManager authenticationManager)
 	{
 		this.authenticationManager = authenticationManager;
 	}

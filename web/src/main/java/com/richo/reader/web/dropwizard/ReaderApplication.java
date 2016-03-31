@@ -1,5 +1,6 @@
 package com.richo.reader.web.dropwizard;
 
+import com.hubspot.dropwizard.guice.GuiceBundle;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -24,7 +25,16 @@ public class ReaderApplication extends Application<ReaderConfiguration>
 	@Override
 	public void initialize(Bootstrap<ReaderConfiguration> bootstrap)
 	{
-		bootstrap.addBundle(new MyBundle());
+		bootstrap.addBundle(getGuiceBundle(bootstrap));
+	}
+
+	private GuiceBundle getGuiceBundle(Bootstrap<?> bootstrap)
+	{
+		final GuiceModule gcpWebModule = new GuiceModule();
+		return GuiceBundle.<ReaderConfiguration>newBuilder().addModule(gcpWebModule)
+				.enableAutoConfig("com.richo.reader.web.dropwizard.autoscanned")
+				.setConfigClass(ReaderConfiguration.class)
+				.build();
 	}
 
 	@Override

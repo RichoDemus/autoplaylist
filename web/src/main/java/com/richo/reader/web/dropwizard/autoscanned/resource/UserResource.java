@@ -1,4 +1,4 @@
-package com.richo.reader.web.resources;
+package com.richo.reader.web.dropwizard.autoscanned.resource;
 
 import com.richo.reader.web.authentication.UserServiceBridge;
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ public class UserResource
 	private final UserServiceBridge userService;
 
 	@Inject
-	public UserResource(UserServiceBridge userService)
+	UserResource(UserServiceBridge userService)
 	{
 		this.userService = userService;
 	}

@@ -1,4 +1,4 @@
-package com.richo.reader.web.resources;
+package com.richo.reader.web.dropwizard.autoscanned.resource;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
