@@ -42,8 +42,13 @@ public class PeriodicDownloadOrchestrator
 	{
 		this.cache = cache;
 		this.downloader = downloader;
-		this.executor = new ScheduledThreadPoolExecutor(1, new ThreadFactoryBuilder().setNameFormat("yt-downloader-%s").build());
+		this.executor = new ScheduledThreadPoolExecutor(1, new ThreadFactoryBuilder().setNameFormat("yt-downloader-%s").setUncaughtExceptionHandler(this::onException).build());
 		this.timeToRun = timeToRun;
+	}
+
+	private void onException(Thread thread, Throwable throwable)
+	{
+		logger.error("Thread {} threw uncaught exception:", thread, throwable);
 	}
 
 	public void start()
