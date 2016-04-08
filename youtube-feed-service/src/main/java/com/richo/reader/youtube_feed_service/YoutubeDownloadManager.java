@@ -63,8 +63,8 @@ public class YoutubeDownloadManager
 				break;
 			}
 		}
-		logger.info("Downloaded {} new videos from the channel {}", itemsAddedToList, channelName);
 		cache.update(new Feed(feed.getId(), items, LocalDateTime.now()));
+		logger.info("Downloaded {} new videos from the channel {}", itemsAddedToList, channelName);
 	}
 
 	private Item toItem(PlaylistItem playlistItem)
