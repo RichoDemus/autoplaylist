@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -66,6 +67,7 @@ public class PeriodicDownloadOrchestrator
 	{
 		logger.info("Midnight, time to download");
 		final List<String> feedIds = cache.getAllFeedIds();
+		Collections.sort(feedIds);
 		logger.info("{} feeds to download", feedIds.size());
 
 		feedIds.forEach(downloader::downloadFeed);
