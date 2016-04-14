@@ -1,5 +1,6 @@
 package com.richo.reader.test;
 
+import com.richo.reader.test.util.DropwizardContainer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

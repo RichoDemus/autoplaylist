@@ -146,6 +146,12 @@
 				<version>2.9.0</version>
 				<scope>test</scope>
 			</dependency>
+			<dependency>
+				<groupId>com.jayway.restassured</groupId>
+				<artifactId>json-path</artifactId>
+				<version>2.9.0</version>
+				<scope>test</scope>
+			</dependency>
 
 			<dependency>
 				<groupId>org.glassfish.jersey.core</groupId>

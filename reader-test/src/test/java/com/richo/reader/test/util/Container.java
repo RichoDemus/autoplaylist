@@ -1,4 +1,4 @@
-package com.richo.reader.test;
+package com.richo.reader.test.util;
 
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.messages.ContainerConfig;
@@ -15,12 +15,12 @@ import java.util.function.BooleanSupplier;
 
 import static org.assertj.core.api.Assertions.fail;
 
-public class Container implements AutoCloseable
+class Container implements AutoCloseable
 {
 	private final DefaultDockerClient docker;
 	private final String id;
 
-	public Container(String image, final Set<String> ports) throws Exception
+	Container(String image, final Set<String> ports) throws Exception
 	{
 		if (!image.contains(":"))
 		{
@@ -53,7 +53,7 @@ public class Container implements AutoCloseable
 		docker.startContainer(id);
 	}
 
-	public void awaitStartup(final BooleanSupplier supplier) throws Exception
+	void awaitStartup(final BooleanSupplier supplier) throws Exception
 	{
 		testIfStartedUp(300, supplier);
 	}
