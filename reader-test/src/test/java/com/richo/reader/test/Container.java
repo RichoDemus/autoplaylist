@@ -40,6 +40,7 @@ public class Container implements AutoCloseable
 
 		// Create container with exposed ports
 		final ContainerConfig containerConfig = ContainerConfig.builder()
+				.env("YOUTUBE_URL=http://youtube-mock")
 				.hostConfig(hostConfig)
 				.image(image).exposedPorts(ports)
 				.build();

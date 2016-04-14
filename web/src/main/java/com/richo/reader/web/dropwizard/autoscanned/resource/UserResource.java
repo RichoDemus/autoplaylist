@@ -27,12 +27,13 @@ public class UserResource
 	{
 		try
 		{
-			//Disabled
-			if (true)
+			//Hack, this will only work during testing
+			logger.info("youtube_url is {}", System.getenv("YOUTUBE_URL"));
+			if (System.getenv("YOUTUBE_URL") == null)
 			{
 				throw new BadRequestException("Not implemented");
 			}
-			userService.createUser(username);
+			userService.createUser(username, "123456789qwertyuio123qweasd");
 		}
 		catch (Exception e)
 		{

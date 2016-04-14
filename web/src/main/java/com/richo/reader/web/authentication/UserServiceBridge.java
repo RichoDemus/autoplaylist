@@ -34,8 +34,8 @@ public class UserServiceBridge implements com.richodemus.dropwizard.jwt.UserServ
 		return Optional.of(new Role("user"));
 	}
 
-	public void createUser(String username)
+	public void createUser(String username, String password)
 	{
-		userManager.createUser(username);
+		userManager.createUser(username, password);
 	}
 }

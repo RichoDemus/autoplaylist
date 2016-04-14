@@ -101,4 +101,19 @@ public class JsonFileSystemUserPersistence implements UserPersister
 			throw new NoSuchUserException("Unable to find passowrd for user user: " + username);
 		}
 	}
+
+	@Override
+	public void updatePassword(final String username, final String password)
+	{
+		try
+		{
+			logger.debug("Changing password for user {}", username);
+			new ObjectMapper().writeValue(new File(saveRoot + "/users/" + username + "/password.json"), password);
+		}
+		catch (IOException e)
+		{
+			logger.error("Unable to change password for user {}", username, e);
+		}
+
+	}
 }

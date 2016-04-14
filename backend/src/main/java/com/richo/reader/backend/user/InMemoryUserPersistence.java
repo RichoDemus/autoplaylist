@@ -41,4 +41,10 @@ public class InMemoryUserPersistence implements UserPersister
 	{
 		throw new IllegalStateException("Not implemented");
 	}
+
+	@Override
+	public void updatePassword(String username, String password)
+	{
+		throw new IllegalStateException("Not implemented");
+	}
 }

@@ -21,10 +21,11 @@ public class UserManager
 		this.userService = userService;
 	}
 
-	public void createUser(String username)
+	public void createUser(String username, String password)
 	{
 		logger.debug("Creating user {}", username);
 		userService.update(new User(username, Sets.newHashSet()));
+		userService.updatePassword(username, password);
 	}
 
 	public boolean checkCredentials(String username, String password) throws NoSuchUserException

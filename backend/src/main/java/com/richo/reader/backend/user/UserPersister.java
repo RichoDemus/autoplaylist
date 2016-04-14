@@ -10,4 +10,6 @@ public interface UserPersister
 	void update(User user);
 
 	boolean isPasswordValid(String username, String password);
+
+	void updatePassword(String username, String password);
 }

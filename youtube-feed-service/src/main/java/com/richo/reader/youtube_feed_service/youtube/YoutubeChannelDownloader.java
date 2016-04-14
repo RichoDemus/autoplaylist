@@ -24,8 +24,16 @@ public class YoutubeChannelDownloader
 	public YoutubeChannelDownloader(@Named("apiKey") String apiKey)
 	{
 		this.apiKey = apiKey;
-		youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(), request -> {
-		}).setApplicationName("Richo-Reader").build();
+		final Optional<String> env_url = Optional.ofNullable(System.getenv("YOUTUBE_URL"));
+		logger.info("youtube url: \"{}\"", env_url.orElse("Not set"));
+		final YouTube.Builder builder = new YouTube.Builder(
+				new NetHttpTransport(),
+				new JacksonFactory(),
+				request -> {
+				})
+				.setApplicationName("Richo-Reader");
+		env_url.ifPresent(builder::setRootUrl);
+		youtube = builder.build();
 	}
 
 	public Optional<YoutubeVideoChunk> getVideoChunk(String channelName)
