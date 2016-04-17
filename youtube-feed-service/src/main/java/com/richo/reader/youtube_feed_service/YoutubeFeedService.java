@@ -15,7 +15,7 @@ public class YoutubeFeedService
 
 	public void registerChannel(final String channelName)
 	{
-
+		cache.add(channelName);
 	}
 
 	public Optional<Feed> getChannel(final String channelName)

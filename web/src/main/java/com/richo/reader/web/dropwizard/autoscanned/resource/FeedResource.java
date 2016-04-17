@@ -110,12 +110,9 @@ public class FeedResource
 	@POST //todo shouldnt this be a put
 	public void addFeed(@PathParam("username") final String username, final String feedName)
 	{
+		logger.info("{} wants to subscribe to {}", username, feedName);
 		try
 		{
-			if (true)
-			{
-				throw new InternalServerErrorException("Not implemented");
-			}
 			backend.addFeed(username, feedName);
 		}
 		catch (NoSuchChannelException | NoSuchUserException e)

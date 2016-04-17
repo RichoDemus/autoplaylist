@@ -79,6 +79,7 @@ public class Backend
 		//Todo its now possible to add feeds that doesnt exist...
 		user.addFeed(feedName);
 		userService.update(user);
+		feedService.registerChannel(feedName);
 	}
 
 	public void markAsRead(final String username, final String feedId, String itemId) throws NoSuchUserException, UserNotSubscribedToThatChannelException

@@ -18,7 +18,12 @@ public class DropwizardContainer implements AutoCloseable
 
 	public DropwizardContainer(final String image) throws Exception
 	{
-		container = new Container(image, PORTS);
+		this(image, Sets.newHashSet(Sets.newHashSet("YOUTUBE_URL=http://localhost:80/")));
+	}
+
+	public DropwizardContainer(String image, HashSet<String> env) throws Exception
+	{
+		container = new Container(image, PORTS, env);
 		container.awaitStartup(DropwizardContainer.DROPWIZARD_CHECK);
 	}
 

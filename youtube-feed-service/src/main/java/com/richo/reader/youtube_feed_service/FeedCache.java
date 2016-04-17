@@ -1,6 +1,7 @@
 package com.richo.reader.youtube_feed_service;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,5 +33,11 @@ public class FeedCache
 	public List<String> getAllFeedIds()
 	{
 		return fileSystemPersistence.getAllFeedIds();
+	}
+
+	public void add(String channelName)
+	{
+		final Feed feed = new Feed(channelName, new ArrayList<>(), 0L);
+		fileSystemPersistence.updateChannel(feed);
 	}
 }

@@ -8,6 +8,7 @@ import com.spotify.docker.client.messages.PortBinding;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,12 +16,17 @@ import java.util.function.BooleanSupplier;
 
 import static org.assertj.core.api.Assertions.fail;
 
-class Container implements AutoCloseable
+public class Container implements AutoCloseable
 {
 	private final DefaultDockerClient docker;
 	private final String id;
 
-	Container(String image, final Set<String> ports) throws Exception
+	public Container(String image, final Set<String> ports) throws Exception
+	{
+		this(image, ports, new HashSet<>());
+	}
+
+	public Container(String image, Set<String> ports, Set<String> env) throws Exception
 	{
 		if (!image.contains(":"))
 		{
@@ -39,8 +45,9 @@ class Container implements AutoCloseable
 		final HostConfig hostConfig = HostConfig.builder().portBindings(portBindings).build();
 
 		// Create container with exposed ports
-		final ContainerConfig containerConfig = ContainerConfig.builder()
-				.env("YOUTUBE_URL=http://youtube-mock")
+		final ContainerConfig.Builder builder = ContainerConfig.builder();
+		env.forEach(builder::env);
+		final ContainerConfig containerConfig = builder
 				.hostConfig(hostConfig)
 				.image(image).exposedPorts(ports)
 				.build();
@@ -53,7 +60,7 @@ class Container implements AutoCloseable
 		docker.startContainer(id);
 	}
 
-	void awaitStartup(final BooleanSupplier supplier) throws Exception
+	public void awaitStartup(final BooleanSupplier supplier) throws Exception
 	{
 		testIfStartedUp(300, supplier);
 	}
