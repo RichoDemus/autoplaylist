@@ -1,15 +1,15 @@
 package com.richo.reader.web.dropwizard.autoscanned;
 
-import com.hubspot.dropwizard.guice.InjectableHealthCheck;
 import com.richo.reader.backend.Backend;
 import com.richo.reader.model.Feed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.vyarus.dropwizard.guice.module.installer.feature.health.NamedHealthCheck;
 
 import javax.inject.Inject;
 import java.util.List;
 
-public class BackendHealthCheck extends InjectableHealthCheck
+public class BackendHealthCheck extends NamedHealthCheck
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final Backend backend;

@@ -11,7 +11,7 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class MyBundle implements ConfiguredBundle<ReaderConfiguration>
+public class MyBundle implements ConfiguredBundle<ReaderConfiguration>
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 

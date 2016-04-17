@@ -1,0 +1,36 @@
+apply plugin: 'java'
+
+analyzeTestClassesDependencies.enabled = false
+
+dependencies {
+    testCompile 'com.google.guava:guava:18.0'
+    testCompile 'com.spotify:docker-client:3.6.6'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:3.2.0'
+    testCompile 'com.jayway.restassured:rest-assured:2.9.0'
+    testCompile 'com.jayway.restassured:json-path:2.9.0'
+}
+
+sourceSets {
+    // Note that just declaring this sourceset creates two configurations.
+    componentTests {
+        java {
+            srcDir 'src/component-test/java'
+        }
+        resources {
+            srcDir 'src/component-test/resources'
+        }
+        //compileClasspath += sourceSets.main.runtimeClasspath
+    }
+}
+
+configurations {
+    componentTestsCompile.extendsFrom testCompile
+    componentTestsRuntime.extendsFrom testRuntime
+}
+
+task componentTest(type: Test) {
+    description = "Runs component tests (located in src/component-test/...)."
+    testClassesDir = project.sourceSets.componentTests.output.classesDir
+    classpath = project.sourceSets.componentTests.runtimeClasspath
+}

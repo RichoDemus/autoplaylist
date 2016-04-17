@@ -1,11 +1,12 @@
 package com.richo.reader.web.dropwizard;
 
-import com.hubspot.dropwizard.guice.GuiceBundle;
+import com.richo.reader.web.dropwizard.autoscanned.MyBundle;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.vyarus.dropwizard.guice.GuiceBundle;
 
 public class ReaderApplication extends Application<ReaderConfiguration>
 {
@@ -25,16 +26,11 @@ public class ReaderApplication extends Application<ReaderConfiguration>
 	@Override
 	public void initialize(Bootstrap<ReaderConfiguration> bootstrap)
 	{
-		bootstrap.addBundle(getGuiceBundle(bootstrap));
-	}
-
-	private GuiceBundle getGuiceBundle(Bootstrap<?> bootstrap)
-	{
-		final GuiceModule gcpWebModule = new GuiceModule();
-		return GuiceBundle.<ReaderConfiguration>newBuilder().addModule(gcpWebModule)
+		bootstrap.addBundle(new MyBundle());
+		bootstrap.addBundle(GuiceBundle.builder()
+				.modules(new GuiceModule())
 				.enableAutoConfig("com.richo.reader.web.dropwizard.autoscanned")
-				.setConfigClass(ReaderConfiguration.class)
-				.build();
+				.build());
 	}
 
 	@Override

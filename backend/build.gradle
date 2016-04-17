@@ -1,0 +1,16 @@
+apply plugin: 'java'
+
+description = 'Backend'
+dependencies {
+    compile project(':youtube-feed-service')
+    compile project(':api')
+    compile 'org.slf4j:slf4j-api:1.7.12'
+    compile 'com.google.inject:guice:4.0'
+    compile 'javax.inject:javax.inject:1'
+    compile 'com.google.guava:guava:18.0'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.6.3'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.3'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.0.7-beta'
+    testCompile 'org.assertj:assertj-core:3.2.0'
+}

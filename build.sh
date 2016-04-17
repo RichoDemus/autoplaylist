@@ -17,11 +17,12 @@ armv7l)
   exit 1
 esac
 
-JAR_FILE=${DIR}/web/target/web-1.0-SNAPSHOT.jar
+JAR_FILE=${DIR}/web/build/libs/web.jar
 CONFIG_FILE=${DIR}/config.yaml
-CONTENT_DIR=${DIR}/docker/content/
+DEPENDENCIES=${DIR}/web/build/dependencies
+CONTENT_DIR=${DIR}/build/docker/
 
-mvn clean install -T1C
+${DIR}/gradlew clean build
 status=$?
 if [ $status -ne 0 ]; then
   echo "mvn build failed with status $status" >&2
@@ -31,17 +32,20 @@ fi
 mkdir -p $CONTENT_DIR
 cp $JAR_FILE $CONTENT_DIR
 cp $CONFIG_FILE $CONTENT_DIR
+cp -r $DEPENDENCIES $CONTENT_DIR
 
 
 case $CPU_ARCHITECTURE in
 x86_64)
-  docker build -t richodemus/reader:latest -f ${DIR}/docker/Dockerfile ${DIR}/docker/
+  docker build -t richodemus/reader:latest -f ${DIR}/Dockerfile ${DIR}/
   ;;
 armv7l)
-  docker build -t richodemus/reader:latest -f ${DIR}/docker/Dockerfile_arm ${DIR}/docker/
+  docker build -t richodemus/reader:latest -f ${DIR}/Dockerfile_arm ${DIR}/
   ;;
 esac
 
+rm $CONTENT_DIR/dependencies/*
+rmdir $CONTENT_DIR/dependencies
 rm $CONTENT_DIR/*
 rmdir $CONTENT_DIR
 echo "Done!"

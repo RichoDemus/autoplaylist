@@ -1,0 +1,42 @@
+apply plugin: 'java'
+
+description = 'Web'
+dependencies {
+    compile project(':backend')
+    compile project(':api')
+    compile project(':youtube-feed-service')
+    compile 'com.richodemus.dropwizard.jwt:dropwizard-jwt:1.0-SNAPSHOT'
+    compile 'io.dropwizard:dropwizard-core:0.9.0'
+    compile 'io.dropwizard:dropwizard-assets:0.9.0'
+    compile 'ru.vyarus:dropwizard-guicey:3.1.0'
+    compile 'io.dropwizard:dropwizard-jersey:0.9.0'
+    compile 'io.dropwizard.modules:dropwizard-java8:0.9.0-1'
+    compile 'io.dropwizard:dropwizard-lifecycle:0.9.0'
+    compile 'io.dropwizard:dropwizard-servlets:0.9.0'
+    compile 'io.dropwizard.metrics:metrics-healthchecks:3.1.2'
+    compile 'org.slf4j:slf4j-api:1.7.12'
+    compile 'org.glassfish.jersey.core:jersey-server:2.19'
+    compile 'com.google.inject:guice:4.0'
+    compile 'javax.inject:javax.inject:1'
+    compile 'javax.annotation:javax.annotation-api:1.2'
+    compile 'javax.ws.rs:javax.ws.rs-api:2.0.1'
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.6.3'
+    compile 'com.google.guava:guava:18.0'
+    testCompile 'io.dropwizard:dropwizard-testing:0.9.0'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.0.7-beta'
+    testCompile 'org.assertj:assertj-core:3.2.0'
+}
+
+repositories {
+    //needed for my dropwizard jwt stuff
+    mavenLocal()
+}
+
+task copyDependencies(type: Copy) {
+    from configurations.compile
+    into 'build/dependencies'
+}
+
+build.finalizedBy(copyDependencies)
