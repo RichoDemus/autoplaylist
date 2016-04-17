@@ -43,6 +43,7 @@ public class Backend
 		}
 
 		final Feed feed = feedService.getChannel(feedId).orElseThrow(() -> new NoSuchChannelException("Couldn find feed " + feedId));
+		logger.debug("Found feed: {}", feed);
 
 		final List<com.richo.reader.model.Item> unwatchedItems = feed.getItems().stream()
 				.filter(i -> !user.getFeeds().get(feedId).contains(i.getId()))

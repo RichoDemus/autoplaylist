@@ -9,23 +9,23 @@ import static com.jayway.restassured.RestAssured.get;
 
 public class StatusTestIT
 {
-	private DropwizardContainer container;
+	private DropwizardContainer target;
 
 	@Before
 	public void setUp() throws Exception
 	{
-		container = new DropwizardContainer("richodemus/reader");
+		target = new DropwizardContainer("richodemus/reader");
 	}
 
 	@After
 	public void tearDown() throws Exception
 	{
-		container.close();
+		target.close();
 	}
 
 	@Test
 	public void shouldReturn200OK() throws Exception
 	{
-		get("http://localhost:" + container.getAdminPort() + "/").then().assertThat().statusCode(200);
+		get("http://localhost:" + target.getAdminPort() + "/").then().assertThat().statusCode(200);
 	}
 }

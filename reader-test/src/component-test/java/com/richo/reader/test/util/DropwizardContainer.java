@@ -15,10 +15,10 @@ public class DropwizardContainer implements AutoCloseable
 
 	public DropwizardContainer(final String image) throws Exception
 	{
-		this(image, Sets.newHashSet(Sets.newHashSet("YOUTUBE_URL=http://localhost:80/")));
+		this(image, Sets.newHashSet("YOUTUBE_URL=http://localhost:80/"));
 	}
 
-	private DropwizardContainer(String image, HashSet<String> env) throws Exception
+	public DropwizardContainer(String image, HashSet<String> env) throws Exception
 	{
 		container = new Container(image, env);
 		container.awaitStartup(() -> get("http://localhost:" + getAdminPort() + "/ping").then().extract().statusCode() == 200);
@@ -40,5 +40,15 @@ public class DropwizardContainer implements AutoCloseable
 	{
 		return container.getExternalPort(ADMIN_PORT)
 				.orElseThrow(() -> new RuntimeException("Admin port is not exposed"));
+	}
+
+	public String getIp() throws Exception
+	{
+		return container.getIp();
+	}
+
+	public String getLogs()
+	{
+		return container.getLogs();
 	}
 }

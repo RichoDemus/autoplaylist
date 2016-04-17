@@ -1,0 +1,21 @@
+{
+ "kind": "youtube#channelListResponse",
+ "etag": "\"CuSCwMPVmgi8taDtE2LV6HdgkN0/m87bS2swf9NYyzPizl3MK_hWbl4\"",
+ "pageInfo": {
+  "totalResults": 1,
+  "resultsPerPage": 5
+ },
+ "items": [
+  {
+   "kind": "youtube#channel",
+   "etag": "\"CuSCwMPVmgi8taDtE2LV6HdgkN0/dNlL00E8acVYHoX4BO7DWuG4qbM\"",
+   "id": "UCyPvQQ-dZmKzh_PrpWmTJkw",
+   "contentDetails": {
+    "relatedPlaylists": {
+     "uploads": "UUyPvQQ-dZmKzh_PrpWmTJkw"
+    },
+    "googlePlusUserId": "102708316793214904836"
+   }
+  }
+ ]
+}

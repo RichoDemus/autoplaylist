@@ -21,5 +21,6 @@ include 'backend'
 include 'web'
 include 'youtube-feed-service'
 include 'reader-test'
+include 'youtube-mock'
 
 rootProject.name = 'richo-reader'

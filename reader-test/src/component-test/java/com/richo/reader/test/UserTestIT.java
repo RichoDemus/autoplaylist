@@ -10,20 +10,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserTestIT
 {
-	private DropwizardContainer container;
+	private DropwizardContainer target;
 	private String baseUrl;
 
 	@Before
 	public void setUp() throws Exception
 	{
-		container = new DropwizardContainer("richodemus/reader");
-		baseUrl = "http://localhost:" + container.getHttpPort();
+		target = new DropwizardContainer("richodemus/reader");
+		baseUrl = "http://localhost:" + target.getHttpPort();
 	}
 
 	@After
 	public void tearDown() throws Exception
 	{
-		container.close();
+		target.close();
 	}
 
 	@Test

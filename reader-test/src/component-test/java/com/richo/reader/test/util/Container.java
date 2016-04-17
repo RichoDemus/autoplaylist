@@ -1,6 +1,7 @@
 package com.richo.reader.test.util;
 
 import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.ContainerInfo;
@@ -9,6 +10,7 @@ import com.spotify.docker.client.messages.NetworkSettings;
 import com.spotify.docker.client.messages.PortBinding;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -17,12 +19,17 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.fail;
 
-class Container implements AutoCloseable
+public class Container implements AutoCloseable
 {
 	private final DefaultDockerClient docker;
 	private final String id;
 
-	Container(String image, Set<String> env) throws Exception
+	public Container(final String image) throws Exception
+	{
+		this(image, new HashSet<>());
+	}
+
+	public Container(String image, Set<String> env) throws Exception
 	{
 		if (!image.contains(":"))
 		{
@@ -45,7 +52,7 @@ class Container implements AutoCloseable
 		docker.startContainer(id);
 	}
 
-	void awaitStartup(final BooleanSupplier supplier) throws Exception
+	public void awaitStartup(final BooleanSupplier supplier) throws Exception
 	{
 		testIfStartedUp(300, supplier);
 	}
@@ -75,6 +82,11 @@ class Container implements AutoCloseable
 		}
 	}
 
+	public String getIp() throws Exception
+	{
+		return docker.inspectContainer(id).networkSettings().ipAddress();
+	}
+
 	@Override
 	public void close() throws Exception
 	{
@@ -83,7 +95,7 @@ class Container implements AutoCloseable
 		docker.close();
 	}
 
-	Optional<Integer> getExternalPort(String internalPort)
+	public Optional<Integer> getExternalPort(String internalPort)
 	{
 		final String port = ensureProtocol(internalPort);
 
@@ -119,6 +131,18 @@ class Container implements AutoCloseable
 		catch (Exception e)
 		{
 			throw new IllegalStateException(e);
+		}
+	}
+
+	String getLogs()
+	{
+		try
+		{
+			return docker.logs(id, DockerClient.LogsParam.stdout()).readFully();
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
 		}
 	}
 }
