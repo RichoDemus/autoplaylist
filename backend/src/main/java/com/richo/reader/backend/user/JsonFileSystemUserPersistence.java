@@ -1,5 +1,7 @@
 package com.richo.reader.backend.user;
 
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
@@ -62,7 +64,9 @@ public class JsonFileSystemUserPersistence implements UserPersister
 			final String path = saveRoot + "/users/" + user.getName();
 			final boolean success = new File(path).mkdirs();
 			logger.trace("Creating {} successful: {}", path, success);
-			new ObjectMapper().writerWithDefaultPrettyPrinter().writeValue(new File(path + "/data.json"), user);
+			final DefaultPrettyPrinter pp = new DefaultPrettyPrinter();
+			pp.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
+			new ObjectMapper().writer(pp).writeValue(new File(path + "/data.json"), user);
 		}
 		catch (IOException e)
 		{
