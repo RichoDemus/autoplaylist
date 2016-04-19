@@ -1,12 +1,20 @@
+apply plugin: 'com.bmuschko.docker-remote-api'
+apply plugin: 'com.google.osdetector'
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
 defaultTasks 'build'
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'com.github.ben-manes.versions'
     apply plugin: 'ca.cutterslade.analyze'
-    repositories {
-        jcenter()
-    }
 }
 
 buildscript {
@@ -16,5 +24,28 @@ buildscript {
     dependencies {
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
         classpath 'ca.cutterslade.gradle:gradle-dependency-analyze:1.0.3'
+        classpath 'com.bmuschko:gradle-docker-plugin:2.6.8'
+        classpath 'com.google.gradle:osdetector-gradle-plugin:1.4.0'
     }
+}
+
+task buildImage(type: DockerBuildImage) {
+    switch(osdetector.arch) {
+        case 'x86_64':
+            println "You have an 64b processor"
+            dockerFile = new File('./Dockerfile')
+            break
+        case 'arm_32':
+            println "You have an arm processor"
+            dockerFile = new File('./Dockerfile_arm')
+            break
+
+        default:
+            println "Unrecognized architechture: $osdetector.arch"
+            throw new GradleException("Unrecognized architechture: $osdetector.arch")
+        break
+
+    }
+    inputDir = new File('.')
+    tag = 'richodemus/reader:latest'
 }
