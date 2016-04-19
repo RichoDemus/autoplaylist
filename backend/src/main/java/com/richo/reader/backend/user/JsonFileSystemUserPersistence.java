@@ -62,7 +62,7 @@ public class JsonFileSystemUserPersistence implements UserPersister
 			final String path = saveRoot + "/users/" + user.getName();
 			final boolean success = new File(path).mkdirs();
 			logger.trace("Creating {} successful: {}", path, success);
-			new ObjectMapper().writeValue(new File(path + "/data.json"), user);
+			new ObjectMapper().writerWithDefaultPrettyPrinter().writeValue(new File(path + "/data.json"), user);
 		}
 		catch (IOException e)
 		{
