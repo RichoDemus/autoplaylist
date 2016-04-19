@@ -6,6 +6,7 @@ import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 defaultTasks 'build'
 
 allprojects {
+    apply plugin: 'com.github.ben-manes.versions'
     repositories {
         jcenter()
     }
@@ -13,7 +14,6 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'com.github.ben-manes.versions'
     apply plugin: 'ca.cutterslade.analyze'
 }
 
