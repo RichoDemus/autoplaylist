@@ -28,3 +28,12 @@
 * Split channels into subchannels using keywords/regex
 * Some way to bulk-store ranges of read items, like "this item and all older are read"
 
+## Design
+### Services
+* UserService, login: username, password -> session(userId)
+* LabelService, getLabels: userId -> labels
+* FeedSerice, getFeed: feedId -> items
+* SubscribedFeedsService, getFeeds: userId -> List<Pair<feedId, #unreadItems>>
+* ReadItemsService, getReadItems: userId, feedId -> readItems
+### Explanation
+When an item is marked as read in ReadItemsService, a message will also go to SubscribedFeedsService which will decrement its counter for that feed
