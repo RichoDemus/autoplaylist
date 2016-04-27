@@ -14,11 +14,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FeedTestIT
 {
 	private DropwizardContainer container;
+	private String baseUrl;
 
 	@Before
 	public void setUp() throws Exception
 	{
 		container = new DropwizardContainer("richodemus/reader");
+		baseUrl = "http://localhost:" + container.getHttpPort();
 	}
 
 	@After
@@ -32,17 +34,17 @@ public class FeedTestIT
 	{
 		RestAssured
 				.given().body("richodemus")
-				.when().post("http://localhost:8080/api/users")
+				.when().post(baseUrl + "/api/users")
 				.then().assertThat().statusCode(200);
 
 		final String token = RestAssured
 				.given().body("123456789qwertyuio123qweasd")
-				.when().post("http://localhost:8080/api/users/richodemus/sessions")
+				.when().post(baseUrl + "/api/users/richodemus/sessions")
 				.then().assertThat().statusCode(200).extract().body().jsonPath().get("token");
 
 		final List<String> feeds = RestAssured
 				.given().header("x-token-jwt", token)
-				.when().get("http://localhost:8080/api/users/richodemus/feeds/")
+				.when().get(baseUrl + "/api/users/richodemus/feeds/")
 				.then().assertThat().statusCode(200).extract().body().jsonPath().get("feeds");
 
 		assertThat(feeds).hasSize(0);
@@ -53,7 +55,7 @@ public class FeedTestIT
 	{
 		RestAssured
 				.given()
-				.when().get("http://localhost:8080/api/users/richodemus/feeds/")
+				.when().get(baseUrl + "/api/users/richodemus/feeds/")
 				.then().assertThat().statusCode(403);
 	}
 
@@ -64,22 +66,22 @@ public class FeedTestIT
 
 		RestAssured
 				.given().body("richodemus")
-				.when().post("http://localhost:8080/api/users")
+				.when().post(baseUrl + "/api/users")
 				.then().assertThat().statusCode(200);
 
 		final String token = RestAssured
 				.given().body("123456789qwertyuio123qweasd")
-				.when().post("http://localhost:8080/api/users/richodemus/sessions")
+				.when().post(baseUrl + "/api/users/richodemus/sessions")
 				.then().assertThat().statusCode(200).extract().body().jsonPath().get("token");
 
 		RestAssured
 				.given().header("x-token-jwt", token).body(feedName).contentType(ContentType.JSON)
-				.when().post("http://localhost:8080/api/users/richodemus/feeds/")
+				.when().post(baseUrl + "/api/users/richodemus/feeds/")
 				.then().assertThat().statusCode(204);
 
 		final List<String> feeds = RestAssured
 				.given().header("x-token-jwt", token)
-				.when().get("http://localhost:8080/api/users/richodemus/feeds/")
+				.when().get(baseUrl + "/api/users/richodemus/feeds/")
 				.then().assertThat().statusCode(200).extract().body().jsonPath().get("feeds.name");
 
 		assertThat(feeds).containsExactly(feedName);

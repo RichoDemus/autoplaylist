@@ -3,30 +3,26 @@ package com.richo.reader.test.util;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
+import com.spotify.docker.client.messages.ContainerInfo;
 import com.spotify.docker.client.messages.HostConfig;
+import com.spotify.docker.client.messages.NetworkSettings;
 import com.spotify.docker.client.messages.PortBinding;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.fail;
 
-public class Container implements AutoCloseable
+class Container implements AutoCloseable
 {
 	private final DefaultDockerClient docker;
 	private final String id;
 
-	public Container(String image, final Set<String> ports) throws Exception
-	{
-		this(image, ports, new HashSet<>());
-	}
-
-	public Container(String image, Set<String> ports, Set<String> env) throws Exception
+	Container(String image, Set<String> env) throws Exception
 	{
 		if (!image.contains(":"))
 		{
@@ -34,33 +30,22 @@ public class Container implements AutoCloseable
 		}
 		docker = DefaultDockerClient.fromEnv().build();
 
-		final Map<String, List<PortBinding>> portBindings = new HashMap<>();
-		for (String port : ports)
-		{
-			List<PortBinding> hostPorts = new ArrayList<PortBinding>();
-			hostPorts.add(PortBinding.of("0.0.0.0", port));
-			portBindings.put(port, hostPorts);
-		}
+		final HostConfig hostConfig = HostConfig.builder().publishAllPorts(true).build();
 
-		final HostConfig hostConfig = HostConfig.builder().portBindings(portBindings).build();
-
-		// Create container with exposed ports
 		final ContainerConfig.Builder builder = ContainerConfig.builder();
 		env.forEach(builder::env);
 		final ContainerConfig containerConfig = builder
 				.hostConfig(hostConfig)
-				.image(image).exposedPorts(ports)
+				.image(image)
 				.build();
 
 		final ContainerCreation creation = docker.createContainer(containerConfig);
 		id = creation.id();
 
-		System.out.println("container id: " + id);
-
 		docker.startContainer(id);
 	}
 
-	public void awaitStartup(final BooleanSupplier supplier) throws Exception
+	void awaitStartup(final BooleanSupplier supplier) throws Exception
 	{
 		testIfStartedUp(300, supplier);
 	}
@@ -96,5 +81,44 @@ public class Container implements AutoCloseable
 		docker.stopContainer(id, 1);
 		docker.removeContainer(id);
 		docker.close();
+	}
+
+	Optional<Integer> getExternalPort(String internalPort)
+	{
+		final String port = ensureProtocol(internalPort);
+
+		return Stream.of(id)
+				.map(this::getContainerInfo)
+				.map(ContainerInfo::networkSettings)
+				.map(NetworkSettings::ports)
+				.map(Map::entrySet)
+				.flatMap(Collection::stream)
+				.filter(p -> p.getKey().equals(port))
+				.map(Map.Entry::getValue)
+				.flatMap(Collection::stream)
+				.map(PortBinding::hostPort)
+				.map(Integer::parseInt)
+				.findAny();
+	}
+
+	private String ensureProtocol(String port)
+	{
+		if (port.contains("/"))
+		{
+			return port;
+		}
+		return port + "/tcp";
+	}
+
+	private ContainerInfo getContainerInfo(String id)
+	{
+		try
+		{
+			return docker.inspectContainer(id);
+		}
+		catch (Exception e)
+		{
+			throw new IllegalStateException(e);
+		}
 	}
 }

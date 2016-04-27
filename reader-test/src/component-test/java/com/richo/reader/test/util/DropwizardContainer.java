@@ -3,7 +3,6 @@ package com.richo.reader.test.util;
 import com.google.common.collect.Sets;
 
 import java.util.HashSet;
-import java.util.function.BooleanSupplier;
 
 import static com.jayway.restassured.RestAssured.get;
 
@@ -11,8 +10,6 @@ public class DropwizardContainer implements AutoCloseable
 {
 	private static final String PORT = "8080";
 	private static final String ADMIN_PORT = "8081";
-	private static final HashSet<String> PORTS = Sets.newHashSet(PORT, ADMIN_PORT);
-	private static final BooleanSupplier DROPWIZARD_CHECK = () -> get("http://localhost:8081/ping").then().extract().statusCode() == 200;
 
 	private final Container container;
 
@@ -21,15 +18,27 @@ public class DropwizardContainer implements AutoCloseable
 		this(image, Sets.newHashSet(Sets.newHashSet("YOUTUBE_URL=http://localhost:80/")));
 	}
 
-	public DropwizardContainer(String image, HashSet<String> env) throws Exception
+	private DropwizardContainer(String image, HashSet<String> env) throws Exception
 	{
-		container = new Container(image, PORTS, env);
-		container.awaitStartup(DropwizardContainer.DROPWIZARD_CHECK);
+		container = new Container(image, env);
+		container.awaitStartup(() -> get("http://localhost:" + getAdminPort() + "/ping").then().extract().statusCode() == 200);
 	}
 
 	@Override
 	public void close() throws Exception
 	{
 		container.close();
+	}
+
+	public int getHttpPort()
+	{
+		return container.getExternalPort(PORT)
+				.orElseThrow(() -> new RuntimeException("Http port is not exposed"));
+	}
+
+	public int getAdminPort()
+	{
+		return container.getExternalPort(ADMIN_PORT)
+				.orElseThrow(() -> new RuntimeException("Admin port is not exposed"));
 	}
 }

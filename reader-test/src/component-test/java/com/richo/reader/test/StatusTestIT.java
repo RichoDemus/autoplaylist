@@ -26,6 +26,6 @@ public class StatusTestIT
 	@Test
 	public void shouldReturn200OK() throws Exception
 	{
-		get("http://localhost:8080/").then().assertThat().statusCode(200);
+		get("http://localhost:" + container.getAdminPort() + "/").then().assertThat().statusCode(200);
 	}
 }
