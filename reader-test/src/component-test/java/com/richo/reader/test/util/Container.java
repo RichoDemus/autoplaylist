@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 public class Container implements AutoCloseable
 {
+	private static final long MAXIMUM_STARTUP_TIME = 60_000L;
 	private final DefaultDockerClient docker;
 	private final String id;
 
@@ -54,19 +55,16 @@ public class Container implements AutoCloseable
 
 	public void awaitStartup(final BooleanSupplier supplier) throws Exception
 	{
-		testIfStartedUp(300, supplier);
-	}
-
-	private void testIfStartedUp(final int retriesLeft, final BooleanSupplier supplier) throws Exception
-	{
-		if (retriesLeft == 0)
+		final long start = System.currentTimeMillis();
+		boolean isStarted = false;
+		while (!isStarted && System.currentTimeMillis() < start + MAXIMUM_STARTUP_TIME)
+		{
+			isStarted = isRunning(supplier);
+			Thread.sleep(100L);
+		}
+		if (!isStarted)
 		{
 			fail("Container never started");
-		}
-		if (!isRunning(supplier))
-		{
-			Thread.sleep(10L);
-			testIfStartedUp(retriesLeft - 1, supplier);
 		}
 	}
 
