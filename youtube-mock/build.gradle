@@ -49,7 +49,7 @@ task buildImage(type: DockerBuildImage) {
             break
         case 'arm_32':
             println "You have an arm processor"
-            dockerFile = new File('./Dockerfile_arm')
+            dockerFile = new File('youtube-mock/Dockerfile_arm')
             break
 
         default:
