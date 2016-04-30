@@ -1,12 +1,15 @@
 package com.richo.reader.web.authentication;
 
 import com.google.common.base.Strings;
+import com.richodemus.dropwizard.jwt.AuthenticationManager;
+import com.richodemus.dropwizard.jwt.RawToken;
 import com.richodemus.dropwizard.jwt.Token;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Priority;
+import javax.inject.Inject;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -25,6 +28,13 @@ import java.io.IOException;
 public class UsernameCheckFilter implements ContainerRequestFilter
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
+	private final AuthenticationManager authenticationManager;
+
+	@Inject
+	public UsernameCheckFilter(final AuthenticationManager authenticationManager)
+	{
+		this.authenticationManager = authenticationManager;
+	}
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException
@@ -46,7 +56,8 @@ public class UsernameCheckFilter implements ContainerRequestFilter
 			logger.debug("no token");
 			return;
 		}
-		final String usernameFromToken = new Token(rawToken).getUsername();
+		final Token token = authenticationManager.parseToken(new RawToken(rawToken));
+		final String usernameFromToken = token.getUsername();
 		if (!usernameFromToken.equals(usernameFromURI))
 		{
 			logger.warn("username from token {} does not match username in url {}", usernameFromToken, usernameFromURI);

@@ -3,7 +3,7 @@ package com.richo.reader.web.dropwizard.autoscanned.resource;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.model.Session;
 import com.richodemus.dropwizard.jwt.AuthenticationManager;
-import com.richodemus.dropwizard.jwt.Token;
+import com.richodemus.dropwizard.jwt.RawToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ public class SessionResource
 		try
 		{
 			return authenticationManager.login(username, password)
-					.map(token -> new Session(username, token.getRaw()))
+					.map(token -> new Session(username, token.stringValue()))
 					.orElseThrow(() -> new NoSuchUserException("Failed to create session object"));
 		}
 		catch (NoSuchUserException e)
@@ -64,9 +64,9 @@ public class SessionResource
 	public Session refreshSession(@Context HttpServletRequest request, @PathParam("username") String username)
 	{
 		logger.debug("Refreshing session for {}", username);
-		final String rawToken = request.getHeader("x-token-jwt");
-		return authenticationManager.refreshToken(new Token(rawToken))
-				.map(token -> new Session(username, token.getRaw()))
+		final RawToken rawToken = new RawToken(request.getHeader("x-token-jwt"));
+		return authenticationManager.refreshToken(rawToken)
+				.map(token -> new Session(username, token.stringValue()))
 				.orElseThrow(() -> new BadRequestException("Failed to create session object"));
 	}
 }

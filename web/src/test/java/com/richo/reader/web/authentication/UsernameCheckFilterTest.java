@@ -1,5 +1,6 @@
 package com.richo.reader.web.authentication;
 
+import com.richodemus.dropwizard.jwt.AuthenticationManager;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class UsernameCheckFilterTest
 	@Before
 	public void setUp() throws Exception
 	{
-		target = new UsernameCheckFilter();
+		target = new UsernameCheckFilter(new AuthenticationManager(null, null, "secret_used_for_testing"));
 	}
 
 	@Test
