@@ -1,7 +1,8 @@
 package com.richo.reader.test;
 
 import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
+import com.richo.reader.test.pages.FeedPage;
+import com.richo.reader.test.pages.LoginPage;
 import com.richo.reader.test.util.DropwizardContainer;
 import org.junit.After;
 import org.junit.Before;
@@ -15,12 +16,14 @@ public class FeedTestIT
 {
 	private DropwizardContainer target;
 	private String baseUrl;
+	private LoginPage loginPage;
 
 	@Before
 	public void setUp() throws Exception
 	{
 		target = new DropwizardContainer("richodemus/reader");
 		baseUrl = "http://localhost:" + target.getHttpPort();
+		loginPage = new LoginPage(target.getHttpPort());
 	}
 
 	@After
@@ -32,22 +35,14 @@ public class FeedTestIT
 	@Test
 	public void shouldReturnZeroFeedsIfNoneAreDownloaded() throws Exception
 	{
-		RestAssured
-				.given().body("richodemus")
-				.when().post(baseUrl + "/api/users")
-				.then().assertThat().statusCode(200);
+		final String username = "richodemus";
+		loginPage.createUser(username);
+		loginPage.login(username);
+		final FeedPage feedPage = loginPage.toFeedPage();
 
-		final String token = RestAssured
-				.given().body("123456789qwertyuio123qweasd")
-				.when().post(baseUrl + "/api/users/richodemus/sessions")
-				.then().assertThat().statusCode(200).extract().body().jsonPath().get("token");
+		final List<String> result = feedPage.getAllFeedNames();
 
-		final List<String> feeds = RestAssured
-				.given().header("x-token-jwt", token)
-				.when().get(baseUrl + "/api/users/richodemus/feeds/")
-				.then().assertThat().statusCode(200).extract().body().jsonPath().get("feeds");
-
-		assertThat(feeds).hasSize(0);
+		assertThat(result).hasSize(0);
 	}
 
 	@Test
@@ -62,28 +57,15 @@ public class FeedTestIT
 	@Test
 	public void getFeedsShouldContainAddedFeed() throws Exception
 	{
+		final String username = "richodemus";
 		final String feedName = "richodemus";
+		loginPage.createUser(username);
+		loginPage.login(username);
+		final FeedPage feedPage = loginPage.toFeedPage();
 
-		RestAssured
-				.given().body("richodemus")
-				.when().post(baseUrl + "/api/users")
-				.then().assertThat().statusCode(200);
+		feedPage.addFeed(feedName);
 
-		final String token = RestAssured
-				.given().body("123456789qwertyuio123qweasd")
-				.when().post(baseUrl + "/api/users/richodemus/sessions")
-				.then().assertThat().statusCode(200).extract().body().jsonPath().get("token");
-
-		RestAssured
-				.given().header("x-token-jwt", token).body(feedName).contentType(ContentType.JSON)
-				.when().post(baseUrl + "/api/users/richodemus/feeds/")
-				.then().assertThat().statusCode(204);
-
-		final List<String> feeds = RestAssured
-				.given().header("x-token-jwt", token)
-				.when().get(baseUrl + "/api/users/richodemus/feeds/")
-				.then().assertThat().statusCode(200).extract().body().jsonPath().get("feeds.name");
-
-		assertThat(feeds).containsExactly(feedName);
+		final List<String> result = feedPage.getAllFeedNames();
+		assertThat(result).containsExactly(feedName);
 	}
 }
