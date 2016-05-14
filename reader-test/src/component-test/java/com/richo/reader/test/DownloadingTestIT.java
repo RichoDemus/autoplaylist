@@ -9,14 +9,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
-import static com.jayway.restassured.RestAssured.get;
 import static com.jayway.restassured.RestAssured.post;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class DownloadingTestIT
 {
-	private static final BooleanSupplier DROPWIZARD_CHECK = () -> get("http://localhost:80/").then().extract().statusCode() == 200;
 	private DropwizardContainer target;
 	private DropwizardContainer youtubeMock;
 	private String baseUrl;
@@ -39,7 +37,7 @@ public class DownloadingTestIT
 	}
 
 	@Test(timeout = 30_000L)
-	public void test() throws Exception
+	public void shouldDownloadItemsAndAddThemToList() throws Exception
 	{
 		final String username = "richodemus";
 		final String feedName = "richodemus";
@@ -59,20 +57,28 @@ public class DownloadingTestIT
 				.when().post(baseUrl + "/api/users/" + username + "/feeds/")
 				.then().assertThat().statusCode(204);
 
-		RestAssured
-				.given().header("x-token-jwt", token)
-				.when().get(baseUrl + "/api/users/" + username + "/feeds/")
-				.then().assertThat().statusCode(200);
+		final List<Integer> feedSizes = getFeedSizes(username, token);
+		assertThat(feedSizes).containsExactly(0);
 
 
 		final int adminPort = target.getAdminPort();
 		post("http://localhost:" + adminPort + "/tasks/download").then().statusCode(200);
 
-		while(getItems(username, feedName, token).size() == 0)
+		while (getItems(username, feedName, token).size() == 0)
 		{
 			Thread.sleep(100L);
 		}
-		System.out.println(target.getLogs());
+
+		final List<Integer> result = getFeedSizes(username, token);
+		assertThat(result).containsExactly(1);
+	}
+
+	private List<Integer> getFeedSizes(String username, String token)
+	{
+		return RestAssured
+				.given().header("x-token-jwt", token)
+				.when().get(baseUrl + "/api/users/" + username + "/feeds/")
+				.then().assertThat().statusCode(200).extract().body().jsonPath().getList("feeds.numberOfAvailableItems");
 	}
 
 	private List<String> getItems(String username, String feedName, String token)
