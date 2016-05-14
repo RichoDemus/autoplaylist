@@ -33,4 +33,12 @@ public class FeedPage
 				.when().post(baseUrl + "/api/users/" + username + "/feeds/")
 				.then().assertThat().statusCode(204);
 	}
+
+	public List<String> getItemNames(String feedName)
+	{
+		return RestAssured
+				.given().header("x-token-jwt", token)
+				.when().get(baseUrl + "/api/users/" + username + "/feeds/" + feedName)
+				.then().extract().body().jsonPath().get("items.id");
+	}
 }
