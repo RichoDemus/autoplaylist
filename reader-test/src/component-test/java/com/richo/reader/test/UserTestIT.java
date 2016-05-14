@@ -1,6 +1,6 @@
 package com.richo.reader.test;
 
-import com.jayway.restassured.RestAssured;
+import com.richo.reader.test.pages.LoginPage;
 import com.richo.reader.test.util.DropwizardContainer;
 import org.junit.After;
 import org.junit.Before;
@@ -11,13 +11,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UserTestIT
 {
 	private DropwizardContainer target;
-	private String baseUrl;
+	private LoginPage loginPage;
 
 	@Before
 	public void setUp() throws Exception
 	{
 		target = new DropwizardContainer("richodemus/reader");
-		baseUrl = "http://localhost:" + target.getHttpPort();
+		loginPage = new LoginPage(target.getHttpPort());
 	}
 
 	@After
@@ -29,49 +29,38 @@ public class UserTestIT
 	@Test
 	public void shouldNotBeAbleToLoginIfUserDoesntExist() throws Exception
 	{
-		RestAssured
-				.given().body("MyPassword")
-				.when().post(baseUrl + "/api/users/richodemus/sessions")
-				.then().assertThat().statusCode(400);
+		final String username = "richodemus";
+
+		loginPage.login(username);
+
+		assertThat(loginPage.isLoggedIn()).isFalse();
 	}
 
 	@Test
 	public void shouldCreateUser() throws Exception
 	{
-		RestAssured
-				.given().body("richodemus")
-				.when().post(baseUrl + "/api/users")
-				.then().assertThat().statusCode(200);
+		loginPage.createUser("richodemus");
 	}
 
 	@Test
 	public void shouldLoginUser() throws Exception
 	{
 		final String username = "richodemus";
-		RestAssured
-				.given().body(username)
-				.when().post(baseUrl + "/api/users")
-				.then().assertThat().statusCode(200);
+		loginPage.createUser(username);
 
-		final String result = RestAssured
-				.given().body("123456789qwertyuio123qweasd")
-				.when().post(baseUrl + "/api/users/" + username + "/sessions")
-				.then().assertThat().statusCode(200).extract().body().jsonPath().get("username");
+		loginPage.login(username);
 
-		assertThat(result).isEqualTo(username);
+		assertThat(loginPage.isLoggedIn()).isTrue();
 	}
 
 	@Test
 	public void shouldNotLoginUserWithInvalidPassword() throws Exception
 	{
-		RestAssured
-				.given().body("richodemus")
-				.when().post(baseUrl + "/api/users")
-				.then().assertThat().statusCode(200);
+		final String username = "richodemus";
+		loginPage.createUser(username);
 
-		RestAssured
-				.given().body("not_the_right_password")
-				.when().post(baseUrl + "/api/users/richodemus/sessions")
-				.then().assertThat().statusCode(400);
+		loginPage.login(username, "not_the_right_password");
+
+		assertThat(loginPage.isLoggedIn()).isFalse();
 	}
 }
