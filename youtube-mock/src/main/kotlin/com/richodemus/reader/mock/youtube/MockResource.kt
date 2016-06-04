@@ -24,7 +24,7 @@ class MockResource {
     @GET
     @Path("playlistItems")
     fun getListItems() =
-            listOf("getListItemsResponse.json")
+            listOf("getListItemsResponseTwoVideos.json")
                     .map { Resources.getResource(it) }
                     .map { Resources.toString(it, Charsets.UTF_8) }
                     .first()

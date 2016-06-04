@@ -72,6 +72,6 @@ public class DownloadingTestIT
 			Thread.sleep(100L);
 		}
 
-		assertThat(feedPage.getItemNames(feedName)).containsExactly("Zs6bAFlcH0M");
+		assertThat(feedPage.getItemNames(feedName)).containsExactly("Zs6bAFlcH0M", "vtuDTx1oJGA");
 	}
 }

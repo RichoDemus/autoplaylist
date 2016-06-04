@@ -41,4 +41,17 @@ public class FeedPage
 				.when().get(baseUrl + "/api/users/" + username + "/feeds/" + feedName)
 				.then().extract().body().jsonPath().get("items.id");
 	}
+
+	public void markAsRead(String feedName, String item)
+	{
+		RestAssured
+				.given().header("x-token-jwt", token).body(new MarkReadAction()).contentType(ContentType.JSON)
+				.when().post(baseUrl + "/api/users/" + username + "/feeds/" + feedName + "/items/" + item)
+				.then().assertThat().statusCode(204);
+	}
+
+	private static class MarkReadAction
+	{
+		public final String action = "MARK_READ";
+	}
 }
