@@ -2,6 +2,7 @@ package com.richo.reader.test.pages;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
+import com.richo.reader.test.pages.model.FeedWithoutItem;
 
 import java.util.List;
 
@@ -18,12 +19,12 @@ public class FeedPage
 		this.token = token;
 	}
 
-	public List<String> getAllFeedNames()
+	public List<FeedWithoutItem> getAllFeeds()
 	{
 		return RestAssured
 				.given().header("x-token-jwt", token)
 				.when().get(baseUrl + "/api/users/" + username + "/feeds/")
-				.then().assertThat().statusCode(200).extract().body().jsonPath().get("feeds.name");
+				.then().assertThat().statusCode(200).extract().body().jsonPath().get("feeds");
 	}
 
 	public void addFeed(String feedName)

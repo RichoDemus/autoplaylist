@@ -73,5 +73,6 @@ public class DownloadingTestIT
 		}
 
 		assertThat(feedPage.getItemNames(feedName)).containsExactly("Zs6bAFlcH0M", "vtuDTx1oJGA");
+		assertThat(feedPage.getAllFeeds()).extracting("numberOfAvailableItems").containsExactly(2);
 	}
 }
