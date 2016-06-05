@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -62,13 +63,30 @@ public class Backend
 		return user.getFeeds().keySet().stream()
 				.map(feedService::getChannel)
 				.flatMap(this::toStream)
-				.map(f -> new com.richo.reader.model.Feed(f.getId(), f.getId(), f.getItems().size()))
+				.map(f -> new com.richo.reader.model.Feed(f.getId(), f.getId(), calculateNumberOfItems(user, f)))
 				.collect(Collectors.toList());
 	}
 
 	private Stream<Feed> toStream(Optional<Feed> o)
 	{
 		return o.isPresent() ? Stream.of(o.get()) : Stream.empty();
+	}
+
+	//todo make more functional
+	private int calculateNumberOfItems(final User user, final Feed feed)
+	{
+		if (!user.getFeeds().containsKey(feed.getId()))
+		{
+			return 0;
+		}
+
+		final Set<String> readItems = user.getFeeds().get(feed.getId());
+
+		final List<String> allItemIds = feed.getItems().stream().map(Item::getId).collect(Collectors.toList());
+
+		allItemIds.removeAll(readItems);
+
+		return allItemIds.size();
 	}
 
 	public void addFeed(final String username, final String feedName) throws NoSuchChannelException, NoSuchUserException

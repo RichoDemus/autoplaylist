@@ -8,7 +8,6 @@ import com.richo.reader.test.pages.model.FeedWithoutItem;
 import com.richo.reader.test.util.DropwizardContainer;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -79,7 +78,6 @@ public class FeedTestIT
 	}
 
 
-	@Ignore("Read items are not deducted from numberOfAvailableItems when doing getAllFeeds")
 	@Test(timeout = 30_000L)
 	public void shouldNotContainItemMarkedAsRead() throws Exception
 	{

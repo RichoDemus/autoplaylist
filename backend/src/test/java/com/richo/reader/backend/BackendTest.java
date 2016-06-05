@@ -43,7 +43,7 @@ public class BackendTest
 			Collections.singletonList(new Item("feed2-item1", "title", "desc", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC))), 0L);
 
 
-	public static final User EXISTING_USER = new User("existing_user", 0L, ImmutableMap.of(FEED_1.getId(), Sets.newHashSet(ITEM_THAT_SHOULD_BE_READ.getId()), FEED_2.getId(), new HashSet<>()), new ArrayList<>());
+	private static final User EXISTING_USER = new User("existing_user", 0L, ImmutableMap.of(FEED_1.getId(), Sets.newHashSet(ITEM_THAT_SHOULD_BE_READ.getId()), FEED_2.getId(), new HashSet<>()), new ArrayList<>());
 
 	private Backend target;
 	private UserService userService;
@@ -80,7 +80,7 @@ public class BackendTest
 	public void getFeedsShouldReturnSubscribedFeeds() throws Exception
 	{
 		final List<com.richo.reader.model.Feed> expected = Arrays.asList(FEED_1, FEED_2).stream()
-				.map(f -> new com.richo.reader.model.Feed(f.getId(), f.getId(), f.getItems().size()))
+				.map(f -> new com.richo.reader.model.Feed(f.getId(), f.getId(), 1))
 				.collect(Collectors.toList());
 
 		final List<com.richo.reader.model.Feed> result = target.getAllFeedsWithoutItems(EXISTING_USER.getName());
@@ -93,10 +93,8 @@ public class BackendTest
 	{
 		final List<com.richo.reader.model.Feed> result = target.getAllFeedsWithoutItems(EXISTING_USER.getName());
 
-		final List<com.richo.reader.model.Feed> expected = Arrays.asList(new com.richo.reader.model.Feed(FEED_1.getId(), FEED_1.getId(), FEED_1.getItems().size()),
-				new com.richo.reader.model.Feed(FEED_2.getId(), FEED_2.getId(), FEED_2.getItems().size()));
-
-		assertThat(result).isEqualTo(expected);
+		assertThat(result.get(0).getItems()).isEmpty();
+		assertThat(result.get(1).getItems()).isEmpty();
 	}
 
 	@Test(expected = NoSuchUserException.class)
@@ -114,12 +112,27 @@ public class BackendTest
 	}
 
 	@Test
-	public void getFeedsShouldNotReturnFeedsMarkedAsRead() throws Exception
+	public void getFeedShouldNotReturnFeedsMarkedAsRead() throws Exception
 	{
 		target.markAsRead(EXISTING_USER.getName(), FEED_1.getId(), ITEM_TO_MARK_AS_READ.getId());
 		final com.richo.reader.model.Feed result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId()).get();
 
 		assertThat(result.getItems()).extracting("id").doesNotContain(ITEM_TO_MARK_AS_READ.getId());
+	}
+
+	@Test
+	public void markingAnItemAsReadShouldUpdateNumberOfAvailableItems() throws Exception
+	{
+		target.markAsRead(EXISTING_USER.getName(), FEED_1.getId(), ITEM_TO_MARK_AS_READ.getId());
+
+		final int result = target.getAllFeedsWithoutItems(EXISTING_USER.getName())
+				.stream()
+				.filter(f -> f.getId().equals(FEED_1.getId()))
+				.map(com.richo.reader.model.Feed::getNumberOfAvailableItems)
+				.findAny()
+				.get();
+
+		assertThat(result).isEqualTo(2);
 	}
 
 	@Test
