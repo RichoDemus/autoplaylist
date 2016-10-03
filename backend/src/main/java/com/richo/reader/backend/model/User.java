@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richo.reader.model.Label;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +34,7 @@ public class User
 	{
 		this.name = username;
 		this.feeds = new HashMap<>();
-		this.labels = Collections.emptyList();
+		this.labels = new ArrayList<>();
 		feedIds.forEach(id -> feeds.put(id, new HashSet<>()));
 	}
 
@@ -55,7 +55,7 @@ public class User
 
 	public void markAsRead(String feedId, String itemId) throws UserNotSubscribedToThatChannelException
 	{
-		if(!feeds.containsKey(feedId))
+		if (!feeds.containsKey(feedId))
 		{
 			throw new UserNotSubscribedToThatChannelException(name + " is not subscribed to feed " + feedId);
 		}
