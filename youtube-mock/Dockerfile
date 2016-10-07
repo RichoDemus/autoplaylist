@@ -1,4 +1,4 @@
-FROM develar/java:8u45
+FROM openjdk:8u92-jre-alpine
 
 RUN mkdir /youtube
 COPY build/dependencies /youtube/dependencies
