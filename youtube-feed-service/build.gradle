@@ -2,19 +2,19 @@ apply plugin: 'java'
 
 description = 'youtube-feed-service'
 dependencies {
-    compile 'org.slf4j:slf4j-api:1.7.12'
-    compile 'javax.inject:javax.inject:1'
-    compile 'com.google.guava:guava:18.0'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.3'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.6.3'
-    compile 'com.google.apis:google-api-services-youtube:v3-rev107-1.18.0-rc'
-    compile 'com.google.http-client:google-http-client-jackson2:1.20.0'
-    compile 'com.google.http-client:google-http-client:1.20.0'
+    compile "org.slf4j:slf4j-api:${project.property('slf4j.version')}"
+    compile "javax.inject:javax.inject:${project.property('javax-inject.version')}"
+    compile "com.google.guava:guava:${project.property('guava.version')}"
+    compile "com.fasterxml.jackson.core:jackson-databind:${project.property('jackson.version')}"
+    compile "com.fasterxml.jackson.core:jackson-annotations:${project.property('jackson.version')}"
+    compile "com.google.apis:google-api-services-youtube:${project.property('youtube-api.version')}"
+    compile "com.google.http-client:google-http-client-jackson2:${project.property('google-http-client.version')}"
+    compile "com.google.http-client:google-http-client:${project.property('google-http-client.version')}"
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.0.7-beta'
-    testCompile 'org.assertj:assertj-core:3.2.0'
-    testRuntime 'org.slf4j:slf4j-simple:1.7.16'
+    testCompile "junit:junit:${project.property('junit.version')}"
+    testCompile "org.mockito:mockito-core:${project.property('mockito.version')}"
+    testCompile "org.assertj:assertj-core:${project.property('assertj.version')}"
+    testRuntime "org.slf4j:slf4j-simple:${project.property('slf4j.version')}"
 }
 
 repositories {

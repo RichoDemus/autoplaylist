@@ -7,16 +7,16 @@ apply plugin: 'com.google.osdetector'
 apply plugin: 'com.bmuschko.docker-remote-api'
 
 dependencies {
-    compile 'org.slf4j:slf4j-api:1.7.12'
-    compile 'org.jetbrains.kotlin:kotlin-runtime:1.0.1-2'
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:1.0.1-2'
-    compile 'io.dropwizard:dropwizard-core:0.9.2'
-    compile 'io.dropwizard:dropwizard-jersey:0.9.2'
-    compile 'javax.ws.rs:javax.ws.rs-api:2.0.1'
-    compile 'com.google.guava:guava:18.0'
+    compile "org.slf4j:slf4j-api:${project.property('slf4j.version')}"
+    compile "org.jetbrains.kotlin:kotlin-runtime:${project.property('kotlin.version')}"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:${project.property('kotlin.version')}"
+    compile "io.dropwizard:dropwizard-core:${project.property('dropwizard.version')}"
+    compile "io.dropwizard:dropwizard-jersey:${project.property('dropwizard.version')}"
+    compile "javax.ws.rs:javax.ws.rs-api:${project.property('javax-ws-rs-api.version')}"
+    compile "com.google.guava:guava:${project.property('guava.version')}"
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.assertj:assertj-core:3.4.1'
+    testCompile "junit:junit:${project.property('junit.version')}"
+    testCompile "org.assertj:assertj-core:${project.property('assertj.version')}"
 }
 
 repositories {
@@ -28,9 +28,9 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.1-2'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
-        classpath 'ca.cutterslade.gradle:gradle-dependency-analyze:1.0.3'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${project.property('kotlin.version')}"
+        classpath "com.github.ben-manes:gradle-versions-plugin:${project.property('gradle-versions-plugin.version')}"
+        classpath "ca.cutterslade.gradle:gradle-dependency-analyze:${project.property('gradle-dependency-analyze-plugin.version')}"
     }
 }
 

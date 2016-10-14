@@ -3,12 +3,12 @@ apply plugin: 'java'
 analyzeTestClassesDependencies.enabled = false
 
 dependencies {
-    testCompile 'com.google.guava:guava:18.0'
-    testCompile 'com.spotify:docker-client:3.6.6'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.assertj:assertj-core:3.2.0'
-    testCompile 'com.jayway.restassured:rest-assured:2.9.0'
-    testCompile 'com.jayway.restassured:json-path:2.9.0'
+    testCompile "com.google.guava:guava:${project.property('guava.version')}"
+    testCompile "com.spotify:docker-client:${project.property('docker-client.version')}"
+    testCompile "junit:junit:${project.property('junit.version')}"
+    testCompile "org.assertj:assertj-core:${project.property('assertj.version')}"
+    testCompile "com.jayway.restassured:rest-assured:${project.property('restassured.version')}"
+    testCompile "com.jayway.restassured:json-path:${project.property('restassured.version')}"
 }
 
 sourceSets {

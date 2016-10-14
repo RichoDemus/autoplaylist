@@ -22,10 +22,10 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.12.0'
-        classpath 'ca.cutterslade.gradle:gradle-dependency-analyze:1.0.3'
-        classpath 'com.bmuschko:gradle-docker-plugin:2.6.8'
-        classpath 'com.google.gradle:osdetector-gradle-plugin:1.4.0'
+        classpath "com.github.ben-manes:gradle-versions-plugin:${project.property('gradle-versions-plugin.version')}"
+        classpath "ca.cutterslade.gradle:gradle-dependency-analyze:${project.property('gradle-dependency-analyze-plugin.version')}"
+        classpath "com.bmuschko:gradle-docker-plugin:${project.property('gradle-docker-plugin.version')}"
+        classpath "com.google.gradle:osdetector-gradle-plugin:${project.property('osdetector-gradle-plugin.version')}"
     }
 }
 

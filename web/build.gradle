@@ -6,27 +6,27 @@ dependencies {
     compile project(':api')
     compile project(':youtube-feed-service')
     compile 'com.github.RichoDemus:dropwizard-jwt:1.1.0'
-    compile 'io.dropwizard:dropwizard-core:0.9.0'
-    compile 'io.dropwizard:dropwizard-assets:0.9.0'
-    compile 'ru.vyarus:dropwizard-guicey:3.1.0'
-    compile 'io.dropwizard:dropwizard-jersey:0.9.0'
+    compile "io.dropwizard:dropwizard-core:${project.property('dropwizard.version')}"
+    compile "io.dropwizard:dropwizard-assets:${project.property('dropwizard.version')}"
+    compile "io.dropwizard:dropwizard-jersey:${project.property('dropwizard.version')}"
+    compile "io.dropwizard:dropwizard-lifecycle:${project.property('dropwizard.version')}"
+    compile "io.dropwizard:dropwizard-servlets:${project.property('dropwizard.version')}"
     compile 'io.dropwizard.modules:dropwizard-java8:0.9.0-1'
-    compile 'io.dropwizard:dropwizard-lifecycle:0.9.0'
-    compile 'io.dropwizard:dropwizard-servlets:0.9.0'
     compile 'io.dropwizard.metrics:metrics-healthchecks:3.1.2'
-    compile 'org.slf4j:slf4j-api:1.7.12'
+    compile 'ru.vyarus:dropwizard-guicey:3.1.0'
+    compile "org.slf4j:slf4j-api:${project.property('slf4j.version')}"
     compile 'org.glassfish.jersey.core:jersey-server:2.19'
-    compile 'com.google.inject:guice:4.0'
-    compile 'javax.inject:javax.inject:1'
+    compile "com.google.inject:guice:${project.property('guice.version')}"
+    compile "javax.inject:javax.inject:${project.property('javax-inject.version')}"
     compile 'javax.annotation:javax.annotation-api:1.2'
-    compile 'javax.ws.rs:javax.ws.rs-api:2.0.1'
+    compile "javax.ws.rs:javax.ws.rs-api:${project.property('javax-ws-rs-api.version')}"
     compile 'javax.servlet:javax.servlet-api:3.1.0'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.6.3'
-    compile 'com.google.guava:guava:18.0'
-    testCompile 'io.dropwizard:dropwizard-testing:0.9.0'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.0.7-beta'
-    testCompile 'org.assertj:assertj-core:3.2.0'
+    compile "com.fasterxml.jackson.core:jackson-annotations:${project.property('jackson.version')}"
+    compile "com.google.guava:guava:${project.property('guava.version')}"
+    testCompile "io.dropwizard:dropwizard-testing:${project.property('dropwizard.version')}"
+    testCompile "junit:junit:${project.property('junit.version')}"
+    testCompile "org.mockito:mockito-core:${project.property('mockito.version')}"
+    testCompile "org.assertj:assertj-core:${project.property('assertj.version')}"
 }
 
 repositories {
