@@ -2,11 +2,8 @@ version: '2'
 services:
   reader:
     image: richodemus/reader:latest
-    environment:
-      - YOUTUBE_URL=http://youtube-mock
+    volumes:
+      - "./data:/reader/data"
     ports:
       - "8080:8080"
       - "8081:8081"
-
- # nginx:
-  #  image: nginx:latest
