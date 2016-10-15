@@ -45,11 +45,11 @@ task buildImage(type: DockerBuildImage) {
     switch(osdetector.arch) {
         case 'x86_64':
             println "You have an 64b processor"
-            dockerFile = new File("youtube-mock/Dockerfile")
+            dockerFile = file("./Dockerfile")
             break
         case 'arm_32':
             println "You have an arm processor"
-            dockerFile = new File('youtube-mock/Dockerfile_arm')
+            dockerFile = file('./Dockerfile_arm')
             break
 
         default:
@@ -58,6 +58,6 @@ task buildImage(type: DockerBuildImage) {
         break
 
     }
-    inputDir = new File('youtube-mock')
+    inputDir = file('.')
     tag = 'richodemus/youtubemock:latest'
 }

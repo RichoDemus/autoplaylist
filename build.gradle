@@ -46,6 +46,6 @@ task buildImage(type: DockerBuildImage) {
         break
 
     }
-    inputDir = new File('.')
+    inputDir = file('.')
     tag = 'richodemus/reader:latest'
 }
