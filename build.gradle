@@ -34,14 +34,15 @@ buildscript {
 }
 
 task buildImage(type: DockerBuildImage) {
+    println 'This is the buildImage task in the root project'
     switch(osdetector.arch) {
         case 'x86_64':
             println "You have an 64b processor"
-            dockerFile = new File('./Dockerfile')
+            dockerFile = file('./Dockerfile')
             break
         case 'arm_32':
             println "You have an arm processor"
-            dockerFile = new File('./Dockerfile_arm')
+            dockerFile = file('./Dockerfile_arm')
             break
 
         default:

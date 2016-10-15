@@ -35,7 +35,7 @@ task buildImage(type: DockerBuildImage) {
     switch(osdetector.arch) {
         case 'x86_64':
             println "You have an 64b processor"
-            dockerFile = file("./Dockerfile")
+            dockerFile = file('./Dockerfile')
             break
         case 'arm_32':
             println "You have an arm processor"
@@ -51,3 +51,4 @@ task buildImage(type: DockerBuildImage) {
     inputDir = file('.')
     tag = 'richodemus/youtubemock:latest'
 }
+
