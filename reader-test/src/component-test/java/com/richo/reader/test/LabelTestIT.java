@@ -12,7 +12,9 @@ import org.junit.Test;
 import java.util.List;
 
 import static com.jayway.restassured.RestAssured.post;
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 public class LabelTestIT
 {
@@ -55,7 +57,7 @@ public class LabelTestIT
 		assertThat(id).isEqualTo(0);
 	}
 
-	@Test(timeout = 30_000L)
+	@Test
 	public void shouldAddFeedToLabel() throws Exception
 	{
 		final String username = "richodemus";
@@ -71,10 +73,7 @@ public class LabelTestIT
 		final int adminPort = target.getAdminPort();
 		post("http://localhost:" + adminPort + "/tasks/download").then().statusCode(200);
 
-		while (feedPage.getItemNames(feedName).size() == 0)
-		{
-			Thread.sleep(100L);
-		}
+		await().atMost(1, MINUTES).until(() -> assertThat(feedPage.getItemNames(feedName)).isNotEmpty());
 
 		final int labelId = feedPage.createLabel(labelName);
 		feedPage.addFeedToLabel(feedName, labelId);

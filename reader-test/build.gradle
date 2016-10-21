@@ -9,6 +9,7 @@ dependencies {
     testCompile "org.assertj:assertj-core:${project.property('assertj.version')}"
     testCompile "com.jayway.restassured:rest-assured:${project.property('restassured.version')}"
     testCompile "com.jayway.restassured:json-path:${project.property('restassured.version')}"
+    testCompile "org.awaitility:awaitility:${project.property('awaitility.version')}"
 }
 
 sourceSets {
