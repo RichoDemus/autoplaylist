@@ -17,7 +17,9 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.fail;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 public class Container implements AutoCloseable
 {
@@ -55,17 +57,7 @@ public class Container implements AutoCloseable
 
 	public void awaitStartup(final BooleanSupplier supplier) throws Exception
 	{
-		final long start = System.currentTimeMillis();
-		boolean isStarted = false;
-		while (!isStarted && System.currentTimeMillis() < start + MAXIMUM_STARTUP_TIME)
-		{
-			isStarted = isRunning(supplier);
-			Thread.sleep(100L);
-		}
-		if (!isStarted)
-		{
-			fail("Container never started");
-		}
+		await().atMost(1, MINUTES).until(() -> assertThat(isRunning(supplier)).isTrue());
 	}
 
 	private boolean isRunning(BooleanSupplier supplier)

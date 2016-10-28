@@ -13,7 +13,9 @@ import org.junit.Test;
 import java.util.List;
 
 import static com.jayway.restassured.RestAssured.post;
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 public class FeedTestIT
 {
@@ -93,10 +95,7 @@ public class FeedTestIT
 		final int adminPort = target.getAdminPort();
 		post("http://localhost:" + adminPort + "/tasks/download").then().statusCode(200);
 
-		while (feedPage.getItemNames(feedName).size() == 0)
-		{
-			Thread.sleep(100L);
-		}
+		await().atMost(1, MINUTES).until(() -> assertThat(feedPage.getItemNames(feedName)).isNotEmpty());
 
 		assertThat(feedPage.getItemNames(feedName)).containsExactly("Zs6bAFlcH0M", "vtuDTx1oJGA");
 
