@@ -1,5 +1,3 @@
-offlineMode: false
-
 logging:
   level: INFO
   loggers:

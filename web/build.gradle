@@ -21,7 +21,6 @@ dependencies {
     compile "javax.annotation:javax.annotation-api:${project.property('javax-annotation-api.version')}"
     compile "javax.ws.rs:javax.ws.rs-api:${project.property('javax-ws-rs-api.version')}"
     compile "javax.servlet:javax.servlet-api:${project.property('javax-servlet-api.version')}"
-    compile "com.fasterxml.jackson.core:jackson-annotations:${project.property('jackson.version')}"
     compile "com.google.guava:guava:${project.property('guava.version')}"
     testCompile "io.dropwizard:dropwizard-testing:${project.property('dropwizard.version')}"
     testCompile "junit:junit:${project.property('junit.version')}"

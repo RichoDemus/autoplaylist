@@ -7,5 +7,5 @@ ${DIR}/gradlew componentTest
 status=$?
 if [ $status -ne 0 ]; then
   echo "gradle componentTest failed with status $status" >&2
-  exit
+  exit 1
 fi
