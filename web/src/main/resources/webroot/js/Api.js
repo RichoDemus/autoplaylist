@@ -136,7 +136,13 @@ var Api = (function()
 	pub.createLabel = function(label, callback)
 	{
 		console.log("Attepmting to create label " + label);
-		$.post("api/users/" + Authentication.username + "/labels", label, callback);
+		$.ajax({
+			url: "api/users/" + Authentication.username + "/labels",
+			data: label,
+			type: "POST",
+			headers: { 'x-token-jwt': Authentication.token.raw },
+			success: callback
+		});
 	};
 
 	pub.addFeedToLabel = function(feed, label, callback)
