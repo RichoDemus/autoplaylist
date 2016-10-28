@@ -1,12 +1,13 @@
 apply plugin: 'com.bmuschko.docker-remote-api'
 apply plugin: 'com.google.osdetector'
+apply plugin: 'com.github.ben-manes.versions'
+
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
 defaultTasks 'build'
 
 allprojects {
-    apply plugin: 'com.github.ben-manes.versions'
     repositories {
         jcenter()
     }

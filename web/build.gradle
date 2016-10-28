@@ -15,12 +15,12 @@ dependencies {
     compile 'io.dropwizard.metrics:metrics-healthchecks:3.1.2'
     compile 'ru.vyarus:dropwizard-guicey:4.0.0'
     compile "org.slf4j:slf4j-api:${project.property('slf4j.version')}"
-    compile 'org.glassfish.jersey.core:jersey-server:2.19'
+    compile "org.glassfish.jersey.core:jersey-server:${project.property('jersey-server.version')}"
     compile "com.google.inject:guice:${project.property('guice.version')}"
     compile "javax.inject:javax.inject:${project.property('javax-inject.version')}"
-    compile 'javax.annotation:javax.annotation-api:1.2'
+    compile "javax.annotation:javax.annotation-api:${project.property('javax-annotation-api.version')}"
     compile "javax.ws.rs:javax.ws.rs-api:${project.property('javax-ws-rs-api.version')}"
-    compile 'javax.servlet:javax.servlet-api:3.1.0'
+    compile "javax.servlet:javax.servlet-api:${project.property('javax-servlet-api.version')}"
     compile "com.fasterxml.jackson.core:jackson-annotations:${project.property('jackson.version')}"
     compile "com.google.guava:guava:${project.property('guava.version')}"
     testCompile "io.dropwizard:dropwizard-testing:${project.property('dropwizard.version')}"

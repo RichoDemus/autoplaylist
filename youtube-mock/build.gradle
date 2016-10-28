@@ -19,10 +19,6 @@ dependencies {
     testCompile "org.assertj:assertj-core:${project.property('assertj.version')}"
 }
 
-repositories {
-    jcenter()
-}
-
 buildscript {
     repositories {
         jcenter()
