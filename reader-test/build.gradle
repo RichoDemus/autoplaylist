@@ -1,15 +1,13 @@
-apply plugin: 'java'
-
 analyzeTestClassesDependencies.enabled = false
 
 dependencies {
-    testCompile "com.google.guava:guava:${project.property('guava.version')}"
-    testCompile "com.spotify:docker-client:${project.property('docker-client.version')}"
-    testCompile "junit:junit:${project.property('junit.version')}"
-    testCompile "org.assertj:assertj-core:${project.property('assertj.version')}"
-    testCompile "com.jayway.restassured:rest-assured:${project.property('restassured.version')}"
-    testCompile "com.jayway.restassured:json-path:${project.property('restassured.version')}"
-    testCompile "org.awaitility:awaitility:${project.property('awaitility.version')}"
+    testCompile "com.google.guava:guava:$rootProject.guavaVersion"
+    testCompile "com.spotify:docker-client:$rootProject.dockerClientVersion"
+    testCompile "junit:junit:$rootProject.junitVersion"
+    testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
+    testCompile "com.jayway.restassured:rest-assured:$rootProject.restassuredVersion"
+    testCompile "com.jayway.restassured:json-path:$rootProject.restassuredVersion"
+    testCompile "org.awaitility:awaitility:$rootProject.awaitilityVersion"
 }
 
 sourceSets {

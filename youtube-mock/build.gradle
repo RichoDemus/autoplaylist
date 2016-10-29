@@ -1,22 +1,19 @@
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
 apply plugin: 'kotlin'
-apply plugin: 'com.github.ben-manes.versions'
-apply plugin: 'ca.cutterslade.analyze'
-apply plugin: 'com.google.osdetector'
 apply plugin: 'com.bmuschko.docker-remote-api'
 
 dependencies {
-    compile "org.slf4j:slf4j-api:${project.property('slf4j.version')}"
-    compile "org.jetbrains.kotlin:kotlin-runtime:${project.property('kotlin.version')}"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:${project.property('kotlin.version')}"
-    compile "io.dropwizard:dropwizard-core:${project.property('dropwizard.version')}"
-    compile "io.dropwizard:dropwizard-jersey:${project.property('dropwizard.version')}"
-    compile "javax.ws.rs:javax.ws.rs-api:${project.property('javax-ws-rs-api.version')}"
-    compile "com.google.guava:guava:${project.property('guava.version')}"
+    compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
+    compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
+    compile "io.dropwizard:dropwizard-core:$rootProject.dropwizardVersion"
+    compile "io.dropwizard:dropwizard-jersey:$rootProject.dropwizardVersion"
+    compile "javax.ws.rs:javax.ws.rs-api:$rootProject.javaxWsRsApiVersion"
+    compile "com.google.guava:guava:$rootProject.guavaVersion"
 
-    testCompile "junit:junit:${project.property('junit.version')}"
-    testCompile "org.assertj:assertj-core:${project.property('assertj.version')}"
+    testCompile "junit:junit:$rootProject.junitVersion"
+    testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
 }
 
 buildscript {
@@ -24,9 +21,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${project.property('kotlin.version')}"
-        classpath "com.github.ben-manes:gradle-versions-plugin:${project.property('gradle-versions-plugin.version')}"
-        classpath "ca.cutterslade.gradle:gradle-dependency-analyze:${project.property('gradle-dependency-analyze-plugin.version')}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.kotlinVersion"
     }
 }
 

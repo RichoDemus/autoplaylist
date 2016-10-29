@@ -1,31 +1,29 @@
-apply plugin: 'java'
-
 description = 'Web'
 dependencies {
     compile project(':backend')
     compile project(':api')
     compile project(':youtube-feed-service')
     compile 'com.github.RichoDemus:dropwizard-jwt:1.1.0'
-    compile "io.dropwizard:dropwizard-core:${project.property('dropwizard.version')}"
-    compile "io.dropwizard:dropwizard-assets:${project.property('dropwizard.version')}"
-    compile "io.dropwizard:dropwizard-jersey:${project.property('dropwizard.version')}"
-    compile "io.dropwizard:dropwizard-lifecycle:${project.property('dropwizard.version')}"
-    compile "io.dropwizard:dropwizard-servlets:${project.property('dropwizard.version')}"
+    compile "io.dropwizard:dropwizard-core:$rootProject.dropwizardVersion"
+    compile "io.dropwizard:dropwizard-assets:$rootProject.dropwizardVersion"
+    compile "io.dropwizard:dropwizard-jersey:$rootProject.dropwizardVersion"
+    compile "io.dropwizard:dropwizard-lifecycle:$rootProject.dropwizardVersion"
+    compile "io.dropwizard:dropwizard-servlets:$rootProject.dropwizardVersion"
     compile 'io.dropwizard.modules:dropwizard-java8:0.9.0-1'
     compile 'io.dropwizard.metrics:metrics-healthchecks:3.1.2'
     compile 'ru.vyarus:dropwizard-guicey:4.0.0'
-    compile "org.slf4j:slf4j-api:${project.property('slf4j.version')}"
-    compile "org.glassfish.jersey.core:jersey-server:${project.property('jersey-server.version')}"
-    compile "com.google.inject:guice:${project.property('guice.version')}"
-    compile "javax.inject:javax.inject:${project.property('javax-inject.version')}"
-    compile "javax.annotation:javax.annotation-api:${project.property('javax-annotation-api.version')}"
-    compile "javax.ws.rs:javax.ws.rs-api:${project.property('javax-ws-rs-api.version')}"
-    compile "javax.servlet:javax.servlet-api:${project.property('javax-servlet-api.version')}"
-    compile "com.google.guava:guava:${project.property('guava.version')}"
-    testCompile "io.dropwizard:dropwizard-testing:${project.property('dropwizard.version')}"
-    testCompile "junit:junit:${project.property('junit.version')}"
-    testCompile "org.mockito:mockito-core:${project.property('mockito.version')}"
-    testCompile "org.assertj:assertj-core:${project.property('assertj.version')}"
+    compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
+    compile "org.glassfish.jersey.core:jersey-server:$rootProject.jerseyServerVersion"
+    compile "com.google.inject:guice:$rootProject.guiceVersion"
+    compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
+    compile "javax.annotation:javax.annotation-api:$rootProject.javaxAnnotationApiVersion"
+    compile "javax.ws.rs:javax.ws.rs-api:$rootProject.javaxWsRsApiVersion"
+    compile "javax.servlet:javax.servlet-api:$rootProject.javaxServletApiVersion"
+    compile "com.google.guava:guava:$rootProject.guavaVersion"
+    testCompile "io.dropwizard:dropwizard-testing:$rootProject.dropwizardVersion"
+    testCompile "junit:junit:$rootProject.junitVersion"
+    testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
 }
 
 repositories {

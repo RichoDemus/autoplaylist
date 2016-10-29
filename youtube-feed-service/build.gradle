@@ -1,20 +1,18 @@
-apply plugin: 'java'
-
 description = 'youtube-feed-service'
 dependencies {
-    compile "org.slf4j:slf4j-api:${project.property('slf4j.version')}"
-    compile "javax.inject:javax.inject:${project.property('javax-inject.version')}"
-    compile "com.google.guava:guava:${project.property('guava.version')}"
-    compile "com.fasterxml.jackson.core:jackson-databind:${project.property('jackson.version')}"
-    compile "com.fasterxml.jackson.core:jackson-annotations:${project.property('jackson.version')}"
-    compile "com.google.apis:google-api-services-youtube:${project.property('youtube-api.version')}"
-    compile "com.google.http-client:google-http-client-jackson2:${project.property('google-http-client.version')}"
-    compile "com.google.http-client:google-http-client:${project.property('google-http-client.version')}"
+    compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
+    compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
+    compile "com.google.guava:guava:$rootProject.guavaVersion"
+    compile "com.fasterxml.jackson.core:jackson-databind:$rootProject.jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$rootProject.jacksonVersion"
+    compile "com.google.apis:google-api-services-youtube:$rootProject.youtubeApiVersion"
+    compile "com.google.http-client:google-http-client-jackson2:$rootProject.googleHttpClientVersion"
+    compile "com.google.http-client:google-http-client:$rootProject.googleHttpClientVersion"
 
-    testCompile "junit:junit:${project.property('junit.version')}"
-    testCompile "org.mockito:mockito-core:${project.property('mockito.version')}"
-    testCompile "org.assertj:assertj-core:${project.property('assertj.version')}"
-    testRuntime "org.slf4j:slf4j-simple:${project.property('slf4j.version')}"
+    testCompile "junit:junit:$rootProject.junitVersion"
+    testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
+    testRuntime "org.slf4j:slf4j-simple:$rootProject.slf4jVersion"
 }
 
 repositories {
