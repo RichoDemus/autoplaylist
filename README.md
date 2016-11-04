@@ -27,6 +27,7 @@
 * Add feed name to item list
 * Split channels into subchannels using keywords/regex
 * Some way to bulk-store ranges of read items, like "this item and all older are read"
+* look into https://github.com/palantir/dropwizard-version-info for inspiration for version info
 
 ## Design
 ### Services
