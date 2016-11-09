@@ -1,6 +1,7 @@
 package com.richo.reader.test.util;
 
 import com.google.common.collect.Sets;
+import com.spotify.docker.client.exceptions.DockerException;
 
 import java.util.HashSet;
 
@@ -21,11 +22,16 @@ public class DropwizardContainer implements AutoCloseable
 	public DropwizardContainer(String image, HashSet<String> env) throws Exception
 	{
 		container = new Container(image, env);
-		container.awaitStartup(() -> get("http://localhost:" + getAdminPort() + "/ping").then().extract().statusCode() == 200);
+		container.awaitStartup(() -> ping() == 200);
+	}
+
+	private int ping()
+	{
+		return get("http://localhost:" + getAdminPort() + "/ping").then().extract().statusCode();
 	}
 
 	@Override
-	public void close() throws Exception
+	public void close() throws DockerException
 	{
 		container.close();
 	}
@@ -33,13 +39,13 @@ public class DropwizardContainer implements AutoCloseable
 	public int getHttpPort()
 	{
 		return container.getExternalPort(PORT)
-				.orElseThrow(() -> new RuntimeException("Http port is not exposed"));
+				.orElseThrow(() -> new IllegalStateException("Http port is not exposed"));
 	}
 
 	public int getAdminPort()
 	{
 		return container.getExternalPort(ADMIN_PORT)
-				.orElseThrow(() -> new RuntimeException("Admin port is not exposed"));
+				.orElseThrow(() -> new IllegalStateException("Admin port is not exposed"));
 	}
 
 	public String getIp() throws Exception

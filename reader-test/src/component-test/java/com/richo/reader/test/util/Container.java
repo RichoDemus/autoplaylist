@@ -2,6 +2,7 @@ package com.richo.reader.test.util;
 
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.ContainerInfo;
@@ -19,11 +20,11 @@ import java.util.stream.Stream;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.awaitility.Awaitility.await;
 
 public class Container implements AutoCloseable
 {
-	private static final long MAXIMUM_STARTUP_TIME = 60_000L;
 	private final DefaultDockerClient docker;
 	private final String id;
 
@@ -78,11 +79,19 @@ public class Container implements AutoCloseable
 	}
 
 	@Override
-	public void close() throws Exception
+	public void close() throws DockerException
 	{
-		docker.stopContainer(id, 1);
-		docker.removeContainer(id);
-		docker.close();
+		try
+		{
+			docker.stopContainer(id, 1);
+			docker.removeContainer(id);
+			docker.close();
+		}
+		catch (InterruptedException e)
+		{
+			Thread.currentThread().interrupt();
+			fail("Interrupted during close", e);
+		}
 	}
 
 	public Optional<Integer> getExternalPort(String internalPort)
@@ -132,7 +141,7 @@ public class Container implements AutoCloseable
 		}
 		catch (Exception e)
 		{
-			throw new RuntimeException(e);
+			throw new IllegalStateException(e);
 		}
 	}
 }

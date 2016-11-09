@@ -9,14 +9,14 @@ import java.io.File;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 public class PeriodicDownloadOrchestratorTest
 {
-	public String saveRoot;
-	public boolean running;
+	private String saveRoot;
+	private boolean running;
 
 	@Before
 	public void setUp() throws Exception

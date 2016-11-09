@@ -16,7 +16,6 @@ class YoutubemockApplication : Application<YoutubemockConfiguration>() {
 
     }
 
-    override fun run(configuration: YoutubemockConfiguration, environment: Environment) {
-        environment.jersey().register(MockResource())
-    }
+    override fun run(configuration: YoutubemockConfiguration, environment: Environment) =
+            environment.jersey().register(MockResource())
 }

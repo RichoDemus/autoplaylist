@@ -4,7 +4,6 @@ apply plugin: 'kotlin'
 apply plugin: 'com.bmuschko.docker-remote-api'
 
 dependencies {
-    compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
     compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
     compile "io.dropwizard:dropwizard-core:$rootProject.dropwizardVersion"

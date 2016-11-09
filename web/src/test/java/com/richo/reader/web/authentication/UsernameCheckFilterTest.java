@@ -8,8 +8,7 @@ import org.junit.Test;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,7 +16,7 @@ import static org.mockito.Mockito.when;
 
 public class UsernameCheckFilterTest
 {
-	public static final String VALID_USER_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoidXNlcm5hbWUiLCJyb2xlIjoidXNlciJ9.xciSe5aT_-LjjSs7sqtyo9J2wuqR4Bl4kb4scjcSTvQ";
+	private static final String VALID_USER_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoidXNlcm5hbWUiLCJyb2xlIjoidXNlciJ9.xciSe5aT_-LjjSs7sqtyo9J2wuqR4Bl4kb4scjcSTvQ";
 	private UsernameCheckFilter target;
 
 	@Before
@@ -69,7 +68,7 @@ public class UsernameCheckFilterTest
 		when(requestContextMock.getAbsolutePath()).thenReturn(uri);
 		if (token != null)
 		{
-			when(requestContextMock.getHeaderString(eq("x-token-jwt"))).thenReturn(token);
+			when(requestContextMock.getHeaderString("x-token-jwt")).thenReturn(token);
 		}
 		return requestContextMock;
 	}
