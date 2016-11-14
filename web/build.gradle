@@ -3,7 +3,7 @@ dependencies {
     compile project(':backend')
     compile project(':api')
     compile project(':youtube-feed-service')
-    compile 'com.github.RichoDemus:dropwizard-jwt:1.1.0'
+    compile 'com.richodemus.dropwizard-jwt:dropwizard-jwt:1.0.0'
     compile "io.dropwizard:dropwizard-core:$rootProject.dropwizardVersion"
     compile "io.dropwizard:dropwizard-assets:$rootProject.dropwizardVersion"
     compile "io.dropwizard:dropwizard-jersey:$rootProject.dropwizardVersion"
@@ -25,12 +25,6 @@ dependencies {
     testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
     testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
 }
-
-repositories {
-    //needed for my dropwizard jwt stuff
-    maven { url "https://jitpack.io" }
-}
-
 task copyDependencies(type: Copy) {
     from configurations.compile
     into 'build/dependencies'
