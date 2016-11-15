@@ -1,5 +1,7 @@
 package com.richo.reader.web.dropwizard.autoscanned.resource;
 
+import com.codahale.metrics.annotation.Timed;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.Path;
@@ -9,6 +11,7 @@ import java.util.Properties;
 @Path("/info")
 public class InfoResource
 {
+	@Timed
 	@GET
 	public String getInfo()
 	{

@@ -1,5 +1,6 @@
 package com.richo.reader.web.dropwizard.autoscanned.resource;
 
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import com.richo.reader.backend.LabelManager;
 import com.richo.reader.backend.exception.NoSuchLabelException;
@@ -33,6 +34,7 @@ public class LabelResource
 		this.labelManager = labelManager;
 	}
 
+	@Timed
 	@POST
 	public Label createLabel(@PathParam("username") String username, String labelName)
 	{
@@ -57,6 +59,7 @@ public class LabelResource
 		}
 	}
 
+	@Timed
 	@PUT
 	@Path("/{labelId}")
 	public void addFeedToLabel(@PathParam("username") String username, @PathParam("labelId") long labelId, String feedId)
@@ -66,7 +69,7 @@ public class LabelResource
 		{
 			labelManager.addFeedToLabel(username, labelId, feedId);
 		}
-		catch (NoSuchUserException|NoSuchLabelException e)
+		catch (NoSuchUserException | NoSuchLabelException e)
 		{
 			throw new BadRequestException(e);
 		}

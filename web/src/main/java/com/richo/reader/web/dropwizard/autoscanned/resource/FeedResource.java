@@ -1,5 +1,6 @@
 package com.richo.reader.web.dropwizard.autoscanned.resource;
 
+import com.codahale.metrics.annotation.Timed;
 import com.richo.reader.backend.Backend;
 import com.richo.reader.backend.LabelManager;
 import com.richo.reader.backend.exception.ItemNotInFeedException;
@@ -43,8 +44,9 @@ public class FeedResource
 		this.labelManager = labelManager;
 	}
 
+	@Timed
 	@GET
-	public User get(@PathParam("username") final String username)
+	public User getAllFeedsAndLabels(@PathParam("username") final String username)
 	{
 		try
 		{
@@ -64,6 +66,7 @@ public class FeedResource
 		}
 	}
 
+	@Timed
 	@GET
 	@Path("/{feed}/")
 	public Feed getFeed(@PathParam("username") final String username, @PathParam("feed") final String feedId)
@@ -72,6 +75,7 @@ public class FeedResource
 				.orElseThrow(() -> new BadRequestException("Couldn't find feed " + feedId));
 	}
 
+	@Timed
 	@POST
 	@Path("/{feed}/items/{item}/")
 	public void performFeedOperation(@PathParam("username") final String username, @PathParam("feed") final String feedId, @PathParam("item") final String itemId, ItemOperation operation)
@@ -107,6 +111,7 @@ public class FeedResource
 		}
 	}
 
+	@Timed
 	@POST //todo shouldnt this be a put
 	public void addFeed(@PathParam("username") final String username, final String feedName)
 	{

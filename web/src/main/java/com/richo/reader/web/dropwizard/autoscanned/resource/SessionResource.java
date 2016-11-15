@@ -1,5 +1,6 @@
 package com.richo.reader.web.dropwizard.autoscanned.resource;
 
+import com.codahale.metrics.annotation.Timed;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.model.Session;
 import com.richodemus.dropwizard.jwt.AuthenticationManager;
@@ -33,6 +34,7 @@ public class SessionResource
 		this.authenticationManager = authenticationManager;
 	}
 
+	@Timed
 	@POST
 	@PermitAll
 	public Session login(@PathParam("username") String username, String password)
@@ -58,6 +60,7 @@ public class SessionResource
 		}
 	}
 
+	@Timed
 	@POST
 	@Path("/refresh")
 	@RolesAllowed("any")

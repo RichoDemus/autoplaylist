@@ -1,5 +1,6 @@
 package com.richo.reader.web.dropwizard.autoscanned.resource;
 
+import com.codahale.metrics.annotation.Timed;
 import com.richo.reader.web.authentication.UserServiceBridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ public class UserResource
 		this.userService = userService;
 	}
 
+	@Timed
 	@POST
 	public String createUser(String username)
 	{
