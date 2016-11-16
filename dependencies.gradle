@@ -1,7 +1,7 @@
 ext {
     // compile dependencies
     kotlinVersion = '1.0.5'
-    dropwizardVersion = '1.0.3'
+    dropwizardVersion = '1.0.4'
     dropwizardMetricsVersion = '3.1.2'
     jacksonVersion = '2.8.5'
     slf4jVersion = '1.7.21'
@@ -18,7 +18,7 @@ ext {
     // test dependencies
     junitVersion = '4.12'
     assertjVersion = '3.5.2'
-    mockitoVersion = '2.2.16'
+    mockitoVersion = '2.2.17'
     restassuredVersion = '2.9.0'
     dockerClientVersion = '6.1.0'
     awaitilityVersion = '2.0.0'
