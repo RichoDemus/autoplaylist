@@ -22,6 +22,13 @@ var Buttons = (function()
 		Service.login(username, password);
 	};
 
+	pub.logout = function()
+	{
+		console.log("Logout, deleting stored token and reloading page");
+		Persistence.clearSession();
+		window.location.reload(false);
+	};
+
 	pub.signup = function()
 	{
 		const username = $("#signupNameInput").val();
