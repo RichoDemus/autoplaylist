@@ -33,7 +33,7 @@ var Table = (function()
 	{
 		if(!selectedFeed)
 		{
-			console.log("No feed selected")
+			console.log("No feed selected");
 			return;
 		}
 		feeds.forEach(function(feed)
@@ -146,7 +146,7 @@ var Table = (function()
 	function getNumberOfItems(feed)
 	{
 		if(feed.items.length > 0)
-			return feed.items.length
+			return feed.items.length;
 		return feed.numberOfAvailableItems;
 	}
 	/*

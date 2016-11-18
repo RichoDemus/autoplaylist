@@ -18,13 +18,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 
-@Provider
-@Priority(Priorities.AUTHORIZATION)
-@PreMatching
 /**
  * Makes sure that users don't try to access other users stuff <br/>
  * basically blocks if username in api/users/{username} differs from the one in the token
  */
+@Provider
+@Priority(Priorities.AUTHORIZATION)
+@PreMatching
 public class UsernameCheckFilter implements ContainerRequestFilter
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());

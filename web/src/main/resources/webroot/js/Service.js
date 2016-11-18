@@ -53,7 +53,7 @@ var Service = (function()
 		//todo make better
 		if(!feeds)
 		{
-			console.log("No feeds, fetching from server...")
+			console.log("No feeds, fetching from server...");
 			Service.getAllItems();
 			return;
 		}

@@ -6,9 +6,11 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import static java.time.temporal.ChronoUnit.MINUTES;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -72,9 +74,6 @@ public class PeriodicDownloadOrchestratorTest
 		final PeriodicDownloadOrchestrator target = new PeriodicDownloadOrchestrator(cache, downloader, ZonedDateTime.now());
 		target.start();
 		System.out.println("Sleeping...");
-		while (true)
-		{
-			Thread.sleep(10L);
-		}
+		Thread.sleep(Duration.of(5, MINUTES).toMillis());
 	}
 }

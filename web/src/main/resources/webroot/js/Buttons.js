@@ -64,7 +64,7 @@ var Buttons = (function()
 		console.log("Add feed " + feed + "(" + label.id + ") to label: " + labelName);
 		Api.addFeedToLabel(feed, label.id, function(result)
 		{
-			console.log("Callback from label thing")
+			console.log("Callback from label thing");
 			console.log(result);
 			label.feeds.push(feed);
 		});

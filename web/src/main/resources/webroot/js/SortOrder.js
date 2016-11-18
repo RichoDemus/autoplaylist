@@ -4,6 +4,6 @@ var SortOrder = {
 	properties:
 	{
 		1: {name: "Oldest First"},
-		2: {name: "Newest First"},
-	}
+		2: {name: "Newest First"}
+    }
 };

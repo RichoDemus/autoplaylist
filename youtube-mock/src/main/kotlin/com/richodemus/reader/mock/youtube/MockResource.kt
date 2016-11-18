@@ -11,14 +11,14 @@ import javax.ws.rs.core.MediaType
 class MockResource {
     @GET
     @Path("channels")
-    fun getChannel() =
+    fun getChannel(): String =
             "getChannelResponse.json"
                     .let { Resources.getResource(it) }
                     .let { Resources.toString(it, Charsets.UTF_8) }
 
     @GET
     @Path("playlistItems")
-    fun getListItems() =
+    fun getListItems(): String =
             "getListItemsResponseTwoVideos.json"
                     .let { Resources.getResource(it) }
                     .let { Resources.toString(it, Charsets.UTF_8) }
