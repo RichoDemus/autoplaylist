@@ -15,6 +15,7 @@ dependencies {
     compile 'ru.vyarus:dropwizard-guicey:4.0.0'
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
     compile "org.glassfish.jersey.core:jersey-server:$rootProject.jerseyServerVersion"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$rootProject.jacksonVersion"
     compile "com.google.inject:guice:$rootProject.guiceVersion"
     compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
     compile "javax.annotation:javax.annotation-api:$rootProject.javaxAnnotationApiVersion"

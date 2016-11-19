@@ -34,12 +34,13 @@ var Buttons = (function()
 		const username = $("#signupNameInput").val();
 		const password = $("#signupPasswordInput").val();
 		const password2 = $("#signupPasswordInput2").val();
+		const inviteCode = $("#inviteCode").val();
 		if(password != password2)
 		{
 			alert("Passwords do not match");
 			return;
 		}
-		Api.signup(username, password, function(token)
+		Api.signup(username, password, inviteCode, function(token)
 		{
 			Authentication.signedUp(token);
 		});

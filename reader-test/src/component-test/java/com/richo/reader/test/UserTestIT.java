@@ -10,6 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserTestIT
 {
+	private static final String USERNAME = "richodemus";
 	private DropwizardContainer target;
 	private LoginPage loginPage;
 
@@ -29,9 +30,7 @@ public class UserTestIT
 	@Test
 	public void shouldNotBeAbleToLoginIfUserDoesntExist() throws Exception
 	{
-		final String username = "richodemus";
-
-		loginPage.login(username);
+		loginPage.login(USERNAME);
 
 		assertThat(loginPage.isLoggedIn()).isFalse();
 	}
@@ -39,16 +38,25 @@ public class UserTestIT
 	@Test
 	public void shouldCreateUser() throws Exception
 	{
-		loginPage.createUser("richodemus");
+		loginPage.createUser(USERNAME);
+	}
+
+	@Test
+	public void shouldNotCreateUserWithInvalidInviteCode() throws Exception
+	{
+		final int status = loginPage.createUser(USERNAME, "wrong code");
+		assertThat(status).isEqualTo(403);
+
+		loginPage.login(USERNAME);
+		assertThat(loginPage.isLoggedIn()).isFalse();
 	}
 
 	@Test
 	public void shouldLoginUser() throws Exception
 	{
-		final String username = "richodemus";
-		loginPage.createUser(username);
+		loginPage.createUser(USERNAME);
 
-		loginPage.login(username);
+		loginPage.login(USERNAME);
 
 		assertThat(loginPage.isLoggedIn()).isTrue();
 	}
@@ -56,10 +64,9 @@ public class UserTestIT
 	@Test
 	public void shouldNotLoginUserWithInvalidPassword() throws Exception
 	{
-		final String username = "richodemus";
-		loginPage.createUser(username);
+		loginPage.createUser(USERNAME);
 
-		loginPage.login(username, "not_the_right_password");
+		loginPage.login(USERNAME, "not_the_right_password");
 
 		assertThat(loginPage.isLoggedIn()).isFalse();
 	}

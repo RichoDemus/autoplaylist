@@ -1,11 +1,16 @@
 package com.richo.reader.test.pages;
 
+import com.google.common.collect.ImmutableMap;
 import com.jayway.restassured.RestAssured;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class LoginPage
 {
+	private static final String DEFAULT_PASSWORD = "123456789qwertyuio123qweasd";
+	private static final String INVITE_CODE = "iwouldlikeaninvitepleaseletmesignuptotestthis";
 	private final String baseUrl;
 	private Optional<String> token;
 	private Optional<String> username;
@@ -15,17 +20,33 @@ public class LoginPage
 		baseUrl = "http://localhost:" + port;
 	}
 
-	public void createUser(final String username)
+	public int createUser(final String username)
 	{
-		RestAssured
-				.given().body(username)
+		final int status = createUser(username, DEFAULT_PASSWORD, INVITE_CODE);
+		assertThat(status).isEqualTo(200);
+		return status;
+	}
+
+	public int createUser(final String username, final String inviteCode)
+	{
+		return createUser(username, DEFAULT_PASSWORD, inviteCode);
+	}
+
+	private int createUser(final String username, final String password, final String inviteCode)
+	{
+		return RestAssured
+				.given().contentType("application/json")
+				.body(ImmutableMap.builder()
+						.put("username", username).put("password", password)
+						.put("inviteCode", inviteCode)
+						.build())
 				.when().post(baseUrl + "/api/users")
-				.then().assertThat().statusCode(200);
+				.then().extract().statusCode();
 	}
 
 	public void login(final String username)
 	{
-		login(username, "123456789qwertyuio123qweasd");
+		login(username, DEFAULT_PASSWORD);
 	}
 
 	public void login(String username, String password)

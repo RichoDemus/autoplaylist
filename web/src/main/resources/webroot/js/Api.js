@@ -101,21 +101,31 @@ var Api = (function()
 		});
 	};
 
-	pub.login = function(username, password, callback)
-	{
-		console.log("Attempting to log in user " + username);
-		$.post("api/users/" + username + "/sessions", password, callback).fail(function(data)
-		{
-			alert("Unable to login");
-			console.log(data);
-		});
-	};
+    pub.login = function (username, password, callback)
+    {
+        console.log("Attempting to log in user " + username);
+        $.post("api/users/" + username + "/sessions", password, callback).fail(function (data)
+        {
+            alert("Unable to login");
+            console.log(data);
+        });
+    };
 
-	pub.signup = function(username, password, callback)
-	{
-		console.log("Attempting to sign up user " + username);
-		$.post("api/users", username, callback);
-	};
+    pub.signup = function (username, password, inviteCode, callback)
+    {
+        console.log("Attempting to sign up user " + username);
+        jQuery.ajax({
+            url: "api/users",
+            type: "POST",
+            data: JSON.stringify({username: username, password: password, inviteCode: inviteCode}),
+            dataType: "text",
+            contentType: "application/json; charset=utf-8"
+        }).done(callback)
+            .fail(function (jqHXR, status, err)
+            {
+                alert("Signup failed")
+            });
+    };
 
 	pub.refreshSession = function(session, callback)
 	{
