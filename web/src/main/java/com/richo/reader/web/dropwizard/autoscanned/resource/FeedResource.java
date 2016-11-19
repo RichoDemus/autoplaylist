@@ -27,6 +27,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 @Path("/users/{username}/feeds/")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -115,6 +117,11 @@ public class FeedResource
 	@POST //todo shouldnt this be a put
 	public void addFeed(@PathParam("username") final String username, final String feedName)
 	{
+		if(isNullOrEmpty(feedName))
+		{
+			logger.info("User {} tried to add an empty feed", username);
+			throw new BadRequestException("Feed can't be empty");
+		}
 		logger.info("{} wants to subscribe to {}", username, feedName);
 		try
 		{
