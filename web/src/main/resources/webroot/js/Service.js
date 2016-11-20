@@ -2,7 +2,7 @@ var Service = (function()
 {
 	var pub = {},
 	//Private property
-	sortingAlgorithm = function(a,b)
+	byFeedName = function(a,b)
 	{
 		var nameA=a.name.toLowerCase(), nameB=b.name.toLowerCase();
 		if (nameA < nameB) //sort string ascending
@@ -13,14 +13,13 @@ var Service = (function()
 	};
 
 	//Public property
-	pub.sortOrder = null;
 
 	//Public method
 	//Loads token from storage, verifies it and goes to the logged-in state, if anything fails, show the login pane
 	pub.init = function()
 	{
 		restoreSession();
-		initSortOrderToggle();
+		Table.init();
 	};
 
 	pub.login = function(username, password)
@@ -36,7 +35,7 @@ var Service = (function()
 		Api.getAllItems(Authentication.username, Authentication.token, function(result)
 		{
 			feeds = result.feeds;
-			feeds.sort(sortingAlgorithm);
+			feeds.sort(byFeedName);
 			labels = result.labels;
 			labels.push(UNLABELED_LABEL);
 			labels.push(ALL_LABEL);
@@ -61,19 +60,6 @@ var Service = (function()
 		Table.addLabelsToTable();
 		Table.addFeedsToTable();
 		Table.addItemsToTable();
-	};
-
-	pub.toggleSortOrder = function()
-	{
-		console.log("Toggle sort order, current is: " + Service.sortOrder);
-		if(Service.sortOrder === SortOrder.OLDEST_FIRST)
-		{
-			setSortOrder(SortOrder.NEWEST_FIRST);
-		}
-		else
-		{
-			setSortOrder(SortOrder.OLDEST_FIRST);
-		}
 	};
 
 	pub.selectFeed = function(feedId)
@@ -129,21 +115,6 @@ var Service = (function()
 		});
 	}
 
-	function initSortOrderToggle()
-	{
-		//save sort order on the server
-		var sortOrder = SortOrder.OLDEST_FIRST;
-
-		setSortOrder(sortOrder);
-	}
-
-	function setSortOrder(sortOrder)
-	{
-		console.log("Setting sortoder to " + sortOrder);
-		$("#sortOrderSpan").text("Currently sorting by " + SortOrder.properties[sortOrder].name);
-		Service.sortOrder = sortOrder;
-		Service.updateEverything();
-	}
 	//Return just the public parts
 	return pub;
 }());

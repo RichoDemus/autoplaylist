@@ -8,10 +8,25 @@ var Table = (function()
 	//pub.ingredient = "Bacon Strips";
 
 	//Public method
-	pub.addItemToTable = function(feedId, item)
+	pub.init = function ()
 	{
-		$('#itemListTable').find('> tbody:last').append(
-			"<tr data-feed-id=\"" + feedId + "\" data-item-id=\"" + item.id + "\" id=\"video-" + item.id + "\"><th>" + Table.getMarkAsReadToggleButton(feedId, item) + "</th><th>" + Table.getTitle(feedId, item) + "</th><th>" + item.description.substring(0,10) + "</th><th>" + item.uploadDate + "</th><th>" + getMarkOlderItemsAsReadButton(feedId, item) + "</th></tr>");
+		$('#itemListTable').DataTable({
+			"paging": false,
+			"searching": false,
+			"ordering": true,
+			"order": [[ 3, "asc" ]]
+		});
+	};
+
+	pub.addItemToTable = function (feedId, item)
+	{
+		$('#itemListTable').DataTable().row.add([
+			Table.getMarkAsReadToggleButton(feedId, item),
+			Table.getTitle(feedId, item),
+			item.description.substring(0, 10),
+			item.uploadDate,
+			getMarkOlderItemsAsReadButton(feedId, item)
+		]).draw(false);
 	};
 
 	pub.addFeedToTable = function(feed)
@@ -40,18 +55,7 @@ var Table = (function()
 		{
 			if(feed.id === selectedFeed)
 			{
-				const items = feed.items;
-				items.sort(function(a,b)
-				{
-					const a_date = new Date(a.uploadDate);
-					const b_date = new Date(b.uploadDate);
-					return a_date - b_date;
-				});
-				if(Service.sortOrder == SortOrder.OLDEST_FIRST)
-					console.log("Order is oldest first, already sorted that way");
-				else
-					items.reverse();
-				items.forEach(function(item)
+				feed.items.forEach(function(item)
 				{
 					Table.addItemToTable(feed.id, item);
 				});
@@ -99,8 +103,8 @@ var Table = (function()
 	pub.clearTables = function()
 	{
 		$("#feedListTable").find("tbody tr").remove();
-		$("#itemListTable").find("tbody tr").remove();
 		$("#labelListTable").find("tbody tr").remove();
+		$('#itemListTable').dataTable().fnClearTable();
 	};
 
 	pub.addLabelToTable = function(label)

@@ -129,10 +129,6 @@ var Buttons = (function()
 		Api.markAsRead(item.getAttribute("data-feed-id"), item.getAttribute("data-id"));
 	};
 
-	pub.toggleSortOrder = function()
-	{
-		Service.toggleSortOrder();
-	};
 	//Private method
 	/*
 	function privateWay() {

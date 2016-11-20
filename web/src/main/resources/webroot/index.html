@@ -12,9 +12,12 @@
     <title>Reader</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="js/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <!-- Bootstrap theme -->
-    <link href="js/lib/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
 
     <!-- Custom styles for this template -->
     <!-- <link href="theme.css" rel="stylesheet"> -->
@@ -114,10 +117,6 @@
                 Add Feed <input id="feedToBeAddedToLabelInput" type="text" name="feedToAddToLabel"> to Label: <input id="labelForFeedToBeAddedTo" type="text" name="labelForFeedToBeAddedTo">
                 <button type="button" class="btn btn-xs btn-default" onclick="Buttons.addFeedToLabel()">Add</button> <br/>
             </div>
-            <div class="col-md-6">
-                <span id="sortOrderSpan">Currently sorting by PLACEHOLDER</span> <br/>
-                <button id="toggleSortOrderButton" type="button" class="btn btn-xs btn-default" onclick="Buttons.toggleSortOrder()">Toggle</button>
-            </div>
         </div>
         <div class="row">
             <div class="col-md-3">
@@ -135,7 +134,7 @@
                 </table>
             </div>
             <div class="col-md-9">
-                <table class="table" id="itemListTable">
+                <table class="table table-striped table-bordered table-hover" id="itemListTable">
                     <thead>
                     <tr>
                         <th>Action</th>
@@ -157,7 +156,9 @@
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="js/lib/bootstrap/js/bootstrap.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
 <script src="js/lib/persist-js/persist-min.js"></script>
 <script src="js/Main.js"></script>
 <script src="js/Api.js"></script>
@@ -168,6 +169,5 @@
 <script src="js/Table.js"></script>
 <script src="js/Service.js"></script>
 <script src="js/FormOnLoad.js"></script>
-<script src="js/SortOrder.js"></script>
 </body>
 </html>
