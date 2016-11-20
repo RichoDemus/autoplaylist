@@ -11,7 +11,7 @@ var Table = (function()
 	pub.init = function ()
 	{
 		$('#itemListTable').DataTable({
-			"paging": false,
+			"paging": true,
 			"searching": false,
 			"ordering": true,
 			"order": [[ 3, "asc" ]]
@@ -26,7 +26,7 @@ var Table = (function()
 			item.description.substring(0, 10),
 			item.uploadDate,
 			getMarkOlderItemsAsReadButton(feedId, item)
-		]).draw(false);
+		]);
 	};
 
 	pub.addFeedToTable = function(feed)
@@ -59,6 +59,7 @@ var Table = (function()
 				{
 					Table.addItemToTable(feed.id, item);
 				});
+				$('#itemListTable').DataTable().draw();
 			}
 		});
 	};
