@@ -1,7 +1,7 @@
 package com.richo.reader.web.dropwizard.autoscanned;
 
 import com.richo.reader.backend.Backend;
-import com.richo.reader.model.Feed;
+import com.richo.reader.backend.model.Feed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vyarus.dropwizard.guice.module.installer.feature.health.NamedHealthCheck;

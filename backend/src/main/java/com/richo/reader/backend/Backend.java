@@ -32,7 +32,7 @@ public class Backend
 		this.feedService = feedService;
 	}
 
-	public Optional<com.richo.reader.model.Feed> getFeed(String username, String feedId)
+	public Optional<com.richo.reader.backend.model.Feed> getFeed(String username, String feedId)
 	{
 		logger.debug("Getting feed {} for user {}", feedId, username);
 
@@ -46,15 +46,15 @@ public class Backend
 		final Feed feed = feedService.getChannel(feedId).orElseThrow(() -> new NoSuchChannelException("Couldn find feed " + feedId));
 		logger.debug("Found feed: {}", feed);
 
-		final List<com.richo.reader.model.Item> unwatchedItems = feed.getItems().stream()
+		final List<com.richo.reader.backend.model.Item> unwatchedItems = feed.getItems().stream()
 				.filter(i -> !user.getFeeds().get(feedId).contains(i.getId()))
-				.map(i -> new com.richo.reader.model.Item(i.getId(), i.getTitle(), i.getDescription(), i.getUploadDate().toString(), "https://youtube.com/watch?v=" + i.getId()))
+				.map(i -> new com.richo.reader.backend.model.Item(i.getId(), i.getTitle(), i.getDescription(), i.getUploadDate().toString(), "https://youtube.com/watch?v=" + i.getId()))
 				.collect(Collectors.toList());
 
-		return Optional.of(new com.richo.reader.model.Feed(feed.getId(), feed.getId(), unwatchedItems));
+		return Optional.of(new com.richo.reader.backend.model.Feed(feed.getId(), feed.getId(), unwatchedItems));
 	}
 
-	public List<com.richo.reader.model.Feed> getAllFeedsWithoutItems(String username)
+	public List<com.richo.reader.backend.model.Feed> getAllFeedsWithoutItems(String username)
 	{
 		logger.debug("Getting all feeds for user {}", username);
 
@@ -63,7 +63,7 @@ public class Backend
 		return user.getFeeds().keySet().stream()
 				.map(feedService::getChannel)
 				.flatMap(this::toStream)
-				.map(f -> new com.richo.reader.model.Feed(f.getId(), f.getId(), calculateNumberOfItems(user, f)))
+				.map(f -> new com.richo.reader.backend.model.Feed(f.getId(), f.getId(), calculateNumberOfItems(user, f)))
 				.collect(Collectors.toList());
 	}
 

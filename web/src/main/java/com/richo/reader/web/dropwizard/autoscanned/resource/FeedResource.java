@@ -7,10 +7,10 @@ import com.richo.reader.backend.exception.ItemNotInFeedException;
 import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
-import com.richo.reader.model.Feed;
-import com.richo.reader.model.ItemOperation;
-import com.richo.reader.model.Label;
-import com.richo.reader.model.User;
+import com.richo.reader.backend.model.Feed;
+import com.richo.reader.web.dto.ItemOperation;
+import com.richo.reader.backend.model.Label;
+import com.richo.reader.web.dto.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -5,7 +5,7 @@ import com.google.common.base.Strings;
 import com.richo.reader.backend.LabelManager;
 import com.richo.reader.backend.exception.NoSuchLabelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
-import com.richo.reader.model.Label;
+import com.richo.reader.backend.model.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,6 +1,6 @@
 package com.richo.reader.web;
 
-import com.richo.reader.model.Feed;
+import com.richo.reader.backend.model.Feed;
 
 import java.util.Arrays;
 import java.util.List;

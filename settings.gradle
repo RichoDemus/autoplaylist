@@ -1,6 +1,5 @@
 rootProject.name = 'richo-reader'
 
-include 'api'
 include 'backend'
 include 'web'
 include 'youtube-feed-service'

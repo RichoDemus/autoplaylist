@@ -2,7 +2,7 @@ package com.richo.reader.web.dropwizard.autoscanned.resource;
 
 import com.codahale.metrics.annotation.Timed;
 import com.richo.reader.backend.exception.NoSuchUserException;
-import com.richo.reader.model.Session;
+import com.richo.reader.web.dto.Session;
 import com.richodemus.dropwizard.jwt.AuthenticationManager;
 import com.richodemus.dropwizard.jwt.RawToken;
 import org.slf4j.Logger;

@@ -1,4 +1,4 @@
-package com.richo.reader.model;
+package com.richo.reader.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 

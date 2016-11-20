@@ -65,13 +65,13 @@ public class BackendTest
 	@Test
 	public void getFeedShouldReturnFeed() throws Exception
 	{
-		final List<com.richo.reader.model.Item> unwatchedItems = FEED_1.getItems()
+		final List<com.richo.reader.backend.model.Item> unwatchedItems = FEED_1.getItems()
 				.stream()
 				.filter(i -> !EXISTING_USER.isRead(FEED_1.getId(), i.getId()))
-				.map(i -> new com.richo.reader.model.Item(i.getId(), i.getTitle(), i.getDescription(), i.getUploadDate().toString(), "https://youtube.com/watch?v=" + i.getId()))
+				.map(i -> new com.richo.reader.backend.model.Item(i.getId(), i.getTitle(), i.getDescription(), i.getUploadDate().toString(), "https://youtube.com/watch?v=" + i.getId()))
 				.collect(Collectors.toList());
-		final com.richo.reader.model.Feed expected = new com.richo.reader.model.Feed(FEED_1.getId(), FEED_1.getId(), unwatchedItems);
-		final Optional<com.richo.reader.model.Feed> result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId());
+		final com.richo.reader.backend.model.Feed expected = new com.richo.reader.backend.model.Feed(FEED_1.getId(), FEED_1.getId(), unwatchedItems);
+		final Optional<com.richo.reader.backend.model.Feed> result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId());
 
 		assertThat(result.get()).isEqualTo(expected);
 	}
@@ -79,11 +79,11 @@ public class BackendTest
 	@Test
 	public void getFeedsShouldReturnSubscribedFeeds() throws Exception
 	{
-		final List<com.richo.reader.model.Feed> expected = Arrays.asList(FEED_1, FEED_2).stream()
-				.map(f -> new com.richo.reader.model.Feed(f.getId(), f.getId(), 1))
+		final List<com.richo.reader.backend.model.Feed> expected = Arrays.asList(FEED_1, FEED_2).stream()
+				.map(f -> new com.richo.reader.backend.model.Feed(f.getId(), f.getId(), 1))
 				.collect(Collectors.toList());
 
-		final List<com.richo.reader.model.Feed> result = target.getAllFeedsWithoutItems(EXISTING_USER.getName());
+		final List<com.richo.reader.backend.model.Feed> result = target.getAllFeedsWithoutItems(EXISTING_USER.getName());
 
 		assertThat(result).isEqualTo(expected);
 	}
@@ -91,7 +91,7 @@ public class BackendTest
 	@Test
 	public void getFeedsShouldNotReturnItems() throws Exception
 	{
-		final List<com.richo.reader.model.Feed> result = target.getAllFeedsWithoutItems(EXISTING_USER.getName());
+		final List<com.richo.reader.backend.model.Feed> result = target.getAllFeedsWithoutItems(EXISTING_USER.getName());
 
 		assertThat(result.get(0).getItems()).isEmpty();
 		assertThat(result.get(1).getItems()).isEmpty();
@@ -115,7 +115,7 @@ public class BackendTest
 	public void getFeedShouldNotReturnFeedsMarkedAsRead() throws Exception
 	{
 		target.markAsRead(EXISTING_USER.getName(), FEED_1.getId(), ITEM_TO_MARK_AS_READ.getId());
-		final com.richo.reader.model.Feed result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId()).get();
+		final com.richo.reader.backend.model.Feed result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId()).get();
 
 		assertThat(result.getItems()).extracting("id").doesNotContain(ITEM_TO_MARK_AS_READ.getId());
 	}
@@ -128,7 +128,7 @@ public class BackendTest
 		final int result = target.getAllFeedsWithoutItems(EXISTING_USER.getName())
 				.stream()
 				.filter(f -> f.getId().equals(FEED_1.getId()))
-				.map(com.richo.reader.model.Feed::getNumberOfAvailableItems)
+				.map(com.richo.reader.backend.model.Feed::getNumberOfAvailableItems)
 				.findAny()
 				.get();
 
@@ -139,7 +139,7 @@ public class BackendTest
 	public void markAsUnreadShouldLeadToThatItemBeingReturnedAgain() throws Exception
 	{
 		target.markAsUnread(EXISTING_USER.getName(), FEED_1.getId(), ITEM_THAT_SHOULD_BE_READ.getId());
-		final com.richo.reader.model.Feed result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId()).get();
+		final com.richo.reader.backend.model.Feed result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId()).get();
 
 		assertThat(result.getItems()).extracting("id").contains(ITEM_THAT_SHOULD_BE_READ.getId());
 	}
@@ -148,7 +148,7 @@ public class BackendTest
 	public void markOlderItemsAsUnreadShouldLeadToOlderItemsNotBeingReturned() throws Exception
 	{
 		target.markOlderItemsAsRead(EXISTING_USER.getName(), FEED_1.getId(), "item-id-4");
-		final com.richo.reader.model.Feed result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId()).get();
+		final com.richo.reader.backend.model.Feed result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId()).get();
 
 		assertThat(result.getItems()).extracting("id").containsOnly("item-id-4");
 	}

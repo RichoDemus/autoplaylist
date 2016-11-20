@@ -3,9 +3,9 @@ package com.richo.reader.web.dropwizard.autoscanned.resource;
 
 import com.richo.reader.backend.Backend;
 import com.richo.reader.backend.LabelManager;
-import com.richo.reader.model.Feed;
-import com.richo.reader.model.ItemOperation;
-import com.richo.reader.model.User;
+import com.richo.reader.backend.model.Feed;
+import com.richo.reader.web.dto.ItemOperation;
+import com.richo.reader.web.dto.User;
 import com.richo.reader.web.TestData;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.assertj.core.util.Lists;
