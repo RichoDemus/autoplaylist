@@ -1,8 +1,8 @@
 var Table = ((()=>
 {
     var pub = {},
-        //Private property
-        greyFloorTile = null;
+    //Private property
+    itemListTableSelector = $('#itemListTable');
 
     //Public property
     //pub.ingredient = "Bacon Strips";
@@ -10,25 +10,25 @@ var Table = ((()=>
     //Public method
     pub.init = () =>
     {
-        $('#itemListTable').DataTable({
+        itemListTableSelector.DataTable({
             "paging": true,
             "searching": false,
             "ordering": true,
             "order": [[3, "desc"]]
         });
-        $('#itemListTable').on('order.dt', ()=>
+        itemListTableSelector.on('order.dt', ()=>
         {
-            var order = $('#itemListTable').DataTable().order();
+            var order = itemListTableSelector.DataTable().order();
             Persistence.storeSortOrder(order);
         });
         var order = Persistence.loadSortOrder();
         if (order) {
-            $('#itemListTable').DataTable().order(order).draw();
+            itemListTableSelector.DataTable().order(order).draw();
         }
     };
 
     pub.addItemToTable = (feedId, item)=>
-        $('#itemListTable').DataTable().row.add([
+        itemListTableSelector.DataTable().row.add([
             Table.getMarkAsReadToggleButton(feedId, item),
             Table.getTitle(feedId, item),
             item.description.substring(0, 10),
@@ -58,11 +58,22 @@ var Table = ((()=>
         feeds.forEach(feed=>
         {
             if (feed.id === selectedFeed) {
-                feed.items.forEach(item=>Table.addItemToTable(feed.id, item));
-                $('#itemListTable').DataTable().draw();
+                feed.items.forEach(item=>addItemToTable(feed.id, item));
+                itemListTableSelector.DataTable().draw();
             }
         });
     };
+
+    function addItemToTable (feedId, item)
+    {
+        itemListTableSelector.DataTable().row.add([
+            Table.getMarkAsReadToggleButton(feedId, item),
+            Table.getTitle(feedId, item),
+            item.description.substring(0, 10),
+            item.uploadDate,
+            getMarkOlderItemsAsReadButton(feedId, item)
+        ]);
+    }
 
     pub.addFeedsToTable = ()=>feeds.forEach(feed=>
     {
@@ -96,7 +107,7 @@ var Table = ((()=>
     {
         $("#feedListTable").find("tbody tr").remove();
         $("#labelListTable").find("tbody tr").remove();
-        $('#itemListTable').dataTable().fnClearTable();
+        itemListTableSelector.dataTable().fnClearTable();
     };
 
     pub.addLabelToTable = label=>
