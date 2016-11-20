@@ -91,12 +91,14 @@ var Service = (function()
 	function loggedIn(session)
 	{
 		Authentication.loggedIn(session.username, session.token);
+		console.log("storing session: " + JSON.stringify(session));
 		Persistence.storeSession(session);
 	}
 
 	function restoreSession()
 	{
 		const session = Persistence.restoreSession();
+		console.log("got session: " + JSON.stringify(session));
 		if(!session)
 		{
 			console.log("No session stored");
