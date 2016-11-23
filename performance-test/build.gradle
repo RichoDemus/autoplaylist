@@ -3,7 +3,7 @@ apply plugin: "com.github.lkishalmi.gatling"
 
 
 dependencies {
-    gatlingCompile 'org.apache.commons:commons-lang3:3.4'
+    gatlingCompile 'org.apache.commons:commons-lang3:3.5'
     gatlingRuntime 'cglib:cglib-nodep:3.2.0'
     gatlingCompile 'org.scala-lang:scala-library:2.11.8'
     gatlingCompile 'org.scala-lang:scala-reflect:2.11.8'

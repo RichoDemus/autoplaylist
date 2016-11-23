@@ -1,7 +1,7 @@
 ext {
     // compile dependencies
-    kotlinVersion = '1.0.5'
-    dropwizardVersion = '1.0.4'
+    kotlinVersion = '1.0.5-2'
+    dropwizardVersion = '1.0.5'
     dropwizardMetricsVersion = '3.1.2'
     jacksonVersion = '2.8.5'
     slf4jVersion = '1.7.21'
@@ -12,13 +12,13 @@ ext {
     guiceVersion = '4.1.0'
     javaxWsRsApiVersion = '2.0.1'
     googleHttpClientVersion = '1.22.0'
-    youtubeApiVersion = 'v3-rev179-1.22.0'
+    youtubeApiVersion = 'v3-rev180-1.22.0'
     jerseyServerVersion = '2.24'
 
     // test dependencies
     junitVersion = '4.12'
-    assertjVersion = '3.5.2'
-    mockitoVersion = '2.2.17'
+    assertjVersion = '3.6.0'
+    mockitoVersion = '2.2.22'
     restassuredVersion = '2.9.0'
     dockerClientVersion = '6.1.0'
     awaitilityVersion = '2.0.0'
@@ -29,3 +29,4 @@ ext {
     gradleDockerPluginVersion = '3.0.3'
     osdetectorGradlePluginVersion = '1.4.0'
 }
+
