@@ -1,5 +1,6 @@
 description = 'Web'
 dependencies {
+    compile project(':dto')
     compile project(':backend')
     compile project(':youtube-feed-service')
     compile 'com.richodemus.dropwizard-jwt:dropwizard-jwt:1.0.0'
@@ -26,6 +27,7 @@ dependencies {
     testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
     testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
 }
+
 task copyDependencies(type: Copy) {
     from configurations.compile
     into 'build/dependencies'

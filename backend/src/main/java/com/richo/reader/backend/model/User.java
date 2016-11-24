@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableMap;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
+import com.richodemus.reader.dto.FeedId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,12 +17,12 @@ import java.util.Set;
 public class User
 {
 	private final String name;
-	private final Map<String, Set<String>> feeds;
+	private final Map<FeedId, Set<String>> feeds;
 	private final List<Label> labels;
 	private long nextLabelId;
 
 	@JsonCreator
-	public User(@JsonProperty("name") String username, @JsonProperty("nextLabelId") long nextLabelId, @JsonProperty("feeds") Map<String, Set<String>> feedsIds, @JsonProperty("labels") List<Label> labels)
+	public User(@JsonProperty("name") String username, @JsonProperty("nextLabelId") long nextLabelId, @JsonProperty("feeds") Map<FeedId, Set<String>> feedsIds, @JsonProperty("labels") List<Label> labels)
 	{
 		this.name = username;
 		this.nextLabelId = nextLabelId;
@@ -29,7 +30,7 @@ public class User
 		this.labels = labels;
 	}
 
-	public User(String username, Set<String> feedIds)
+	public User(String username, Set<FeedId> feedIds)
 	{
 		this.name = username;
 		this.feeds = new HashMap<>();
@@ -37,12 +38,12 @@ public class User
 		feedIds.forEach(id -> feeds.put(id, new HashSet<>()));
 	}
 
-	public Map<String, Set<String>> getFeeds()
+	public Map<FeedId, Set<String>> getFeeds()
 	{
 		return ImmutableMap.copyOf(feeds);
 	}
 
-	public void addFeed(String feedId)
+	public void addFeed(FeedId feedId)
 	{
 		feeds.put(feedId, new HashSet<>());
 	}
@@ -52,7 +53,7 @@ public class User
 		return name;
 	}
 
-	public void markAsRead(String feedId, String itemId) throws UserNotSubscribedToThatChannelException
+	public void markAsRead(FeedId feedId, String itemId) throws UserNotSubscribedToThatChannelException
 	{
 		if (!feeds.containsKey(feedId))
 		{
@@ -62,12 +63,12 @@ public class User
 		feeds.get(feedId).add(itemId);
 	}
 
-	public boolean isRead(String feedId, String videoId)
+	public boolean isRead(FeedId feedId, String videoId)
 	{
 		return feeds.get(feedId).contains(videoId);
 	}
 
-	public void markAsUnRead(String feedId, String itemId)
+	public void markAsUnRead(FeedId feedId, String itemId)
 	{
 		feeds.get(feedId).remove(itemId);
 	}

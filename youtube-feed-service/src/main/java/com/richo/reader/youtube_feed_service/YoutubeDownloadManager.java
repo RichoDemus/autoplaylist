@@ -4,6 +4,7 @@ import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader;
 import com.richo.reader.youtube_feed_service.youtube.YoutubeVideoChunk;
+import com.richodemus.reader.dto.FeedId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,21 +30,21 @@ public class YoutubeDownloadManager
 		this.cache = cache;
 	}
 
-	public void downloadFeed(String channelName)
+	public void downloadFeed(FeedId feedId)
 	{
 		//todo refactor this method, it's balls
-		logger.info("Channel {} requested", channelName);
-		final Feed feed = cache.get(channelName).orElse(new Feed(channelName, new ArrayList<>(), LocalDateTime.now()));
+		logger.info("Channel {} requested", feedId);
+		final Feed feed = cache.get(feedId).orElse(new Feed(feedId, new ArrayList<>(), LocalDateTime.now()));
 
 		final List<String> itemIds = feed.getItems().stream().map(Item::getId).collect(toList());
 		final List<Item> items = new ArrayList<>(feed.getItems());
-		final Optional<YoutubeVideoChunk> videoChunk = youtubeChannelDownloader.getVideoChunk(channelName);
+		final Optional<YoutubeVideoChunk> videoChunk = youtubeChannelDownloader.getVideoChunk(feedId);
 
 		List<PlaylistItem> nextVideoChunk;
 		long itemsAddedToList = 0;
 		while ((nextVideoChunk = videoChunk.get().getNextVideoChunk()).size() > 0)
 		{
-			logger.trace("Downloaded a chunk of {} for channel {}", nextVideoChunk.size(), channelName);
+			logger.trace("Downloaded a chunk of {} for channel {}", nextVideoChunk.size(), feedId);
 			boolean itemAlreadyInList = false;
 			for (PlaylistItem item : nextVideoChunk)
 			{
@@ -64,7 +65,7 @@ public class YoutubeDownloadManager
 			}
 		}
 		cache.update(new Feed(feed.getId(), items, LocalDateTime.now()));
-		logger.info("Downloaded {} new videos from the channel {}", itemsAddedToList, channelName);
+		logger.info("Downloaded {} new videos from the channel {}", itemsAddedToList, feedId);
 	}
 
 	private Item toItem(PlaylistItem playlistItem)

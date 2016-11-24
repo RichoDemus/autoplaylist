@@ -9,6 +9,7 @@ import com.richo.reader.backend.user.UserService;
 import com.richo.reader.youtube_feed_service.Feed;
 import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.YoutubeFeedService;
+import com.richodemus.reader.dto.FeedId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,7 @@ public class Backend
 		this.feedService = feedService;
 	}
 
-	public Optional<com.richo.reader.backend.model.Feed> getFeed(String username, String feedId)
+	public Optional<com.richo.reader.backend.model.Feed> getFeed(String username, FeedId feedId)
 	{
 		logger.debug("Getting feed {} for user {}", feedId, username);
 
@@ -89,7 +90,7 @@ public class Backend
 		return allItemIds.size();
 	}
 
-	public void addFeed(final String username, final String feedName) throws NoSuchChannelException, NoSuchUserException
+	public void addFeed(final String username, final FeedId feedName) throws NoSuchChannelException, NoSuchUserException
 	{
 		logger.info("Add feed: {} for user {}", feedName, username);
 
@@ -101,7 +102,7 @@ public class Backend
 		feedService.registerChannel(feedName);
 	}
 
-	public void markAsRead(final String username, final String feedId, String itemId) throws NoSuchUserException, UserNotSubscribedToThatChannelException
+	public void markAsRead(final String username, final FeedId feedId, final String itemId) throws NoSuchUserException, UserNotSubscribedToThatChannelException
 	{
 		logger.info("Marking item {} in feed {} for user {} as read", itemId, feedId, username);
 		final User user = userService.get(username);
@@ -109,7 +110,7 @@ public class Backend
 		userService.update(user);
 	}
 
-	public void markAsUnread(final String username, final String feedId, String itemId) throws NoSuchUserException
+	public void markAsUnread(final String username, final FeedId feedId, String itemId) throws NoSuchUserException
 	{
 		logger.info("Marking item {} in feed {} for user {} as unread", itemId, feedId, username);
 		final User user = userService.get(username);
@@ -117,7 +118,7 @@ public class Backend
 		userService.update(user);
 	}
 
-	public void markOlderItemsAsRead(final String username, final String feedId, final String itemId) throws NoSuchChannelException, ItemNotInFeedException, UserNotSubscribedToThatChannelException
+	public void markOlderItemsAsRead(final String username, final FeedId feedId, final String itemId) throws NoSuchChannelException, ItemNotInFeedException, UserNotSubscribedToThatChannelException
 	{
 		logger.info("Marking items older than {} in feed {} for user {} as read", itemId, feedId, username);
 		final User user = userService.get(username);

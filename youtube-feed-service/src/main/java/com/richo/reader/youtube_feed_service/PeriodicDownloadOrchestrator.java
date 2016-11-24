@@ -1,6 +1,7 @@
 package com.richo.reader.youtube_feed_service;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.richodemus.reader.dto.FeedId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,8 +74,8 @@ public class PeriodicDownloadOrchestrator
 	private void addDownloadsTasksToExecutor()
 	{
 		logger.info("Midnight, time to download");
-		final List<String> feedIds = cache.getAllFeedIds();
-		Collections.sort(feedIds);
+		final List<FeedId> feedIds = cache.getAllFeedIds();
+		Collections.sort(feedIds, (o1, o2) -> o1.getId().compareTo(o2.getId()));
 		logger.info("{} feeds to download", feedIds.size());
 
 		feedIds.forEach(downloader::downloadFeed);

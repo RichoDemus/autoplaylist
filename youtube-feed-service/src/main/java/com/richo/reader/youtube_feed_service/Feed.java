@@ -3,34 +3,35 @@ package com.richo.reader.youtube_feed_service;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.richodemus.reader.dto.FeedId;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Objects;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class Feed
 {
-	private final String id;
+	private final FeedId id;
 	private final List<Item> items;
 	private final LocalDateTime lastUpdated;
 
 	@JsonCreator
-	public Feed(@JsonProperty("id") String id, @JsonProperty("items") List<Item> items, @JsonProperty("lastUpdated") long lastUpdated)
+	public Feed(@JsonProperty("id") FeedId id, @JsonProperty("items") List<Item> items, @JsonProperty("lastUpdated") long lastUpdated)
 	{
-		this.id = id;
-		this.items = items;
-		this.lastUpdated = LocalDateTime.ofEpochSecond(lastUpdated, 0, ZoneOffset.UTC);
+		this(id, items, LocalDateTime.ofEpochSecond(lastUpdated, 0, ZoneOffset.UTC));
 	}
 
-	public Feed(String id, List<Item> items, LocalDateTime lastUpdated)
+	public Feed(FeedId id, List<Item> items, LocalDateTime lastUpdated)
 	{
-		this.id = id;
+		this.id = checkNotNull(id, "Id can't be null");
 		this.items = items;
 		this.lastUpdated = lastUpdated;
 	}
 
-	public String getId()
+	public FeedId getId()
 	{
 		return id;
 	}

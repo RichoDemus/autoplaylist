@@ -1,5 +1,6 @@
 package com.richo.reader.youtube_feed_service;
 
+import com.richodemus.reader.dto.FeedId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +16,7 @@ import java.util.Optional;
 public class FeedCache
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final Map<String, Feed> cache;
+	private final Map<FeedId, Feed> cache;
 	private final JsonFileSystemPersistence fileSystemPersistence;
 
 	@Inject
@@ -25,10 +26,10 @@ public class FeedCache
 		cache = new HashMap<>();
 	}
 
-	public Optional<Feed> get(String channelName)
+	public Optional<Feed> get(FeedId feedId)
 	{
-		logger.debug("Fetching channel {}", channelName);
-		return Optional.ofNullable(cache.computeIfAbsent(channelName, name -> fileSystemPersistence.getChannel(channelName).orElse(null)));
+		logger.debug("Fetching channel {}", feedId);
+		return Optional.ofNullable(cache.computeIfAbsent(feedId, name -> fileSystemPersistence.getChannel(feedId).orElse(null)));
 	}
 
 	public void update(Feed feed)
@@ -39,14 +40,14 @@ public class FeedCache
 		fileSystemPersistence.updateChannel(feed);
 	}
 
-	public List<String> getAllFeedIds()
+	List<FeedId> getAllFeedIds()
 	{
 		return fileSystemPersistence.getAllFeedIds();
 	}
 
-	public void add(String channelName)
+	public void add(FeedId feedId)
 	{
-		final Feed feed = new Feed(channelName, new ArrayList<>(), 0L);
+		final Feed feed = new Feed(feedId, new ArrayList<>(), 0L);
 		fileSystemPersistence.updateChannel(feed);
 	}
 }

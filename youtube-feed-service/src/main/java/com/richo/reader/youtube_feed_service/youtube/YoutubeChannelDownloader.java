@@ -9,6 +9,7 @@ import com.google.api.services.youtube.model.ChannelStatistics;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.api.services.youtube.model.VideoStatistics;
+import com.richodemus.reader.dto.FeedId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +97,7 @@ public class YoutubeChannelDownloader
 		System.out.println(title + " has " + viewCount + " views");
 	}
 
-	public Optional<YoutubeVideoChunk> getVideoChunk(String channelName)
+	public Optional<YoutubeVideoChunk> getVideoChunk(FeedId channelName)
 	{
 		final List<Channel> channels;
 		try
@@ -104,7 +105,7 @@ public class YoutubeChannelDownloader
 			channels = youtube.channels()
 					.list("contentDetails")
 					.setKey(apiKey)
-					.setForUsername(channelName)
+					.setForUsername(channelName.getId())
 					.execute()
 					.getItems();
 		}

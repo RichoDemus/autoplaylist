@@ -8,9 +8,10 @@ import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richo.reader.backend.model.Feed;
-import com.richo.reader.web.dto.ItemOperation;
 import com.richo.reader.backend.model.Label;
+import com.richo.reader.web.dto.ItemOperation;
 import com.richo.reader.web.dto.User;
+import com.richodemus.reader.dto.FeedId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +27,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-
-import static com.google.common.base.Strings.isNullOrEmpty;
 
 @Path("/users/{username}/feeds/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -73,7 +72,7 @@ public class FeedResource
 	@Path("/{feed}/")
 	public Feed getFeed(@PathParam("username") final String username, @PathParam("feed") final String feedId)
 	{
-		return backend.getFeed(username, feedId)
+		return backend.getFeed(username, new FeedId(feedId))
 				.orElseThrow(() -> new BadRequestException("Couldn't find feed " + feedId));
 	}
 
@@ -88,13 +87,13 @@ public class FeedResource
 			switch (operation.getAction())
 			{
 				case MARK_READ:
-					backend.markAsRead(username, feedId, itemId);
+					backend.markAsRead(username, new FeedId(feedId), itemId);
 					break;
 				case MARK_UNREAD:
-					backend.markAsUnread(username, feedId, itemId);
+					backend.markAsUnread(username, new FeedId(feedId), itemId);
 					break;
 				case MARK_OLDER_ITEMS_AS_READ:
-					backend.markOlderItemsAsRead(username, feedId, itemId);
+					backend.markOlderItemsAsRead(username, new FeedId(feedId), itemId);
 					break;
 				default:
 					logger.error("Unknown action {}", operation.getAction());
@@ -117,7 +116,7 @@ public class FeedResource
 	@POST //todo shouldnt this be a put
 	public void addFeed(@PathParam("username") final String username, final String feedName)
 	{
-		if(isNullOrEmpty(feedName))
+		if(feedName == null)
 		{
 			logger.info("User {} tried to add an empty feed", username);
 			throw new BadRequestException("Feed can't be empty");
@@ -125,7 +124,7 @@ public class FeedResource
 		logger.info("{} wants to subscribe to {}", username, feedName);
 		try
 		{
-			backend.addFeed(username, feedName);
+			backend.addFeed(username, new FeedId(feedName));
 		}
 		catch (NoSuchChannelException | NoSuchUserException e)
 		{

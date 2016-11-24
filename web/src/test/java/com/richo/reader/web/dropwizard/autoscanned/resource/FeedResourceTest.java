@@ -7,6 +7,7 @@ import com.richo.reader.backend.model.Feed;
 import com.richo.reader.web.dto.ItemOperation;
 import com.richo.reader.web.dto.User;
 import com.richo.reader.web.TestData;
+import com.richodemus.reader.dto.FeedId;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
@@ -27,7 +28,7 @@ import static org.mockito.Mockito.when;
 public class FeedResourceTest
 {
 	private static final String USERNAME = "user";
-	private static final String FEED = "my-feed";
+	private static final FeedId FEED = new FeedId("my-feed");
 	private static final String ITEM = "my-item";
 
 	private static Backend backendMock = mock(Backend.class);

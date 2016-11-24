@@ -2,6 +2,7 @@ package com.richo.reader.youtube_feed_service.youtube;
 
 
 import com.google.api.services.youtube.model.PlaylistItem;
+import com.richodemus.reader.dto.FeedId;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,7 +19,7 @@ public class YoutubeChannelDownloaderTest
 
 		final YoutubeChannelDownloader downloader = new YoutubeChannelDownloader("AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
 
-		final YoutubeVideoChunk chunk = downloader.getVideoChunk("RichoDemus").get();
+		final YoutubeVideoChunk chunk = downloader.getVideoChunk(new FeedId("RichoDemus")).get();
 
 		List<PlaylistItem> videoChunk = chunk.getNextVideoChunk();
 
@@ -36,7 +37,7 @@ public class YoutubeChannelDownloaderTest
 	{
 		final YoutubeChannelDownloader downloader = new YoutubeChannelDownloader("AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
 
-		final YoutubeVideoChunk chunk = downloader.getVideoChunk("Thunderf00t").get();
+		final YoutubeVideoChunk chunk = downloader.getVideoChunk(new FeedId("Thunderf00t")).get();
 
 		List<PlaylistItem> videos = chunk.getNextVideoChunk();
 

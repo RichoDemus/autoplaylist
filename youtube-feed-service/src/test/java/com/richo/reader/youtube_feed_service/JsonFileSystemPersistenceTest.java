@@ -1,5 +1,6 @@
 package com.richo.reader.youtube_feed_service;
 
+import com.richodemus.reader.dto.FeedId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,14 +30,14 @@ public class JsonFileSystemPersistenceTest
 	@Test
 	public void shouldSaveStuffInTheRightPlace() throws Exception
 	{
-		target.updateChannel(new Feed("name", new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC)));
+		target.updateChannel(new Feed(new FeedId("name"), new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC)));
 		Assert.assertTrue(new File("target/data/").exists());
 	}
 
 	@Test
 	public void shouldBeAbleToLoadSavedData() throws Exception
 	{
-		final String channelName = "my-channel";
+		final FeedId channelName = new FeedId("my-channel");
 		final Item firstVideo = new Item("id1", "title1", "desc1", 0L);
 		final Item secondVideo = new Item("id2", "title2", "desc2", 0L);
 		final Feed expected = new Feed(channelName, Arrays.asList(firstVideo, secondVideo), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC));
@@ -53,12 +54,12 @@ public class JsonFileSystemPersistenceTest
 	@Test
 	public void shouldReturnAllChanelIds() throws Exception
 	{
-		final List<Feed> feeds = Arrays.asList(new Feed("feed1", new ArrayList<>(), 0L), new Feed("feed2", new ArrayList<>(), 0L));
+		final List<Feed> feeds = Arrays.asList(new Feed(new FeedId("feed1"), new ArrayList<>(), 0L), new Feed(new FeedId("feed2"), new ArrayList<>(), 0L));
 
 		feeds.forEach(target::updateChannel);
 
-		final List<String> result = target.getAllFeedIds();
+		final List<FeedId> result = target.getAllFeedIds();
 
-		assertThat(result).containsOnly("feed1", "feed2");
+		assertThat(result).containsOnly(new FeedId("feed1"), new FeedId("feed2"));
 	}
 }

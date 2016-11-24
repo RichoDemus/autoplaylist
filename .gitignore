@@ -3,6 +3,7 @@
 #added by richo
 activemq-data/
 /data
+/classes
 
 ### Intellij ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm

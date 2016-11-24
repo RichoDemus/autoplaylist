@@ -1,6 +1,7 @@
 package com.richo.reader.youtube_feed_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.richodemus.reader.dto.FeedId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,7 @@ public class JsonFileSystemPersistence
 		this.saveRoot = saveRoot;
 	}
 
-	public Optional<Feed> getChannel(String feedId)
+	public Optional<Feed> getChannel(FeedId feedId)
 	{
 		try
 		{
@@ -62,15 +63,16 @@ public class JsonFileSystemPersistence
 		}
 	}
 
-	public List<String> getAllFeedIds()
+	List<FeedId> getAllFeedIds()
 	{
 		final File[] directories = new File(saveRoot + "/feeds/").listFiles(File::isDirectory);
 		if (directories == null)
 		{
 			return new ArrayList<>();
 		}
-		return Arrays.asList(directories).stream()
+		return Arrays.stream(directories)
 				.map(File::getName)
+				.map(FeedId::new)
 				.collect(Collectors.toList());
 	}
 }

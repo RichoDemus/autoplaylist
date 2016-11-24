@@ -1,0 +1,21 @@
+apply plugin: 'kotlin'
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$rootProject.jacksonVersion"
+
+    testCompile "junit:junit:$rootProject.junitVersion"
+    testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
+    testCompile "com.fasterxml.jackson.core:jackson-databind:$rootProject.jacksonVersion"
+    testCompile "com.fasterxml.jackson.module:jackson-module-kotlin:$rootProject.jacksonVersion"
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.kotlinVersion"
+    }
+}

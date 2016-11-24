@@ -2,6 +2,7 @@ package com.richo.reader.backend.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.richodemus.reader.dto.FeedId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,23 +10,23 @@ import java.util.Objects;
 
 public class Feed
 {
-	private final String id;
-	private final String name;
+	private final FeedId id;
+	private final FeedId name;
 	private final List<Item> items;
 	private int numberOfAvailableItems;
 
 	@JsonCreator
-	public Feed(@JsonProperty("id") String id, @JsonProperty("name") String name, @JsonProperty("items") List<Item> items)
+	public Feed(@JsonProperty("id") FeedId id, @JsonProperty("name") FeedId name, @JsonProperty("items") List<Item> items)
 	{
 		this(id, name, items, items.size());
 	}
 
-	public Feed(String id, String name, int numberOfAvailableItems)
+	public Feed(FeedId id, FeedId name, int numberOfAvailableItems)
 	{
 		this(id, name, new ArrayList<>(), numberOfAvailableItems);
 	}
 
-	private Feed(String id, String name, List<Item> items, int numberOfAvailableItems)
+	private Feed(FeedId id, FeedId name, List<Item> items, int numberOfAvailableItems)
 	{
 		this.id = id;
 		this.name = name;
@@ -33,12 +34,12 @@ public class Feed
 		this.numberOfAvailableItems = numberOfAvailableItems;
 	}
 
-	public String getId()
+	public FeedId getId()
 	{
 		return id;
 	}
 
-	public String getName()
+	public FeedId getName()
 	{
 		return name;
 	}

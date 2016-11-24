@@ -8,6 +8,7 @@ import com.richo.reader.backend.user.UserService;
 import com.richo.reader.youtube_feed_service.Feed;
 import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.YoutubeFeedService;
+import com.richodemus.reader.dto.FeedId;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -31,7 +33,7 @@ public class BackendTest
 	private static final Item ITEM_THAT_SHOULD_BE_READ = new Item("item-id-1", "item-title-1", "item-desc-1", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC));
 	private static final Item ITEM_TO_MARK_AS_READ = new Item("item-id-2", "item-title-2", "item-desc-2", LocalDateTime.ofEpochSecond(200L, 0, ZoneOffset.UTC));
 	private static final Feed FEED_1 = new Feed(
-			"existing_feed_id",
+			new FeedId("existing_feed_id"),
 			Arrays.asList(
 					ITEM_THAT_SHOULD_BE_READ,
 					ITEM_TO_MARK_AS_READ,
@@ -39,7 +41,7 @@ public class BackendTest
 					new Item("item-id-4", "item-title-4", "item-desc-4", LocalDateTime.ofEpochSecond(400L, 0, ZoneOffset.UTC))
 			), 0L);
 	private static final Feed FEED_2 = new Feed(
-			"feed_2",
+			new FeedId("feed_2"),
 			Collections.singletonList(new Item("feed2-item1", "title", "desc", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC))), 0L);
 
 
@@ -79,7 +81,7 @@ public class BackendTest
 	@Test
 	public void getFeedsShouldReturnSubscribedFeeds() throws Exception
 	{
-		final List<com.richo.reader.backend.model.Feed> expected = Arrays.asList(FEED_1, FEED_2).stream()
+		final List<com.richo.reader.backend.model.Feed> expected = Stream.of(FEED_1, FEED_2)
 				.map(f -> new com.richo.reader.backend.model.Feed(f.getId(), f.getId(), 1))
 				.collect(Collectors.toList());
 
