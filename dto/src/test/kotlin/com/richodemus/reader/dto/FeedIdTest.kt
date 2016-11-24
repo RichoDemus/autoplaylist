@@ -7,10 +7,13 @@ import org.junit.Test
 
 class FeedIdTest {
     @Test
-    fun `should serialize into just an id`() {
+    fun `should serialize into just its value when used as a field in another object`() {
         val mapper = ObjectMapper()
         mapper.registerModule(KotlinModule())
-        val result = mapper.writeValueAsString(Channel(FeedId("my-id")))
+        val result = "my-id"
+                .let { FeedId(it) }
+                .let { Channel(it) }
+                .let { mapper.writeValueAsString(it) }
 
         //language=JSON
         assertThat(result).isEqualTo("{\"id\":\"my-id\"}")
