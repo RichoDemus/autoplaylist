@@ -81,7 +81,7 @@ public class Feed
 	@Override
 	public String toString()
 	{
-		if(items.isEmpty())
+		if (items.isEmpty())
 		{
 			return name + ", " + numberOfAvailableItems + " items";
 		}

@@ -116,7 +116,7 @@ public class FeedResource
 	@POST //todo shouldnt this be a put
 	public void addFeed(@PathParam("username") final String username, final String feedName)
 	{
-		if(feedName == null)
+		if (feedName == null)
 		{
 			logger.info("User {} tried to add an empty feed", username);
 			throw new BadRequestException("Feed can't be empty");

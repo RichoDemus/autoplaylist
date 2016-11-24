@@ -33,7 +33,7 @@ public class JsonFileSystemPersistence
 		try
 		{
 			final File file = new File(saveRoot + "/feeds/" + feedId + "/data.json");
-			if(!file.exists())
+			if (!file.exists())
 			{
 				logger.debug("Feed {} not on disk", feedId);
 				return Optional.empty();

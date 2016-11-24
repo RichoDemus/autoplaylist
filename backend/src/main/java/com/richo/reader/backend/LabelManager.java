@@ -2,9 +2,9 @@ package com.richo.reader.backend;
 
 import com.richo.reader.backend.exception.NoSuchLabelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
+import com.richo.reader.backend.model.Label;
 import com.richo.reader.backend.model.User;
 import com.richo.reader.backend.user.UserService;
-import com.richo.reader.backend.model.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

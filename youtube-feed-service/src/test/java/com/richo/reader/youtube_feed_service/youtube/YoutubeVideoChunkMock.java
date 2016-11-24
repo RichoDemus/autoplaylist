@@ -27,7 +27,7 @@ public class YoutubeVideoChunkMock extends YoutubeVideoChunk
 	@Override
 	public List<PlaylistItem> getNextVideoChunk()
 	{
-		final Optional<PlaylistItem> chunk  = getNewestVideo();
+		final Optional<PlaylistItem> chunk = getNewestVideo();
 		chunk.ifPresent(item ->
 		{
 			logger.info("returning item {} and removing it from the chunk list", item.getSnippet().getTitle());

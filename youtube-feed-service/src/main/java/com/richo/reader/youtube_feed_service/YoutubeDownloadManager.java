@@ -48,7 +48,7 @@ public class YoutubeDownloadManager
 			boolean itemAlreadyInList = false;
 			for (PlaylistItem item : nextVideoChunk)
 			{
-				if(itemIds.contains(item.getSnippet().getResourceId().getVideoId()))
+				if (itemIds.contains(item.getSnippet().getResourceId().getVideoId()))
 				{
 					itemAlreadyInList = true;
 					logger.debug("Video {} is already cached, this channel should be up to date now", item);
