@@ -1,11 +1,19 @@
 apply plugin: 'scala'
 apply plugin: "com.github.lkishalmi.gatling"
 
+// to remove some weird error messages, see
+// https://discuss.gradle.org/t/idea-integration-with-scala-plugin-broken-since-gradle-3-0-no-such-property-daemonserver/19159/2
+ScalaCompileOptions.metaClass.daemonServer = true
+ScalaCompileOptions.metaClass.fork = true
+ScalaCompileOptions.metaClass.useAnt = false
+ScalaCompileOptions.metaClass.useCompileDaemon = false
+
 
 dependencies {
     gatlingCompile 'org.apache.commons:commons-lang3:3.5'
     gatlingRuntime 'cglib:cglib-nodep:3.2.0'
     gatlingCompile 'org.scala-lang:scala-library:2.11.8'
+    compile 'org.scala-lang:scala-library:2.11.8'
     gatlingCompile 'org.scala-lang:scala-reflect:2.11.8'
 }
 
@@ -22,4 +30,15 @@ buildscript {
     dependencies {
         classpath "gradle.plugin.com.github.lkishalmi.gradle:gradle-gatling-plugin:0.4.1"
     }
+}
+
+/*
+without scala-library as compile time intellij complains
+with it gradle complains
+need to ignore it, but couldn't figure out how
+ustWarn is a workaround
+see: https://github.com/wfhartford/gradle-dependency-analyze/issues/27
+ */
+analyzeClassesDependencies {
+    justWarn = true
 }
