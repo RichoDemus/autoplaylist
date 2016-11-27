@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -77,13 +78,15 @@ public class YoutubeDownloadManager
 		{
 			final YoutubeVideoChunk youtubeVideoChunk = youtubeChannelDownloader.getVideoChunk(feedId).orElseThrow(() -> new RuntimeException("Failed to get videochunk for feed " + feedId + ", video " + itemId));
 
-			final long viewCount = youtubeVideoChunk.getDurationAndViewCount(itemId.getId()).viewCount;
+			final DurationAndViewcount durationAndViewCount = youtubeVideoChunk.getDurationAndViewCount(itemId.getId());
+			final long viewCount = durationAndViewCount.viewCount;
+			final Duration duration = durationAndViewCount.duration;
 
 			final List<Item> newItems = feed.getItems().stream().map(item ->
 			{
 				if (item.getId().equals(itemId.getId()))
 				{
-					return new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), item.getDuration(), viewCount);
+					return new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), duration, viewCount);
 				}
 				return item;
 			}).collect(toList());

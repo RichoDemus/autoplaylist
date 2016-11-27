@@ -104,6 +104,7 @@ public class YoutubeDownloadManagerTest
 	public void shouldUpdateVideoStatistics() throws Exception
 	{
 		final long newViewCount = 1000L;
+		final Duration newDuration = Duration.ofMinutes(1L);
 		final Feed originalFeed = cache.get(CACHED_CHANNEL.getId())
 				.get();
 		final Item originalItem = originalFeed
@@ -125,7 +126,8 @@ public class YoutubeDownloadManagerTest
 				.get();
 
 		assertThat(result.getViews()).isEqualTo(newViewCount);
-		assertThat(result).isEqualToIgnoringGivenFields(originalItem, "views");
+		assertThat(result.getDuration()).isEqualTo(newDuration);
+		assertThat(result).isEqualToIgnoringGivenFields(originalItem, "views", "duration");
 	}
 
 	private Stream<Feed> toStream(Optional<Feed> o)
