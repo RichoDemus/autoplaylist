@@ -13,6 +13,7 @@ import com.richodemus.reader.dto.FeedId;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -30,21 +31,21 @@ import static org.mockito.Mockito.when;
 public class YoutubeDownloadManagerTest
 {
 	private static final FeedId NON_EXISTENT_CHANNEL_NAME = new FeedId("non existerino");
-	private static final Item CACHED_CHANNEL_FIRST_VIDEO = new Item("_0S1jebDBzk", "cached_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
+	private static final Item CACHED_CHANNEL_FIRST_VIDEO = new Item("_0S1jebDBzk", "cached_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56), Duration.ZERO, 0L);
 	private static final Feed CACHED_CHANNEL = new Feed(
 			new FeedId("cached_channel"),
 			singletonList(CACHED_CHANNEL_FIRST_VIDEO),
 			LocalDateTime.now());
 
-	private static final Item UNCACHED_CHANNEL_FIRST_VIDEO = new Item("_0S1jebDBzk", "uncached_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
+	private static final Item UNCACHED_CHANNEL_FIRST_VIDEO = new Item("_0S1jebDBzk", "uncached_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56), Duration.ZERO, 0L);
 	private static final Feed UNCACHED_CHANNEL = new Feed(
 			new FeedId("uncached_channel"),
 			singletonList(UNCACHED_CHANNEL_FIRST_VIDEO),
 			LocalDateTime.now());
 
-	private static final Item OUTDATED_CHANNEL_FIRST_VIDEO = new Item("_0S1jebDBzk", "outdated_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56));
-	private static final Item OUTDATED_CHANNEL_SECOND_VIDEO = new Item("_0S1jebdDBzk", "outdated_2", "description2", LocalDateTime.of(2014, 9, 10, 12, 37, 56));
-	private static final Item OUTDATED_CHANNEL_NOT_CACHED_VIDEO = new Item("_0s1jebDBze", "outdated_noncached_3", "description3", LocalDateTime.of(2014, 11, 5, 12, 37, 56));
+	private static final Item OUTDATED_CHANNEL_FIRST_VIDEO = new Item("_0S1jebDBzk", "outdated_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56), Duration.ZERO, 0L);
+	private static final Item OUTDATED_CHANNEL_SECOND_VIDEO = new Item("_0S1jebdDBzk", "outdated_2", "description2", LocalDateTime.of(2014, 9, 10, 12, 37, 56), Duration.ZERO, 0L);
+	private static final Item OUTDATED_CHANNEL_NOT_CACHED_VIDEO = new Item("_0s1jebDBze", "outdated_noncached_3", "description3", LocalDateTime.of(2014, 11, 5, 12, 37, 56), Duration.ZERO, 0L);
 	private static final Feed OUTDATED_CHANNEL_WITH_NEW_ITEM = new Feed(
 			new FeedId("outdated_channel"),
 			asList(OUTDATED_CHANNEL_FIRST_VIDEO, OUTDATED_CHANNEL_SECOND_VIDEO, OUTDATED_CHANNEL_NOT_CACHED_VIDEO),
@@ -63,9 +64,9 @@ public class YoutubeDownloadManagerTest
 	public void setUp() throws Exception
 	{
 		channelDownloaderMock = getYoutubeChannelDownloaderMock();
-		final JsonFileSystemPersistence mock = mock(JsonFileSystemPersistence.class);
-		when(mock.getChannel(any())).thenReturn(Optional.empty());
-		cache = new FeedCache(mock);
+		final JsonFileSystemPersistence fileSystemPersistenceMock = mock(JsonFileSystemPersistence.class);
+		when(fileSystemPersistenceMock.getChannel(any())).thenReturn(Optional.empty());
+		cache = new FeedCache(fileSystemPersistenceMock);
 		cache.update(CACHED_CHANNEL);
 		cache.update(OUTDATED_CHANNEL_WITHOUT_NEW_ITEM);
 		target = new YoutubeDownloadManager(channelDownloaderMock, cache);

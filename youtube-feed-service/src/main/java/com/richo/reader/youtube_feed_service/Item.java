@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -13,25 +14,28 @@ public class Item
 	private final String title;
 	private final String description;
 	private final LocalDateTime uploadDate;
+	private final Duration duration;
+	private final long views;
 
 	@JsonCreator
 	public Item(@JsonProperty("id") String id,
 				@JsonProperty("title") String title,
 				@JsonProperty("description") String description,
-				@JsonProperty("uploadDate") long uploadDate)
+				@JsonProperty("uploadDate") long uploadDate,
+				@JsonProperty("duration") long duration,
+				@JsonProperty("views") long views)
 	{
-		this.id = id;
-		this.title = title;
-		this.description = description;
-		this.uploadDate = LocalDateTime.ofEpochSecond(uploadDate, 0, ZoneOffset.UTC);
+		this(id, title, description, LocalDateTime.ofEpochSecond(uploadDate, 0, ZoneOffset.UTC), Duration.ofSeconds(duration), views);
 	}
 
-	public Item(String id, String title, String description, LocalDateTime uploadDate)
+	public Item(String id, String title, String description, LocalDateTime uploadDate, Duration duration, long views)
 	{
 		this.id = id;
 		this.title = title;
 		this.description = description;
 		this.uploadDate = uploadDate;
+		this.duration = duration;
+		this.views = views;
 	}
 
 	public String getId()
@@ -59,6 +63,23 @@ public class Item
 	public long getUploadDateAsLong()
 	{
 		return uploadDate.toEpochSecond(ZoneOffset.UTC);
+	}
+
+	@JsonIgnore
+	public Duration getDuration()
+	{
+		return duration;
+	}
+
+	@JsonProperty("duration")
+	public long getDurationAsLong()
+	{
+		return duration.getSeconds();
+	}
+
+	public long getViews()
+	{
+		return views;
 	}
 
 	@Override

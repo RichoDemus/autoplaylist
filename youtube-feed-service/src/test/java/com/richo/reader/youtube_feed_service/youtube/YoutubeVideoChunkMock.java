@@ -7,19 +7,20 @@ import org.assertj.core.util.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class YoutubeVideoChunkMock extends YoutubeVideoChunk
+class YoutubeVideoChunkMock extends YoutubeVideoChunk
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final List<PlaylistItem> chunks;
 
-	public YoutubeVideoChunkMock(List<PlaylistItem> items)
+	YoutubeVideoChunkMock(List<PlaylistItem> items)
 	{
-		super(null, null, null);
+		super(null, null, null, null);
 		this.chunks = new LinkedList<>();
 		chunks.addAll(items);
 	}
@@ -36,6 +37,12 @@ public class YoutubeVideoChunkMock extends YoutubeVideoChunk
 
 		return chunk.map(Collections::singletonList)
 				.orElseGet(Lists::emptyList);
+	}
+
+	@Override
+	public DurationAndViewcount getDurationAndViewCount(String itemId)
+	{
+		return new DurationAndViewcount(Duration.ofMinutes(1L), 1L);
 	}
 
 	private Optional<PlaylistItem> getNewestVideo()
@@ -58,7 +65,7 @@ public class YoutubeVideoChunkMock extends YoutubeVideoChunk
 				.get();
 	}
 
-	public int chunksLeft()
+	int chunksLeft()
 	{
 		return chunks.size();
 	}

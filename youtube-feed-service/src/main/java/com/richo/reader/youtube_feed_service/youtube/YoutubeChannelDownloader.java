@@ -7,6 +7,7 @@ import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelSnippet;
 import com.google.api.services.youtube.model.ChannelStatistics;
 import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoContentDetails;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.api.services.youtube.model.VideoStatistics;
 import com.richodemus.reader.dto.FeedId;
@@ -24,12 +25,14 @@ public class YoutubeChannelDownloader
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	private final DurationParser durationParser;
 	private final YouTube youtube;
 	private final String apiKey;
 
 	@Inject
-	public YoutubeChannelDownloader(@Named("apiKey") String apiKey)
+	public YoutubeChannelDownloader(DurationParser durationParser, @Named("apiKey") String apiKey)
 	{
+		this.durationParser = durationParser;
 		this.apiKey = apiKey;
 		final Optional<String> env_url = Optional.ofNullable(System.getenv("YOUTUBE_URL"));
 		logger.info("youtube url: \"{}\"", env_url.orElse("Not set"));
@@ -46,8 +49,8 @@ public class YoutubeChannelDownloader
 
 	public static void main(String[] args) throws IOException
 	{
-		final YoutubeChannelDownloader downloader = new YoutubeChannelDownloader("AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
-		downloader.printVideoViews();
+		final YoutubeChannelDownloader downloader = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
+		downloader.printVideoViewsfromItemApi();
 		downloader.channelStatistics();
 	}
 
@@ -74,11 +77,10 @@ public class YoutubeChannelDownloader
 		System.out.println(channelName + " has " + views + " views :(");
 	}
 
-	private void printVideoViews() throws IOException
+	private void printVideoViewsfromItemApi() throws IOException
 	{
-
 		final List<Video> items = youtube.videos()
-				.list("snippet,status,id,statistics")
+				.list("snippet,status,id,statistics,contentDetails")
 				.setKey(apiKey)
 				.setId("NVbH1BVXywY")
 				.execute()
@@ -89,12 +91,22 @@ public class YoutubeChannelDownloader
 				.map(VideoSnippet::getTitle)
 				.findAny()
 				.orElse("TITLE_NOT_FOUND");
+		final String id = items.stream()
+				.map(Video::getSnippet)
+				.map(VideoSnippet::getTitle)
+				.findAny()
+				.orElse("TITLE_NOT_FOUND");
 		final BigInteger viewCount = items.stream()
 				.map(Video::getStatistics)
 				.map(VideoStatistics::getViewCount)
 				.findAny()
 				.orElse(BigInteger.ZERO);
-		System.out.println(title + " has " + viewCount + " views");
+		final String duration = items.stream()
+				.map(Video::getContentDetails)
+				.map(VideoContentDetails::getDuration)
+				.findAny()
+				.orElse("UNKNOWN DURATION");
+		System.out.println(title + "(" + id + ") has " + viewCount + " views and is " + duration + " long");
 	}
 
 	public Optional<YoutubeVideoChunk> getVideoChunk(FeedId channelName)
@@ -135,7 +147,7 @@ public class YoutubeChannelDownloader
 			return Optional.empty();
 		}
 
-		return Optional.of(new YoutubeVideoChunk(youtube, playlistId.get(), apiKey));
+		return Optional.of(new YoutubeVideoChunk(youtube, durationParser, playlistId.get(), apiKey));
 	}
 
 	private String toPlaylistId(final Channel channel)

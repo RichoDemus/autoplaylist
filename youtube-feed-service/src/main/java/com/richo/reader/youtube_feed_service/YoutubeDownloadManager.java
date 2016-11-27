@@ -2,6 +2,7 @@ package com.richo.reader.youtube_feed_service;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.PlaylistItem;
+import com.richo.reader.youtube_feed_service.youtube.DurationAndViewcount;
 import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader;
 import com.richo.reader.youtube_feed_service.youtube.YoutubeVideoChunk;
 import com.richodemus.reader.dto.FeedId;
@@ -55,7 +56,7 @@ public class YoutubeDownloadManager
 				}
 				else
 				{
-					items.add(toItem(item));
+					items.add(toItem(item, videoChunk.get()));
 					itemsAddedToList++;
 				}
 			}
@@ -68,13 +69,14 @@ public class YoutubeDownloadManager
 		logger.info("Downloaded {} new videos from the channel {}", itemsAddedToList, feedId);
 	}
 
-	private Item toItem(PlaylistItem playlistItem)
+	private Item toItem(PlaylistItem playlistItem, YoutubeVideoChunk youtubeVideoChunk)
 	{
 		final String videoId = playlistItem.getSnippet().getResourceId().getVideoId();
 		final String title = playlistItem.getSnippet().getTitle();
 		final String description = playlistItem.getSnippet().getDescription();
 		final LocalDateTime uploadDate = convertDate(playlistItem.getSnippet().getPublishedAt());
-		return new Item(videoId, title, description, uploadDate.toEpochSecond(ZoneOffset.UTC));
+		final DurationAndViewcount durationAndViewCount = youtubeVideoChunk.getDurationAndViewCount(videoId);
+		return new Item(videoId, title, description, uploadDate.toEpochSecond(ZoneOffset.UTC), durationAndViewCount.duration.getSeconds(), durationAndViewCount.viewCount);
 	}
 
 	private LocalDateTime convertDate(DateTime publishedAt)

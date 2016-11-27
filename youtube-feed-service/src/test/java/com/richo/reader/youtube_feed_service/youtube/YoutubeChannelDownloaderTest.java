@@ -17,7 +17,7 @@ public class YoutubeChannelDownloaderTest
 	public void testDownloadVideosFromSingleVideoChannel() throws Exception
 	{
 
-		final YoutubeChannelDownloader downloader = new YoutubeChannelDownloader("AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
+		final YoutubeChannelDownloader downloader = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
 
 		final YoutubeVideoChunk chunk = downloader.getVideoChunk(new FeedId("RichoDemus")).get();
 
@@ -35,7 +35,7 @@ public class YoutubeChannelDownloaderTest
 	@Test
 	public void testDownloadVideosFromChannelWithLotsOfVideos() throws Exception
 	{
-		final YoutubeChannelDownloader downloader = new YoutubeChannelDownloader("AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
+		final YoutubeChannelDownloader downloader = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
 
 		final YoutubeVideoChunk chunk = downloader.getVideoChunk(new FeedId("Thunderf00t")).get();
 
@@ -48,7 +48,7 @@ public class YoutubeChannelDownloaderTest
 
 		Assert.assertEquals(videos.size(), 50);
 		videos.stream().map((video) -> video.getSnippet().getTitle()).collect(Collectors.toList()).forEach(System.out::println);
-
-
 	}
+
+
 }

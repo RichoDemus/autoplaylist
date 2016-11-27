@@ -21,11 +21,13 @@ public class JsonFileSystemPersistence
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final String saveRoot;
+	private ObjectMapper objectMapper;
 
 	@Inject
 	public JsonFileSystemPersistence(@Named("saveRoot") String saveRoot)
 	{
 		this.saveRoot = saveRoot;
+		objectMapper = new ObjectMapper();
 	}
 
 	public Optional<Feed> getChannel(FeedId feedId)
@@ -39,7 +41,7 @@ public class JsonFileSystemPersistence
 				return Optional.empty();
 			}
 			logger.trace("Reading feed {} from disk", feedId);
-			return Optional.ofNullable(new ObjectMapper().readValue(file, Feed.class));
+			return Optional.ofNullable(objectMapper.readValue(file, Feed.class));
 		}
 		catch (Exception e)
 		{
@@ -48,14 +50,16 @@ public class JsonFileSystemPersistence
 		}
 	}
 
-	void updateChannel(Feed feed)
+	void updateChannel(final Feed feed)
 	{
 		try
 		{
+			feed.getItems().sort((o1, o2) -> o1.getUploadDate().compareTo(o2.getUploadDate()));
+
 			final String path = saveRoot + "/feeds/" + feed.getId();
 			final boolean success = new File(path).mkdirs();
 			logger.trace("Creating {} successful: {}", path, success);
-			new ObjectMapper().writeValue(new File(path + "/data.json"), feed);
+			objectMapper.writeValue(new File(path + "/data.json"), feed);
 		}
 		catch (IOException e)
 		{
