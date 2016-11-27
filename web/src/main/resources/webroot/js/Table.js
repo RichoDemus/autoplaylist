@@ -14,6 +14,7 @@ var Table = ((()=>
             "paging": true,
             "searching": false,
             "ordering": true,
+            "autoWidth": true,
             "order": [[3, "desc"]]
         });
         itemListTableSelector.on('order.dt', ()=>
@@ -26,15 +27,6 @@ var Table = ((()=>
             itemListTableSelector.DataTable().order(order).draw();
         }
     };
-
-    pub.addItemToTable = (feedId, item)=>
-        itemListTableSelector.DataTable().row.add([
-            Table.getMarkAsReadToggleButton(feedId, item),
-            Table.getTitle(feedId, item),
-            item.description.substring(0, 10),
-            item.uploadDate,
-            getMarkOlderItemsAsReadButton(feedId, item)
-        ]);
 
     pub.addFeedToTable = feed=>
     {
@@ -71,6 +63,8 @@ var Table = ((()=>
             Table.getTitle(feedId, item),
             item.description.substring(0, 10),
             item.uploadDate,
+            item.duration,
+            item.views,
             getMarkOlderItemsAsReadButton(feedId, item)
         ]);
     }

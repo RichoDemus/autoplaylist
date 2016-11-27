@@ -1,8 +1,6 @@
 package com.richo.reader.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import java.time.Duration;
 import java.util.Objects;
 
 public class Item
@@ -12,15 +10,39 @@ public class Item
 	private final String description;
 	private final String uploadDate;
 	private final String url;
+	private final String duration;
+	private final long views;
 
-	@JsonCreator
-	public Item(@JsonProperty("id") String id, @JsonProperty("title") String title, @JsonProperty("description") String description, @JsonProperty("uploadDate") String uploadDate, @JsonProperty("url") String url)
+	public Item(String id,
+				String title,
+				String description,
+				String uploadDate,
+				String url,
+				Duration duration,
+				long views)
 	{
 		this.id = id;
 		this.title = title;
 		this.description = description;
 		this.uploadDate = uploadDate;
 		this.url = url;
+		this.duration = durationToString(duration);
+		this.views = views;
+	}
+
+	private String durationToString(Duration duration)
+	{
+		return "" + duration.toMinutes() + ":" + toDoubleDigitSeconds(duration.minusMinutes(duration.toMinutes()).getSeconds());
+	}
+
+	private String toDoubleDigitSeconds(long seconds)
+	{
+		final String string = String.valueOf(seconds);
+		if (string.length() == 1)
+		{
+			return "0" + string;
+		}
+		return string;
 	}
 
 	public String getId()
@@ -46,6 +68,16 @@ public class Item
 	public String getUrl()
 	{
 		return url;
+	}
+
+	public String getDuration()
+	{
+		return duration;
+	}
+
+	public long getViews()
+	{
+		return views;
 	}
 
 	@Override

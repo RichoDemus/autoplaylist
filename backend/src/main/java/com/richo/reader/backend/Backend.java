@@ -49,7 +49,7 @@ public class Backend
 
 		final List<com.richo.reader.backend.model.Item> unwatchedItems = feed.getItems().stream()
 				.filter(i -> !user.getFeeds().get(feedId).contains(i.getId()))
-				.map(i -> new com.richo.reader.backend.model.Item(i.getId(), i.getTitle(), i.getDescription(), i.getUploadDate().toString(), "https://youtube.com/watch?v=" + i.getId()))
+				.map(i -> new com.richo.reader.backend.model.Item(i.getId(), i.getTitle(), i.getDescription(), i.getUploadDate().toString(), "https://youtube.com/watch?v=" + i.getId(), i.getDuration(), i.getViews()))
 				.collect(Collectors.toList());
 
 		return Optional.of(new com.richo.reader.backend.model.Feed(feed.getId(), feed.getId(), unwatchedItems));
