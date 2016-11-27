@@ -105,7 +105,28 @@ public class YoutubeDownloadManager
 		final String ids = items.stream().map(Item::getId).collect(joining(","));
 		final Map<String, DurationAndViewcount> statistics = youtubeChannelDownloader.getStatistics(ids);
 		return items.stream()
-				.map(item -> new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), statistics.get(item.getId()).duration, statistics.get(item.getId()).viewCount))
+				.map(item ->
+				{
+					final DurationAndViewcount durationAndViewcount = statistics.get(item.getId());
+					if (durationAndViewcount != null)
+					{
+						return new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), durationAndViewcount.duration, durationAndViewcount.viewCount);
+					}
+
+					final Map<String, DurationAndViewcount> newStatistics = youtubeChannelDownloader.getStatistics(item.getId());
+					final boolean unavailable = newStatistics.isEmpty();
+					if (unavailable)
+					{
+						logger.info("Video {}({}) is unavailable", item.getTitle(), item.getId());
+						return new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), item.getDuration(), item.getViews());
+					}
+					else
+					{
+						logger.warn("Had to retry {}({})", item.getTitle(), item.getId());
+						final DurationAndViewcount newDurationAndViewCount = newStatistics.get(item.getId());
+						return new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), newDurationAndViewCount.duration, newDurationAndViewCount.viewCount);
+					}
+				})
 				.collect(toList());
 	}
 
