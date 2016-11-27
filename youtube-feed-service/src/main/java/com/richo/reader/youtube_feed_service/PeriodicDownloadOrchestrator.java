@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import static java.time.temporal.ChronoUnit.HOURS;
 
@@ -80,7 +81,7 @@ public class PeriodicDownloadOrchestrator
 	//todo move into addUpdateStatisticsTasksToExecutor
 	private void update()
 	{
-		cache.getAllFeedIds().forEach(downloader::updateFeedStatistics);
+		cache.getAllFeedIds().forEach(feedId -> runWithExceptionHandling(feedId, downloader::updateFeedStatistics));
 	}
 
 	public void stop()
@@ -95,7 +96,7 @@ public class PeriodicDownloadOrchestrator
 		Collections.sort(feedIds, (o1, o2) -> o1.getId().compareTo(o2.getId()));
 		logger.info("{} feeds to download", feedIds.size());
 
-		feedIds.forEach(downloader::downloadFeed);
+		feedIds.forEach(feedId -> runWithExceptionHandling(feedId, downloader::downloadFeed));
 	}
 
 	private void addUpdateStatisticsTasksToExecutor()
@@ -107,5 +108,18 @@ public class PeriodicDownloadOrchestrator
 	private long calculateDelayUntilMidnight()
 	{
 		return ChronoUnit.MILLIS.between(Instant.now(), timeToRun);
+	}
+
+	private void runWithExceptionHandling(FeedId feedId, Consumer<FeedId> consumer)
+	{
+		try
+		{
+			consumer.accept(feedId);
+		}
+		catch (Exception e)
+		{
+			logger.error("Failed to run job", e);
+			throw e;
+		}
 	}
 }
