@@ -10,6 +10,7 @@ import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.JsonFileSystemPersistence;
 import com.richo.reader.youtube_feed_service.YoutubeDownloadManager;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.ItemId;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,6 +20,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -96,6 +98,39 @@ public class YoutubeDownloadManagerTest
 		target.downloadFeed(OUTDATED_CHANNEL_WITH_NEW_ITEM.getId());
 		final Feed result = cache.get(OUTDATED_CHANNEL_WITH_NEW_ITEM.getId()).get();
 		assertThat(result).isEqualTo(OUTDATED_CHANNEL_WITH_NEW_ITEM);
+	}
+
+	@Test
+	public void shouldUpdateVideoStatistics() throws Exception
+	{
+		final long newViewCount = 1000L;
+		final Feed originalFeed = cache.get(CACHED_CHANNEL.getId())
+				.get();
+		final Item originalItem = originalFeed
+				.getItems()
+				.stream()
+				.filter(item -> item.getId().equals(CACHED_CHANNEL_FIRST_VIDEO.getId()))
+				.findAny()
+				.get();
+
+		target.updateFeedStatistics(CACHED_CHANNEL.getId(), new ItemId(CACHED_CHANNEL_FIRST_VIDEO.getId()));
+
+		final Feed resultingFeed = cache.get(CACHED_CHANNEL.getId())
+				.get();
+		final Item result = resultingFeed
+				.getItems()
+				.stream()
+				.filter(item -> item.getId().equals(CACHED_CHANNEL_FIRST_VIDEO.getId()))
+				.findAny()
+				.get();
+
+		assertThat(result.getViews()).isEqualTo(newViewCount);
+		assertThat(result).isEqualToIgnoringGivenFields(originalItem, "views");
+	}
+
+	private Stream<Feed> toStream(Optional<Feed> o)
+	{
+		return o.isPresent() ? Stream.of(o.get()) : Stream.empty();
 	}
 
 	private YoutubeChannelDownloader getYoutubeChannelDownloaderMock()

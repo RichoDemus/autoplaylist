@@ -42,7 +42,7 @@ class YoutubeVideoChunkMock extends YoutubeVideoChunk
 	@Override
 	public DurationAndViewcount getDurationAndViewCount(String itemId)
 	{
-		return new DurationAndViewcount(Duration.ofMinutes(1L), 1L);
+		return new DurationAndViewcount(Duration.ofMinutes(1L), 1000L);
 	}
 
 	private Optional<PlaylistItem> getNewestVideo()

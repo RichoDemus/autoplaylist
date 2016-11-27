@@ -6,6 +6,7 @@ import com.richo.reader.youtube_feed_service.youtube.DurationAndViewcount;
 import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader;
 import com.richo.reader.youtube_feed_service.youtube.YoutubeVideoChunk;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.ItemId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +68,28 @@ public class YoutubeDownloadManager
 		}
 		cache.update(new Feed(feed.getId(), items, LocalDateTime.now()));
 		logger.info("Downloaded {} new videos from the channel {}", itemsAddedToList, feedId);
+	}
+
+	public void updateFeedStatistics(final FeedId feedId, final ItemId itemId)
+	{
+		logger.info("Updating statistics for feed {}, item {}", feedId, itemId);
+		cache.get(feedId).ifPresent(feed ->
+		{
+			final YoutubeVideoChunk youtubeVideoChunk = youtubeChannelDownloader.getVideoChunk(feedId).orElseThrow(() -> new RuntimeException("Failed to get videochunk for feed " + feedId + ", video " + itemId));
+
+			final long viewCount = youtubeVideoChunk.getDurationAndViewCount(itemId.getId()).viewCount;
+
+			final List<Item> newItems = feed.getItems().stream().map(item ->
+			{
+				if (item.getId().equals(itemId.getId()))
+				{
+					return new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), item.getDuration(), viewCount);
+				}
+				return item;
+			}).collect(toList());
+
+			cache.update(new Feed(feed.getId(), newItems, LocalDateTime.now()));
+		});
 	}
 
 	private Item toItem(PlaylistItem playlistItem, YoutubeVideoChunk youtubeVideoChunk)

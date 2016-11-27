@@ -2,11 +2,13 @@ package com.richo.reader.youtube_feed_service;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.ItemId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -16,6 +18,8 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import static java.time.temporal.ChronoUnit.HOURS;
 
 @Singleton
 public class PeriodicDownloadOrchestrator
@@ -57,13 +61,30 @@ public class PeriodicDownloadOrchestrator
 	public void start()
 	{
 		final long milisecondsUntilMidnight = calculateDelayUntilMidnight();
+		final long fourInTheMorning = milisecondsUntilMidnight + Duration.of(4, HOURS).toMillis();
 		executor.scheduleAtFixedRate(this::addDownloadsTasksToExecutor, milisecondsUntilMidnight, MILLISECONDS_IN_A_DAY, TimeUnit.MILLISECONDS);
+		executor.scheduleAtFixedRate(this::addUpdateStatisticsTasksToExecutor, fourInTheMorning, MILLISECONDS_IN_A_DAY, TimeUnit.MILLISECONDS);
 		logger.info("Started orchestrator, will run at {}", Instant.ofEpochMilli(System.currentTimeMillis() + milisecondsUntilMidnight).toString());
 	}
 
 	public void downloadEverythingOnce()
 	{
 		executor.execute(this::addDownloadsTasksToExecutor);
+	}
+
+	public void updateEverythingOnce()
+	{
+		//todo move into addUpdateStatisticsTasksToExecutor
+		executor.execute(this::update);
+	}
+
+	//todo move into addUpdateStatisticsTasksToExecutor
+	private void update()
+	{
+		cache.getAllFeedIds().forEach(feedId ->
+				cache.get(feedId).get().getItems().forEach(item ->
+						executor.execute(() -> downloader.updateFeedStatistics(feedId, new ItemId(item.getId())))));
+
 	}
 
 	public void stop()
@@ -79,6 +100,12 @@ public class PeriodicDownloadOrchestrator
 		logger.info("{} feeds to download", feedIds.size());
 
 		feedIds.forEach(downloader::downloadFeed);
+	}
+
+	private void addUpdateStatisticsTasksToExecutor()
+	{
+		logger.info("It's 4 in the morning, time to update statistics");
+		logger.warn("Not implemented");
 	}
 
 	private long calculateDelayUntilMidnight()
