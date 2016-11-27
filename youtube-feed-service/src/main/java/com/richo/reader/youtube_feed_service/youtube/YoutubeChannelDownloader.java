@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
@@ -147,7 +148,49 @@ public class YoutubeChannelDownloader
 			return Optional.empty();
 		}
 
-		return Optional.of(new YoutubeVideoChunk(youtube, durationParser, playlistId.get(), apiKey));
+		return Optional.of(new YoutubeVideoChunk(youtube, durationParser, playlistId.get(), apiKey, this));
+	}
+
+	public DurationAndViewcount getDurationAndViewCount(final String itemId)
+	{
+		final List<Video> items;
+		try
+		{
+			items = youtube.videos()
+					.list("snippet,status,id,statistics,contentDetails")
+					.setKey(apiKey)
+					.setId(itemId)
+					.execute()
+					.getItems();
+		}
+		catch (IOException e)
+		{
+			throw new RuntimeException(e);
+		}
+
+		Long viewCount;
+		try
+		{
+			viewCount = items.stream()
+					.map(Video::getStatistics)
+					.map(VideoStatistics::getViewCount)
+					.map(BigInteger::longValueExact)
+					.findAny()
+					.orElseThrow(() -> new RuntimeException("Unable to get view count for video " + itemId));
+		}
+		catch (ArithmeticException e)
+		{
+			final BigInteger count = items.stream().map(Video::getStatistics).map(VideoStatistics::getViewCount).findAny().orElseThrow(() -> new RuntimeException("This pretty much can't happen, itemId " + itemId, e));
+			logger.error("Unable to convert view count of {} to a long for video {}", count, itemId);
+			viewCount = 0L;
+		}
+		final Duration duration = items.stream()
+				.map(Video::getContentDetails)
+				.map(VideoContentDetails::getDuration)
+				.map(durationParser::fromYoutubeDuration)
+				.findAny()
+				.orElseThrow(() -> new RuntimeException("Unable to get duration for video " + itemId));
+		return new DurationAndViewcount(duration, viewCount);
 	}
 
 	private String toPlaylistId(final Channel channel)

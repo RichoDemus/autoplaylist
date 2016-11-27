@@ -66,6 +66,7 @@ public class YoutubeDownloadManagerTest
 	public void setUp() throws Exception
 	{
 		channelDownloaderMock = getYoutubeChannelDownloaderMock();
+		when(channelDownloaderMock.getDurationAndViewCount(any())).thenReturn(new DurationAndViewcount(Duration.ofMinutes(1), 1000L));
 		final JsonFileSystemPersistence fileSystemPersistenceMock = mock(JsonFileSystemPersistence.class);
 		when(fileSystemPersistenceMock.getChannel(any())).thenReturn(Optional.empty());
 		cache = new FeedCache(fileSystemPersistenceMock);

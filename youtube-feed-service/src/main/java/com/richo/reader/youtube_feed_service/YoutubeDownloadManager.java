@@ -58,7 +58,7 @@ public class YoutubeDownloadManager
 				}
 				else
 				{
-					items.add(toItem(item, videoChunk.get()));
+					items.add(toItem(item));
 					itemsAddedToList++;
 				}
 			}
@@ -76,9 +76,7 @@ public class YoutubeDownloadManager
 		logger.info("Updating statistics for feed {}, item {}", feedId, itemId);
 		cache.get(feedId).ifPresent(feed ->
 		{
-			final YoutubeVideoChunk youtubeVideoChunk = youtubeChannelDownloader.getVideoChunk(feedId).orElseThrow(() -> new RuntimeException("Failed to get videochunk for feed " + feedId + ", video " + itemId));
-
-			final DurationAndViewcount durationAndViewCount = youtubeVideoChunk.getDurationAndViewCount(itemId.getId());
+			final DurationAndViewcount durationAndViewCount = youtubeChannelDownloader.getDurationAndViewCount(itemId.getId());
 			final long viewCount = durationAndViewCount.viewCount;
 			final Duration duration = durationAndViewCount.duration;
 
@@ -95,13 +93,13 @@ public class YoutubeDownloadManager
 		});
 	}
 
-	private Item toItem(PlaylistItem playlistItem, YoutubeVideoChunk youtubeVideoChunk)
+	private Item toItem(PlaylistItem playlistItem)
 	{
 		final String videoId = playlistItem.getSnippet().getResourceId().getVideoId();
 		final String title = playlistItem.getSnippet().getTitle();
 		final String description = playlistItem.getSnippet().getDescription();
 		final LocalDateTime uploadDate = convertDate(playlistItem.getSnippet().getPublishedAt());
-		final DurationAndViewcount durationAndViewCount = youtubeVideoChunk.getDurationAndViewCount(videoId);
+		final DurationAndViewcount durationAndViewCount = youtubeChannelDownloader.getDurationAndViewCount(videoId);
 		return new Item(videoId, title, description, uploadDate.toEpochSecond(ZoneOffset.UTC), durationAndViewCount.duration.getSeconds(), durationAndViewCount.viewCount);
 	}
 
