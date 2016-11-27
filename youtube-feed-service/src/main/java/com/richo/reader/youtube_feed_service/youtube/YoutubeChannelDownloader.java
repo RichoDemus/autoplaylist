@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class YoutubeChannelDownloader
 {
@@ -149,6 +151,54 @@ public class YoutubeChannelDownloader
 		}
 
 		return Optional.of(new YoutubeVideoChunk(youtube, durationParser, playlistId.get(), apiKey, this));
+	}
+
+	public Map<String, DurationAndViewcount> getStatistics(final String ids)
+	{
+		final List<Video> items;
+		try
+		{
+			items = youtube.videos()
+					.list("statistics,contentDetails")
+					.setKey(apiKey)
+					.setId(ids)
+					.execute()
+					.getItems();
+		}
+		catch (IOException e)
+		{
+			throw new RuntimeException(e);
+		}
+
+		return items.stream()
+				.collect(Collectors.toMap(Video::getId, this::toDurationAndViewCount));
+	}
+
+	private DurationAndViewcount toDurationAndViewCount(final Video video)
+	{
+		final Duration duration = getDuration(video);
+		final long views = getViews(video);
+
+		return new DurationAndViewcount(duration, views);
+	}
+
+	private Duration getDuration(Video video)
+	{
+		return durationParser.fromYoutubeDuration(video.getContentDetails().getDuration());
+	}
+
+	private long getViews(final Video video)
+	{
+		final BigInteger views = video.getStatistics().getViewCount();
+		try
+		{
+			return views.longValueExact();
+		}
+		catch (ArithmeticException e)
+		{
+			logger.error("Unable to convert view count of {} to a long for video {}", views, video.getId());
+			return views.longValue();
+		}
 	}
 
 	public DurationAndViewcount getDurationAndViewCount(final String itemId)

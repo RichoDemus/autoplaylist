@@ -2,11 +2,11 @@ package com.richo.reader.youtube_feed_service;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.PlaylistItem;
+import com.google.common.collect.Lists;
 import com.richo.reader.youtube_feed_service.youtube.DurationAndViewcount;
 import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader;
 import com.richo.reader.youtube_feed_service.youtube.YoutubeVideoChunk;
 import com.richodemus.reader.dto.FeedId;
-import com.richodemus.reader.dto.ItemId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,9 +15,12 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class YoutubeDownloadManager
@@ -44,10 +47,10 @@ public class YoutubeDownloadManager
 		final Optional<YoutubeVideoChunk> videoChunk = youtubeChannelDownloader.getVideoChunk(feedId);
 
 		List<PlaylistItem> nextVideoChunk;
-		long itemsAddedToList = 0;
+		final List<Item> itemsToAdd = new ArrayList<>();
 		while ((nextVideoChunk = videoChunk.get().getNextVideoChunk()).size() > 0)
 		{
-			logger.trace("Downloaded a chunk of {} for channel {}", nextVideoChunk.size(), feedId);
+			logger.info("Downloaded a chunk of {} for channel {}, {} in total", nextVideoChunk.size(), feedId, itemsToAdd.size());
 			boolean itemAlreadyInList = false;
 			for (PlaylistItem item : nextVideoChunk)
 			{
@@ -58,8 +61,7 @@ public class YoutubeDownloadManager
 				}
 				else
 				{
-					items.add(toItem(item));
-					itemsAddedToList++;
+					itemsToAdd.add(toItem(item));
 				}
 			}
 			if (itemAlreadyInList)
@@ -67,30 +69,44 @@ public class YoutubeDownloadManager
 				break;
 			}
 		}
+
+		if (!itemsToAdd.isEmpty())
+		{
+			logger.info("Getting statistics for {} new videos in feed {}", itemsToAdd.size(), feedId);
+		}
+		final List<Item> itemsToAddWithStatistics = addStatistics(itemsToAdd);
+
+		itemsToAddWithStatistics.forEach(items::add);
 		cache.update(new Feed(feed.getId(), items, LocalDateTime.now()));
-		logger.info("Downloaded {} new videos from the channel {}", itemsAddedToList, feedId);
+		logger.info("Downloaded {} new videos from the channel {}", itemsToAdd.size(), feedId);
 	}
 
-	public void updateFeedStatistics(final FeedId feedId, final ItemId itemId)
+	public void updateFeedStatistics(final FeedId feedId)
 	{
-		logger.info("Updating statistics for feed {}, item {}", feedId, itemId);
-		cache.get(feedId).ifPresent(feed ->
-		{
-			final DurationAndViewcount durationAndViewCount = youtubeChannelDownloader.getDurationAndViewCount(itemId.getId());
-			final long viewCount = durationAndViewCount.viewCount;
-			final Duration duration = durationAndViewCount.duration;
+		logger.info("Updating statistics for feed {}", feedId);
+		final Feed feed = cache.get(feedId).orElseThrow(() -> new RuntimeException("No such feed: " + feedId));
 
-			final List<Item> newItems = feed.getItems().stream().map(item ->
-			{
-				if (item.getId().equals(itemId.getId()))
-				{
-					return new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), duration, viewCount);
-				}
-				return item;
-			}).collect(toList());
+		final List<Item> newItems = addStatistics(feed.getItems());
 
-			cache.update(new Feed(feed.getId(), newItems, LocalDateTime.now()));
-		});
+		cache.update(new Feed(feed.getId(), newItems, LocalDateTime.now()));
+	}
+
+	private List<Item> addStatistics(List<Item> itemsToAdd)
+	{
+		return Lists.partition(itemsToAdd, 50).stream()
+				.map(this::toItemWithStatistics)
+				.flatMap(Collection::stream)
+				.collect(toList());
+	}
+
+	private List<Item> toItemWithStatistics(List<Item> items)
+	{
+		logger.info("Getting statistics for {} items", items.size());
+		final String ids = items.stream().map(Item::getId).collect(joining(","));
+		final Map<String, DurationAndViewcount> statistics = youtubeChannelDownloader.getStatistics(ids);
+		return items.stream()
+				.map(item -> new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), statistics.get(item.getId()).duration, statistics.get(item.getId()).viewCount))
+				.collect(toList());
 	}
 
 	private Item toItem(PlaylistItem playlistItem)
@@ -99,8 +115,7 @@ public class YoutubeDownloadManager
 		final String title = playlistItem.getSnippet().getTitle();
 		final String description = playlistItem.getSnippet().getDescription();
 		final LocalDateTime uploadDate = convertDate(playlistItem.getSnippet().getPublishedAt());
-		final DurationAndViewcount durationAndViewCount = youtubeChannelDownloader.getDurationAndViewCount(videoId);
-		return new Item(videoId, title, description, uploadDate.toEpochSecond(ZoneOffset.UTC), durationAndViewCount.duration.getSeconds(), durationAndViewCount.viewCount);
+		return new Item(videoId, title, description, uploadDate.toEpochSecond(ZoneOffset.UTC), Duration.ZERO.toMillis(), 0L);
 	}
 
 	private LocalDateTime convertDate(DateTime publishedAt)

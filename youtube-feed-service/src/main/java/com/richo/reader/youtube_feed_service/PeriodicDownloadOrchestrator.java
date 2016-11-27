@@ -2,7 +2,6 @@ package com.richo.reader.youtube_feed_service;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.richodemus.reader.dto.FeedId;
-import com.richodemus.reader.dto.ItemId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,10 +80,7 @@ public class PeriodicDownloadOrchestrator
 	//todo move into addUpdateStatisticsTasksToExecutor
 	private void update()
 	{
-		cache.getAllFeedIds().forEach(feedId ->
-				cache.get(feedId).get().getItems().forEach(item ->
-						executor.execute(() -> downloader.updateFeedStatistics(feedId, new ItemId(item.getId())))));
-
+		cache.getAllFeedIds().forEach(downloader::updateFeedStatistics);
 	}
 
 	public void stop()
