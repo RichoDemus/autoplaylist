@@ -60,11 +60,11 @@ public class PeriodicDownloadOrchestrator
 
 	public void start()
 	{
-		final long milisecondsUntilMidnight = calculateDelayUntilMidnight();
-		final long fourInTheMorning = milisecondsUntilMidnight + Duration.of(4, HOURS).toMillis();
-		executor.scheduleAtFixedRate(this::addDownloadsTasksToExecutor, milisecondsUntilMidnight, MILLISECONDS_IN_A_DAY, TimeUnit.MILLISECONDS);
+		final long millisecondsUntilMidnight = calculateDelayUntilMidnight();
+		final long fourInTheMorning = millisecondsUntilMidnight + Duration.of(4, HOURS).toMillis();
+		executor.scheduleAtFixedRate(this::addDownloadsTasksToExecutor, millisecondsUntilMidnight, MILLISECONDS_IN_A_DAY, TimeUnit.MILLISECONDS);
 		executor.scheduleAtFixedRate(this::addUpdateStatisticsTasksToExecutor, fourInTheMorning, MILLISECONDS_IN_A_DAY, TimeUnit.MILLISECONDS);
-		logger.info("Started orchestrator, will run at {}", Instant.ofEpochMilli(System.currentTimeMillis() + milisecondsUntilMidnight).toString());
+		logger.info("Started orchestrator, will run at {}", Instant.ofEpochMilli(System.currentTimeMillis() + millisecondsUntilMidnight).toString());
 	}
 
 	public void downloadEverythingOnce()
@@ -74,14 +74,7 @@ public class PeriodicDownloadOrchestrator
 
 	public void updateEverythingOnce()
 	{
-		//todo move into addUpdateStatisticsTasksToExecutor
-		executor.execute(this::update);
-	}
-
-	//todo move into addUpdateStatisticsTasksToExecutor
-	private void update()
-	{
-		cache.getAllFeedIds().forEach(feedId -> runWithExceptionHandling(feedId, downloader::updateFeedStatistics));
+		executor.execute(this::addUpdateStatisticsTasksToExecutor);
 	}
 
 	public void stop()
@@ -102,7 +95,7 @@ public class PeriodicDownloadOrchestrator
 	private void addUpdateStatisticsTasksToExecutor()
 	{
 		logger.info("It's 4 in the morning, time to update statistics");
-		logger.warn("Not implemented");
+		cache.getAllFeedIds().forEach(feedId -> runWithExceptionHandling(feedId, downloader::updateFeedStatistics));
 	}
 
 	private long calculateDelayUntilMidnight()
