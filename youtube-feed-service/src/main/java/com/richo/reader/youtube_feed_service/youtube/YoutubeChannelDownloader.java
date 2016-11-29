@@ -11,6 +11,7 @@ import com.google.api.services.youtube.model.VideoContentDetails;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.api.services.youtube.model.VideoStatistics;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.ItemId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,7 +154,12 @@ public class YoutubeChannelDownloader
 		return Optional.of(new YoutubeVideoChunk(youtube, durationParser, playlistId.get(), apiKey, this));
 	}
 
-	public Map<String, DurationAndViewcount> getStatistics(final String ids)
+	public Map<ItemId, DurationAndViewcount> getStatistics(final ItemId id)
+	{
+		return getStatistics(id.getValue());
+	}
+
+	public Map<ItemId, DurationAndViewcount> getStatistics(final String ids)
 	{
 		final List<Video> items;
 		try
@@ -171,7 +177,7 @@ public class YoutubeChannelDownloader
 		}
 
 		return items.stream()
-				.collect(Collectors.toMap(Video::getId, this::toDurationAndViewCount));
+				.collect(Collectors.toMap(video -> new ItemId(video.getId()), this::toDurationAndViewCount));
 	}
 
 	private DurationAndViewcount toDurationAndViewCount(final Video video)

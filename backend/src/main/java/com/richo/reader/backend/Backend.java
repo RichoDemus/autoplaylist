@@ -10,6 +10,7 @@ import com.richo.reader.youtube_feed_service.Feed;
 import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.YoutubeFeedService;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.ItemId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,9 +82,9 @@ public class Backend
 			return 0;
 		}
 
-		final Set<String> readItems = user.getFeeds().get(feed.getId());
+		final Set<ItemId> readItems = user.getFeeds().get(feed.getId());
 
-		final List<String> allItemIds = feed.getItems().stream().map(Item::getId).collect(Collectors.toList());
+		final List<ItemId> allItemIds = feed.getItems().stream().map(Item::getId).collect(Collectors.toList());
 
 		allItemIds.removeAll(readItems);
 
@@ -102,7 +103,7 @@ public class Backend
 		feedService.registerChannel(feedName);
 	}
 
-	public void markAsRead(final String username, final FeedId feedId, final String itemId) throws NoSuchUserException, UserNotSubscribedToThatChannelException
+	public void markAsRead(final String username, final FeedId feedId, final ItemId itemId) throws NoSuchUserException, UserNotSubscribedToThatChannelException
 	{
 		logger.info("Marking item {} in feed {} for user {} as read", itemId, feedId, username);
 		final User user = userService.get(username);
@@ -110,7 +111,7 @@ public class Backend
 		userService.update(user);
 	}
 
-	public void markAsUnread(final String username, final FeedId feedId, String itemId) throws NoSuchUserException
+	public void markAsUnread(final String username, final FeedId feedId, ItemId itemId) throws NoSuchUserException
 	{
 		logger.info("Marking item {} in feed {} for user {} as unread", itemId, feedId, username);
 		final User user = userService.get(username);
@@ -118,7 +119,7 @@ public class Backend
 		userService.update(user);
 	}
 
-	public void markOlderItemsAsRead(final String username, final FeedId feedId, final String itemId) throws NoSuchChannelException, ItemNotInFeedException, UserNotSubscribedToThatChannelException
+	public void markOlderItemsAsRead(final String username, final FeedId feedId, final ItemId itemId) throws NoSuchChannelException, ItemNotInFeedException, UserNotSubscribedToThatChannelException
 	{
 		logger.info("Marking items older than {} in feed {} for user {} as read", itemId, feedId, username);
 		final User user = userService.get(username);

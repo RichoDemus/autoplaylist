@@ -1,5 +1,6 @@
 package com.richo.reader.backend.model;
 
+import com.richodemus.reader.dto.ItemId;
 import org.junit.Test;
 
 import java.time.Duration;
@@ -21,6 +22,6 @@ public class ItemTest
 
 	private void assertDuration(Duration duration, String expected)
 	{
-		assertThat(new Item("id", "title", "desc", "date", "url", duration, 0L).getDuration()).isEqualTo(expected);
+		assertThat(new Item(new ItemId("id"), "title", "desc", "date", "url", duration, 0L).getDuration()).isEqualTo(expected);
 	}
 }

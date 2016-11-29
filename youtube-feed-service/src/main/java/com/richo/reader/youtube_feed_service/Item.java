@@ -3,6 +3,7 @@ package com.richo.reader.youtube_feed_service;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.richodemus.reader.dto.ItemId;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -10,7 +11,7 @@ import java.time.ZoneOffset;
 
 public class Item
 {
-	private final String id;
+	private final ItemId id;
 	private final String title;
 	private final String description;
 	private final LocalDateTime uploadDate;
@@ -25,10 +26,10 @@ public class Item
 				@JsonProperty("duration") long duration,
 				@JsonProperty("views") long views)
 	{
-		this(id, title, description, LocalDateTime.ofEpochSecond(uploadDate, 0, ZoneOffset.UTC), Duration.ofSeconds(duration), views);
+		this(new ItemId(id), title, description, LocalDateTime.ofEpochSecond(uploadDate, 0, ZoneOffset.UTC), Duration.ofSeconds(duration), views);
 	}
 
-	public Item(String id, String title, String description, LocalDateTime uploadDate, Duration duration, long views)
+	public Item(ItemId id, String title, String description, LocalDateTime uploadDate, Duration duration, long views)
 	{
 		this.id = id;
 		this.title = title;
@@ -38,7 +39,7 @@ public class Item
 		this.views = views;
 	}
 
-	public String getId()
+	public ItemId getId()
 	{
 		return id;
 	}

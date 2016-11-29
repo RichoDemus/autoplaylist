@@ -1,5 +1,6 @@
 package com.richo.reader.youtube_feed_service;
 
+import com.richodemus.reader.dto.ItemId;
 import org.junit.Test;
 
 import java.time.Duration;
@@ -13,8 +14,8 @@ public class ItemTest
 	public void shouldHandleDurationProperly() throws Exception
 	{
 		final Duration duration = Duration.ofMinutes(2);
-		final Item item = new Item("id", "title", "desc", LocalDateTime.now(), duration, 1L);
-		final Item newItem = new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDateAsLong(), item.getDurationAsLong(), item.getViews());
+		final Item item = new Item(new ItemId("id"), "title", "desc", LocalDateTime.now(), duration, 1L);
+		final Item newItem = new Item(item.getId().getValue(), item.getTitle(), item.getDescription(), item.getUploadDateAsLong(), item.getDurationAsLong(), item.getViews());
 
 		assertThat(newItem.getDuration()).isEqualTo(newItem.getDuration());
 	}

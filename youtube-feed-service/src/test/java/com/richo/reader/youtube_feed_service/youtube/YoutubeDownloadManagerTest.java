@@ -11,6 +11,7 @@ import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.JsonFileSystemPersistence;
 import com.richo.reader.youtube_feed_service.YoutubeDownloadManager;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.ItemId;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,6 +27,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,21 +35,21 @@ import static org.mockito.Mockito.when;
 public class YoutubeDownloadManagerTest
 {
 	private static final FeedId NON_EXISTENT_CHANNEL_NAME = new FeedId("non existerino");
-	private static final Item CACHED_CHANNEL_FIRST_VIDEO = new Item("_0S1jebDBzk", "cached_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56), Duration.ZERO, 0L);
+	private static final Item CACHED_CHANNEL_FIRST_VIDEO = new Item(new ItemId("_0S1jebDBzk"), "cached_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56), Duration.ZERO, 0L);
 	private static final Feed CACHED_CHANNEL = new Feed(
 			new FeedId("cached_channel"),
 			singletonList(CACHED_CHANNEL_FIRST_VIDEO),
 			LocalDateTime.now());
 
-	private static final Item UNCACHED_CHANNEL_FIRST_VIDEO = new Item("_0S1jebDBzk1", "uncached_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56), Duration.ZERO, 0L);
+	private static final Item UNCACHED_CHANNEL_FIRST_VIDEO = new Item(new ItemId("_0S1jebDBzk1"), "uncached_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56), Duration.ZERO, 0L);
 	private static final Feed UNCACHED_CHANNEL = new Feed(
 			new FeedId("uncached_channel"),
 			singletonList(UNCACHED_CHANNEL_FIRST_VIDEO),
 			LocalDateTime.now());
 
-	private static final Item OUTDATED_CHANNEL_FIRST_VIDEO = new Item("_0S1jebDBzk2", "outdated_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56), Duration.ZERO, 0L);
-	private static final Item OUTDATED_CHANNEL_SECOND_VIDEO = new Item("_0S1jebdDBzk", "outdated_2", "description2", LocalDateTime.of(2014, 9, 10, 12, 37, 56), Duration.ZERO, 0L);
-	private static final Item OUTDATED_CHANNEL_NOT_CACHED_VIDEO = new Item("_0s1jebDBze", "outdated_noncached_3", "description3", LocalDateTime.of(2014, 11, 5, 12, 37, 56), Duration.ZERO, 0L);
+	private static final Item OUTDATED_CHANNEL_FIRST_VIDEO = new Item(new ItemId("_0S1jebDBzk2"), "outdated_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56), Duration.ZERO, 0L);
+	private static final Item OUTDATED_CHANNEL_SECOND_VIDEO = new Item(new ItemId("_0S1jebdDBzk"), "outdated_2", "description2", LocalDateTime.of(2014, 9, 10, 12, 37, 56), Duration.ZERO, 0L);
+	private static final Item OUTDATED_CHANNEL_NOT_CACHED_VIDEO = new Item(new ItemId("_0s1jebDBze"), "outdated_noncached_3", "description3", LocalDateTime.of(2014, 11, 5, 12, 37, 56), Duration.ZERO, 0L);
 	private static final Feed OUTDATED_CHANNEL_WITH_NEW_ITEM = new Feed(
 			new FeedId("outdated_channel"),
 			asList(OUTDATED_CHANNEL_FIRST_VIDEO, OUTDATED_CHANNEL_SECOND_VIDEO, OUTDATED_CHANNEL_NOT_CACHED_VIDEO),
@@ -66,7 +68,7 @@ public class YoutubeDownloadManagerTest
 	public void setUp() throws Exception
 	{
 		channelDownloaderMock = getYoutubeChannelDownloaderMock();
-		when(channelDownloaderMock.getStatistics(any())).thenReturn(ImmutableMap.of(
+		when(channelDownloaderMock.getStatistics(anyString())).thenReturn(ImmutableMap.of(
 				CACHED_CHANNEL_FIRST_VIDEO.getId(), new DurationAndViewcount(Duration.ofMinutes(1), 1000L),
 				UNCACHED_CHANNEL_FIRST_VIDEO.getId(), new DurationAndViewcount(Duration.ofMinutes(1), 1000L),
 				OUTDATED_CHANNEL_FIRST_VIDEO.getId(), new DurationAndViewcount(Duration.ofMinutes(1), 1000L),
@@ -184,7 +186,7 @@ public class YoutubeDownloadManagerTest
 		return new PlaylistItem().setSnippet(new PlaylistItemSnippet()
 				.setTitle(v.getTitle())
 				.setDescription(v.getDescription())
-				.setResourceId(new ResourceId().setVideoId(v.getId()))
+				.setResourceId(new ResourceId().setVideoId(v.getId().getValue()))
 				.setPublishedAt(new DateTime(v.getUploadDateAsLong(), 0)));
 	}
 }

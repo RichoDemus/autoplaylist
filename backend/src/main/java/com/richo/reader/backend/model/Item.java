@@ -1,11 +1,13 @@
 package com.richo.reader.backend.model;
 
+import com.richodemus.reader.dto.ItemId;
+
 import java.time.Duration;
 import java.util.Objects;
 
 public class Item
 {
-	private final String id;
+	private final ItemId id;
 	private final String title;
 	private final String description;
 	private final String uploadDate;
@@ -13,7 +15,7 @@ public class Item
 	private final String duration;
 	private final long views;
 
-	public Item(String id,
+	public Item(ItemId id,
 				String title,
 				String description,
 				String uploadDate,
@@ -45,7 +47,7 @@ public class Item
 		return string;
 	}
 
-	public String getId()
+	public ItemId getId()
 	{
 		return id;
 	}

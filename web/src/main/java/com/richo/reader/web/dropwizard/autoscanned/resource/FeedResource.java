@@ -12,6 +12,7 @@ import com.richo.reader.backend.model.Label;
 import com.richo.reader.web.dto.ItemOperation;
 import com.richo.reader.web.dto.User;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.ItemId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,13 +88,13 @@ public class FeedResource
 			switch (operation.getAction())
 			{
 				case MARK_READ:
-					backend.markAsRead(username, new FeedId(feedId), itemId);
+					backend.markAsRead(username, new FeedId(feedId), new ItemId(itemId));
 					break;
 				case MARK_UNREAD:
-					backend.markAsUnread(username, new FeedId(feedId), itemId);
+					backend.markAsUnread(username, new FeedId(feedId), new ItemId(itemId));
 					break;
 				case MARK_OLDER_ITEMS_AS_READ:
-					backend.markOlderItemsAsRead(username, new FeedId(feedId), itemId);
+					backend.markOlderItemsAsRead(username, new FeedId(feedId), new ItemId(itemId));
 					break;
 				default:
 					logger.error("Unknown action {}", operation.getAction());

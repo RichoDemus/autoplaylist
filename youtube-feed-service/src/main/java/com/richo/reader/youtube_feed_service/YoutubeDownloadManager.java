@@ -7,6 +7,7 @@ import com.richo.reader.youtube_feed_service.youtube.DurationAndViewcount;
 import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader;
 import com.richo.reader.youtube_feed_service.youtube.YoutubeVideoChunk;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.ItemId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,7 @@ public class YoutubeDownloadManager
 		logger.info("Channel {} requested", feedId);
 		final Feed feed = cache.get(feedId).orElse(new Feed(feedId, new ArrayList<>(), LocalDateTime.now()));
 
-		final List<String> itemIds = feed.getItems().stream().map(Item::getId).collect(toList());
+		final List<ItemId> itemIds = feed.getItems().stream().map(Item::getId).collect(toList());
 		final List<Item> items = new ArrayList<>(feed.getItems());
 		final Optional<YoutubeVideoChunk> videoChunk = youtubeChannelDownloader.getVideoChunk(feedId);
 
@@ -54,7 +55,7 @@ public class YoutubeDownloadManager
 			boolean itemAlreadyInList = false;
 			for (PlaylistItem item : nextVideoChunk)
 			{
-				if (itemIds.contains(item.getSnippet().getResourceId().getVideoId()))
+				if (itemIds.contains(new ItemId(item.getSnippet().getResourceId().getVideoId())))
 				{
 					itemAlreadyInList = true;
 					logger.debug("Video {} is already cached, this channel should be up to date now", item);
@@ -102,8 +103,8 @@ public class YoutubeDownloadManager
 	private List<Item> toItemWithStatistics(List<Item> items)
 	{
 		logger.info("Getting statistics for {} items", items.size());
-		final String ids = items.stream().map(Item::getId).collect(joining(","));
-		final Map<String, DurationAndViewcount> statistics = youtubeChannelDownloader.getStatistics(ids);
+		final String ids = items.stream().map(Item::getId).map(ItemId::getValue).collect(joining(","));
+		final Map<ItemId, DurationAndViewcount> statistics = youtubeChannelDownloader.getStatistics(ids);
 		return items.stream()
 				.map(item ->
 				{
@@ -113,7 +114,7 @@ public class YoutubeDownloadManager
 						return new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), durationAndViewcount.duration, durationAndViewcount.viewCount);
 					}
 
-					final Map<String, DurationAndViewcount> newStatistics = youtubeChannelDownloader.getStatistics(item.getId());
+					final Map<ItemId, DurationAndViewcount> newStatistics = youtubeChannelDownloader.getStatistics(item.getId());
 					final boolean unavailable = newStatistics.isEmpty();
 					if (unavailable)
 					{

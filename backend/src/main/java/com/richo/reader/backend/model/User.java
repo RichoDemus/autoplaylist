@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableMap;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.ItemId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,12 +18,12 @@ import java.util.Set;
 public class User
 {
 	private final String name;
-	private final Map<FeedId, Set<String>> feeds;
+	private final Map<FeedId, Set<ItemId>> feeds;
 	private final List<Label> labels;
 	private long nextLabelId;
 
 	@JsonCreator
-	public User(@JsonProperty("name") String username, @JsonProperty("nextLabelId") long nextLabelId, @JsonProperty("feeds") Map<FeedId, Set<String>> feedsIds, @JsonProperty("labels") List<Label> labels)
+	public User(@JsonProperty("name") String username, @JsonProperty("nextLabelId") long nextLabelId, @JsonProperty("feeds") Map<FeedId, Set<ItemId>> feedsIds, @JsonProperty("labels") List<Label> labels)
 	{
 		this.name = username;
 		this.nextLabelId = nextLabelId;
@@ -38,7 +39,7 @@ public class User
 		feedIds.forEach(id -> feeds.put(id, new HashSet<>()));
 	}
 
-	public Map<FeedId, Set<String>> getFeeds()
+	public Map<FeedId, Set<ItemId>> getFeeds()
 	{
 		return ImmutableMap.copyOf(feeds);
 	}
@@ -53,7 +54,7 @@ public class User
 		return name;
 	}
 
-	public void markAsRead(FeedId feedId, String itemId) throws UserNotSubscribedToThatChannelException
+	public void markAsRead(FeedId feedId, ItemId itemId) throws UserNotSubscribedToThatChannelException
 	{
 		if (!feeds.containsKey(feedId))
 		{
@@ -63,12 +64,12 @@ public class User
 		feeds.get(feedId).add(itemId);
 	}
 
-	public boolean isRead(FeedId feedId, String videoId)
+	public boolean isRead(FeedId feedId, ItemId videoId)
 	{
 		return feeds.get(feedId).contains(videoId);
 	}
 
-	public void markAsUnRead(FeedId feedId, String itemId)
+	public void markAsUnRead(FeedId feedId, ItemId itemId)
 	{
 		feeds.get(feedId).remove(itemId);
 	}
