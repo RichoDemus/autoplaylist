@@ -5,6 +5,7 @@ import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.Label;
 import com.richo.reader.backend.model.User;
 import com.richo.reader.backend.user.UserService;
+import com.richodemus.reader.dto.FeedId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +39,7 @@ public class LabelManager
 		return new Label(user.incrementAndGetNextLabelId(), labelName, new ArrayList<>());
 	}
 
-	public void addFeedToLabel(String username, long labelId, String feedId) throws NoSuchUserException, NoSuchLabelException
+	public void addFeedToLabel(String username, long labelId, final FeedId feedId) throws NoSuchUserException, NoSuchLabelException
 	{
 		logger.debug("Adding feed {} to label {} for user {}", feedId, labelId, username);
 		final User user = userService.get(username);

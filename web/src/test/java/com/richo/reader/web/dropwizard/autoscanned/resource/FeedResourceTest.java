@@ -101,4 +101,12 @@ public class FeedResourceTest
 		assertEquals(TestData.FEED1.getNumberOfAvailableItems(), feed1.getNumberOfAvailableItems());
 		assertEquals(TestData.FEED2.getNumberOfAvailableItems(), feed2.getNumberOfAvailableItems());
 	}
+
+	@Test
+	public void shouldAddFeed() throws Exception
+	{
+		TARGET.client().target("/users/" + USERNAME + "/feeds/").request().post(Entity.json("\"ERB\""));
+
+		verify(backendMock).addFeed(USERNAME, new FeedId("ERB"));
+	}
 }

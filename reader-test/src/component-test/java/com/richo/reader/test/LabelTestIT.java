@@ -3,6 +3,7 @@ package com.richo.reader.test;
 import com.google.common.collect.Sets;
 import com.richo.reader.test.pages.FeedPage;
 import com.richo.reader.test.pages.LoginPage;
+import com.richo.reader.test.pages.model.FeedId;
 import com.richo.reader.test.pages.model.Label;
 import com.richo.reader.test.util.DropwizardContainer;
 import org.junit.After;
@@ -18,6 +19,7 @@ import static org.awaitility.Awaitility.await;
 
 public class LabelTestIT
 {
+	private static final FeedId FEED_ID = new FeedId("richodemus");
 	private DropwizardContainer target;
 	private DropwizardContainer youtubeMock;
 	private String baseUrl;
@@ -45,7 +47,6 @@ public class LabelTestIT
 	public void shouldCreateLabel() throws Exception
 	{
 		final String username = "richodemus";
-		final String feedName = "richodemus";
 		final String labelName = "my-label";
 
 		loginPage.createUser(username);
@@ -61,25 +62,24 @@ public class LabelTestIT
 	public void shouldAddFeedToLabel() throws Exception
 	{
 		final String username = "richodemus";
-		final String feedName = "richodemus";
 		final String labelName = "my-label";
 
 		loginPage.createUser(username);
 		loginPage.login(username);
 		final FeedPage feedPage = loginPage.toFeedPage();
-		feedPage.addFeed(feedName);
+		feedPage.addFeed(FEED_ID);
 
 
 		final int adminPort = target.getAdminPort();
 		post("http://localhost:" + adminPort + "/tasks/download").then().statusCode(200);
 
-		await().atMost(1, MINUTES).until(() -> assertThat(feedPage.getItemNames(feedName)).isNotEmpty());
+		await().atMost(1, MINUTES).until(() -> assertThat(feedPage.getItemNames(FEED_ID)).isNotEmpty());
 
 		final int labelId = feedPage.createLabel(labelName);
-		feedPage.addFeedToLabel(feedName, labelId);
+		feedPage.addFeedToLabel(FEED_ID, labelId);
 
 		final List<Label> result = feedPage.getLabels();
 
-		assertThat(result).flatExtracting("feeds").containsOnly(feedName);
+		assertThat(result).flatExtracting("feeds").containsOnly(FEED_ID.toString());
 	}
 }

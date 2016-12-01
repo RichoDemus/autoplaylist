@@ -3,6 +3,7 @@ package com.richo.reader.test;
 import com.google.common.collect.Sets;
 import com.richo.reader.test.pages.FeedPage;
 import com.richo.reader.test.pages.LoginPage;
+import com.richo.reader.test.pages.model.FeedId;
 import com.richo.reader.test.util.DropwizardContainer;
 import org.junit.After;
 import org.junit.Before;
@@ -17,6 +18,7 @@ import static org.awaitility.Awaitility.await;
 
 public class DownloadingTestIT
 {
+	private static final FeedId FEED_ID = new FeedId("richodemus");
 	private DropwizardContainer target;
 	private DropwizardContainer youtubeMock;
 	private LoginPage loginPage;
@@ -42,14 +44,13 @@ public class DownloadingTestIT
 	public void newlyAddedFeedShouldNotContainItems() throws Exception
 	{
 		final String username = "richodemus";
-		final String feedName = "richodemus";
 
 		loginPage.createUser(username);
 		loginPage.login(username);
 		final FeedPage feedPage = loginPage.toFeedPage();
-		feedPage.addFeed(feedName);
+		feedPage.addFeed(FEED_ID);
 
-		final List<String> result = feedPage.getItemNames(feedName);
+		final List<String> result = feedPage.getItemNames(FEED_ID);
 
 		assertThat(result).hasSize(0);
 	}
@@ -58,20 +59,19 @@ public class DownloadingTestIT
 	public void shouldDownloadItemsAndAddThemToList() throws Exception
 	{
 		final String username = "richodemus";
-		final String feedName = "richodemus";
 
 		loginPage.createUser(username);
 		loginPage.login(username);
 		final FeedPage feedPage = loginPage.toFeedPage();
-		feedPage.addFeed(feedName);
+		feedPage.addFeed(FEED_ID);
 
 
 		final int adminPort = target.getAdminPort();
 		post("http://localhost:" + adminPort + "/tasks/download").then().statusCode(200);
 
-		await().atMost(1, MINUTES).until(() -> assertThat(feedPage.getItemNames(feedName)).isNotEmpty());
+		await().atMost(1, MINUTES).until(() -> assertThat(feedPage.getItemNames(FEED_ID)).isNotEmpty());
 
-		assertThat(feedPage.getItemNames(feedName)).containsExactly("Zs6bAFlcH0M", "vtuDTx1oJGA");
+		assertThat(feedPage.getItemNames(FEED_ID)).containsExactly("Zs6bAFlcH0M", "vtuDTx1oJGA");
 		assertThat(feedPage.getAllFeeds()).extracting("numberOfAvailableItems").containsExactly(2);
 	}
 }

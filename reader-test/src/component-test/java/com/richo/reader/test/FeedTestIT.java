@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.jayway.restassured.RestAssured;
 import com.richo.reader.test.pages.FeedPage;
 import com.richo.reader.test.pages.LoginPage;
+import com.richo.reader.test.pages.model.FeedId;
 import com.richo.reader.test.pages.model.FeedWithoutItem;
 import com.richo.reader.test.util.DropwizardContainer;
 import org.junit.After;
@@ -19,6 +20,7 @@ import static org.awaitility.Awaitility.await;
 
 public class FeedTestIT
 {
+	private static final FeedId FEED_ID = new FeedId("richodemus");
 	private DropwizardContainer target;
 	private DropwizardContainer youtubeMock;
 	private String baseUrl;
@@ -68,40 +70,38 @@ public class FeedTestIT
 	public void getFeedsShouldContainAddedFeed() throws Exception
 	{
 		final String username = "richodemus";
-		final String feedName = "richodemus";
 		loginPage.createUser(username);
 		loginPage.login(username);
 		final FeedPage feedPage = loginPage.toFeedPage();
 
-		feedPage.addFeed(feedName);
+		feedPage.addFeed(FEED_ID);
 
 		final List<FeedWithoutItem> result = feedPage.getAllFeeds();
-		assertThat(result).extracting("name").containsExactly(feedName);
+		assertThat(result).extracting("name").containsExactly(FEED_ID.toString());
 	}
 
 
-	@Test(timeout = 30_000L)
+	@Test
 	public void shouldNotContainItemMarkedAsRead() throws Exception
 	{
 		final String username = "richodemus";
-		final String feedName = "richodemus";
 
 		loginPage.createUser(username);
 		loginPage.login(username);
 		final FeedPage feedPage = loginPage.toFeedPage();
-		feedPage.addFeed(feedName);
+		feedPage.addFeed(FEED_ID);
 
 
 		final int adminPort = target.getAdminPort();
 		post("http://localhost:" + adminPort + "/tasks/download").then().statusCode(200);
 
-		await().atMost(1, MINUTES).until(() -> assertThat(feedPage.getItemNames(feedName)).isNotEmpty());
+		await().atMost(1, MINUTES).until(() -> assertThat(feedPage.getItemNames(FEED_ID)).isNotEmpty());
 
-		assertThat(feedPage.getItemNames(feedName)).containsExactly("Zs6bAFlcH0M", "vtuDTx1oJGA");
+		assertThat(feedPage.getItemNames(FEED_ID)).containsExactly("Zs6bAFlcH0M", "vtuDTx1oJGA");
 
-		feedPage.markAsRead(feedName, "vtuDTx1oJGA");
+		feedPage.markAsRead(FEED_ID, "vtuDTx1oJGA");
 
-		assertThat(feedPage.getItemNames(feedName)).containsExactly("Zs6bAFlcH0M");
+		assertThat(feedPage.getItemNames(FEED_ID)).containsExactly("Zs6bAFlcH0M");
 		assertThat(feedPage.getAllFeeds()).extracting("numberOfAvailableItems").containsExactly(1);
 	}
 }

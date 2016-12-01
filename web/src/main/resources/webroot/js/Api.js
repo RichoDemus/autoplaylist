@@ -91,7 +91,7 @@ var Api = (function()
 		jQuery.ajax ({
 			url: "api/users/" + Authentication.username + "/feeds",
 			type: "POST",
-			data: feedName,
+			data: JSON.stringify(feedName),
 			dataType: "json",
 			contentType: "application/json; charset=utf-8",
 			headers: { 'x-token-jwt': Authentication.token.raw },
@@ -160,7 +160,8 @@ var Api = (function()
 		console.log("Attempting to add feed " + feed + " to label " + label);
 		$.ajax({
 			url: "api/users/" + Authentication.username + "/labels/" + label,
-			data: feed,
+			contentType: "application/json; charset=utf-8",
+			data: JSON.stringify(feed),
 			type: "PUT",
 			headers: { 'x-token-jwt': Authentication.token.raw },
 			success: callback

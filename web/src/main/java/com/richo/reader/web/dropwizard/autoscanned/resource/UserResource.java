@@ -22,7 +22,7 @@ public class UserResource
 	private final UserServiceBridge userService;
 
 	@Inject
-	UserResource(UserServiceBridge userService)
+	UserResource(final UserServiceBridge userService)
 	{
 		this.userService = userService;
 	}

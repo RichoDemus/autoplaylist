@@ -2,6 +2,7 @@ package com.richo.reader.test.pages;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
+import com.richo.reader.test.pages.model.FeedId;
 import com.richo.reader.test.pages.model.FeedWithoutItem;
 import com.richo.reader.test.pages.model.Label;
 
@@ -28,15 +29,15 @@ public class FeedPage
 				.then().assertThat().statusCode(200).extract().body().jsonPath().get("feeds");
 	}
 
-	public void addFeed(String feedName)
+	public void addFeed(final FeedId feedName)
 	{
 		RestAssured
-				.given().header("x-token-jwt", token).body(feedName).contentType(ContentType.JSON)
+				.given().header("x-token-jwt", token).body(feedName.toJson()).contentType(ContentType.JSON)
 				.when().post(baseUrl + "/api/users/" + username + "/feeds/")
 				.then().assertThat().statusCode(204);
 	}
 
-	public List<String> getItemNames(String feedName)
+	public List<String> getItemNames(final FeedId feedName)
 	{
 		return RestAssured
 				.given().header("x-token-jwt", token)
@@ -44,7 +45,7 @@ public class FeedPage
 				.then().extract().body().jsonPath().get("items.id");
 	}
 
-	public void markAsRead(String feedName, String item)
+	public void markAsRead(FeedId feedName, String item)
 	{
 		RestAssured
 				.given().header("x-token-jwt", token).body(new MarkReadAction()).contentType(ContentType.JSON)
@@ -60,10 +61,10 @@ public class FeedPage
 				.then().extract().body().jsonPath().get("id");
 	}
 
-	public void addFeedToLabel(String feedName, int labelId)
+	public void addFeedToLabel(final FeedId feedName, int labelId)
 	{
 		RestAssured
-				.given().header("x-token-jwt", token).body(feedName).contentType(ContentType.JSON)
+				.given().header("x-token-jwt", token).body(feedName.toJson()).contentType(ContentType.JSON)
 				.when().put(baseUrl + "/api/users/" + username + "/labels/" + labelId)
 				.then().assertThat().statusCode(204);
 	}

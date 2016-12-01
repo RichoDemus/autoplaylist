@@ -6,12 +6,14 @@ import com.richo.reader.backend.LabelManager;
 import com.richo.reader.backend.exception.NoSuchLabelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.Label;
+import com.richodemus.reader.dto.FeedId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -29,14 +31,14 @@ public class LabelResource
 	private final LabelManager labelManager;
 
 	@Inject
-	LabelResource(LabelManager labelManager)
+	LabelResource(final LabelManager labelManager)
 	{
 		this.labelManager = labelManager;
 	}
 
 	@Timed
 	@POST
-	public Label createLabel(@PathParam("username") String username, String labelName)
+	public Label createLabel(@PathParam("username") final String username, final String labelName)
 	{
 		if (Strings.isNullOrEmpty(labelName))
 		{
@@ -60,9 +62,10 @@ public class LabelResource
 	}
 
 	@Timed
+	@Consumes(MediaType.APPLICATION_JSON)
 	@PUT
 	@Path("/{labelId}")
-	public void addFeedToLabel(@PathParam("username") String username, @PathParam("labelId") long labelId, String feedId)
+	public void addFeedToLabel(@PathParam("username") final String username, @PathParam("labelId") final long labelId, final FeedId feedId)
 	{
 		logger.debug("Adding feed {} to label {} for user {}", feedId, labelId, username);
 		try

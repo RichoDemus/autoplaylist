@@ -29,7 +29,7 @@ public class SessionResource
 	private final AuthenticationManager authenticationManager;
 
 	@Inject
-	SessionResource(AuthenticationManager authenticationManager)
+	SessionResource(final AuthenticationManager authenticationManager)
 	{
 		this.authenticationManager = authenticationManager;
 	}
@@ -37,7 +37,7 @@ public class SessionResource
 	@Timed
 	@POST
 	@PermitAll
-	public Session login(@PathParam("username") String username, String password)
+	public Session login(@PathParam("username") final String username, final String password)
 	{
 		logger.info("Logging user {}", username);
 		try
@@ -64,7 +64,7 @@ public class SessionResource
 	@POST
 	@Path("/refresh")
 	@RolesAllowed("any")
-	public Session refreshSession(@Context HttpServletRequest request, @PathParam("username") String username)
+	public Session refreshSession(@Context final HttpServletRequest request, @PathParam("username") final String username)
 	{
 		logger.debug("Refreshing session for {}", username);
 		final RawToken rawToken = new RawToken(request.getHeader("x-token-jwt"));

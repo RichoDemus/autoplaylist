@@ -40,7 +40,7 @@ public class FeedResource
 	private final LabelManager labelManager;
 
 	@Inject
-	FeedResource(Backend injectable, LabelManager labelManager)
+	FeedResource(final Backend injectable, final LabelManager labelManager)
 	{
 		this.backend = injectable;
 		this.labelManager = labelManager;
@@ -71,16 +71,16 @@ public class FeedResource
 	@Timed
 	@GET
 	@Path("/{feed}/")
-	public Feed getFeed(@PathParam("username") final String username, @PathParam("feed") final String feedId)
+	public Feed getFeed(@PathParam("username") final String username, @PathParam("feed") final FeedId feedId)
 	{
-		return backend.getFeed(username, new FeedId(feedId))
+		return backend.getFeed(username, feedId)
 				.orElseThrow(() -> new BadRequestException("Couldn't find feed " + feedId));
 	}
 
 	@Timed
 	@POST
 	@Path("/{feed}/items/{item}/")
-	public void performFeedOperation(@PathParam("username") final String username, @PathParam("feed") final String feedId, @PathParam("item") final String itemId, ItemOperation operation)
+	public void performFeedOperation(@PathParam("username") final String username, @PathParam("feed") final FeedId feedId, @PathParam("item") final ItemId itemId, final ItemOperation operation)
 	{
 		logger.info("Received item operation {} for feed {}, item {}", operation, feedId, itemId);
 		try
@@ -88,13 +88,13 @@ public class FeedResource
 			switch (operation.getAction())
 			{
 				case MARK_READ:
-					backend.markAsRead(username, new FeedId(feedId), new ItemId(itemId));
+					backend.markAsRead(username, feedId, itemId);
 					break;
 				case MARK_UNREAD:
-					backend.markAsUnread(username, new FeedId(feedId), new ItemId(itemId));
+					backend.markAsUnread(username, feedId, itemId);
 					break;
 				case MARK_OLDER_ITEMS_AS_READ:
-					backend.markOlderItemsAsRead(username, new FeedId(feedId), new ItemId(itemId));
+					backend.markOlderItemsAsRead(username, feedId, itemId);
 					break;
 				default:
 					logger.error("Unknown action {}", operation.getAction());
@@ -115,26 +115,26 @@ public class FeedResource
 
 	@Timed
 	@POST //todo shouldnt this be a put
-	public void addFeed(@PathParam("username") final String username, final String feedName)
+	public void addFeed(@PathParam("username") final String username, final FeedId feedId)
 	{
-		if (feedName == null)
+		if (feedId == null)
 		{
 			logger.info("User {} tried to add an empty feed", username);
 			throw new BadRequestException("Feed can't be empty");
 		}
-		logger.info("{} wants to subscribe to {}", username, feedName);
+		logger.info("{} wants to subscribe to {}", username, feedId);
 		try
 		{
-			backend.addFeed(username, new FeedId(feedName));
+			backend.addFeed(username, feedId);
 		}
 		catch (NoSuchChannelException | NoSuchUserException e)
 		{
-			logger.warn("Exception when {} added feed {}", username, feedName, e);
+			logger.warn("Exception when {} added feed {}", username, feedId, e);
 			throw new BadRequestException(e);
 		}
 		catch (Exception e)
 		{
-			logger.warn("Exception when {} added feed {}", username, feedName, e);
+			logger.warn("Exception when {} added feed {}", username, feedId, e);
 			throw new InternalServerErrorException(e);
 		}
 	}
