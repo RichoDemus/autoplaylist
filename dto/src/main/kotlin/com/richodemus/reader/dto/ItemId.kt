@@ -1,8 +1,9 @@
 package com.richodemus.reader.dto
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonValue
 
-data class ItemId(val value: String) {
+data class ItemId(@get:JsonIgnore val value: String) {
     init {
         require(value.isNotBlank()) { "FeedId can't be empty" }
     }
