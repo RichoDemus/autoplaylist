@@ -17,9 +17,11 @@ import org.junit.Test;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import static com.richo.reader.web.TestData.FEED1;
 import static com.richo.reader.web.TestData.FEED2;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -105,8 +107,24 @@ public class FeedResourceTest
 	@Test
 	public void shouldAddFeed() throws Exception
 	{
-		TARGET.client().target("/users/" + USERNAME + "/feeds/").request().post(Entity.json("\"ERB\""));
+		//language=JSON
+		final String channelName = "\"ERB\"";
+		TARGET.client().target("/users/" + USERNAME + "/feeds/").request().post(Entity.json(channelName));
 
 		verify(backendMock).addFeed(USERNAME, new FeedId("ERB"));
+	}
+
+	@Test
+	public void shouldRespondWithUserErrorWhenAddingEmptyFeed() throws Exception
+	{
+		final Response response = TARGET.client().target("/users/" + USERNAME + "/feeds/").request().post(Entity.json("\"\""));
+		final int status = response.getStatus();
+		final String body = response.readEntity(String.class);
+
+		assertThat(status).isEqualTo(400);
+		// todo see if we can get the actual error message: "FeedId can't be empty"
+		//language=JSON
+		final String expectedError = "{\"code\":400,\"message\":\"Unable to process JSON\"}";
+		assertThat(body).isEqualTo(expectedError);
 	}
 }
