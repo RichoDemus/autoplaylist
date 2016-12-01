@@ -3,7 +3,6 @@ package com.richodemus.reader.dto
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Ignore
 import org.junit.Test
 
 class FeedIdTest {
@@ -40,23 +39,24 @@ class FeedIdTest {
         assertThat(result).isEqualTo(Channel(FeedId("hello")))
     }
 
-    @Ignore("Can't get this to work")
     @Test
-    fun `should serialize into just it's value`() {
+    fun `should serialize into just a string`() {
         val mapper = ObjectMapper()
         val result = mapper.writeValueAsString(FeedId("hello"))
 
-        assertThat(result).isEqualTo("hello")
+        //language=JSON
+        val expected = "\"hello\""
+        assertThat(result).isEqualTo(expected)
     }
 
-    @Ignore("Can't get this to work")
     @Test
     fun `should deserialize from just a string`() {
         val mapper = ObjectMapper()
         mapper.registerModule(KotlinModule())
 
         //language=JSON
-        val result = mapper.readValue("hello", FeedId::class.java)
+        val json = "\"hello\""
+        val result = mapper.readValue(json, FeedId::class.java)
 
         assertThat(result).isEqualTo(FeedId("hello"))
     }
