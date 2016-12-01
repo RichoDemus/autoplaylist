@@ -121,7 +121,7 @@ public class YoutubeChannelDownloader
 			channels = youtube.channels()
 					.list("contentDetails")
 					.setKey(apiKey)
-					.setForUsername(channelName.getId())
+					.setForUsername(channelName.getValue())
 					.execute()
 					.getItems();
 		}

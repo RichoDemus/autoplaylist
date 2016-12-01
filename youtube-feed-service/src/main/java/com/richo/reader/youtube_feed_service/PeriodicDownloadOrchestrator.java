@@ -86,7 +86,7 @@ public class PeriodicDownloadOrchestrator
 	{
 		logger.info("Midnight, time to download");
 		final List<FeedId> feedIds = cache.getAllFeedIds();
-		Collections.sort(feedIds, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+		Collections.sort(feedIds, (o1, o2) -> o1.getValue().compareTo(o2.getValue()));
 		logger.info("{} feeds to download", feedIds.size());
 
 		feedIds.forEach(feedId -> runWithExceptionHandling(feedId, downloader::downloadFeed));

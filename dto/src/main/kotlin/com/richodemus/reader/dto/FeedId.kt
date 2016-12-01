@@ -9,7 +9,5 @@ data class FeedId(@get:JsonIgnore val value: String) {
         Pair(1, 2) // This is just here so stdlib is used for something...
     }
 
-    @JsonValue fun getId() = value
-
-    override fun toString() = value
+    @JsonValue override fun toString() = value
 }

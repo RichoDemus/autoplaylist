@@ -8,7 +8,5 @@ data class ItemId(@get:JsonIgnore val value: String) {
         require(value.isNotBlank()) { "FeedId can't be empty" }
     }
 
-    @JsonValue fun getId() = value
-
-    override fun toString() = value
+    @JsonValue override fun toString() = value
 }
