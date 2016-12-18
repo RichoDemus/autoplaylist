@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
 import com.richo.reader.backend.user.UserService;
+import com.richodemus.reader.dto.UserId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,14 +22,14 @@ public class UserManager
 		this.userService = userService;
 	}
 
-	public void createUser(String username, String password)
+	public void createUser(UserId username, String password)
 	{
 		logger.debug("Creating user {}", username);
 		userService.update(new User(username, Sets.newHashSet()));
 		userService.updatePassword(username, password);
 	}
 
-	public boolean checkCredentials(String username, String password) throws NoSuchUserException
+	public boolean checkCredentials(UserId username, String password) throws NoSuchUserException
 	{
 		logger.info("Checking credentials for {}", username);
 		final Optional<User> maybeUser = Optional.ofNullable(userService.get(username));

@@ -2,14 +2,15 @@ package com.richo.reader.backend.user;
 
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
+import com.richodemus.reader.dto.UserId;
 
 public interface UserPersister
 {
-	User get(String username) throws NoSuchUserException;
+	User get(UserId username) throws NoSuchUserException;
 
 	void update(User user);
 
-	boolean isPasswordValid(String username, String password);
+	boolean isPasswordValid(UserId username, String password);
 
-	void updatePassword(String username, String password);
+	void updatePassword(UserId username, String password);
 }

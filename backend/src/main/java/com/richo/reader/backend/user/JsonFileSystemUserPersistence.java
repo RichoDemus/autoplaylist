@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
+import com.richodemus.reader.dto.UserId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public class JsonFileSystemUserPersistence implements UserPersister
 	}
 
 	@Override
-	public User get(String username) throws NoSuchUserException
+	public User get(UserId username) throws NoSuchUserException
 	{
 		try
 		{
@@ -75,7 +76,7 @@ public class JsonFileSystemUserPersistence implements UserPersister
 		}
 	}
 
-	public void setPassword(String username, String password)
+	public void setPassword(UserId username, String password)
 	{
 		try
 		{
@@ -92,7 +93,7 @@ public class JsonFileSystemUserPersistence implements UserPersister
 	}
 
 	@Override
-	public boolean isPasswordValid(String username, String password)
+	public boolean isPasswordValid(UserId username, String password)
 	{
 		try
 		{
@@ -107,7 +108,7 @@ public class JsonFileSystemUserPersistence implements UserPersister
 	}
 
 	@Override
-	public void updatePassword(final String username, final String password)
+	public void updatePassword(final UserId username, final String password)
 	{
 		try
 		{

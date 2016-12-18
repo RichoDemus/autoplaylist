@@ -2,6 +2,7 @@ package com.richo.reader.web.dropwizard.autoscanned;
 
 import com.richo.reader.backend.Backend;
 import com.richo.reader.backend.model.Feed;
+import com.richodemus.reader.dto.UserId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.vyarus.dropwizard.guice.module.installer.feature.health.NamedHealthCheck;
@@ -32,7 +33,7 @@ public class BackendHealthCheck extends NamedHealthCheck
 		final List<Feed> feeds;
 		try
 		{
-			feeds = backend.getAllFeedsWithoutItems("RichoDemus");
+			feeds = backend.getAllFeedsWithoutItems(new UserId("RichoDemus"));
 		}
 		catch (Exception e)
 		{

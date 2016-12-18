@@ -45,7 +45,7 @@ public class SessionResource
 		{
 			// todo use UserId through the whole chain instead
 			return authenticationManager.login(username.getValue(), password)
-					.map(token -> new Session(username.getValue(), token.stringValue()))
+					.map(token -> new Session(username, token.stringValue()))
 					.orElseThrow(() -> new NoSuchUserException("Failed to create session object"));
 		}
 		catch (NoSuchUserException e)
@@ -66,7 +66,7 @@ public class SessionResource
 	@POST
 	@Path("/refresh")
 	@RolesAllowed("any")
-	public Session refreshSession(@Context final HttpServletRequest request, @PathParam("username") final String username)
+	public Session refreshSession(@Context final HttpServletRequest request, @PathParam("username") final UserId username)
 	{
 		logger.debug("Refreshing session for {}", username);
 		final RawToken rawToken = new RawToken(request.getHeader("x-token-jwt"));

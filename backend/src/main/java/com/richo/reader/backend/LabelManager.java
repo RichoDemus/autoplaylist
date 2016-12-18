@@ -6,6 +6,7 @@ import com.richo.reader.backend.model.Label;
 import com.richo.reader.backend.model.User;
 import com.richo.reader.backend.user.UserService;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.UserId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,7 @@ public class LabelManager
 		this.userService = userService;
 	}
 
-	public Label createLabelForUser(String username, String labelName) throws NoSuchUserException
+	public Label createLabelForUser(UserId username, String labelName) throws NoSuchUserException
 	{
 		logger.info("Creating label {} for user {}", labelName, username);
 		final User user = userService.get(username);
@@ -39,7 +40,7 @@ public class LabelManager
 		return new Label(user.incrementAndGetNextLabelId(), labelName, new ArrayList<>());
 	}
 
-	public void addFeedToLabel(String username, long labelId, final FeedId feedId) throws NoSuchUserException, NoSuchLabelException
+	public void addFeedToLabel(UserId username, long labelId, final FeedId feedId) throws NoSuchUserException, NoSuchLabelException
 	{
 		logger.debug("Adding feed {} to label {} for user {}", feedId, labelId, username);
 		final User user = userService.get(username);
@@ -53,7 +54,7 @@ public class LabelManager
 		userService.update(user);
 	}
 
-	public List<Label> getLabels(String username) throws NoSuchUserException
+	public List<Label> getLabels(UserId username) throws NoSuchUserException
 	{
 		logger.info("Getting labels for user {}", username);
 		final User user = userService.get(username);

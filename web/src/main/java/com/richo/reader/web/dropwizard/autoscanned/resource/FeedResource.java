@@ -53,8 +53,8 @@ public class FeedResource
 	{
 		try
 		{
-			final List<Feed> feeds = backend.getAllFeedsWithoutItems(username.getValue());
-			final List<Label> labels = labelManager.getLabels(username.getValue());
+			final List<Feed> feeds = backend.getAllFeedsWithoutItems(username);
+			final List<Label> labels = labelManager.getLabels(username);
 			return new User(feeds, labels);
 		}
 		catch (NoSuchUserException e)
@@ -74,7 +74,7 @@ public class FeedResource
 	@Path("/{feed}/")
 	public Feed getFeed(@PathParam("username") final UserId username, @PathParam("feed") final FeedId feedId)
 	{
-		return backend.getFeed(username.getValue(), feedId)
+		return backend.getFeed(username, feedId)
 				.orElseThrow(() -> new BadRequestException("Couldn't find feed " + feedId));
 	}
 
@@ -89,13 +89,13 @@ public class FeedResource
 			switch (operation.getAction())
 			{
 				case MARK_READ:
-					backend.markAsRead(username.getValue(), feedId, itemId);
+					backend.markAsRead(username, feedId, itemId);
 					break;
 				case MARK_UNREAD:
-					backend.markAsUnread(username.getValue(), feedId, itemId);
+					backend.markAsUnread(username, feedId, itemId);
 					break;
 				case MARK_OLDER_ITEMS_AS_READ:
-					backend.markOlderItemsAsRead(username.getValue(), feedId, itemId);
+					backend.markOlderItemsAsRead(username, feedId, itemId);
 					break;
 				default:
 					logger.error("Unknown action {}", operation.getAction());
@@ -126,7 +126,7 @@ public class FeedResource
 		logger.info("{} wants to subscribe to {}", username, feedId);
 		try
 		{
-			backend.addFeed(username.getValue(), feedId);
+			backend.addFeed(username, feedId);
 		}
 		catch (NoSuchChannelException | NoSuchUserException e)
 		{

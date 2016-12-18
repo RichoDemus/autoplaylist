@@ -1,6 +1,7 @@
 package com.richo.reader.backend.user;
 
 import com.richo.reader.backend.exception.NoSuchUserException;
+import com.richodemus.reader.dto.UserId;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -9,7 +10,7 @@ import static org.mockito.Mockito.when;
 
 public class UserServiceTest
 {
-	private static final String NON_EXISTING_USER = "non_existing_user";
+	private static final UserId NON_EXISTING_USER = new UserId("non_existing_user");
 	private UserService target;
 	private UserPersister memoryMock;
 	private UserPersister fileSystemMock;

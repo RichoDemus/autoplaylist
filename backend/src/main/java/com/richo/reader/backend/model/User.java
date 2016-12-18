@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.ItemId;
+import com.richodemus.reader.dto.UserId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,13 +18,13 @@ import java.util.Set;
 
 public class User
 {
-	private final String name;
+	private final UserId name;
 	private final Map<FeedId, Set<ItemId>> feeds;
 	private final List<Label> labels;
 	private long nextLabelId;
 
 	@JsonCreator
-	public User(@JsonProperty("name") String username, @JsonProperty("nextLabelId") long nextLabelId, @JsonProperty("feeds") Map<FeedId, Set<ItemId>> feedsIds, @JsonProperty("labels") List<Label> labels)
+	public User(@JsonProperty("name") UserId username, @JsonProperty("nextLabelId") long nextLabelId, @JsonProperty("feeds") Map<FeedId, Set<ItemId>> feedsIds, @JsonProperty("labels") List<Label> labels)
 	{
 		this.name = username;
 		this.nextLabelId = nextLabelId;
@@ -31,7 +32,7 @@ public class User
 		this.labels = labels;
 	}
 
-	public User(String username, Set<FeedId> feedIds)
+	public User(UserId username, Set<FeedId> feedIds)
 	{
 		this.name = username;
 		this.feeds = new HashMap<>();
@@ -49,7 +50,7 @@ public class User
 		feeds.put(feedId, new HashSet<>());
 	}
 
-	public String getName()
+	public UserId getName()
 	{
 		return name;
 	}
@@ -100,6 +101,6 @@ public class User
 	@Override
 	public String toString()
 	{
-		return name;
+		return name.toString();
 	}
 }

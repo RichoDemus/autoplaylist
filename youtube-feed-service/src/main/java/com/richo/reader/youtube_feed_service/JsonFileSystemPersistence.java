@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -54,7 +55,7 @@ public class JsonFileSystemPersistence
 	{
 		try
 		{
-			feed.getItems().sort((o1, o2) -> o1.getUploadDate().compareTo(o2.getUploadDate()));
+			feed.getItems().sort(Comparator.comparing(Item::getUploadDate));
 
 			final String path = saveRoot + "/feeds/" + feed.getId();
 			final boolean success = new File(path).mkdirs();

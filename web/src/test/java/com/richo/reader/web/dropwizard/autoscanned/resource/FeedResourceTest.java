@@ -9,6 +9,7 @@ import com.richo.reader.web.dto.ItemOperation;
 import com.richo.reader.web.dto.User;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.ItemId;
+import com.richodemus.reader.dto.UserId;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
@@ -30,7 +31,7 @@ import static org.mockito.Mockito.when;
 
 public class FeedResourceTest
 {
-	private static final String USERNAME = "user";
+	private static final UserId USERNAME = new UserId("user");
 	private static final FeedId FEED = new FeedId("my-feed");
 	private static final ItemId ITEM = new ItemId("my-item");
 

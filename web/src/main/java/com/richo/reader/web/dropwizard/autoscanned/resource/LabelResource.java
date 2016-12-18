@@ -48,7 +48,7 @@ public class LabelResource
 		logger.debug("creating label {} for {}", labelName, username);
 		try
 		{
-			return labelManager.createLabelForUser(username.getValue(), labelName);
+			return labelManager.createLabelForUser(username, labelName);
 		}
 		catch (NoSuchUserException e)
 		{
@@ -71,7 +71,7 @@ public class LabelResource
 		logger.debug("Adding feed {} to label {} for user {}", feedId, labelId, username);
 		try
 		{
-			labelManager.addFeedToLabel(username.getValue(), labelId, feedId);
+			labelManager.addFeedToLabel(username, labelId, feedId);
 		}
 		catch (NoSuchUserException | NoSuchLabelException e)
 		{

@@ -10,6 +10,7 @@ import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.YoutubeFeedService;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.ItemId;
+import com.richodemus.reader.dto.UserId;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,7 +32,7 @@ import static org.mockito.Mockito.when;
 
 public class BackendTest
 {
-	private static final String NON_EXISTING_USER = "non_existing_user";
+	private static final UserId NON_EXISTING_USER = new UserId("non_existing_user");
 	private static final Item ITEM_THAT_SHOULD_BE_READ = new Item(new ItemId("item-id-1"), "item-title-1", "item-desc-1", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC), Duration.ZERO, 0L);
 	private static final Item ITEM_TO_MARK_AS_READ = new Item(new ItemId("item-id-2"), "item-title-2", "item-desc-2", LocalDateTime.ofEpochSecond(200L, 0, ZoneOffset.UTC), Duration.ZERO, 0L);
 	private static final Feed FEED_1 = new Feed(
@@ -47,7 +48,7 @@ public class BackendTest
 			Collections.singletonList(new Item(new ItemId("feed2-item1"), "title", "desc", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC), Duration.ZERO, 0L)), 0L);
 
 
-	private static final User EXISTING_USER = new User("existing_user", 0L, ImmutableMap.of(FEED_1.getId(), Sets.newHashSet(ITEM_THAT_SHOULD_BE_READ.getId()), FEED_2.getId(), new HashSet<>()), new ArrayList<>());
+	private static final User EXISTING_USER = new User(new UserId("existing_user"), 0L, ImmutableMap.of(FEED_1.getId(), Sets.newHashSet(ITEM_THAT_SHOULD_BE_READ.getId()), FEED_2.getId(), new HashSet<>()), new ArrayList<>());
 
 	private Backend target;
 	private UserService userService;

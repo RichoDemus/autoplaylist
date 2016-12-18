@@ -2,6 +2,7 @@ package com.richo.reader.backend.user;
 
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
+import com.richodemus.reader.dto.UserId;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -19,7 +20,7 @@ public class UserService implements UserPersister
 	}
 
 	@Override
-	public User get(String username) throws NoSuchUserException
+	public User get(UserId username) throws NoSuchUserException
 	{
 		try
 		{
@@ -39,12 +40,12 @@ public class UserService implements UserPersister
 	}
 
 	@Override
-	public boolean isPasswordValid(String username, String password)
+	public boolean isPasswordValid(UserId username, String password)
 	{
 		return fileSystemPersister.isPasswordValid(username, password);
 	}
 
-	public void updatePassword(String username, String password)
+	public void updatePassword(UserId username, String password)
 	{
 		fileSystemPersister.updatePassword(username, password);
 	}

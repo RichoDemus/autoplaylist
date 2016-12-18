@@ -2,6 +2,7 @@ package com.richo.reader.backend.user;
 
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
+import com.richodemus.reader.dto.UserId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,7 @@ import java.util.Map;
 public class InMemoryUserPersistence implements UserPersister
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final Map<String, User> users;
+	private final Map<UserId, User> users;
 
 	InMemoryUserPersistence()
 	{
@@ -21,7 +22,7 @@ public class InMemoryUserPersistence implements UserPersister
 	}
 
 	@Override
-	public User get(String username) throws NoSuchUserException
+	public User get(UserId username) throws NoSuchUserException
 	{
 		if (!users.containsKey(username))
 		{
@@ -37,13 +38,13 @@ public class InMemoryUserPersistence implements UserPersister
 	}
 
 	@Override
-	public boolean isPasswordValid(String username, String password)
+	public boolean isPasswordValid(UserId username, String password)
 	{
 		throw new IllegalStateException("Not implemented");
 	}
 
 	@Override
-	public void updatePassword(String username, String password)
+	public void updatePassword(UserId username, String password)
 	{
 		throw new IllegalStateException("Not implemented");
 	}

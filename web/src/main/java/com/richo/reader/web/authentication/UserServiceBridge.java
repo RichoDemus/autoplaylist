@@ -2,6 +2,7 @@ package com.richo.reader.web.authentication;
 
 import com.richo.reader.backend.UserManager;
 import com.richodemus.dropwizard.jwt.model.Role;
+import com.richodemus.reader.dto.UserId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,7 @@ public class UserServiceBridge implements com.richodemus.dropwizard.jwt.UserServ
 	public Optional<Role> login(String username, String password)
 	{
 		logger.info("Asked to login user {}", username);
-		if (!userManager.checkCredentials(username, password))
+		if (!userManager.checkCredentials(new UserId(username), password))
 		{
 			logger.warn("Invalid username or password for user {}", username);
 			return Optional.empty();
@@ -34,7 +35,7 @@ public class UserServiceBridge implements com.richodemus.dropwizard.jwt.UserServ
 		return Optional.of(new Role("user"));
 	}
 
-	public void createUser(String username, String password)
+	public void createUser(UserId username, String password)
 	{
 		userManager.createUser(username, password);
 	}

@@ -1,20 +1,21 @@
 package com.richo.reader.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.richodemus.reader.dto.UserId;
 
 public class Session
 {
-	private final String username;
+	private final UserId username;
 	private final String token;
 
 	@JsonCreator
-	public Session(String username, String token)
+	public Session(UserId username, String token)
 	{
 		this.username = username;
 		this.token = token;
 	}
 
-	public String getUsername()
+	public UserId getUsername()
 	{
 		return username;
 	}
