@@ -62,6 +62,19 @@ public class UserTestIT
 	}
 
 	@Test
+	public void usernamesShouldBeCaseInsensitive() throws Exception
+	{
+		loginPage.createUser("UPPERCASE");
+		loginPage.login("uppercase");
+		assertThat(loginPage.isLoggedIn()).isTrue();
+
+		final LoginPage loginPage2 = new LoginPage(target.getHttpPort());
+		loginPage2.createUser("lowercase");
+		loginPage2.login("LOWERCASE");
+		assertThat(loginPage2.isLoggedIn()).isTrue();
+	}
+
+	@Test
 	public void shouldNotLoginUserWithInvalidPassword() throws Exception
 	{
 		loginPage.createUser(USERNAME);

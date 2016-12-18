@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 
 data class ItemId(@get:JsonIgnore val value: String) {
     init {
-        require(value.isNotBlank()) { "FeedId can't be empty" }
+        require(value.isNotBlank()) { "ItemId can't be empty" }
     }
 
     @JsonValue override fun toString() = value

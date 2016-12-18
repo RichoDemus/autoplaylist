@@ -5,6 +5,7 @@ import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.web.dto.Session;
 import com.richodemus.dropwizard.jwt.AuthenticationManager;
 import com.richodemus.dropwizard.jwt.RawToken;
+import com.richodemus.reader.dto.UserId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +38,14 @@ public class SessionResource
 	@Timed
 	@POST
 	@PermitAll
-	public Session login(@PathParam("username") final String username, final String password)
+	public Session login(@PathParam("username") final UserId username, final String password)
 	{
 		logger.info("Logging user {}", username);
 		try
 		{
-			return authenticationManager.login(username, password)
-					.map(token -> new Session(username, token.stringValue()))
+			// todo use UserId through the whole chain instead
+			return authenticationManager.login(username.getValue(), password)
+					.map(token -> new Session(username.getValue(), token.stringValue()))
 					.orElseThrow(() -> new NoSuchUserException("Failed to create session object"));
 		}
 		catch (NoSuchUserException e)

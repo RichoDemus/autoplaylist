@@ -13,6 +13,7 @@ import com.richo.reader.web.dto.ItemOperation;
 import com.richo.reader.web.dto.User;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.ItemId;
+import com.richodemus.reader.dto.UserId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,12 +49,12 @@ public class FeedResource
 
 	@Timed
 	@GET
-	public User getAllFeedsAndLabels(@PathParam("username") final String username)
+	public User getAllFeedsAndLabels(@PathParam("username") final UserId username)
 	{
 		try
 		{
-			final List<Feed> feeds = backend.getAllFeedsWithoutItems(username);
-			final List<Label> labels = labelManager.getLabels(username);
+			final List<Feed> feeds = backend.getAllFeedsWithoutItems(username.getValue());
+			final List<Label> labels = labelManager.getLabels(username.getValue());
 			return new User(feeds, labels);
 		}
 		catch (NoSuchUserException e)
@@ -71,16 +72,16 @@ public class FeedResource
 	@Timed
 	@GET
 	@Path("/{feed}/")
-	public Feed getFeed(@PathParam("username") final String username, @PathParam("feed") final FeedId feedId)
+	public Feed getFeed(@PathParam("username") final UserId username, @PathParam("feed") final FeedId feedId)
 	{
-		return backend.getFeed(username, feedId)
+		return backend.getFeed(username.getValue(), feedId)
 				.orElseThrow(() -> new BadRequestException("Couldn't find feed " + feedId));
 	}
 
 	@Timed
 	@POST
 	@Path("/{feed}/items/{item}/")
-	public void performFeedOperation(@PathParam("username") final String username, @PathParam("feed") final FeedId feedId, @PathParam("item") final ItemId itemId, final ItemOperation operation)
+	public void performFeedOperation(@PathParam("username") final UserId username, @PathParam("feed") final FeedId feedId, @PathParam("item") final ItemId itemId, final ItemOperation operation)
 	{
 		logger.info("Received item operation {} for feed {}, item {}", operation, feedId, itemId);
 		try
@@ -88,13 +89,13 @@ public class FeedResource
 			switch (operation.getAction())
 			{
 				case MARK_READ:
-					backend.markAsRead(username, feedId, itemId);
+					backend.markAsRead(username.getValue(), feedId, itemId);
 					break;
 				case MARK_UNREAD:
-					backend.markAsUnread(username, feedId, itemId);
+					backend.markAsUnread(username.getValue(), feedId, itemId);
 					break;
 				case MARK_OLDER_ITEMS_AS_READ:
-					backend.markOlderItemsAsRead(username, feedId, itemId);
+					backend.markOlderItemsAsRead(username.getValue(), feedId, itemId);
 					break;
 				default:
 					logger.error("Unknown action {}", operation.getAction());
@@ -115,7 +116,7 @@ public class FeedResource
 
 	@Timed
 	@POST //todo shouldnt this be a put
-	public void addFeed(@PathParam("username") final String username, final FeedId feedId)
+	public void addFeed(@PathParam("username") final UserId username, final FeedId feedId)
 	{
 		if (feedId == null)
 		{
@@ -125,7 +126,7 @@ public class FeedResource
 		logger.info("{} wants to subscribe to {}", username, feedId);
 		try
 		{
-			backend.addFeed(username, feedId);
+			backend.addFeed(username.getValue(), feedId);
 		}
 		catch (NoSuchChannelException | NoSuchUserException e)
 		{

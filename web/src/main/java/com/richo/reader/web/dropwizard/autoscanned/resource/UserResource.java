@@ -39,7 +39,8 @@ public class UserResource
 		}
 		try
 		{
-			userService.createUser(createUserRequest.username, createUserRequest.password);
+			// todo use UserId through the whole chain instead
+			userService.createUser(createUserRequest.username.getValue(), createUserRequest.password);
 		}
 		catch (Exception e)
 		{
