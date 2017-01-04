@@ -38,3 +38,7 @@
 * ReadItemsService, getReadItems: userId, feedId -> readItems
 ### Explanation
 When an item is marked as read in ReadItemsService, a message will also go to SubscribedFeedsService which will decrement its counter for that feed
+
+## Scripts
+Create user:
+```curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" -d '{"username":"RichoDemus","password":"funnay","inviteCode":"iwouldlikeaninvitepleaseletmesignuptotestthis"}' http://localhost:8080/api/users```
