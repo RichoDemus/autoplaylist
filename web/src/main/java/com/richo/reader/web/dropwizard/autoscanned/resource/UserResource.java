@@ -2,7 +2,7 @@ package com.richo.reader.web.dropwizard.autoscanned.resource;
 
 import com.codahale.metrics.annotation.Timed;
 import com.richo.reader.web.authentication.UserServiceBridge;
-import com.richo.reader.web.dto.CreateUserRequest;
+import com.richo.reader.web.dto.CreateUserCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,23 +30,23 @@ public class UserResource
 	@Timed
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public String createUser(final CreateUserRequest createUserRequest)
+	public String createUser(final CreateUserCommand createUserCommand)
 	{
-		if (!INVITE_CODE.equals(createUserRequest.inviteCode))
+		if (!INVITE_CODE.equals(createUserCommand.inviteCode))
 		{
-			logger.info("{} tried to signup with invalid code {}", createUserRequest.username, createUserRequest.inviteCode);
+			logger.info("{} tried to signup with invalid code {}", createUserCommand.username, createUserCommand.inviteCode);
 			throw new ForbiddenException("Signup not allowed");
 		}
 		try
 		{
 			// todo use UserId through the whole chain instead
-			userService.createUser(createUserRequest.username, createUserRequest.password);
+			userService.createUser(createUserCommand.username, createUserCommand.password);
 		}
 		catch (Exception e)
 		{
 			logger.error("Exception when creating user {}", e);
 			throw new InternalServerErrorException(e);
 		}
-		return createUserRequest.username + " created";
+		return createUserCommand.username + " created";
 	}
 }
