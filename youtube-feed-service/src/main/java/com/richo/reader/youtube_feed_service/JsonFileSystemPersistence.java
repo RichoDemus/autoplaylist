@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.singletonList;
+
 
 public class JsonFileSystemPersistence
 {
@@ -24,11 +26,21 @@ public class JsonFileSystemPersistence
 	private final String saveRoot;
 	private ObjectMapper objectMapper;
 
+	/**
+	 * Just used to create some test data
+	 */
+	public static void main(String[] args) {
+		new JsonFileSystemPersistence("data/").updateChannel(
+				new Feed(new FeedId("richodemus"),
+						singletonList(new Item("id", "title", "desc", 0L, 60L, 100L)),
+						0L));
+	}
+
 	@Inject
 	public JsonFileSystemPersistence(@Named("saveRoot") String saveRoot)
 	{
 		this.saveRoot = saveRoot;
-		objectMapper = new ObjectMapper();
+		this.objectMapper = new ObjectMapper();
 	}
 
 	public Optional<Feed> getChannel(FeedId feedId)
