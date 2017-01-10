@@ -38,8 +38,8 @@ public class JsonFileSystemPersistenceTest
 	public void shouldBeAbleToLoadSavedData() throws Exception
 	{
 		final FeedId channelName = new FeedId("my-channel");
-		final Item firstVideo = new Item("id1", "title1", "desc1", 0L, 0L, 0L);
-		final Item secondVideo = new Item("id2", "title2", "desc2", 0L, 0L, 0L);
+		final Item firstVideo = new Item("id1", "title1", "desc1", 0L, 0L, 0L, 0L);
+		final Item secondVideo = new Item("id2", "title2", "desc2", 0L, 0L, 0L, 0L);
 		final Feed expected = new Feed(channelName, Arrays.asList(firstVideo, secondVideo), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC));
 		target.updateChannel(expected);
 

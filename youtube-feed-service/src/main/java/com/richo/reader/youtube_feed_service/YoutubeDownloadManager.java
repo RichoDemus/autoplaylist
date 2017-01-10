@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.time.ZoneOffset.UTC;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
@@ -117,7 +118,13 @@ public class YoutubeDownloadManager
 					final DurationAndViewcount durationAndViewcount = statistics.get(item.getId());
 					if (durationAndViewcount != null)
 					{
-						return new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), durationAndViewcount.duration, durationAndViewcount.viewCount);
+						return new Item(item.getId(),
+								item.getTitle(),
+								item.getDescription(),
+								item.getUploadDate(),
+								item.getAdded(),
+								durationAndViewcount.duration,
+								durationAndViewcount.viewCount);
 					}
 
 					final Map<ItemId, DurationAndViewcount> newStatistics = youtubeChannelDownloader.getStatistics(item.getId());
@@ -125,13 +132,13 @@ public class YoutubeDownloadManager
 					if (unavailable)
 					{
 						logger.info("Video {}({}) is unavailable", item.getTitle(), item.getId());
-						return new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), item.getDuration(), item.getViews());
+						return new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), item.getAdded(), item.getDuration(), item.getViews());
 					}
 					else
 					{
 						logger.warn("Had to retry {}({})", item.getTitle(), item.getId());
 						final DurationAndViewcount newDurationAndViewCount = newStatistics.get(item.getId());
-						return new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), newDurationAndViewCount.duration, newDurationAndViewCount.viewCount);
+						return new Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate(), item.getAdded(), newDurationAndViewCount.duration, newDurationAndViewCount.viewCount);
 					}
 				})
 				.collect(toList());
@@ -143,7 +150,7 @@ public class YoutubeDownloadManager
 		final String title = playlistItem.getSnippet().getTitle();
 		final String description = playlistItem.getSnippet().getDescription();
 		final LocalDateTime uploadDate = convertDate(playlistItem.getSnippet().getPublishedAt());
-		return new Item(videoId, title, description, uploadDate.toEpochSecond(ZoneOffset.UTC), Duration.ZERO.toMillis(), 0L);
+		return new Item(videoId, title, description, uploadDate.toEpochSecond(UTC), LocalDateTime.now().toEpochSecond(UTC), Duration.ZERO.toMillis(), 0L);
 	}
 
 	private LocalDateTime convertDate(DateTime publishedAt)

@@ -32,7 +32,7 @@ public class JsonFileSystemPersistence
 	public static void main(String[] args) {
 		new JsonFileSystemPersistence("data/").updateChannel(
 				new Feed(new FeedId("richodemus"),
-						singletonList(new Item("id", "title", "desc", 0L, 60L, 100L)),
+						singletonList(new Item("id", "title", "desc", 0L, 0L, 60L, 100L)),
 						0L));
 	}
 

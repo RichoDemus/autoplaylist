@@ -15,6 +15,10 @@ public class Item
 	private final String title;
 	private final String description;
 	private final LocalDateTime uploadDate;
+	/**
+	 * When the application first found this Item
+	 */
+	private final LocalDateTime added;
 	private final Duration duration;
 	private final long views;
 
@@ -23,18 +27,32 @@ public class Item
 				@JsonProperty("title") String title,
 				@JsonProperty("description") String description,
 				@JsonProperty("uploadDate") long uploadDate,
+				@JsonProperty("added") long added,
 				@JsonProperty("duration") long duration,
 				@JsonProperty("views") long views)
 	{
-		this(new ItemId(id), title, description, LocalDateTime.ofEpochSecond(uploadDate, 0, ZoneOffset.UTC), Duration.ofSeconds(duration), views);
+		this(new ItemId(id),
+				title,
+				description,
+				LocalDateTime.ofEpochSecond(uploadDate, 0, ZoneOffset.UTC),
+				LocalDateTime.ofEpochSecond(added, 0, ZoneOffset.UTC),
+				Duration.ofSeconds(duration),
+				views);
 	}
 
-	public Item(ItemId id, String title, String description, LocalDateTime uploadDate, Duration duration, long views)
+	public Item(ItemId id,
+				String title,
+				String description,
+				LocalDateTime uploadDate,
+				LocalDateTime added,
+				Duration duration,
+				long views)
 	{
 		this.id = id;
 		this.title = title;
 		this.description = description;
 		this.uploadDate = uploadDate;
+		this.added = added;
 		this.duration = duration;
 		this.views = views;
 	}
@@ -64,6 +82,18 @@ public class Item
 	public long getUploadDateAsLong()
 	{
 		return uploadDate.toEpochSecond(ZoneOffset.UTC);
+	}
+
+	@JsonIgnore
+	public LocalDateTime getAdded()
+	{
+		return added;
+	}
+
+	@JsonProperty("added")
+	public long getAddedAsLong()
+	{
+		return added.toEpochSecond(ZoneOffset.UTC);
 	}
 
 	@JsonIgnore

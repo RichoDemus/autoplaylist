@@ -33,19 +33,19 @@ import static org.mockito.Mockito.when;
 public class BackendTest
 {
 	private static final UserId NON_EXISTING_USER = new UserId("non_existing_user");
-	private static final Item ITEM_THAT_SHOULD_BE_READ = new Item(new ItemId("item-id-1"), "item-title-1", "item-desc-1", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC), Duration.ZERO, 0L);
-	private static final Item ITEM_TO_MARK_AS_READ = new Item(new ItemId("item-id-2"), "item-title-2", "item-desc-2", LocalDateTime.ofEpochSecond(200L, 0, ZoneOffset.UTC), Duration.ZERO, 0L);
+	private static final Item ITEM_THAT_SHOULD_BE_READ = new Item(new ItemId("item-id-1"), "item-title-1", "item-desc-1", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC), LocalDateTime.now(), Duration.ZERO, 0L);
+	private static final Item ITEM_TO_MARK_AS_READ = new Item(new ItemId("item-id-2"), "item-title-2", "item-desc-2", LocalDateTime.ofEpochSecond(200L, 0, ZoneOffset.UTC), LocalDateTime.now(), Duration.ZERO, 0L);
 	private static final Feed FEED_1 = new Feed(
 			new FeedId("existing_feed_id"),
 			Arrays.asList(
 					ITEM_THAT_SHOULD_BE_READ,
 					ITEM_TO_MARK_AS_READ,
-					new Item(new ItemId("item-id-3"), "item-title-3", "item-desc-3", LocalDateTime.ofEpochSecond(300L, 0, ZoneOffset.UTC), Duration.ZERO, 0L),
-					new Item(new ItemId("item-id-4"), "item-title-4", "item-desc-4", LocalDateTime.ofEpochSecond(400L, 0, ZoneOffset.UTC), Duration.ZERO, 0L)
+					new Item(new ItemId("item-id-3"), "item-title-3", "item-desc-3", LocalDateTime.ofEpochSecond(300L, 0, ZoneOffset.UTC), LocalDateTime.now(), Duration.ZERO, 0L),
+					new Item(new ItemId("item-id-4"), "item-title-4", "item-desc-4", LocalDateTime.ofEpochSecond(400L, 0, ZoneOffset.UTC), LocalDateTime.now(), Duration.ZERO, 0L)
 			), 0L);
 	private static final Feed FEED_2 = new Feed(
 			new FeedId("feed_2"),
-			Collections.singletonList(new Item(new ItemId("feed2-item1"), "title", "desc", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC), Duration.ZERO, 0L)), 0L);
+			Collections.singletonList(new Item(new ItemId("feed2-item1"), "title", "desc", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC), LocalDateTime.now(), Duration.ZERO, 0L)), 0L);
 
 
 	private static final User EXISTING_USER = new User(new UserId("existing_user"), 0L, ImmutableMap.of(FEED_1.getId(), Sets.newHashSet(ITEM_THAT_SHOULD_BE_READ.getId()), FEED_2.getId(), new HashSet<>()), new ArrayList<>());
