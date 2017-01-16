@@ -6,6 +6,7 @@ import com.richo.reader.test.pages.FeedPage;
 import com.richo.reader.test.pages.LoginPage;
 import com.richo.reader.test.pages.model.FeedId;
 import com.richo.reader.test.pages.model.FeedWithoutItem;
+import com.richo.reader.test.util.TestableApplication;
 import com.richo.reader.test.util.DropwizardContainer;
 import org.junit.After;
 import org.junit.Before;
@@ -21,8 +22,8 @@ import static org.awaitility.Awaitility.await;
 public class FeedTestIT
 {
 	private static final FeedId FEED_ID = new FeedId("richodemus");
-	private DropwizardContainer target;
-	private DropwizardContainer youtubeMock;
+	private TestableApplication target;
+	private TestableApplication youtubeMock;
 	private String baseUrl;
 	private LoginPage loginPage;
 

@@ -1,5 +1,6 @@
 package com.richo.reader.test;
 
+import com.richo.reader.test.util.TestableApplication;
 import com.richo.reader.test.util.DropwizardContainer;
 import org.junit.After;
 import org.junit.Before;
@@ -9,7 +10,7 @@ import static com.jayway.restassured.RestAssured.get;
 
 public class StatusTestIT
 {
-	private DropwizardContainer target;
+	private TestableApplication target;
 
 	@Before
 	public void setUp() throws Exception

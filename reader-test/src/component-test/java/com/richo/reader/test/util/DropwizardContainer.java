@@ -1,13 +1,12 @@
 package com.richo.reader.test.util;
 
 import com.google.common.collect.Sets;
-import com.spotify.docker.client.exceptions.DockerException;
 
 import java.util.HashSet;
 
 import static com.jayway.restassured.RestAssured.get;
 
-public class DropwizardContainer implements AutoCloseable
+public class DropwizardContainer implements AutoCloseable, TestableApplication
 {
 	private static final String PORT = "8080";
 	private static final String ADMIN_PORT = "8081";
@@ -31,24 +30,27 @@ public class DropwizardContainer implements AutoCloseable
 	}
 
 	@Override
-	public void close() throws DockerException
+	public void close()
 	{
 		container.close();
 	}
 
+	@Override
 	public int getHttpPort()
 	{
 		return container.getExternalPort(PORT)
 				.orElseThrow(() -> new IllegalStateException("Http port is not exposed"));
 	}
 
+	@Override
 	public int getAdminPort()
 	{
 		return container.getExternalPort(ADMIN_PORT)
 				.orElseThrow(() -> new IllegalStateException("Admin port is not exposed"));
 	}
 
-	public String getIp() throws Exception
+	@Override
+	public String getIp()
 	{
 		return container.getIp();
 	}

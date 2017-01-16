@@ -2,7 +2,6 @@ package com.richo.reader.test.util;
 
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
-import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.ContainerInfo;
@@ -73,13 +72,20 @@ public class Container implements AutoCloseable
 		}
 	}
 
-	public String getIp() throws Exception
+	public String getIp()
 	{
-		return docker.inspectContainer(id).networkSettings().ipAddress();
+		try
+		{
+			return docker.inspectContainer(id).networkSettings().ipAddress();
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
-	public void close() throws DockerException
+	public void close()
 	{
 		try
 		{
@@ -91,6 +97,10 @@ public class Container implements AutoCloseable
 		{
 			Thread.currentThread().interrupt();
 			fail("Interrupted during close", e);
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
 		}
 	}
 

@@ -1,6 +1,7 @@
 package com.richo.reader.test;
 
 import com.richo.reader.test.pages.LoginPage;
+import com.richo.reader.test.util.TestableApplication;
 import com.richo.reader.test.util.DropwizardContainer;
 import org.junit.After;
 import org.junit.Before;
@@ -11,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UserTestIT
 {
 	private static final String USERNAME = "richodemus";
-	private DropwizardContainer target;
+	private TestableApplication target;
 	private LoginPage loginPage;
 
 	@Before
