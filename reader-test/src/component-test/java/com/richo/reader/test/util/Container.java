@@ -36,9 +36,9 @@ public class Container implements AutoCloseable
 	{
 		try {
 			if (!image.contains(":"))
-            {
-                image = image + ":latest";
-            }
+			{
+				image = image + ":latest";
+			}
 			docker = DefaultDockerClient.fromEnv().build();
 
 			final HostConfig hostConfig = HostConfig.builder().publishAllPorts(true).build();
@@ -54,7 +54,9 @@ public class Container implements AutoCloseable
 			id = creation.id();
 
 			docker.startContainer(id);
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			throw new RuntimeException(e);
 		}
 	}

@@ -38,8 +38,8 @@ public class YoutubeChannelDownloader
 	{
 		this.durationParser = durationParser;
 		this.apiKey = apiKey;
-		final Optional<String> env_url = Optional.ofNullable(System.getenv("YOUTUBE_URL"));
-		logger.info("youtube url: \"{}\"", env_url.orElse("Not set"));
+		final Optional<String> url_override = getUrlOverride();
+		logger.info("youtube url: \"{}\"", url_override.orElse("Not set"));
 		final YouTube.Builder builder = new YouTube.Builder(
 				new NetHttpTransport(),
 				new JacksonFactory(),
@@ -47,8 +47,19 @@ public class YoutubeChannelDownloader
 				{
 				})
 				.setApplicationName("Richo-Reader");
-		env_url.ifPresent(builder::setRootUrl);
+		url_override.ifPresent(builder::setRootUrl);
 		youtube = builder.build();
+	}
+
+	private Optional<String> getUrlOverride()
+	{
+		final String env = System.getenv("YOUTUBE_URL");
+		if(env != null)
+		{
+			return Optional.of(env);
+		}
+
+		return Optional.ofNullable(System.getProperty("YOUTUBE_URL"));
 	}
 
 	public static void main(String[] args) throws IOException

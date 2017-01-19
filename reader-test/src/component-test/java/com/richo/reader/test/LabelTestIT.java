@@ -1,12 +1,11 @@
 package com.richo.reader.test;
 
-import com.google.common.collect.Sets;
 import com.richo.reader.test.pages.FeedPage;
 import com.richo.reader.test.pages.LoginPage;
 import com.richo.reader.test.pages.model.FeedId;
 import com.richo.reader.test.pages.model.Label;
 import com.richo.reader.test.util.TestableApplication;
-import com.richo.reader.test.util.DropwizardContainer;
+import com.richo.reader.test.util.TestableApplicationProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,10 +28,8 @@ public class LabelTestIT
 	@Before
 	public void setUp() throws Exception
 	{
-		youtubeMock = new DropwizardContainer("richodemus/youtubemock:latest");
-		final String youtubeIp = youtubeMock.getIp();
-		final int port = 8080;
-		target = new DropwizardContainer("richodemus/reader", Sets.newHashSet("YOUTUBE_URL=http://" + youtubeIp + ":" + port + "/"));
+		youtubeMock = new TestableApplicationProvider().youtubeMock();
+		target = new TestableApplicationProvider().readerApplication(youtubeMock.getHttpPort());
 		baseUrl = "http://localhost:" + target.getHttpPort();
 		loginPage = new LoginPage(target.getHttpPort());
 	}
