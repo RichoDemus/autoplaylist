@@ -2,7 +2,7 @@ package com.richo.reader.test;
 
 import com.richo.reader.test.pages.LoginPage;
 import com.richo.reader.test.util.TestableApplication;
-import com.richo.reader.test.util.DropwizardContainer;
+import com.richo.reader.test.util.TestableApplicationProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +18,7 @@ public class UserTestIT
 	@Before
 	public void setUp() throws Exception
 	{
-		target = new DropwizardContainer("richodemus/reader");
+		target = new TestableApplicationProvider().readerApplication();
 		loginPage = new LoginPage(target.getHttpPort());
 	}
 

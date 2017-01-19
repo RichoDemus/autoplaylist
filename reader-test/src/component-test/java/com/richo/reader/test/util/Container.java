@@ -32,30 +32,34 @@ public class Container implements AutoCloseable
 		this(image, new HashSet<>());
 	}
 
-	public Container(String image, Set<String> env) throws Exception
+	public Container(String image, Set<String> env)
 	{
-		if (!image.contains(":"))
-		{
-			image = image + ":latest";
+		try {
+			if (!image.contains(":"))
+            {
+                image = image + ":latest";
+            }
+			docker = DefaultDockerClient.fromEnv().build();
+
+			final HostConfig hostConfig = HostConfig.builder().publishAllPorts(true).build();
+
+			final ContainerConfig.Builder builder = ContainerConfig.builder();
+			env.forEach(builder::env);
+			final ContainerConfig containerConfig = builder
+                    .hostConfig(hostConfig)
+                    .image(image)
+                    .build();
+
+			final ContainerCreation creation = docker.createContainer(containerConfig);
+			id = creation.id();
+
+			docker.startContainer(id);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
-		docker = DefaultDockerClient.fromEnv().build();
-
-		final HostConfig hostConfig = HostConfig.builder().publishAllPorts(true).build();
-
-		final ContainerConfig.Builder builder = ContainerConfig.builder();
-		env.forEach(builder::env);
-		final ContainerConfig containerConfig = builder
-				.hostConfig(hostConfig)
-				.image(image)
-				.build();
-
-		final ContainerCreation creation = docker.createContainer(containerConfig);
-		id = creation.id();
-
-		docker.startContainer(id);
 	}
 
-	public void awaitStartup(final BooleanSupplier supplier) throws Exception
+	public void awaitStartup(final BooleanSupplier supplier)
 	{
 		await().atMost(1, MINUTES).until(() -> assertThat(isRunning(supplier)).isTrue());
 	}

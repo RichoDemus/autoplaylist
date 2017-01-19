@@ -13,12 +13,12 @@ public class DropwizardContainer implements AutoCloseable, TestableApplication
 
 	private final Container container;
 
-	public DropwizardContainer(final String image) throws Exception
+	public DropwizardContainer(final String image)
 	{
 		this(image, Sets.newHashSet("YOUTUBE_URL=http://localhost:80/"));
 	}
 
-	public DropwizardContainer(String image, HashSet<String> env) throws Exception
+	public DropwizardContainer(String image, HashSet<String> env)
 	{
 		container = new Container(image, env);
 		container.awaitStartup(() -> ping() == 200);
