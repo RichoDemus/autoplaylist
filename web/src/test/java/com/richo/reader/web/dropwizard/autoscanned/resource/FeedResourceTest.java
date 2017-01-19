@@ -3,7 +3,7 @@ package com.richo.reader.web.dropwizard.autoscanned.resource;
 
 import com.richo.reader.backend.Backend;
 import com.richo.reader.backend.LabelManager;
-import com.richo.reader.backend.model.Feed;
+import com.richo.reader.backend.model.FeedWithoutItems;
 import com.richo.reader.web.TestData;
 import com.richo.reader.web.dto.ItemOperation;
 import com.richo.reader.web.dto.User;
@@ -89,17 +89,17 @@ public class FeedResourceTest
 	@Test
 	public void feedsShouldNotContainItems() throws Exception
 	{
-		final User result = TARGET.client().target("/users/" + USERNAME + "/feeds/").request().get(User.class);
-		result.getFeeds().forEach(f -> assertEquals(0, f.getItems().size()));
+		final String result = TARGET.client().target("/users/" + USERNAME + "/feeds/").request().get(String.class);
+		assertThat(result).doesNotContain("\"items:\"");
 	}
 
 	@Test
-	public void feedsReturnedShouldContainNumberOfAvailableItems() throws Exception
+	public void feedsReturnedShouldContainNumberOfUnreadItems() throws Exception
 	{
 		final User result = TARGET.client().target("/users/" + USERNAME + "/feeds/").request().get(User.class);
 
-		final Feed feed1 = result.getFeeds().stream().filter(f -> f.getName().equals(FEED1.getName())).findFirst().orElseThrow(() -> new RuntimeException("Couldn't find feed1"));
-		final Feed feed2 = result.getFeeds().stream().filter(f -> f.getName().equals(FEED2.getName())).findFirst().orElseThrow(() -> new RuntimeException("Couldn't find feed2"));
+		final FeedWithoutItems feed1 = result.getFeeds().stream().filter(f -> f.getName().equals(FEED1.getName())).findFirst().orElseThrow(() -> new RuntimeException("Couldn't find feed1"));
+		final FeedWithoutItems feed2 = result.getFeeds().stream().filter(f -> f.getName().equals(FEED2.getName())).findFirst().orElseThrow(() -> new RuntimeException("Couldn't find feed2"));
 
 		assertEquals(TestData.FEED1.getNumberOfAvailableItems(), feed1.getNumberOfAvailableItems());
 		assertEquals(TestData.FEED2.getNumberOfAvailableItems(), feed2.getNumberOfAvailableItems());

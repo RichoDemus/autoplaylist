@@ -4,6 +4,7 @@ import com.richo.reader.backend.exception.ItemNotInFeedException;
 import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
+import com.richo.reader.backend.model.FeedWithoutItems;
 import com.richo.reader.backend.model.User;
 import com.richo.reader.backend.user.UserService;
 import com.richo.reader.youtube_feed_service.Feed;
@@ -57,7 +58,7 @@ public class Backend
 		return Optional.of(new com.richo.reader.backend.model.Feed(feed.getId(), feed.getId(), unwatchedItems));
 	}
 
-	public List<com.richo.reader.backend.model.Feed> getAllFeedsWithoutItems(UserId username)
+	public List<FeedWithoutItems> getAllFeedsWithoutItems(UserId username)
 	{
 		logger.debug("Getting all feeds for user {}", username);
 
@@ -66,7 +67,7 @@ public class Backend
 		return user.getFeeds().keySet().stream()
 				.map(feedService::getChannel)
 				.flatMap(this::toStream)
-				.map(f -> new com.richo.reader.backend.model.Feed(f.getId(), f.getId(), calculateNumberOfItems(user, f)))
+				.map(f -> new FeedWithoutItems(f.getId(), f.getId(), calculateNumberOfItems(user, f)))
 				.collect(Collectors.toList());
 	}
 

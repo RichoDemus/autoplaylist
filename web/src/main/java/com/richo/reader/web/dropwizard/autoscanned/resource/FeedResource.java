@@ -8,6 +8,7 @@ import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richo.reader.backend.model.Feed;
+import com.richo.reader.backend.model.FeedWithoutItems;
 import com.richo.reader.backend.model.Label;
 import com.richo.reader.web.dto.ItemOperation;
 import com.richo.reader.web.dto.User;
@@ -53,7 +54,7 @@ public class FeedResource
 	{
 		try
 		{
-			final List<Feed> feeds = backend.getAllFeedsWithoutItems(username);
+			final List<FeedWithoutItems> feeds = backend.getAllFeedsWithoutItems(username);
 			final List<Label> labels = labelManager.getLabels(username);
 			return new User(feeds, labels);
 		}

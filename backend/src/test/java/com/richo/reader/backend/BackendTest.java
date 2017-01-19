@@ -3,6 +3,7 @@ package com.richo.reader.backend;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.richo.reader.backend.exception.NoSuchUserException;
+import com.richo.reader.backend.model.FeedWithoutItems;
 import com.richo.reader.backend.model.User;
 import com.richo.reader.backend.user.UserService;
 import com.richo.reader.youtube_feed_service.Feed;
@@ -23,9 +24,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -74,7 +75,7 @@ public class BackendTest
 				.stream()
 				.filter(i -> !EXISTING_USER.isRead(FEED_1.getId(), i.getId()))
 				.map(i -> new com.richo.reader.backend.model.Item(i.getId(), i.getTitle(), i.getDescription(), i.getUploadDate().toString(), "https://youtube.com/watch?v=" + i.getId(), i.getDuration(), i.getViews()))
-				.collect(Collectors.toList());
+				.collect(toList());
 		final com.richo.reader.backend.model.Feed expected = new com.richo.reader.backend.model.Feed(FEED_1.getId(), FEED_1.getId(), unwatchedItems);
 		final Optional<com.richo.reader.backend.model.Feed> result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId());
 
@@ -84,22 +85,13 @@ public class BackendTest
 	@Test
 	public void getFeedsShouldReturnSubscribedFeeds() throws Exception
 	{
-		final List<com.richo.reader.backend.model.Feed> expected = Stream.of(FEED_1, FEED_2)
-				.map(f -> new com.richo.reader.backend.model.Feed(f.getId(), f.getId(), 1))
-				.collect(Collectors.toList());
+		final List<FeedId> expected = Stream.of(FEED_1, FEED_2)
+				.map(Feed::getId)
+				.collect(toList());
 
-		final List<com.richo.reader.backend.model.Feed> result = target.getAllFeedsWithoutItems(EXISTING_USER.getName());
+		final List<FeedWithoutItems> result = target.getAllFeedsWithoutItems(EXISTING_USER.getName());
 
-		assertThat(result).isEqualTo(expected);
-	}
-
-	@Test
-	public void getFeedsShouldNotReturnItems() throws Exception
-	{
-		final List<com.richo.reader.backend.model.Feed> result = target.getAllFeedsWithoutItems(EXISTING_USER.getName());
-
-		assertThat(result.get(0).getItems()).isEmpty();
-		assertThat(result.get(1).getItems()).isEmpty();
+		assertThat(result).extracting(FeedWithoutItems::getId).isEqualTo(expected);
 	}
 
 	@Test(expected = NoSuchUserException.class)
@@ -126,14 +118,14 @@ public class BackendTest
 	}
 
 	@Test
-	public void markingAnItemAsReadShouldUpdateNumberOfAvailableItems() throws Exception
+	public void markingAnItemAsReadShouldUpdateNumberOfUnreadItems() throws Exception
 	{
 		target.markAsRead(EXISTING_USER.getName(), FEED_1.getId(), ITEM_TO_MARK_AS_READ.getId());
 
 		final int result = target.getAllFeedsWithoutItems(EXISTING_USER.getName())
 				.stream()
 				.filter(f -> f.getId().equals(FEED_1.getId()))
-				.map(com.richo.reader.backend.model.Feed::getNumberOfAvailableItems)
+				.map(FeedWithoutItems::getNumberOfAvailableItems)
 				.findAny()
 				.get();
 
