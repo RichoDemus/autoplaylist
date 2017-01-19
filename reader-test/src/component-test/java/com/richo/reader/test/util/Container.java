@@ -34,7 +34,8 @@ public class Container implements AutoCloseable
 
 	public Container(String image, Set<String> env)
 	{
-		try {
+		try
+		{
 			if (!image.contains(":"))
 			{
 				image = image + ":latest";
@@ -46,9 +47,9 @@ public class Container implements AutoCloseable
 			final ContainerConfig.Builder builder = ContainerConfig.builder();
 			env.forEach(builder::env);
 			final ContainerConfig containerConfig = builder
-                    .hostConfig(hostConfig)
-                    .image(image)
-                    .build();
+					.hostConfig(hostConfig)
+					.image(image)
+					.build();
 
 			final ContainerCreation creation = docker.createContainer(containerConfig);
 			id = creation.id();

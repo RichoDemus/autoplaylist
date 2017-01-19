@@ -5,13 +5,15 @@ import io.dropwizard.Configuration;
 
 public class ReaderConfiguration extends Configuration
 {
-    private final String saveRoot;
+	private final String saveRoot;
 
-    public ReaderConfiguration(@JsonProperty("saveRoot") String saveRoot) {
-        this.saveRoot = saveRoot;
-    }
+	public ReaderConfiguration(@JsonProperty("saveRoot") String saveRoot)
+	{
+		this.saveRoot = saveRoot;
+	}
 
-    String getSaveRoot() {
-        return saveRoot;
-    }
+	String getSaveRoot()
+	{
+		return saveRoot;
+	}
 }

@@ -12,8 +12,8 @@ public class CreateUserCommand
 
 	@JsonCreator
 	public CreateUserCommand(@JsonProperty("username") final UserId username,
-                             @JsonProperty("password") final String password,
-                             @JsonProperty("inviteCode") final String inviteCode)
+							 @JsonProperty("password") final String password,
+							 @JsonProperty("inviteCode") final String inviteCode)
 	{
 		this.username = username;
 		this.password = password;

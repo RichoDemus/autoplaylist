@@ -10,44 +10,48 @@ import java.util.UUID;
 
 public class TestableReaderApplication implements TestableApplication
 {
-    private DropwizardTestSupport<ReaderConfiguration> support;
+	private DropwizardTestSupport<ReaderConfiguration> support;
 
-    public TestableReaderApplication(final int youtubeMockPort)
-    {
-        if(youtubeMockPort != -1)
-        {
-            System.setProperty("YOUTUBE_URL","http://localhost:" + youtubeMockPort + "/");
-        }
-        support = new DropwizardTestSupport<>(ReaderApplication.class,
-                "../config.yaml",
-                ConfigOverride.config("saveRoot", "build/saveRoots/" + UUID.randomUUID()),
-                ConfigOverride.config("server.applicationConnectors[0].port", "0"));
-        support.before();
-    }
+	public TestableReaderApplication(final int youtubeMockPort)
+	{
+		if (youtubeMockPort != -1)
+		{
+			System.setProperty("YOUTUBE_URL", "http://localhost:" + youtubeMockPort + "/");
+		}
+		support = new DropwizardTestSupport<>(ReaderApplication.class,
+				"../config.yaml",
+				ConfigOverride.config("saveRoot", "build/saveRoots/" + UUID.randomUUID()),
+				ConfigOverride.config("server.applicationConnectors[0].port", "0"));
+		support.before();
+	}
 
-    public TestableReaderApplication()
-    {
-        this(-1);
-    }
+	public TestableReaderApplication()
+	{
+		this(-1);
+	}
 
-    @Override
-    public String getIp() {
-        return "localhost";
-    }
+	@Override
+	public String getIp()
+	{
+		return "localhost";
+	}
 
-    @Override
-    public int getHttpPort() {
-        return support.getLocalPort();
-    }
+	@Override
+	public int getHttpPort()
+	{
+		return support.getLocalPort();
+	}
 
-    @Override
-    public int getAdminPort() {
-        return support.getAdminPort();
-    }
+	@Override
+	public int getAdminPort()
+	{
+		return support.getAdminPort();
+	}
 
-    @Override
-    public void close() {
-        support.after();
-        System.clearProperty("YOUTUBE_URL");
-    }
+	@Override
+	public void close()
+	{
+		support.after();
+		System.clearProperty("YOUTUBE_URL");
+	}
 }

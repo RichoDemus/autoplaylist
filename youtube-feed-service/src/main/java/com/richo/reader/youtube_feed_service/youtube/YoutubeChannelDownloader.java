@@ -54,7 +54,7 @@ public class YoutubeChannelDownloader
 	private Optional<String> getUrlOverride()
 	{
 		final String env = System.getenv("YOUTUBE_URL");
-		if(env != null)
+		if (env != null)
 		{
 			return Optional.of(env);
 		}
