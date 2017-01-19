@@ -1,3 +1,5 @@
+saveRoot: data
+
 logging:
   level: INFO
   loggers:

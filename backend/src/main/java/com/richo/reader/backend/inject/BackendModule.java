@@ -18,12 +18,10 @@ public class BackendModule extends AbstractModule
 		bind(Backend.class);
 		bind(Duration.class).toInstance(Duration.of(1, ChronoUnit.DAYS));
 		bind(String.class).annotatedWith(Names.named("apiKey")).toInstance("AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
-		bind(String.class).annotatedWith(Names.named("saveRoot")).toInstance("data/");
 
 		//bind(ChannelPersister.class).annotatedWith(Names.named("FileSystem")).to(JsonFileSystemPersistence.class);
 
 		bind(UserPersister.class).annotatedWith(Names.named("InMemory")).to(InMemoryUserPersistence.class);
 		bind(UserPersister.class).annotatedWith(Names.named("FileSystem")).to(JsonFileSystemUserPersistence.class);
 	}
-
 }
