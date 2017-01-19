@@ -4,6 +4,7 @@
 activemq-data/
 /data
 /classes
+.DS_Store
 
 ### Intellij ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
