@@ -47,6 +47,12 @@ public class YoutubeDownloadManager
 		final List<Item> items = new ArrayList<>(feed.getItems());
 		final Optional<YoutubeVideoChunk> videoChunk = youtubeChannelDownloader.getVideoChunk(feedId);
 
+		if (!videoChunk.isPresent())
+		{
+			logger.warn("Couldn't find channel {}", feed);
+			return;
+		}
+
 		List<PlaylistItem> nextVideoChunk;
 		final List<Item> itemsToAdd = new ArrayList<>();
 		while ((nextVideoChunk = videoChunk.get().getNextVideoChunk()).size() > 0)
