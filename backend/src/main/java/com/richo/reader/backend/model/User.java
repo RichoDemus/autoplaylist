@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.ItemId;
+import com.richodemus.reader.dto.Label;
 import com.richodemus.reader.dto.UserId;
 
 import java.util.ArrayList;

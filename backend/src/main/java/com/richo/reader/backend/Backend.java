@@ -6,7 +6,7 @@ import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richo.reader.backend.model.FeedWithoutItems;
 import com.richo.reader.backend.model.User;
-import com.richo.reader.backend.user.UserService;
+import com.richo.reader.backend.user.UserServicePort;
 import com.richo.reader.youtube_feed_service.Feed;
 import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.YoutubeFeedService;
@@ -27,13 +27,13 @@ import java.util.stream.Stream;
 public class Backend
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final UserService userService;
+	private final UserServicePort userServicePort;
 	private final YoutubeFeedService feedService;
 
 	@Inject
-	public Backend(final UserService userService, YoutubeFeedService feedService)
+	public Backend(final UserServicePort userServicePort, YoutubeFeedService feedService)
 	{
-		this.userService = userService;
+		this.userServicePort = userServicePort;
 		this.feedService = feedService;
 	}
 
@@ -41,7 +41,7 @@ public class Backend
 	{
 		logger.debug("Getting feed {} for user {}", feedId, username);
 
-		final User user = userService.get(username);
+		final User user = userServicePort.get(username);
 		if (!user.getFeeds().containsKey(feedId))
 		{
 			logger.warn("{} is not subscrbed to feed {}", username, feedId);
@@ -62,7 +62,7 @@ public class Backend
 	{
 		logger.debug("Getting all feeds for user {}", username);
 
-		final User user = userService.get(username);
+		final User user = userServicePort.get(username);
 
 		return user.getFeeds().keySet().stream()
 				.map(feedService::getChannel)
@@ -98,34 +98,34 @@ public class Backend
 		logger.info("Add feed: {} for user {}", feedUrl, username);
 
 		final FeedId feedId = feedService.getFeedId(feedUrl);
-		final User user = userService.get(username);
+		final User user = userServicePort.get(username);
 
 		//Todo its now possible to add feeds that doesnt exist...
 		user.addFeed(feedId);
-		userService.update(user);
+		userServicePort.update(user);
 		feedService.registerChannel(feedId);
 	}
 
 	public void markAsRead(final UserId username, final FeedId feedId, final ItemId itemId) throws NoSuchUserException, UserNotSubscribedToThatChannelException
 	{
 		logger.info("Marking item {} in feed {} for user {} as read", itemId, feedId, username);
-		final User user = userService.get(username);
+		final User user = userServicePort.get(username);
 		user.markAsRead(feedId, itemId);
-		userService.update(user);
+		userServicePort.update(user);
 	}
 
 	public void markAsUnread(final UserId username, final FeedId feedId, ItemId itemId) throws NoSuchUserException
 	{
 		logger.info("Marking item {} in feed {} for user {} as unread", itemId, feedId, username);
-		final User user = userService.get(username);
+		final User user = userServicePort.get(username);
 		user.markAsUnRead(feedId, itemId);
-		userService.update(user);
+		userServicePort.update(user);
 	}
 
 	public void markOlderItemsAsRead(final UserId username, final FeedId feedId, final ItemId itemId) throws NoSuchChannelException, ItemNotInFeedException, UserNotSubscribedToThatChannelException
 	{
 		logger.info("Marking items older than {} in feed {} for user {} as read", itemId, feedId, username);
-		final User user = userService.get(username);
+		final User user = userServicePort.get(username);
 		final Feed feed = feedService.getChannel(feedId).orElseThrow(() ->
 		{
 			logger.error("No such channel: {}", feedId);
@@ -142,6 +142,6 @@ public class Backend
 				.map(Item::getId)
 				.forEach(id -> user.markAsRead(feedId, id));
 
-		userService.update(user);
+		userServicePort.update(user);
 	}
 }

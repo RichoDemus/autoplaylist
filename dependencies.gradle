@@ -15,6 +15,7 @@ ext {
     googleHttpClientVersion = '1.22.0'
     youtubeApiVersion = 'v3-rev180-1.22.0'
     jerseyServerVersion = '2.24'
+    caffeineVersion = '2.3.5'
 
     // test dependencies
     junitVersion = '4.12'

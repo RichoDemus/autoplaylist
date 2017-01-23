@@ -3,7 +3,7 @@ package com.richo.reader.backend;
 import com.google.common.collect.Sets;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
-import com.richo.reader.backend.user.UserService;
+import com.richo.reader.backend.user.UserServicePort;
 import com.richodemus.reader.dto.UserId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,27 +14,27 @@ import java.util.Optional;
 public class UserManager
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final UserService userService;
+	private final UserServicePort userServicePort;
 
 	@Inject
-	public UserManager(UserService userService)
+	public UserManager(UserServicePort userServicePort)
 	{
-		this.userService = userService;
+		this.userServicePort = userServicePort;
 	}
 
 	public void createUser(UserId username, String password)
 	{
 		logger.debug("Creating user {}", username);
-		userService.update(new User(username, Sets.newHashSet()));
-		userService.updatePassword(username, password);
+		userServicePort.update(new User(username, Sets.newHashSet()));
+		userServicePort.updatePassword(username, password);
 	}
 
 	public boolean checkCredentials(UserId username, String password) throws NoSuchUserException
 	{
 		logger.info("Checking credentials for {}", username);
-		final Optional<User> maybeUser = Optional.ofNullable(userService.get(username));
+		final Optional<User> maybeUser = Optional.ofNullable(userServicePort.get(username));
 
 		//todo real password management
-		return maybeUser.isPresent() && userService.isPasswordValid(username, password);
+		return maybeUser.isPresent() && userServicePort.isPasswordValid(username, password);
 	}
 }

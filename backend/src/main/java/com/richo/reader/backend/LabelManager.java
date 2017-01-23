@@ -2,10 +2,10 @@ package com.richo.reader.backend;
 
 import com.richo.reader.backend.exception.NoSuchLabelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
-import com.richo.reader.backend.model.Label;
 import com.richo.reader.backend.model.User;
-import com.richo.reader.backend.user.UserService;
+import com.richo.reader.backend.user.UserServicePort;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.Label;
 import com.richodemus.reader.dto.UserId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,21 +17,21 @@ import java.util.List;
 public class LabelManager
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final UserService userService;
+	private final UserServicePort userServicePort;
 
 	@Inject
-	public LabelManager(UserService userService)
+	public LabelManager(UserServicePort userServicePort)
 	{
-		this.userService = userService;
+		this.userServicePort = userServicePort;
 	}
 
 	public Label createLabelForUser(UserId username, String labelName) throws NoSuchUserException
 	{
 		logger.info("Creating label {} for user {}", labelName, username);
-		final User user = userService.get(username);
+		final User user = userServicePort.get(username);
 		final Label label = createLabel(user, labelName);
 		user.addLabel(label);
-		userService.update(user);
+		userServicePort.update(user);
 		return label;
 	}
 
@@ -43,7 +43,7 @@ public class LabelManager
 	public void addFeedToLabel(UserId username, long labelId, final FeedId feedId) throws NoSuchUserException, NoSuchLabelException
 	{
 		logger.debug("Adding feed {} to label {} for user {}", feedId, labelId, username);
-		final User user = userService.get(username);
+		final User user = userServicePort.get(username);
 		final Label label = user.getLabels().stream()
 				.filter(l -> l.getId() == labelId)
 				.findAny()
@@ -56,13 +56,13 @@ public class LabelManager
 			return;
 		}
 		label.getFeeds().add(feedId);
-		userService.update(user);
+		userServicePort.update(user);
 	}
 
 	public List<Label> getLabels(UserId username) throws NoSuchUserException
 	{
 		logger.info("Getting labels for user {}", username);
-		final User user = userService.get(username);
+		final User user = userServicePort.get(username);
 		return user.getLabels();
 	}
 }

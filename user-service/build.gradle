@@ -1,0 +1,30 @@
+apply plugin: 'kotlin'
+
+description = 'user-service'
+dependencies {
+    compile project(':dto')
+    compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
+    testCompile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
+    compile "org.jetbrains:annotations:$rootProject.jetbrainsAnnotationsVersion"
+    compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
+    compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
+    compile "com.fasterxml.jackson.core:jackson-core:$rootProject.jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-databind:$rootProject.jacksonVersion"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$rootProject.jacksonVersion"
+    compile "com.github.ben-manes.caffeine:caffeine:$rootProject.caffeineVersion"
+
+    testCompile "junit:junit:$rootProject.junitVersion"
+    testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
+    testRuntime "org.slf4j:slf4j-simple:$rootProject.slf4jVersion"
+    testCompile 'com.nhaarman:mockito-kotlin:1.3.0'
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.kotlinVersion"
+    }
+}

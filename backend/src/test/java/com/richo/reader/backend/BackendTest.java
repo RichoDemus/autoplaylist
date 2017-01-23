@@ -5,7 +5,7 @@ import com.google.common.collect.Sets;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.FeedWithoutItems;
 import com.richo.reader.backend.model.User;
-import com.richo.reader.backend.user.UserService;
+import com.richo.reader.backend.user.UserServicePort;
 import com.richo.reader.youtube_feed_service.Feed;
 import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.YoutubeFeedService;
@@ -55,18 +55,18 @@ public class BackendTest
 	private static final User EXISTING_USER = new User(new UserId("existing_user"), 0L, ImmutableMap.of(FEED_1.getId(), Sets.newHashSet(ITEM_THAT_SHOULD_BE_READ.getId()), FEED_2.getId(), new HashSet<>()), new ArrayList<>());
 
 	private Backend target;
-	private UserService userService;
+	private UserServicePort userServicePort;
 	private YoutubeFeedService feedService;
 
 	@Before
 	public void setUp() throws Exception
 	{
 		feedService = mock(YoutubeFeedService.class);
-		userService = mock(UserService.class);
-		target = new Backend(userService, feedService);
+		userServicePort = mock(UserServicePort.class);
+		target = new Backend(userServicePort, feedService);
 
 
-		when(userService.get(EXISTING_USER.getName())).thenReturn(EXISTING_USER);
+		when(userServicePort.get(EXISTING_USER.getName())).thenReturn(EXISTING_USER);
 		when(feedService.getChannel(FEED_1.getId())).thenReturn(Optional.of(FEED_1));
 		when(feedService.getChannel(FEED_2.getId())).thenReturn(Optional.of(FEED_2));
 	}
@@ -100,14 +100,14 @@ public class BackendTest
 	@Test(expected = NoSuchUserException.class)
 	public void getFeedShouldThrowNoSuchUserExceptionIfUserDoesntExist() throws Exception
 	{
-		when(userService.get(NON_EXISTING_USER)).thenThrow(new NoSuchUserException(""));
+		when(userServicePort.get(NON_EXISTING_USER)).thenThrow(new NoSuchUserException(""));
 		target.getFeed(NON_EXISTING_USER, FEED_1.getId());
 	}
 
 	@Test(expected = NoSuchUserException.class)
 	public void getAllFeedsWithoutItemsShouldThrowNoSuchUserExceptionIfUserDoesntExist() throws Exception
 	{
-		when(userService.get(NON_EXISTING_USER)).thenThrow(new NoSuchUserException(""));
+		when(userServicePort.get(NON_EXISTING_USER)).thenThrow(new NoSuchUserException(""));
 		target.getAllFeedsWithoutItems(NON_EXISTING_USER);
 	}
 

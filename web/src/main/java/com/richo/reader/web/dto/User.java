@@ -3,7 +3,7 @@ package com.richo.reader.web.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.richo.reader.backend.model.FeedWithoutItems;
-import com.richo.reader.backend.model.Label;
+import com.richodemus.reader.dto.Label;
 
 import java.util.List;
 
