@@ -43,6 +43,7 @@ var Service = (function()
 			{
 				return a.id - b.id;
 			});
+			initializeFeeds();
 			Service.updateEverything();
 		});
 	};
@@ -65,7 +66,7 @@ var Service = (function()
 	pub.selectFeed = function(feedId)
 	{
 		const selectedFeed = feeds.filter(function(f) {return f.id == feedId;})[0];
-		if (selectedFeed && selectedFeed.items.length > 0)
+		if (selectedFeed && selectedFeed.items)
 		{
 			console.log("Feed Already downloaded..");
 			Service.updateEverything();
@@ -113,6 +114,21 @@ var Service = (function()
 			if(newSession)
 			{
 				loggedIn(session);
+			}
+		});
+	}
+
+	function initializeFeeds()
+	{
+		"use strict";
+		feeds.forEach(feed =>
+		{
+			console.log("Added availableItems method to feed " + feed.id);
+			feed.availableItems = () =>
+			{
+				if (feed.items && feed.items.length > 0)
+					return feed.items.length;
+				return feed.numberOfAvailableItems;
 			}
 		});
 	}
