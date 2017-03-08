@@ -22,10 +22,12 @@ dependencies {
     compile "javax.ws.rs:javax.ws.rs-api:$rootProject.javaxWsRsApiVersion"
     compile "javax.servlet:javax.servlet-api:$rootProject.javaxServletApiVersion"
     compile "com.google.guava:guava:$rootProject.guavaVersion"
+
     testCompile "io.dropwizard:dropwizard-testing:$rootProject.dropwizardVersion"
     testCompile "junit:junit:$rootProject.junitVersion"
     testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
     testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
+    testCompile "com.fasterxml.jackson.core:jackson-databind:$rootProject.jacksonVersion"
 }
 
 task copyDependencies(type: Copy) {

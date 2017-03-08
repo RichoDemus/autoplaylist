@@ -9,10 +9,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -29,7 +30,9 @@ public class PeriodicDownloadOrchestrator
 	private final FeedCache cache;
 	private final YoutubeDownloadManager downloader;
 	private final ScheduledExecutorService executor;
-	final private ZonedDateTime timeToRun;
+	private final ZonedDateTime timeToRun;
+	private boolean isRunning = false;
+	private LocalDateTime lastRun = LocalDateTime.MIN;
 
 	@Inject
 	public PeriodicDownloadOrchestrator(FeedCache cache, YoutubeDownloadManager downloader)
@@ -82,20 +85,48 @@ public class PeriodicDownloadOrchestrator
 		executor.shutdown();
 	}
 
+	public boolean isRunning()
+	{
+		return isRunning;
+	}
+
+	public LocalDateTime lastRun()
+	{
+		return lastRun;
+	}
+
 	private void addDownloadsTasksToExecutor()
 	{
-		logger.info("Midnight, time to download");
-		final List<FeedId> feedIds = cache.getAllFeedIds();
-		Collections.sort(feedIds, (o1, o2) -> o1.getValue().compareTo(o2.getValue()));
-		logger.info("{} feeds to download", feedIds.size());
+		isRunning = true;
+		try
+		{
+			logger.info("Midnight, time to download");
+			final List<FeedId> feedIds = cache.getAllFeedIds();
+			feedIds.sort(Comparator.comparing(FeedId::getValue));
+			logger.info("{} feeds to download", feedIds.size());
 
-		feedIds.forEach(feedId -> runWithExceptionHandling(feedId, downloader::downloadFeed));
+			feedIds.forEach(feedId -> runWithExceptionHandling(feedId, downloader::downloadFeed));
+			lastRun = LocalDateTime.now();
+		}
+		finally
+		{
+			isRunning = false;
+		}
 	}
 
 	private void addUpdateStatisticsTasksToExecutor()
 	{
-		logger.info("It's 4 in the morning, time to update statistics");
-		cache.getAllFeedIds().forEach(feedId -> runWithExceptionHandling(feedId, downloader::updateFeedStatistics));
+		isRunning = true;
+		try
+		{
+			logger.info("It's 4 in the morning, time to update statistics");
+			cache.getAllFeedIds().forEach(feedId -> runWithExceptionHandling(feedId, downloader::updateFeedStatistics));
+			lastRun = LocalDateTime.now();
+		}
+		finally
+		{
+			isRunning = false;
+		}
 	}
 
 	private long calculateDelayUntilMidnight()
