@@ -129,12 +129,15 @@ var Buttons = (function()
 		Api.markAsRead(item.getAttribute("data-feed-id"), item.getAttribute("data-id"));
 	};
 
-	//Private method
-	/*
-	function privateWay() {
-		console.log("private method");
-	}
-	*/
-	//Return just the public parts
+	pub.runJob = function()
+	{
+		console.log("User wants to rerun the download job");
+		Api.runDownloadJob(status =>
+		{
+			$("#downloadJobStatus").text("Download job status: Running...");
+		});
+		$("#runDownloadJobButton").prop("disabled",true);
+	};
+
 	return pub;
 }());

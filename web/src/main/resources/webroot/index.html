@@ -165,7 +165,9 @@
         <h4 class="modal-title">Admin</h4>
       </div>
       <div class="modal-body">
-        <p>Some text in the modal.</p>
+        <p id="downloadJobLastRun">Download job last run: Fetching...</p>
+        <p id="downloadJobStatus">Download job status: Fetching...</p>
+          <button id="runDownloadJobButton" type="button" class="btn btn-default" onclick="Buttons.runJob()" disabled>Run Job</button>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

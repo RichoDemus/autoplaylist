@@ -168,13 +168,19 @@ var Api = (function()
 		});
 	};
 
-	//Private method
-	/*
-	function privateWay() {
-		console.log("private method");
-	}
-	*/
-	//Return just the public parts
+	pub.getDownloadJobStatus = function (callback)
+    {
+		const status = {};
+		status.running = false;
+        status.lastRun = "yesterday";
+		callback(status)
+    };
+
+	pub.runDownloadJob = function (callback)
+    {
+		callback(null);
+    };
+
 	return pub;
 }());
 

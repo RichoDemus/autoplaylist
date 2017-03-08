@@ -1,10 +1,24 @@
-$(function()
+$(function ()
 {
-	Authentication.setLoginFormBehaviour();
-	Authentication.setSignupFormBehaviour();
-	$('#adminModal').on('shown.bs.modal', function (e) {
-	  alert("Modal opened")
-	});
+    Authentication.setLoginFormBehaviour();
+    Authentication.setSignupFormBehaviour();
+    $('#adminModal').on('shown.bs.modal', function (e)
+    {
+        Api.getDownloadJobStatus(status =>
+        {
+            if(status.running) {
+                $("#downloadJobStatus").text("Download job status: Running...");
+            }
+            else
+            {
+                $("#downloadJobStatus").text("Download job status: Not Running...");
+                $("#runDownloadJobButton").prop("disabled",false);
+            }
 
-	Service.init();
+            $("#downloadJobLastRun").text("Download job last run: " + status.lastRun);
+
+        });
+    });
+
+    Service.init();
 });
