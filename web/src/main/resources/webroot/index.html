@@ -62,6 +62,7 @@
                     </ul>
                 </li>
                 <li><a id="logoutButton" href="#" onclick="Buttons.logout()">Logout</a></li>
+                <li><a id="adminButton" href="#" data-toggle="modal" data-target="#adminModal">Admin</a></li>
             </ul>
         </div>
         <!--/.nav-collapse -->
@@ -152,6 +153,26 @@
             </div>
         </div>
     </div>
+</div>
+
+<div id="adminModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Admin</h4>
+      </div>
+      <div class="modal-body">
+        <p>Some text in the modal.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <!-- Bootstrap core JavaScript
