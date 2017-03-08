@@ -170,15 +170,28 @@ var Api = (function()
 
 	pub.getDownloadJobStatus = function (callback)
     {
-		const status = {};
-		status.running = false;
-        status.lastRun = "yesterday";
-		callback(status)
+		if(!Authentication.token)
+		{
+			console.log("No token...");
+			return;
+		}
+		$.ajax(
+		{
+			url: "api/admin/download",
+			type: "GET",
+			headers: { 'x-token-jwt': Authentication.token.raw }
+		}).done(callback);
     };
 
 	pub.runDownloadJob = function (callback)
     {
-		callback(null);
+        $.ajax(
+        {
+            url: "api/admin/download",
+            type: "POST",
+            headers: { 'x-token-jwt': Authentication.token.raw },
+            success: callback
+        });
     };
 
 	return pub;
