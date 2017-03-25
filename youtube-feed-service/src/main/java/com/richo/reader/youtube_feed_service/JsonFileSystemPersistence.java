@@ -75,6 +75,24 @@ public class JsonFileSystemPersistence
 			final boolean success = new File(path).mkdirs();
 			logger.trace("Creating {} successful: {}", path, success);
 			objectMapper.writeValue(new File(path + "/data.json"), feed);
+
+			// temporary code for the migration
+			if(feed.getId().getValue().equals(feed.getName().getValue()))
+			{
+				logger.warn("Feed {} has identical name and id, wont delete old dir", feed.getId());
+				return;
+			}
+
+			final String deletePath = saveRoot + "/feeds/" + feed.getName();
+			if (!new File(deletePath, "data.json").delete())
+			{
+				logger.warn("failed to delete data file for feed {}", feed.getName());
+			}
+			if (!new File(deletePath).delete())
+			{
+				logger.warn("Failed to delete directory for feed {}", feed.getName());
+			}
+			logger.info("Hopefully deleted old dir for feed {}", feed.getName());
 		}
 		catch (IOException e)
 		{
