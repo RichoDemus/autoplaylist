@@ -58,7 +58,7 @@ public class YoutubeChannelDownloader
 		return usernameToChannel(feedName.getValue());
 	}
 
-	public FeedName getName(final FeedId feedId) {
+	public Optional<FeedName> getName(final FeedId feedId) {
 		final List<Channel> channels;
 		try
 		{
@@ -69,17 +69,19 @@ public class YoutubeChannelDownloader
 					.execute()
 					.getItems();
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
-			throw new RuntimeException("Unable to figure out feed name for feed id " + feedId, e);
+			logger.warn("Unable to figure out feed name for feed id {}", feedId, e);
+			return Optional.empty();
 		}
 
 		if (channels == null || channels.size() == 0)
 		{
-			throw new RuntimeException("No channels found for id " + feedId);
+			logger.warn("No channels found for id {}", feedId);
+			return Optional.empty();
 		}
 
-		return new FeedName(channels.get(0).getSnippet().getTitle());
+		return Optional.of(new FeedName(channels.get(0).getSnippet().getTitle()));
 	}
 
 	private FeedId usernameToChannel(String username)

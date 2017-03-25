@@ -39,25 +39,12 @@ public class YoutubeDownloadManager
 		this.cache = cache;
 	}
 
-	public void downloadFeed(FeedId feedIdParam)
+	public void downloadFeed(FeedId feedId)
 	{
 		//todo refactor this method, it's balls
-		logger.info("Channel {} requested", feedIdParam);
-		FeedName feedName;
-		FeedId feedId;
-		try
-		{
-			feedName = youtubeChannelDownloader.getName(feedIdParam);
-			feedId = feedIdParam;
-		}
-		catch (Exception e)
-		{
-			// this means that feedId is actually a name
-			feedName = new FeedName(feedIdParam.getValue());
-			feedId = youtubeChannelDownloader.nameToId(feedName);
-
-		}
-		final Feed feed = cache.get(feedId).orElse(new Feed(feedId, feedName, new ArrayList<>(), LocalDateTime.now()));
+		logger.info("Channel {} requested", feedId);
+		final Optional<FeedName> feedName = youtubeChannelDownloader.getName(feedId);
+		final Feed feed = cache.get(feedId).orElse(new Feed(feedId, feedName.orElseGet(() -> new FeedName("UNKNOWN_FEED")), new ArrayList<>(), LocalDateTime.now()));
 
 		final List<ItemId> itemIds = feed.getItems().stream().map(Item::getId).collect(toList());
 		final List<Item> items = new ArrayList<>(feed.getItems());
@@ -100,7 +87,7 @@ public class YoutubeDownloadManager
 		final List<Item> itemsToAddWithStatistics = addStatistics(itemsToAdd);
 
 		itemsToAddWithStatistics.forEach(items::add);
-		cache.update(new Feed(feed.getId(), feedName, items, LocalDateTime.now()));
+		cache.update(new Feed(feed.getId(), feedName.orElseGet(feed::getName), items, LocalDateTime.now()));
 		logger.info("Downloaded {} new videos from the channel {}", itemsToAdd.size(), feedId);
 	}
 

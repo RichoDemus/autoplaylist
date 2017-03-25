@@ -59,7 +59,7 @@ public class YoutubeChannelDownloaderTest
 	{
 		final YoutubeChannelDownloader target = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
 
-		final FeedName result = target.getName(new FeedId("UCf1iroepad-o5w2il-06Gjg"));
+		final FeedName result = target.getName(new FeedId("UCf1iroepad-o5w2il-06Gjg")).get();
 
 		assertThat(result).isEqualTo(new FeedName("Armoured Media"));
 	}

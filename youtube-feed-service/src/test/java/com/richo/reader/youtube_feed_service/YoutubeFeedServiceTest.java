@@ -1,6 +1,5 @@
 package com.richo.reader.youtube_feed_service;
 
-import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedName;
 import org.junit.Before;
@@ -23,14 +22,6 @@ public class YoutubeFeedServiceTest
 	private static final FeedId NON_CACHED_CHANNEL = new FeedId("foo");
 	private static final Feed CACHED_CHANNEL = new Feed(new FeedId("RichoDemus"), new FeedName("richodemus"), new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC));
 	private static final Feed CHANNEL_ON_DISK = new Feed(new FeedId("Ylvis"), new FeedName("ylvis"), new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC));
-	private static final YoutubeChannelDownloader FANCY_TEMPORARY_MOCK = new YoutubeChannelDownloader(null, null)
-	{
-		@Override
-		public FeedId nameToId(FeedName feedName)
-		{
-			return new FeedId(feedName.getValue());
-		}
-	};
 	private YoutubeFeedService target;
 
 	@Before
@@ -40,7 +31,7 @@ public class YoutubeFeedServiceTest
 		fileSystemPersistence.updateChannel(CHANNEL_ON_DISK);
 		final FeedCache cache = new FeedCache(fileSystemPersistence);
 		cache.update(CACHED_CHANNEL);
-		target = new YoutubeFeedService(cache, FANCY_TEMPORARY_MOCK);
+		target = new YoutubeFeedService(cache);
 	}
 
 	@Test
@@ -64,7 +55,7 @@ public class YoutubeFeedServiceTest
 		when(fileSystemPersistence.getChannel(CHANNEL_ON_DISK.getId())).thenReturn(Optional.of(CHANNEL_ON_DISK));
 		final FeedCache cache = new FeedCache(fileSystemPersistence);
 		cache.update(CACHED_CHANNEL);
-		target = new YoutubeFeedService(cache, FANCY_TEMPORARY_MOCK);
+		target = new YoutubeFeedService(cache);
 
 		target.getChannel(CHANNEL_ON_DISK.getId());
 		target.getChannel(CHANNEL_ON_DISK.getId());

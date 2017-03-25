@@ -17,9 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -64,23 +62,6 @@ public class Backend
 		logger.debug("Getting all feeds for user {}", username);
 
 		final User user = userService.get(username);
-
-		//temporary convert user
-		final Map<FeedId, Set<ItemId>> newFeeds = new HashMap<>();
-		user.getFeeds().entrySet().forEach(entry ->
-		{
-			final Optional<FeedId> newChannel = feedService.getChannel(entry.getKey()).map(Feed::getId);
-			if (!newChannel.isPresent())
-			{
-				logger.warn("Couldn't convert feed {}", entry.getKey());
-				newFeeds.put(entry.getKey(), entry.getValue());
-			}
-			else
-			{
-				newFeeds.put(newChannel.get(), entry.getValue());
-			}
-		});
-		userService.update(new User(user.getName(), user.getNextLabelId(), newFeeds, user.getLabels()));
 
 		return user.getFeeds().keySet().stream()
 				.map(feedService::getChannel)
@@ -160,18 +141,5 @@ public class Backend
 				.forEach(id -> user.markAsRead(feedId, id));
 
 		userService.update(user);
-	}
-
-	//todo remove
-	public FeedId feedNameToId(FeedId feedId)
-	{
-		try
-		{
-			return feedService.getChannel(feedId).map(Feed::getId).orElseThrow(() -> new RuntimeException("Failed to convert label due to feed " + feedId));
-		}
-		catch (RuntimeException e)
-		{
-			return feedId;
-		}
 	}
 }
