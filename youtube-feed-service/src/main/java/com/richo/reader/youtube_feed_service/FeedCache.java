@@ -1,6 +1,7 @@
 package com.richo.reader.youtube_feed_service;
 
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,7 @@ public class FeedCache
 	public FeedCache(JsonFileSystemPersistence fileSystemPersistence)
 	{
 		this.fileSystemPersistence = fileSystemPersistence;
-		cache = new HashMap<>();
+		this.cache = new HashMap<>();
 	}
 
 	public Optional<Feed> get(FeedId feedId)
@@ -47,7 +48,7 @@ public class FeedCache
 
 	public void add(FeedId feedId)
 	{
-		final Feed feed = new Feed(feedId, new ArrayList<>(), 0L);
+		final Feed feed = new Feed(feedId, new FeedName("UNKNOWN_FEED"), new ArrayList<>(), 0L);
 		fileSystemPersistence.updateChannel(feed);
 	}
 }

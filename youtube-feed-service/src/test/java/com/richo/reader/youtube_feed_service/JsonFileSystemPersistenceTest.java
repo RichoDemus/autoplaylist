@@ -1,6 +1,7 @@
 package com.richo.reader.youtube_feed_service;
 
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedName;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,20 +31,21 @@ public class JsonFileSystemPersistenceTest
 	@Test
 	public void shouldSaveStuffInTheRightPlace() throws Exception
 	{
-		target.updateChannel(new Feed(new FeedId("name"), new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC)));
+		target.updateChannel(new Feed(new FeedId("id"), new FeedName("name"), new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC)));
 		Assert.assertTrue(new File("target/data/").exists());
 	}
 
 	@Test
 	public void shouldBeAbleToLoadSavedData() throws Exception
 	{
-		final FeedId channelName = new FeedId("my-channel");
+		final FeedId feedId = new FeedId("my-channel");
+		final FeedName feedName = new FeedName("my-channel");
 		final Item firstVideo = new Item("id1", "title1", "desc1", 0L, 0L, 0L, 0L);
 		final Item secondVideo = new Item("id2", "title2", "desc2", 0L, 0L, 0L, 0L);
-		final Feed expected = new Feed(channelName, Arrays.asList(firstVideo, secondVideo), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC));
+		final Feed expected = new Feed(feedId, feedName, Arrays.asList(firstVideo, secondVideo), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC));
 		target.updateChannel(expected);
 
-		final Optional<Feed> maybeResult = target.getChannel(channelName);
+		final Optional<Feed> maybeResult = target.getChannel(feedId);
 
 		Assert.assertTrue("Should've gotten a channel", maybeResult.isPresent());
 		final Feed result = maybeResult.get();
@@ -54,7 +56,7 @@ public class JsonFileSystemPersistenceTest
 	@Test
 	public void shouldReturnAllChanelIds() throws Exception
 	{
-		final List<Feed> feeds = Arrays.asList(new Feed(new FeedId("feed1"), new ArrayList<>(), 0L), new Feed(new FeedId("feed2"), new ArrayList<>(), 0L));
+		final List<Feed> feeds = Arrays.asList(new Feed(new FeedId("feed1"), new FeedName("qwe"), new ArrayList<>(), 0L), new Feed(new FeedId("feed2"), new FeedName("qwe"), new ArrayList<>(), 0L));
 
 		feeds.forEach(target::updateChannel);
 

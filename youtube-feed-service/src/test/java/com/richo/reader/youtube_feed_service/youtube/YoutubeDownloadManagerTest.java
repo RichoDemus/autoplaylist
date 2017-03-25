@@ -11,6 +11,7 @@ import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.JsonFileSystemPersistence;
 import com.richo.reader.youtube_feed_service.YoutubeDownloadManager;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedName;
 import com.richodemus.reader.dto.ItemId;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,12 +39,14 @@ public class YoutubeDownloadManagerTest
 	private static final Item CACHED_CHANNEL_FIRST_VIDEO = new Item(new ItemId("_0S1jebDBzk"), "cached_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56), LocalDateTime.now(), Duration.ZERO, 0L);
 	private static final Feed CACHED_CHANNEL = new Feed(
 			new FeedId("cached_channel"),
+			new FeedName("cached_channel"),
 			singletonList(CACHED_CHANNEL_FIRST_VIDEO),
 			LocalDateTime.now());
 
 	private static final Item UNCACHED_CHANNEL_FIRST_VIDEO = new Item(new ItemId("_0S1jebDBzk1"), "uncached_1", "description1", LocalDateTime.of(2014, 9, 5, 12, 37, 56), LocalDateTime.now(), Duration.ZERO, 0L);
 	private static final Feed UNCACHED_CHANNEL = new Feed(
 			new FeedId("uncached_channel"),
+			new FeedName("uncached_channel"),
 			singletonList(UNCACHED_CHANNEL_FIRST_VIDEO),
 			LocalDateTime.now());
 
@@ -52,10 +55,12 @@ public class YoutubeDownloadManagerTest
 	private static final Item OUTDATED_CHANNEL_NOT_CACHED_VIDEO = new Item(new ItemId("_0s1jebDBze"), "outdated_noncached_3", "description3", LocalDateTime.of(2014, 11, 5, 12, 37, 56), LocalDateTime.now(), Duration.ZERO, 0L);
 	private static final Feed OUTDATED_CHANNEL_WITH_NEW_ITEM = new Feed(
 			new FeedId("outdated_channel"),
+			new FeedName("outdated_channel"),
 			asList(OUTDATED_CHANNEL_FIRST_VIDEO, OUTDATED_CHANNEL_SECOND_VIDEO, OUTDATED_CHANNEL_NOT_CACHED_VIDEO),
 			LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC));
 	private static final Feed OUTDATED_CHANNEL_WITHOUT_NEW_ITEM = new Feed(
 			new FeedId("outdated_channel"),
+			new FeedName("outdated_channel"),
 			asList(OUTDATED_CHANNEL_FIRST_VIDEO, OUTDATED_CHANNEL_SECOND_VIDEO),
 			LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC));
 

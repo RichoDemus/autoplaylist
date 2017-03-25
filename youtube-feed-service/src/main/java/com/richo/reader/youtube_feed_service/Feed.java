@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedName;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -15,18 +16,23 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class Feed
 {
 	private final FeedId id;
+	private final FeedName name;
 	private final List<Item> items;
 	private final LocalDateTime lastUpdated;
 
 	@JsonCreator
-	public Feed(@JsonProperty("id") FeedId id, @JsonProperty("items") List<Item> items, @JsonProperty("lastUpdated") long lastUpdated)
+	public Feed(@JsonProperty("id") FeedId id,
+				@JsonProperty("name") FeedName name,
+				@JsonProperty("items") List<Item> items,
+				@JsonProperty("lastUpdated") long lastUpdated)
 	{
-		this(id, items, LocalDateTime.ofEpochSecond(lastUpdated, 0, ZoneOffset.UTC));
+		this(id, name, items, LocalDateTime.ofEpochSecond(lastUpdated, 0, ZoneOffset.UTC));
 	}
 
-	public Feed(FeedId id, List<Item> items, LocalDateTime lastUpdated)
+	public Feed(FeedId id, FeedName name, List<Item> items, LocalDateTime lastUpdated)
 	{
 		this.id = checkNotNull(id, "Id can't be null");
+		this.name = name;
 		this.items = items;
 		this.lastUpdated = lastUpdated;
 	}
@@ -34,6 +40,11 @@ public class Feed
 	public FeedId getId()
 	{
 		return id;
+	}
+
+	public FeedName getName()
+	{
+		return name;
 	}
 
 	public List<Item> getItems()
@@ -78,6 +89,6 @@ public class Feed
 	@Override
 	public String toString()
 	{
-		return id + " " + items.size() + " items";
+		return name + " (" + id + ") " + items.size() + " items";
 	}
 }

@@ -1,6 +1,7 @@
 package com.richo.reader.youtube_feed_service;
 
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedName;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,8 +20,8 @@ import static org.mockito.Mockito.when;
 public class YoutubeFeedServiceTest
 {
 	private static final FeedId NON_CACHED_CHANNEL = new FeedId("foo");
-	private static final Feed CACHED_CHANNEL = new Feed(new FeedId("RichoDemus"), new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC));
-	private static final Feed CHANNEL_ON_DISK = new Feed(new FeedId("Ylvis"), new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC));
+	private static final Feed CACHED_CHANNEL = new Feed(new FeedId("RichoDemus"), new FeedName("richodemus"), new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC));
+	private static final Feed CHANNEL_ON_DISK = new Feed(new FeedId("Ylvis"), new FeedName("ylvis"), new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC));
 	private YoutubeFeedService target;
 
 	@Before

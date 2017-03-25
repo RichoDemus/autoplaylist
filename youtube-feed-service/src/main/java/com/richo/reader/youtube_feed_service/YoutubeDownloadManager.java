@@ -7,6 +7,7 @@ import com.richo.reader.youtube_feed_service.youtube.DurationAndViewcount;
 import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader;
 import com.richo.reader.youtube_feed_service.youtube.YoutubeVideoChunk;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedName;
 import com.richodemus.reader.dto.ItemId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,8 @@ public class YoutubeDownloadManager
 	{
 		//todo refactor this method, it's balls
 		logger.info("Channel {} requested", feedId);
-		final Feed feed = cache.get(feedId).orElse(new Feed(feedId, new ArrayList<>(), LocalDateTime.now()));
+		final FeedName feedName = new FeedName(feedId.getValue());
+		final Feed feed = cache.get(feedId).orElse(new Feed(feedId, feedName, new ArrayList<>(), LocalDateTime.now()));
 
 		final List<ItemId> itemIds = feed.getItems().stream().map(Item::getId).collect(toList());
 		final List<Item> items = new ArrayList<>(feed.getItems());
@@ -85,7 +87,7 @@ public class YoutubeDownloadManager
 		final List<Item> itemsToAddWithStatistics = addStatistics(itemsToAdd);
 
 		itemsToAddWithStatistics.forEach(items::add);
-		cache.update(new Feed(feed.getId(), items, LocalDateTime.now()));
+		cache.update(new Feed(feed.getId(), feedName, items, LocalDateTime.now()));
 		logger.info("Downloaded {} new videos from the channel {}", itemsToAdd.size(), feedId);
 	}
 
@@ -96,7 +98,7 @@ public class YoutubeDownloadManager
 
 		final List<Item> newItems = addStatistics(feed.getItems());
 
-		cache.update(new Feed(feed.getId(), newItems, LocalDateTime.now()));
+		cache.update(new Feed(feed.getId(), feed.getName(), newItems, LocalDateTime.now()));
 	}
 
 	private List<Item> addStatistics(List<Item> itemsToAdd)

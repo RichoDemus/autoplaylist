@@ -2,6 +2,7 @@ package com.richo.reader.youtube_feed_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +33,8 @@ public class JsonFileSystemPersistence
 	public static void main(String[] args)
 	{
 		new JsonFileSystemPersistence("data/").updateChannel(
-				new Feed(new FeedId("richodemus"),
-						singletonList(new Item("id", "title", "desc", 0L, 0L, 60L, 100L)),
+				new Feed(new FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw"),
+						new FeedName("richodemus"), singletonList(new Item("id", "title", "desc", 0L, 0L, 60L, 100L)),
 						0L));
 	}
 
