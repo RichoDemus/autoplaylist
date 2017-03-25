@@ -39,11 +39,24 @@ public class YoutubeDownloadManager
 		this.cache = cache;
 	}
 
-	public void downloadFeed(FeedId feedId)
+	public void downloadFeed(FeedId feedIdParam)
 	{
 		//todo refactor this method, it's balls
-		logger.info("Channel {} requested", feedId);
-		final FeedName feedName = new FeedName(feedId.getValue());
+		logger.info("Channel {} requested", feedIdParam);
+		FeedName feedName;
+		FeedId feedId;
+		try
+		{
+			feedName = youtubeChannelDownloader.getName(feedIdParam);
+			feedId = feedIdParam;
+		}
+		catch (Exception e)
+		{
+			// this means that feedId is actually a name
+			feedName = new FeedName(feedIdParam.getValue());
+			feedId = youtubeChannelDownloader.nameToId(feedName);
+
+		}
 		final Feed feed = cache.get(feedId).orElse(new Feed(feedId, feedName, new ArrayList<>(), LocalDateTime.now()));
 
 		final List<ItemId> itemIds = feed.getItems().stream().map(Item::getId).collect(toList());

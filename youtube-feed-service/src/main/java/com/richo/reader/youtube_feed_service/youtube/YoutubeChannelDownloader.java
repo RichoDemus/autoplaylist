@@ -11,6 +11,7 @@ import com.google.api.services.youtube.model.VideoContentDetails;
 import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.api.services.youtube.model.VideoStatistics;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedName;
 import com.richodemus.reader.dto.ItemId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,61 @@ public class YoutubeChannelDownloader
 				.setApplicationName("Richo-Reader");
 		url_override.ifPresent(builder::setRootUrl);
 		youtube = builder.build();
+	}
+
+	// todo remove this
+	public FeedId nameToId(final FeedName feedName)
+	{
+		return usernameToChannel(feedName.getValue());
+	}
+
+	public FeedName getName(final FeedId feedId) {
+		final List<Channel> channels;
+		try
+		{
+			channels = youtube.channels()
+					.list("snippet,status,id,statistics")
+					.setKey(apiKey)
+					.setId(feedId.getValue())
+					.execute()
+					.getItems();
+		}
+		catch (IOException e)
+		{
+			throw new RuntimeException("Unable to figure out feed name for feed id " + feedId, e);
+		}
+
+		if (channels == null || channels.size() == 0)
+		{
+			throw new RuntimeException("No channels found for id " + feedId);
+		}
+
+		return new FeedName(channels.get(0).getSnippet().getTitle());
+	}
+
+	private FeedId usernameToChannel(String username)
+	{
+		final List<Channel> channels;
+		try
+		{
+			channels = youtube.channels()
+					.list("snippet,status,id,statistics")
+					.setKey(apiKey)
+					.setForUsername(username)
+					.execute()
+					.getItems();
+		}
+		catch (IOException e)
+		{
+			throw new RuntimeException("Failed getting channel id for username " + username, e);
+		}
+
+		if (channels == null || channels.size() == 0)
+		{
+			throw new RuntimeException("No channels found for username " + username);
+		}
+
+		return new FeedId(channels.get(0).getId());
 	}
 
 	private Optional<String> getUrlOverride()
@@ -124,7 +180,7 @@ public class YoutubeChannelDownloader
 		System.out.println(title + "(" + id + ") has " + viewCount + " views and is " + duration + " long");
 	}
 
-	public Optional<YoutubeVideoChunk> getVideoChunk(FeedId channelName)
+	public Optional<YoutubeVideoChunk> getVideoChunk(FeedId feedId)
 	{
 		final List<Channel> channels;
 		try
@@ -132,25 +188,25 @@ public class YoutubeChannelDownloader
 			channels = youtube.channels()
 					.list("contentDetails")
 					.setKey(apiKey)
-					.setForUsername(channelName.getValue())
+					.setId(feedId.getValue())
 					.execute()
 					.getItems();
 		}
 		catch (IOException e)
 		{
-			logger.error("Unable to find channel {}", channelName, e);
+			logger.error("Unable to find channel {}", feedId, e);
 			return Optional.empty();
 		}
 
 		if (channels == null)
 		{
-			logger.error("Got null channels when searching for channel {}", channelName);
+			logger.error("Got null channels when searching for channel {}", feedId);
 			return Optional.empty();
 		}
 
 		if (channels.size() == 0)
 		{
-			logger.error("No such channel: {}", channelName);
+			logger.error("No such channel: {}", feedId);
 			return Optional.empty();
 		}
 
@@ -158,7 +214,7 @@ public class YoutubeChannelDownloader
 
 		if (!playlistId.isPresent())
 		{
-			logger.error("Did not get a playlistId for channel {}", channelName);
+			logger.error("Did not get a playlistId for channel {}", feedId);
 			return Optional.empty();
 		}
 

@@ -3,12 +3,15 @@ package com.richo.reader.youtube_feed_service.youtube;
 
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedName;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class YoutubeChannelDownloaderTest
 {
@@ -50,5 +53,14 @@ public class YoutubeChannelDownloaderTest
 		videos.stream().map((video) -> video.getSnippet().getTitle()).collect(Collectors.toList()).forEach(System.out::println);
 	}
 
+	@Ignore("This test uses the live youtube api")
+	@Test
+	public void shouldGetFeedName() throws Exception
+	{
+		final YoutubeChannelDownloader target = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
 
+		final FeedName result = target.getName(new FeedId("UCf1iroepad-o5w2il-06Gjg"));
+
+		assertThat(result).isEqualTo(new FeedName("Armoured Media"));
+	}
 }

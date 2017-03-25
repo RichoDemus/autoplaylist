@@ -65,7 +65,7 @@ public class FeedTestIT
 	}
 
 	@Test
-	public void getFeedsShouldContainAddedFeed() throws Exception
+	public void newlyAddedFieldShouldHaveSpecialName() throws Exception
 	{
 		final String username = "richodemus";
 		loginPage.createUser(username);
@@ -75,7 +75,7 @@ public class FeedTestIT
 		feedPage.addFeed(FEED_ID);
 
 		final List<FeedWithoutItem> result = feedPage.getAllFeeds();
-		assertThat(result).extracting("name").containsExactly(FEED_ID.toString());
+		assertThat(result).extracting("name").containsExactly("UNKNOWN_FEED");
 	}
 
 
