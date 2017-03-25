@@ -17,7 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,8 +45,7 @@ public class Backend
 		final User user = userService.get(username);
 		if (!user.getFeeds().containsKey(feedId))
 		{
-			logger.debug("{} is not subscrbed to feed {}", username, feedId);
-			return Optional.empty();
+			logger.warn("{} is not subscrbed to feed {}", username, feedId);
 		}
 
 		final Feed feed = feedService.getChannel(feedId).orElseThrow(() -> new NoSuchChannelException("Couldn find feed " + feedId));
@@ -55,7 +56,7 @@ public class Backend
 				.map(i -> new com.richo.reader.backend.model.Item(i.getId(), i.getTitle(), i.getDescription(), i.getUploadDate().toString(), "https://youtube.com/watch?v=" + i.getId(), i.getDuration(), i.getViews()))
 				.collect(Collectors.toList());
 
-		return Optional.of(new com.richo.reader.backend.model.Feed(feed.getId(), feed.getId(), unwatchedItems));
+		return Optional.of(new com.richo.reader.backend.model.Feed(feed.getId(), feed.getName(), unwatchedItems));
 	}
 
 	public List<FeedWithoutItems> getAllFeedsWithoutItems(UserId username)
@@ -64,10 +65,27 @@ public class Backend
 
 		final User user = userService.get(username);
 
+		//temporary convert user
+		final Map<FeedId, Set<ItemId>> newFeeds = new HashMap<>();
+		user.getFeeds().entrySet().forEach(entry ->
+		{
+			final Optional<FeedId> newChannel = feedService.getChannel(entry.getKey()).map(Feed::getId);
+			if (!newChannel.isPresent())
+			{
+				logger.warn("Couldn't convert feed {}", entry.getKey());
+				newFeeds.put(entry.getKey(), entry.getValue());
+			}
+			else
+			{
+				newFeeds.put(newChannel.get(), entry.getValue());
+			}
+		});
+		userService.update(new User(user.getName(), user.getNextLabelId(), newFeeds, user.getLabels()));
+
 		return user.getFeeds().keySet().stream()
 				.map(feedService::getChannel)
 				.flatMap(this::toStream)
-				.map(f -> new FeedWithoutItems(f.getId(), f.getId(), calculateNumberOfItems(user, f)))
+				.map(f -> new FeedWithoutItems(f.getId(), f.getName(), calculateNumberOfItems(user, f)))
 				.collect(Collectors.toList());
 	}
 

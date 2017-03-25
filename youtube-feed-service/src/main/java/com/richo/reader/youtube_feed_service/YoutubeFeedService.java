@@ -26,14 +26,22 @@ public class YoutubeFeedService
 
 	public Optional<Feed> getChannel(final FeedId channelName)
 	{
-		return getFeedWrapper(channelName)
-				.map(f -> new Feed(new FeedId(f.getName().getValue()), f.getName(), f.getItems(), f.getLastUpdated()));
+		return getFeedWrapper(channelName);
 	}
 
 	private Optional<Feed> getFeedWrapper(FeedId channelName)
 	{
 		// todo remove this workaround
-		final FeedId feedId = youtubeChannelDownloader.nameToId(new FeedName(channelName.getValue()));
+		FeedId feedId;
+		try
+		{
+			feedId = youtubeChannelDownloader.nameToId(new FeedName(channelName.getValue()));
+		}
+		catch (Exception e)
+		{
+			// if this fails, it probably means that FeedId is actually a feedId and not a name
+			feedId = channelName;
+		}
 		final Optional<Feed> feedById = cache.get(feedId);
 		if (feedById.isPresent())
 		{

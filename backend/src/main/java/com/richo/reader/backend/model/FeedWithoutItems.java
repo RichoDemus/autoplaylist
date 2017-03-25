@@ -4,17 +4,18 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedName;
 
 import java.util.Objects;
 
 public class FeedWithoutItems
 {
 	private final FeedId id;
-	private final FeedId name;
+	private final FeedName name;
 	private final int numberOfAvailableItems;
 
 	@JsonCreator
-	public FeedWithoutItems(@JsonProperty("id") final FeedId id, @JsonProperty("name") final FeedId name, @JsonProperty("numberOfAvailableItems") final int numberOfAvailableItems)
+	public FeedWithoutItems(@JsonProperty("id") final FeedId id, @JsonProperty("name") final FeedName name, @JsonProperty("numberOfAvailableItems") final int numberOfAvailableItems)
 	{
 		this.id = id;
 		this.name = name;
@@ -26,7 +27,7 @@ public class FeedWithoutItems
 		return id;
 	}
 
-	public FeedId getName()
+	public FeedName getName()
 	{
 		return name;
 	}

@@ -3,6 +3,7 @@ package com.richo.reader.backend.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedName;
 
 import java.util.List;
 import java.util.Objects;
@@ -10,11 +11,11 @@ import java.util.Objects;
 public class Feed
 {
 	private final FeedId id;
-	private final FeedId name;
+	private final FeedName name;
 	private final List<Item> items;
 
 	@JsonCreator
-	public Feed(@JsonProperty("id") FeedId id, @JsonProperty("name") FeedId name, @JsonProperty("items") List<Item> items)
+	public Feed(@JsonProperty("id") FeedId id, @JsonProperty("name") FeedName name, @JsonProperty("items") List<Item> items)
 	{
 		this.id = id;
 		this.name = name;
@@ -26,7 +27,7 @@ public class Feed
 		return id;
 	}
 
-	public FeedId getName()
+	public FeedName getName()
 	{
 		return name;
 	}
