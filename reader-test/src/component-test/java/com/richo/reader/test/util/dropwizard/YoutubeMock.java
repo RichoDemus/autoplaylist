@@ -3,6 +3,7 @@ package com.richo.reader.test.util.dropwizard;
 import com.richo.reader.test.util.TestableApplication;
 import com.richodemus.reader.mock.youtube.YoutubemockApplication;
 import com.richodemus.reader.mock.youtube.YoutubemockConfiguration;
+import io.dropwizard.testing.ConfigOverride;
 import io.dropwizard.testing.DropwizardTestSupport;
 
 public class YoutubeMock implements TestableApplication
@@ -12,7 +13,9 @@ public class YoutubeMock implements TestableApplication
 	public YoutubeMock()
 	{
 		support = new DropwizardTestSupport<>(YoutubemockApplication.class,
-				"src/component-test/resources/youtublemockconfig.yaml");
+				"src/component-test/resources/youtublemockconfig.yaml",
+				ConfigOverride.config("server.applicationConnectors[0].port", "0"),
+				ConfigOverride.config("server.adminConnectors[0].port", "0"));
 		support.before();
 	}
 

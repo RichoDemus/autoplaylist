@@ -21,7 +21,8 @@ public class TestableReaderApplication implements TestableApplication
 		support = new DropwizardTestSupport<>(ReaderApplication.class,
 				"../config.yaml",
 				ConfigOverride.config("saveRoot", "build/saveRoots/" + UUID.randomUUID()),
-				ConfigOverride.config("server.applicationConnectors[0].port", "0"));
+				ConfigOverride.config("server.applicationConnectors[0].port", "0"),
+				ConfigOverride.config("server.adminConnectors[0].port", "0"));
 		support.before();
 	}
 
