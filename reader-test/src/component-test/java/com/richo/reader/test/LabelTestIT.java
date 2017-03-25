@@ -19,7 +19,7 @@ import static org.awaitility.Awaitility.await;
 
 public class LabelTestIT
 {
-	private static final FeedId FEED_ID = new FeedId("richodemus");
+	private static final FeedId FEED_ID = new FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw");
 	private TestableApplication target;
 	private TestableApplication youtubeMock;
 	private String baseUrl;

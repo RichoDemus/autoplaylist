@@ -5,6 +5,7 @@ import com.richo.reader.backend.Backend;
 import com.richo.reader.backend.LabelManager;
 import com.richo.reader.backend.exception.ItemNotInFeedException;
 import com.richo.reader.backend.exception.NoSuchChannelException;
+import com.richo.reader.backend.exception.NoSuchLabelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richo.reader.backend.model.Feed;
@@ -29,6 +30,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 import java.util.List;
 
 @Path("/users/{username}/feeds/")
@@ -56,6 +58,39 @@ public class FeedResource
 		{
 			final List<FeedWithoutItems> feeds = backend.getAllFeedsWithoutItems(username);
 			final List<Label> labels = labelManager.getLabels(username);
+			List<Holder> jobs = new ArrayList<>();
+			labels.forEach(label ->
+			{
+				label.getFeeds().stream().map(feedId ->
+				{
+					try
+					{
+						return backend.feedNameToId(feedId);
+					}
+					catch (Exception e)
+					{
+						logger.error("Unable to convert feedname {}", feedId);
+						return feedId;
+					}
+				}).forEach(l ->
+				{
+
+					jobs.add(new Holder((username), label.getId(), l));
+
+				});
+			});
+
+			jobs.forEach(job ->
+			{
+				try
+				{
+					labelManager.addFeedToLabel(job.username, job.id, job.l);
+				}
+				catch (NoSuchLabelException e)
+				{
+					logger.error("Failed to convert label {}", job.id);
+				}
+			});
 			return new User(feeds, labels);
 		}
 		catch (NoSuchUserException e)
@@ -67,6 +102,22 @@ public class FeedResource
 		{
 			logger.warn("Exception when {} got all feeds", e);
 			throw new InternalServerErrorException(e);
+		}
+	}
+
+	private static class Holder
+	{
+
+		private final UserId username;
+		private final long id;
+		private final FeedId l;
+
+		public Holder(UserId username, long id, FeedId l)
+		{
+
+			this.username = username;
+			this.id = id;
+			this.l = l;
 		}
 	}
 

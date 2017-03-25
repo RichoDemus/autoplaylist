@@ -50,6 +50,11 @@ public class LabelManager
 				.orElseThrow(() -> new NoSuchLabelException("User " + user.getName() + " does not have a label with the id " + labelId));
 
 		//todo validate that the feed actually exists
+		if(label.getFeeds().contains(feedId))
+		{
+			logger.info("Feed {} already in label {}, skipping...", feedId, label.getName());
+			return;
+		}
 		label.getFeeds().add(feedId);
 		userService.update(user);
 	}

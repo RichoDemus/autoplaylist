@@ -161,4 +161,17 @@ public class Backend
 
 		userService.update(user);
 	}
+
+	//todo remove
+	public FeedId feedNameToId(FeedId feedId)
+	{
+		try
+		{
+			return feedService.getChannel(feedId).map(Feed::getId).orElseThrow(() -> new RuntimeException("Failed to convert label due to feed " + feedId));
+		}
+		catch (RuntimeException e)
+		{
+			return feedId;
+		}
+	}
 }
