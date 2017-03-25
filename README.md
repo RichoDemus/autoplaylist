@@ -2,6 +2,9 @@
 
 ## Instructions
 
+### Compile and run all test
+`./gradlew`
+
 ### Check for outdated dependencies
     ./gradlew dependencyUpdates
 

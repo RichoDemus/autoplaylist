@@ -31,8 +31,10 @@ configurations {
     componentTestsRuntime.extendsFrom testRuntime
 }
 
-task componentTest(type: Test) {
+task componentTest(type: Test, dependsOn: componentTestsClasses) {
     description = "Runs component tests (located in src/component-test/...)."
     testClassesDir = project.sourceSets.componentTests.output.classesDir
     classpath = project.sourceSets.componentTests.runtimeClasspath
 }
+
+check.dependsOn componentTest
