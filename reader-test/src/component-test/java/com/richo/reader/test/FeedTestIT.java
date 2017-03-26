@@ -4,6 +4,7 @@ import com.jayway.restassured.RestAssured;
 import com.richo.reader.test.pages.FeedPage;
 import com.richo.reader.test.pages.LoginPage;
 import com.richo.reader.test.pages.model.FeedId;
+import com.richo.reader.test.pages.model.FeedUrl;
 import com.richo.reader.test.pages.model.FeedWithoutItem;
 import com.richo.reader.test.util.TestableApplication;
 import com.richo.reader.test.util.TestableApplicationProvider;
@@ -21,6 +22,7 @@ import static org.awaitility.Awaitility.await;
 public class FeedTestIT
 {
 	private static final FeedId FEED_ID = new FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw");
+	private static final FeedUrl FEED_URL = new FeedUrl("https://www.youtube.com/user/richodemus");
 	private TestableApplication target;
 	private TestableApplication youtubeMock;
 	private String baseUrl;
@@ -72,7 +74,7 @@ public class FeedTestIT
 		loginPage.login(username);
 		final FeedPage feedPage = loginPage.toFeedPage();
 
-		feedPage.addFeed(FEED_ID);
+		feedPage.addFeed(FEED_URL);
 
 		final List<FeedWithoutItem> result = feedPage.getAllFeeds();
 		assertThat(result).extracting("name").containsExactly("UNKNOWN_FEED");
@@ -87,7 +89,7 @@ public class FeedTestIT
 		loginPage.createUser(username);
 		loginPage.login(username);
 		final FeedPage feedPage = loginPage.toFeedPage();
-		feedPage.addFeed(FEED_ID);
+		feedPage.addFeed(FEED_URL);
 
 
 		final int adminPort = target.getAdminPort();

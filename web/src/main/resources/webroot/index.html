@@ -47,7 +47,7 @@
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li class="active"><a href="#">Home</a></li>
-                <li><a href="#about">About</a></li>
+                <li><a id="addFeedNav" href="#" data-toggle="modal" data-target="#addFeedModal">Add Feed</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown
                         <span class="caret"></span></a>
@@ -111,8 +111,6 @@
         </div>
         <div class="row">
             <div class="col-md-6">
-                Add Feed: <input id="addFeedButton" type="text" name="feed">
-                <button type="button" class="btn btn-xs btn-default" onclick="Buttons.addFeed()">Add</button> <br/>
                 Create label: <input id="createLabelInput" type="text" name="label">
                 <button type="button" class="btn btn-xs btn-default" onclick="Buttons.createLabel()">Add</button> <br/>
                 Add Feed <input id="feedToBeAddedToLabelInput" type="text" name="feedToAddToLabel"> to Label: <input id="labelForFeedToBeAddedTo" type="text" name="labelForFeedToBeAddedTo">
@@ -175,6 +173,28 @@
     </div>
 
   </div>
+</div>
+
+<div id="addFeedModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Feed</h4>
+            </div>
+            <div class="modal-body">
+                <p>Please enter the full url to the channel.</p>
+                <label>URL<input type="url" id="newFeedUrl" size="35"></label>
+                <button id="addFeedButton" type="button" class="btn btn-default" onclick="Buttons.addFeed()">Add Feed</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 <!-- Bootstrap core JavaScript

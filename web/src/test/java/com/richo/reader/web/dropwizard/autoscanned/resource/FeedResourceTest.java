@@ -8,6 +8,7 @@ import com.richo.reader.web.TestData;
 import com.richo.reader.web.dto.ItemOperation;
 import com.richo.reader.web.dto.User;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.UserId;
 import io.dropwizard.testing.junit.ResourceTestRule;
@@ -109,10 +110,10 @@ public class FeedResourceTest
 	public void shouldAddFeed() throws Exception
 	{
 		//language=JSON
-		final String channelName = "\"ERB\"";
-		TARGET.client().target("/users/" + USERNAME + "/feeds/").request().post(Entity.json(channelName));
+		final String feedUrl = "\"https://www.youtube.com/user/richodemus\"";
+		TARGET.client().target("/users/" + USERNAME + "/feeds/").request().post(Entity.json(feedUrl));
 
-		verify(backendMock).addFeed(USERNAME, new FeedId("ERB"));
+		verify(backendMock).addFeed(USERNAME, new FeedUrl("https://www.youtube.com/user/richodemus"));
 	}
 
 	@Test

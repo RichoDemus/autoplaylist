@@ -12,6 +12,7 @@ import com.google.api.services.youtube.model.VideoSnippet;
 import com.google.api.services.youtube.model.VideoStatistics;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedName;
+import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,17 @@ public class YoutubeChannelDownloader
 				.setApplicationName("Richo-Reader");
 		url_override.ifPresent(builder::setRootUrl);
 		youtube = builder.build();
+	}
+
+	public FeedId getFeedId(final FeedUrl feedUrl)
+	{
+		final String path = feedUrl.getValue().getPath();
+		final String id = path.split("/")[2];
+		if (path.startsWith("/channel/"))
+		{
+			return new FeedId(id);
+		}
+		return usernameToChannel(id);
 	}
 
 	// todo remove this

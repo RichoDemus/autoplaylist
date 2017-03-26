@@ -10,9 +10,9 @@ var Buttons = (function()
 	//Public method
 	pub.addFeed = function()
 	{
-		const feedName = $("#addFeedButton").val();
-		console.log("Add feed: " + feedName);
-		Api.addFeed(feedName);
+		const feedUrl = $("#newFeedUrl").val();
+		console.log("Add feed: " + feedUrl);
+		Api.addFeed(feedUrl);
 	};
 
 	pub.login = function()

@@ -4,6 +4,7 @@ package com.richo.reader.youtube_feed_service.youtube;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedName;
+import com.richodemus.reader.dto.FeedUrl;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -51,6 +52,28 @@ public class YoutubeChannelDownloaderTest
 
 		Assert.assertEquals(videos.size(), 50);
 		videos.stream().map((video) -> video.getSnippet().getTitle()).collect(Collectors.toList()).forEach(System.out::println);
+	}
+
+	@Ignore("This test uses the live youtube api")
+	@Test
+	public void shouldConvertUrlOfUserToFeedId() throws Exception
+	{
+		final YoutubeChannelDownloader target = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
+
+		final FeedId result = target.getFeedId(new FeedUrl("https://www.youtube.com/user/richodemus"));
+
+		assertThat(result).isEqualTo(new FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw"));
+	}
+
+	@Ignore("This test uses the live youtube api")
+	@Test
+	public void shouldConvertUrlOfChannelToFeedId() throws Exception
+	{
+		final YoutubeChannelDownloader target = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
+
+		final FeedId result = target.getFeedId(new FeedUrl("https://www.youtube.com/channel/UC1BWMtZbNLVMSFgwSukjqCw"));
+
+		assertThat(result).isEqualTo(new FeedId("UC1BWMtZbNLVMSFgwSukjqCw"));
 	}
 
 	@Ignore("This test uses the live youtube api")

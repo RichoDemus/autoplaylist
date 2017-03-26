@@ -31,7 +31,7 @@ public class YoutubeFeedServiceTest
 		fileSystemPersistence.updateChannel(CHANNEL_ON_DISK);
 		final FeedCache cache = new FeedCache(fileSystemPersistence);
 		cache.update(CACHED_CHANNEL);
-		target = new YoutubeFeedService(cache);
+		target = new YoutubeFeedService(cache, null);
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class YoutubeFeedServiceTest
 		when(fileSystemPersistence.getChannel(CHANNEL_ON_DISK.getId())).thenReturn(Optional.of(CHANNEL_ON_DISK));
 		final FeedCache cache = new FeedCache(fileSystemPersistence);
 		cache.update(CACHED_CHANNEL);
-		target = new YoutubeFeedService(cache);
+		target = new YoutubeFeedService(cache, null);
 
 		target.getChannel(CHANNEL_ON_DISK.getId());
 		target.getChannel(CHANNEL_ON_DISK.getId());

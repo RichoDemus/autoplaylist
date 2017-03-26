@@ -3,6 +3,7 @@ package com.richo.reader.test.pages;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import com.richo.reader.test.pages.model.FeedId;
+import com.richo.reader.test.pages.model.FeedUrl;
 import com.richo.reader.test.pages.model.FeedWithoutItem;
 import com.richo.reader.test.pages.model.Label;
 
@@ -29,10 +30,10 @@ public class FeedPage
 				.then().assertThat().statusCode(200).extract().body().jsonPath().get("feeds");
 	}
 
-	public void addFeed(final FeedId feedName)
+	public void addFeed(final FeedUrl feedUrl)
 	{
 		RestAssured
-				.given().header("x-token-jwt", token).body(feedName.toJson()).contentType(ContentType.JSON)
+				.given().header("x-token-jwt", token).body(feedUrl.toJson()).contentType(ContentType.JSON)
 				.when().post(baseUrl + "/api/users/" + username + "/feeds/")
 				.then().assertThat().statusCode(204);
 	}

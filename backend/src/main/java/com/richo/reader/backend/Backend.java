@@ -11,6 +11,7 @@ import com.richo.reader.youtube_feed_service.Feed;
 import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.YoutubeFeedService;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.UserId;
 import org.slf4j.Logger;
@@ -92,16 +93,17 @@ public class Backend
 		return allItemIds.size();
 	}
 
-	public void addFeed(final UserId username, final FeedId feedName) throws NoSuchChannelException, NoSuchUserException
+	public void addFeed(final UserId username, final FeedUrl feedUrl) throws NoSuchChannelException, NoSuchUserException
 	{
-		logger.info("Add feed: {} for user {}", feedName, username);
+		logger.info("Add feed: {} for user {}", feedUrl, username);
 
+		final FeedId feedId = feedService.getFeedId(feedUrl);
 		final User user = userService.get(username);
 
 		//Todo its now possible to add feeds that doesnt exist...
-		user.addFeed(feedName);
+		user.addFeed(feedId);
 		userService.update(user);
-		feedService.registerChannel(feedName);
+		feedService.registerChannel(feedId);
 	}
 
 	public void markAsRead(final UserId username, final FeedId feedId, final ItemId itemId) throws NoSuchUserException, UserNotSubscribedToThatChannelException

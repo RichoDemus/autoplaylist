@@ -13,6 +13,7 @@ import com.richo.reader.backend.model.Label;
 import com.richo.reader.web.dto.ItemOperation;
 import com.richo.reader.web.dto.User;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.UserId;
 import org.slf4j.Logger;
@@ -117,26 +118,26 @@ public class FeedResource
 
 	@Timed
 	@POST //todo shouldnt this be a put
-	public void addFeed(@PathParam("username") final UserId username, final FeedId feedId)
+	public void addFeed(@PathParam("username") final UserId username, final FeedUrl feedUrl)
 	{
-		if (feedId == null)
+		if (feedUrl == null)
 		{
 			logger.info("User {} tried to add an empty feed", username);
 			throw new BadRequestException("Feed can't be empty");
 		}
-		logger.info("{} wants to subscribe to {}", username, feedId);
+		logger.info("{} wants to subscribe to {}", username, feedUrl);
 		try
 		{
-			backend.addFeed(username, feedId);
+			backend.addFeed(username, feedUrl);
 		}
 		catch (NoSuchChannelException | NoSuchUserException e)
 		{
-			logger.warn("Exception when {} added feed {}", username, feedId, e);
+			logger.warn("Exception when {} added feed {}", username, feedUrl, e);
 			throw new BadRequestException(e);
 		}
 		catch (Exception e)
 		{
-			logger.warn("Exception when {} added feed {}", username, feedId, e);
+			logger.warn("Exception when {} added feed {}", username, feedUrl, e);
 			throw new InternalServerErrorException(e);
 		}
 	}
