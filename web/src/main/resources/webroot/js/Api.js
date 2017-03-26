@@ -155,13 +155,13 @@ var Api = (function()
 		});
 	};
 
-	pub.addFeedToLabel = function(feed, label, callback)
+	pub.addFeedToLabel = function(feedId, label, callback)
 	{
-		console.log("Attempting to add feed " + feed + " to label " + label);
+		console.log("Attempting to add feed " + feedId + " to label " + label);
 		$.ajax({
 			url: "api/users/" + Authentication.username + "/labels/" + label,
 			contentType: "application/json; charset=utf-8",
-			data: JSON.stringify(feed),
+			data: JSON.stringify(feedId),
 			type: "PUT",
 			headers: { 'x-token-jwt': Authentication.token.raw },
 			success: callback

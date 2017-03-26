@@ -59,15 +59,16 @@ var Buttons = (function()
 
 	pub.addFeedToLabel = function()
 	{
-		const feed = $("#feedToBeAddedToLabelInput").val();
+		const feedName = $("#feedToBeAddedToLabelInput").val();
 		const labelName = $("#labelForFeedToBeAddedTo").val();
+		const feedId = feeds.filter(function(f) {return f.name == feedName;})[0].id;
 		const label = labels.filter(function(e) {return e.name == labelName;})[0];
-		console.log("Add feed " + feed + "(" + label.id + ") to label: " + labelName);
-		Api.addFeedToLabel(feed, label.id, function(result)
+		console.log("Add feed " + feedName + "(" + feedId + ") to label: " + labelName);
+		Api.addFeedToLabel(feedId, label.id, function(result)
 		{
 			console.log("Callback from label thing");
 			console.log(result);
-			label.feeds.push(feed);
+			label.feeds.push(feedId);
 		});
 	};
 
