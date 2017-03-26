@@ -106,13 +106,14 @@ var Table = ((()=>
 
     pub.addLabelToTable = label=>
     {
+        const numberOfItemsInLabel = getNumberOfItemsInLabel(label);
         if (selectedLabel && label.id === selectedLabel.id) {
             $('#labelListTable').find('> tbody:last')
-                .append("<tr data-label-id=\"" + label.id + "\" onclick=\"Buttons.labelClicked(this)\"><td bgcolor=\"#FF0000\">" + label.name + "(" + "x" + ")</td></tr>");
+                .append("<tr data-label-id=\"" + label.id + "\" onclick=\"Buttons.labelClicked(this)\"><td bgcolor=\"#FF0000\">" + label.name + "(" + numberOfItemsInLabel + ")</td></tr>");
         }
         else {
             $('#labelListTable').find('> tbody:last')
-                .append("<tr data-label-id=\"" + label.id + "\" onclick=\"Buttons.labelClicked(this)\"><td>" + label.name + "(" + "x" + ")</td></tr>");
+                .append("<tr data-label-id=\"" + label.id + "\" onclick=\"Buttons.labelClicked(this)\"><td>" + label.name + "(" + numberOfItemsInLabel + ")</td></tr>");
         }
     };
 
@@ -133,11 +134,15 @@ var Table = ((()=>
             "\" type=\"button\" class=\"btn btn-xs btn-default\" onClick=\"Buttons.markOlderItemsAsReadButtonPressed(this)\">Mark older as read</button>"
     }
 
-    /*
-     function privateWay() {
-     console.log("private method");
-     }
-     */
-    //Return just the public parts
+    function getNumberOfItemsInLabel(label)
+    {
+        return label.feeds.map(f => feedIdToCount(f)).reduce((a, b) => a + b, 0);
+    }
+
+    function feedIdToCount(feedId)
+    {
+        return feeds.filter(f => f.id === feedId).map(f => f.availableItems()).reduce((a, b) => a + b, 0);
+    }
+
     return pub;
 })());
