@@ -78,6 +78,17 @@ public class YoutubeChannelDownloaderTest
 
 	@Ignore("This test uses the live youtube api")
 	@Test
+	public void shouldConvertUrlOfChannelWithJunkToFeedId() throws Exception
+	{
+		final YoutubeChannelDownloader target = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
+
+		final FeedId result = target.getFeedId(new FeedUrl("https://www.youtube.com/channel/UC7SeFWZYFmsm1tqWxfuOTPQ/videos"));
+
+		assertThat(result).isEqualTo(new FeedId("UC7SeFWZYFmsm1tqWxfuOTPQ"));
+	}
+
+	@Ignore("This test uses the live youtube api")
+	@Test
 	public void shouldGetFeedName() throws Exception
 	{
 		final YoutubeChannelDownloader target = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
