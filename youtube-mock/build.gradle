@@ -6,6 +6,11 @@ apply plugin: 'com.bmuschko.docker-remote-api'
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
+    compile "org.jetbrains:annotations:$rootProject.jetbrainsAnnotationsVersion"
+    // workaround due to mockito-kotlin downgrading to 1.0.6
+    compile "org.jetbrains.kotlin:kotlin-reflect:$rootProject.kotlinVersion"
+    permitUnusedDeclared "org.jetbrains.kotlin:kotlin-reflect:$rootProject.kotlinVersion"
+    // end workaround
     compile "io.dropwizard:dropwizard-core:$rootProject.dropwizardVersion"
     compile "io.dropwizard:dropwizard-jersey:$rootProject.dropwizardVersion"
     compile "javax.ws.rs:javax.ws.rs-api:$rootProject.javaxWsRsApiVersion"
