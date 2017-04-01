@@ -32,13 +32,15 @@ public class AdminResource
 
 	@GET
 	@Path("/download")
-	public DownloadJobStatus getStatus() {
+	public DownloadJobStatus getStatus()
+	{
 		return new DownloadJobStatus(periodicDownloadOrchestrator.lastRun(), periodicDownloadOrchestrator.isRunning());
 	}
 
 	@POST
 	@Path("/download")
-	public void runDownloadJob() {
+	public void runDownloadJob()
+	{
 		logger.info("User triggered download job");
 		periodicDownloadOrchestrator.downloadEverythingOnce();
 	}

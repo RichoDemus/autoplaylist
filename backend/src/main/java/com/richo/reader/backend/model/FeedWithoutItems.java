@@ -50,8 +50,14 @@ public class FeedWithoutItems
 	@Override
 	public boolean equals(Object o)
 	{
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
 		FeedWithoutItems that = (FeedWithoutItems) o;
 		return numberOfAvailableItems == that.numberOfAvailableItems &&
 				Objects.equals(id, that.id) &&

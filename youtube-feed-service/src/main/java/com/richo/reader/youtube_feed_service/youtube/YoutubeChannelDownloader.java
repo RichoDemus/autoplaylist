@@ -70,7 +70,8 @@ public class YoutubeChannelDownloader
 		return usernameToChannel(feedName.getValue());
 	}
 
-	public Optional<FeedName> getName(final FeedId feedId) {
+	public Optional<FeedName> getName(final FeedId feedId)
+	{
 		final List<Channel> channels;
 		try
 		{

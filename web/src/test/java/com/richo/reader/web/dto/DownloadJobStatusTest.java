@@ -13,7 +13,7 @@ public class DownloadJobStatusTest
 	@Test
 	public void shouldSerializeIntoCorrectJson() throws Exception
 	{
-		final String result = new ObjectMapper().writeValueAsString(new DownloadJobStatus(LocalDateTime.ofEpochSecond(1000L,0, ZoneOffset.UTC), false));
+		final String result = new ObjectMapper().writeValueAsString(new DownloadJobStatus(LocalDateTime.ofEpochSecond(1000L, 0, ZoneOffset.UTC), false));
 
 		//language=JSON
 		final String expected = "{\"lastRun\":\"1970-01-01T00:16:40\",\"running\":false}";
