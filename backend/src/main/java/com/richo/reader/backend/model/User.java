@@ -1,8 +1,5 @@
 package com.richo.reader.backend.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableMap;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richodemus.reader.dto.FeedId;
@@ -24,8 +21,7 @@ public class User
 	private final List<Label> labels;
 	private long nextLabelId;
 
-	@JsonCreator
-	public User(@JsonProperty("name") UserId username, @JsonProperty("nextLabelId") long nextLabelId, @JsonProperty("feeds") Map<FeedId, Set<ItemId>> feedsIds, @JsonProperty("labels") List<Label> labels)
+	public User(final UserId username, final long nextLabelId, final Map<FeedId, Set<ItemId>> feedsIds, final List<Label> labels)
 	{
 		this.name = username;
 		this.nextLabelId = nextLabelId;
@@ -81,7 +77,6 @@ public class User
 		return nextLabelId;
 	}
 
-	@JsonIgnore
 	public synchronized long incrementAndGetNextLabelId()
 	{
 		return nextLabelId++;
@@ -92,13 +87,11 @@ public class User
 		return labels;
 	}
 
-	@JsonIgnore
 	public void addLabel(Label label)
 	{
 		labels.add(label);
 	}
 
-	@JsonIgnore
 	@Override
 	public String toString()
 	{

@@ -7,7 +7,6 @@ dependencies {
     compile "com.google.inject:guice:$rootProject.guiceVersion"
     compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
     compile "com.google.guava:guava:$rootProject.guavaVersion"
-    compile "com.fasterxml.jackson.core:jackson-annotations:$rootProject.jacksonVersion"
 
     testCompile "junit:junit:$rootProject.junitVersion"
     testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"

@@ -1,14 +1,13 @@
 package com.richo.reader.web.dropwizard.autoscanned.resource;
 
 import com.codahale.metrics.annotation.Timed;
-import com.richo.reader.backend.Backend;
 import com.richo.reader.backend.LabelManager;
 import com.richo.reader.backend.exception.ItemNotInFeedException;
 import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
-import com.richo.reader.backend.model.Feed;
-import com.richo.reader.backend.model.FeedWithoutItems;
+import com.richo.reader.web.dto.Feed;
+import com.richo.reader.web.dto.FeedWithoutItems;
 import com.richo.reader.web.dto.ItemOperation;
 import com.richo.reader.web.dto.User;
 import com.richodemus.reader.dto.FeedId;
@@ -16,6 +15,7 @@ import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.Label;
 import com.richodemus.reader.dto.UserId;
+import com.richodemus.reader.web.BackendPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +31,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.Optional;
 
 @Path("/users/{username}/feeds/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -39,13 +40,13 @@ import java.util.List;
 public class FeedResource
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final Backend backend;
+	private final BackendPort backendPort;
 	private final LabelManager labelManager;
 
 	@Inject
-	FeedResource(final Backend injectable, final LabelManager labelManager)
+	FeedResource(final BackendPort backendPort, final LabelManager labelManager)
 	{
-		this.backend = injectable;
+		this.backendPort = backendPort;
 		this.labelManager = labelManager;
 	}
 
@@ -55,7 +56,7 @@ public class FeedResource
 	{
 		try
 		{
-			final List<FeedWithoutItems> feeds = backend.getAllFeedsWithoutItems(username);
+			final List<FeedWithoutItems> feeds = backendPort.getAllFeedsWithoutItems(username);
 			final List<Label> labels = labelManager.getLabels(username);
 			return new User(feeds, labels);
 		}
@@ -76,7 +77,7 @@ public class FeedResource
 	@Path("/{feed}/")
 	public Feed getFeed(@PathParam("username") final UserId username, @PathParam("feed") final FeedId feedId)
 	{
-		return backend.getFeed(username, feedId)
+		return Optional.ofNullable(backendPort.getFeed(username, feedId))
 				.orElseThrow(() -> new BadRequestException("Couldn't find feed " + feedId));
 	}
 
@@ -91,13 +92,13 @@ public class FeedResource
 			switch (operation.getAction())
 			{
 				case MARK_READ:
-					backend.markAsRead(username, feedId, itemId);
+					backendPort.markAsRead(username, feedId, itemId);
 					break;
 				case MARK_UNREAD:
-					backend.markAsUnread(username, feedId, itemId);
+					backendPort.markAsUnread(username, feedId, itemId);
 					break;
 				case MARK_OLDER_ITEMS_AS_READ:
-					backend.markOlderItemsAsRead(username, feedId, itemId);
+					backendPort.markOlderItemsAsRead(username, feedId, itemId);
 					break;
 				default:
 					logger.error("Unknown action {}", operation.getAction());
@@ -128,7 +129,7 @@ public class FeedResource
 		logger.info("{} wants to subscribe to {}", username, feedUrl);
 		try
 		{
-			backend.addFeed(username, feedUrl);
+			backendPort.addFeed(username, feedUrl);
 		}
 		catch (NoSuchChannelException | NoSuchUserException e)
 		{

@@ -1,6 +1,6 @@
 package com.richo.reader.backend.exception;
 
-public class ItemNotInFeedException extends Exception
+public class ItemNotInFeedException extends RuntimeException
 {
 	private static final long serialVersionUID = 1L;
 

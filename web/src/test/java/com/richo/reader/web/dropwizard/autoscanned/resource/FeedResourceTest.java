@@ -1,16 +1,16 @@
 package com.richo.reader.web.dropwizard.autoscanned.resource;
 
 
-import com.richo.reader.backend.Backend;
 import com.richo.reader.backend.LabelManager;
-import com.richo.reader.backend.model.FeedWithoutItems;
 import com.richo.reader.web.TestData;
+import com.richo.reader.web.dto.FeedWithoutItems;
 import com.richo.reader.web.dto.ItemOperation;
 import com.richo.reader.web.dto.User;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.UserId;
+import com.richodemus.reader.web.BackendPort;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
@@ -36,7 +36,7 @@ public class FeedResourceTest
 	private static final FeedId FEED = new FeedId("my-feed");
 	private static final ItemId ITEM = new ItemId("my-item");
 
-	private static Backend backendMock = mock(Backend.class);
+	private static BackendPort backendMock = mock(BackendPort.class);
 	private static LabelManager labelManagerMock = mock(LabelManager.class);
 
 	@ClassRule

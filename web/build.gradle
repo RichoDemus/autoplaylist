@@ -1,8 +1,14 @@
+apply plugin: 'kotlin'
+
 description = 'Web'
 dependencies {
     compile project(':dto')
     compile project(':backend')
     compile project(':youtube-feed-service')
+
+    compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
+
     compile 'com.richodemus.dropwizard-jwt:dropwizard-jwt:1.0.0'
     compile "io.dropwizard:dropwizard-core:$rootProject.dropwizardVersion"
     compile "io.dropwizard:dropwizard-assets:$rootProject.dropwizardVersion"
@@ -28,4 +34,13 @@ dependencies {
     testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
     testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
     testCompile "com.fasterxml.jackson.core:jackson-databind:$rootProject.jacksonVersion"
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.kotlinVersion"
+    }
 }

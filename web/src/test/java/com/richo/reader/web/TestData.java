@@ -1,6 +1,6 @@
 package com.richo.reader.web;
 
-import com.richo.reader.backend.model.FeedWithoutItems;
+import com.richo.reader.web.dto.FeedWithoutItems;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedName;
 

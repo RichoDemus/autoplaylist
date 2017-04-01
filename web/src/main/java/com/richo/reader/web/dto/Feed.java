@@ -1,5 +1,7 @@
-package com.richo.reader.backend.model;
+package com.richo.reader.web.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedName;
 
@@ -12,7 +14,8 @@ public class Feed
 	private final FeedName name;
 	private final List<Item> items;
 
-	public Feed(final FeedId id, final FeedName name, final List<Item> items)
+	@JsonCreator
+	public Feed(@JsonProperty("id") FeedId id, @JsonProperty("name") FeedName name, @JsonProperty("items") List<Item> items)
 	{
 		this.id = id;
 		this.name = name;

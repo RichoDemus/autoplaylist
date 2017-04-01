@@ -1,4 +1,4 @@
-package com.richo.reader.backend.model;
+package com.richo.reader.web.dto;
 
 import com.richodemus.reader.dto.ItemId;
 
@@ -12,7 +12,7 @@ public class Item
 	private final String description;
 	private final String uploadDate;
 	private final String url;
-	private final Duration duration;
+	private final String duration;
 	private final long views;
 
 	public Item(ItemId id,
@@ -28,8 +28,13 @@ public class Item
 		this.description = description;
 		this.uploadDate = uploadDate;
 		this.url = url;
-		this.duration = duration;
+		this.duration = durationToString(duration);
 		this.views = views;
+	}
+
+	private String durationToString(Duration duration)
+	{
+		return "" + duration.toMinutes() + ":" + toDoubleDigitSeconds(duration.minusMinutes(duration.toMinutes()).getSeconds());
 	}
 
 	private String toDoubleDigitSeconds(long seconds)
@@ -67,7 +72,7 @@ public class Item
 		return url;
 	}
 
-	public Duration getDuration()
+	public String getDuration()
 	{
 		return duration;
 	}
