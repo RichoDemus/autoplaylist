@@ -1,6 +1,7 @@
 package com.richo.reader.web.dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.richodemus.reader.web.dto.DownloadJobStatus;
 import org.junit.Test;
 
 import java.time.LocalDateTime;

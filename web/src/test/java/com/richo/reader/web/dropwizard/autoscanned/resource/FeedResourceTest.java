@@ -1,19 +1,21 @@
 package com.richo.reader.web.dropwizard.autoscanned.resource;
 
 
+import com.fasterxml.jackson.module.kotlin.KotlinModule;
 import com.richo.reader.backend.LabelManager;
 import com.richo.reader.web.TestData;
-import com.richo.reader.web.dto.FeedWithoutItems;
-import com.richo.reader.web.dto.ItemOperation;
-import com.richo.reader.web.dto.User;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.UserId;
 import com.richodemus.reader.web.BackendPort;
+import com.richodemus.reader.web.dto.FeedWithoutItems;
+import com.richodemus.reader.web.dto.ItemOperation;
+import com.richodemus.reader.web.dto.User;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -44,6 +46,11 @@ public class FeedResourceTest
 			.addResource(new FeedResource(backendMock, labelManagerMock))
 			.build();
 
+	@BeforeClass
+	public static void before() {
+		TARGET.getObjectMapper().registerModule(new KotlinModule());
+	}
+
 	@Before
 	public void setUp() throws Exception
 	{
@@ -56,21 +63,21 @@ public class FeedResourceTest
 	@Test
 	public void testMarkAsRead() throws Exception
 	{
-		TARGET.client().target("/users/" + USERNAME + "/feeds/" + FEED + "/items/" + ITEM + "/").request().post(Entity.entity(ItemOperation.MARK_AS_READ, MediaType.APPLICATION_JSON));
+		TARGET.client().target("/users/" + USERNAME + "/feeds/" + FEED + "/items/" + ITEM + "/").request().post(Entity.entity(ItemOperation.Companion.getMARK_AS_READ(), MediaType.APPLICATION_JSON));
 		verify(backendMock).markAsRead(USERNAME, FEED, ITEM);
 	}
 
 	@Test
 	public void testMarkAsUnRead() throws Exception
 	{
-		TARGET.client().target("/users/" + USERNAME + "/feeds/" + FEED + "/items/" + ITEM + "/").request().post(Entity.entity(ItemOperation.MARK_AS_UNREAD, MediaType.APPLICATION_JSON));
+		TARGET.client().target("/users/" + USERNAME + "/feeds/" + FEED + "/items/" + ITEM + "/").request().post(Entity.entity(ItemOperation.Companion.getMARK_AS_UNREAD(), MediaType.APPLICATION_JSON));
 		verify(backendMock).markAsUnread(USERNAME, FEED, ITEM);
 	}
 
 	@Test
 	public void testMarkOlderItemsAsRead() throws Exception
 	{
-		TARGET.client().target("/users/" + USERNAME + "/feeds/" + FEED + "/items/" + ITEM + "/").request().post(Entity.entity(ItemOperation.MARK_OLDER_ITEMS_AS_READ, MediaType.APPLICATION_JSON));
+		TARGET.client().target("/users/" + USERNAME + "/feeds/" + FEED + "/items/" + ITEM + "/").request().post(Entity.entity(ItemOperation.Companion.getMARK_OLDER_ITEMS_AS_READ(), MediaType.APPLICATION_JSON));
 		verify(backendMock).markOlderItemsAsRead(USERNAME, FEED, ITEM);
 	}
 

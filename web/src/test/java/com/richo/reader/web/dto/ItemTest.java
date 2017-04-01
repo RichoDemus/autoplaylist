@@ -1,6 +1,7 @@
 package com.richo.reader.web.dto;
 
 import com.richodemus.reader.dto.ItemId;
+import com.richodemus.reader.web.dto.Item;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 

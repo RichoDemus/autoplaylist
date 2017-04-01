@@ -1,13 +1,13 @@
 package com.richodemus.reader.web
 
 import com.richo.reader.backend.Backend
-import com.richo.reader.web.dto.Feed
-import com.richo.reader.web.dto.FeedWithoutItems
-import com.richo.reader.web.dto.Item
+import com.richodemus.reader.web.dto.FeedWithoutItems
+import com.richodemus.reader.web.dto.Item
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.FeedUrl
 import com.richodemus.reader.dto.ItemId
 import com.richodemus.reader.dto.UserId
+import com.richodemus.reader.web.dto.Feed
 import java.util.*
 import javax.inject.Inject
 

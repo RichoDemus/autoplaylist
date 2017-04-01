@@ -1,5 +1,6 @@
 package com.richo.reader.web.dropwizard;
 
+import com.fasterxml.jackson.module.kotlin.KotlinModule;
 import com.richo.reader.web.dropwizard.autoscanned.MyBundle;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
@@ -26,6 +27,7 @@ public class ReaderApplication extends Application<ReaderConfiguration>
 	@Override
 	public void initialize(Bootstrap<ReaderConfiguration> bootstrap)
 	{
+		bootstrap.getObjectMapper().registerModule(new KotlinModule());
 		bootstrap.addBundle(new MyBundle());
 		bootstrap.addBundle(GuiceBundle.builder()
 				.modules(new GuiceModule())

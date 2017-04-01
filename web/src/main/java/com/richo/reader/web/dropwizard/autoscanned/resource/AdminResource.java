@@ -1,6 +1,6 @@
 package com.richo.reader.web.dropwizard.autoscanned.resource;
 
-import com.richo.reader.web.dto.DownloadJobStatus;
+import com.richodemus.reader.web.dto.DownloadJobStatus;
 import com.richo.reader.youtube_feed_service.PeriodicDownloadOrchestrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
