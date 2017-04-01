@@ -16,16 +16,17 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class UserServicePort
+public class UserServicePort implements UserRepository
 {
 	private final com.richo.reader.user_service.UserService userService;
 
 	@Inject
-	public UserServicePort(final com.richo.reader.user_service.UserService userService)
+	UserServicePort(final com.richo.reader.user_service.UserService userService)
 	{
 		this.userService = userService;
 	}
 
+	@Override
 	public User get(UserId username) throws NoSuchUserException
 	{
 		final com.richo.reader.user_service.User user = userService.get(new Username(username.getValue()));
@@ -34,6 +35,7 @@ public class UserServicePort
 		return new User(new UserId(user.getName().getValue()), user.getNextLabelId(), feeds, user.getLabels());
 	}
 
+	@Override
 	public void update(User user)
 	{
 		final Username username = new Username(user.getName().getValue());
@@ -41,11 +43,13 @@ public class UserServicePort
 		userService.update(new com.richo.reader.user_service.User(username, feeds, user.getNextLabelId(), user.getLabels()));
 	}
 
+	@Override
 	public boolean isPasswordValid(UserId username, String password)
 	{
 		return userService.isPasswordValid(new Username(username.getValue()), new Password(password));
 	}
 
+	@Override
 	public void updatePassword(UserId username, String password)
 	{
 		userService.updatePassword(new Username(username.getValue()), new Password(password));
