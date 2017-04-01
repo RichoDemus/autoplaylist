@@ -1,22 +1,24 @@
 package com.richo.reader.test.util.dropwizard;
 
+import com.jayway.restassured.RestAssured;
 import com.richo.reader.test.util.TestableApplication;
-import com.richodemus.reader.mock.youtube.YoutubemockApplication;
-import com.richodemus.reader.mock.youtube.YoutubemockConfiguration;
-import io.dropwizard.testing.ConfigOverride;
-import io.dropwizard.testing.DropwizardTestSupport;
+import com.xebialabs.restito.server.StubServer;
+import org.glassfish.grizzly.http.util.HttpStatus;
+
+import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;
+import static com.xebialabs.restito.semantics.Action.resourceContent;
+import static com.xebialabs.restito.semantics.Action.status;
+import static com.xebialabs.restito.semantics.Condition.get;
 
 public class YoutubeMock implements TestableApplication
 {
-	private DropwizardTestSupport<YoutubemockConfiguration> support;
+	private final StubServer server;
 
 	public YoutubeMock()
 	{
-		support = new DropwizardTestSupport<>(YoutubemockApplication.class,
-				"src/component-test/resources/youtublemockconfig.yaml",
-				ConfigOverride.config("server.applicationConnectors[0].port", "0"),
-				ConfigOverride.config("server.adminConnectors[0].port", "0"));
-		support.before();
+		server = new StubServer().run();
+		RestAssured.port = server.getPort();
+		init();
 	}
 
 	@Override
@@ -28,18 +30,33 @@ public class YoutubeMock implements TestableApplication
 	@Override
 	public int getHttpPort()
 	{
-		return support.getLocalPort();
+		return server.getPort();
 	}
 
 	@Override
 	public int getAdminPort()
 	{
-		return support.getAdminPort();
+		throw new IllegalStateException("Youtube mock does not have an admin port");
 	}
 
 	@Override
 	public void close()
 	{
-		support.after();
+		server.stop();
+	}
+
+	private void init()
+	{
+		whenHttp(server)
+				.match(get("/youtube/v3/channels"))
+				.then(status(HttpStatus.OK_200), resourceContent("getChannelResponse.json"));
+
+		whenHttp(server)
+				.match(get("/youtube/v3/playlistItems"))
+				.then(status(HttpStatus.OK_200), resourceContent("getListItemsResponseTwoVideos.json"));
+
+		whenHttp(server)
+				.match(get("/youtube/v3/videos"))
+				.then(status(HttpStatus.OK_200), resourceContent("getVideoDetailsResponse.json"));
 	}
 }

@@ -34,7 +34,6 @@ buildscript {
 }
 
 task buildImage(type: DockerBuildImage) {
-    println 'This is the buildImage task in the root project'
     switch(osdetector.arch) {
         case 'x86_64':
             println "You have an 64b processor"
