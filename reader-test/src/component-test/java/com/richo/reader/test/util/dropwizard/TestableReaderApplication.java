@@ -19,7 +19,7 @@ public class TestableReaderApplication implements TestableApplication
 			System.setProperty("YOUTUBE_URL", "http://localhost:" + youtubeMockPort + "/");
 		}
 		support = new DropwizardTestSupport<>(ReaderApplication.class,
-				"../config.yaml",
+				"../docker/config.yaml",
 				ConfigOverride.config("saveRoot", "build/saveRoots/" + UUID.randomUUID()),
 				ConfigOverride.config("server.applicationConnectors[0].port", "0"),
 				ConfigOverride.config("server.adminConnectors[0].port", "0"));

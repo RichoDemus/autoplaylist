@@ -3,7 +3,7 @@ services:
   reader:
     image: richodemus/reader:latest
     volumes:
-      - "./data/feeds:/reader/data/feeds"
+      - "./data:/reader/data"
     ports:
       - "8080:8080"
       - "8081:8081"
