@@ -30,7 +30,7 @@ dependencies {
     testCompile "com.fasterxml.jackson.core:jackson-databind:$rootProject.jacksonVersion"
 }
 
-task copyDependencies(type: Copy) {
+task copyDependencies(type: Copy, dependsOn: assemble) {
     from configurations.compile
     into 'build/dependencies'
 }

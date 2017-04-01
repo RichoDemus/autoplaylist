@@ -5,6 +5,9 @@
 ### Compile and run all test
 `./gradlew`
 
+### Compile and run in foreground
+`./build-and-run.sh`
+
 ### Check for outdated dependencies
     ./gradlew dependencyUpdates
 
