@@ -10,6 +10,7 @@ task copyDependencies(type: Copy) {
 }
 
 task buildImage(type: DockerBuildImage, dependsOn: copyDependencies) {
+    description = "Build Docker Image, use -Ptag=X to tag with X instead of latest"
     switch(osdetector.arch) {
         case 'x86_64':
             println "You have an 64b processor"
@@ -27,7 +28,8 @@ task buildImage(type: DockerBuildImage, dependsOn: copyDependencies) {
 
     }
     inputDir = file('.')
-    tag = 'richodemus/reader:latest'
+    def customTag = project.hasProperty('tag') ? project.tag : 'latest'
+    tag = "richodemus/reader:${customTag}"
 }
 
 dependencies {
@@ -40,7 +42,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.bmuschko:gradle-docker-plugin:3.0.5'
+        classpath "com.bmuschko:gradle-docker-plugin:$rootProject.gradleDockerPluginVersion"
         classpath "com.google.gradle:osdetector-gradle-plugin:$rootProject.osdetectorGradlePluginVersion"
     }
 }
