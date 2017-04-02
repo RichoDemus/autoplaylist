@@ -33,10 +33,6 @@ class UserService @Inject internal constructor(private val fileSystemPersistence
 
     fun update(user: User) {
         assertUserExists(user.name) { "Can't update user ${user.name} because it doesn't exist" }
-        // temporary
-        if (user.id == null) {
-            user.id = UserId(UUID.randomUUID().toString())
-        }
         fileSystemPersistence.update(user)
         cache.invalidate(user.name)
     }
