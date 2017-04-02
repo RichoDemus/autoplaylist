@@ -52,7 +52,7 @@ public class BackendTest
 			Collections.singletonList(new Item(new ItemId("feed2-item1"), "title", "desc", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC), LocalDateTime.now(), Duration.ZERO, 0L)), 0L);
 
 
-	private static final User EXISTING_USER = new User(new UserId("existing_user"), 0L, ImmutableMap.of(FEED_1.getId(), Sets.newHashSet(ITEM_THAT_SHOULD_BE_READ.getId()), FEED_2.getId(), new HashSet<>()), new ArrayList<>());
+	private static final User EXISTING_USER = new User(new UserId("id"), new UserId("existing_user"), 0L, ImmutableMap.of(FEED_1.getId(), Sets.newHashSet(ITEM_THAT_SHOULD_BE_READ.getId()), FEED_2.getId(), new HashSet<>()), new ArrayList<>());
 
 	private Backend target;
 	private UserRepository userRepository;

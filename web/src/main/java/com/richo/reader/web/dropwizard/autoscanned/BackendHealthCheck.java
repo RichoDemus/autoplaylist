@@ -24,7 +24,7 @@ public class BackendHealthCheck extends NamedHealthCheck
 	@Override
 	public String getName()
 	{
-		return "Test get feeds";
+		return "Test find feeds";
 	}
 
 	@Override

@@ -11,7 +11,7 @@ import java.io.File
 import javax.inject.Inject
 import javax.inject.Named
 
-internal class FileSystemPersistence @Inject constructor(@Named("saveRoot") val saveRoot: String){
+internal class FileSystemPersistence @Inject constructor(@Named("saveRoot") val saveRoot: String) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     private val mapper = ObjectMapper()

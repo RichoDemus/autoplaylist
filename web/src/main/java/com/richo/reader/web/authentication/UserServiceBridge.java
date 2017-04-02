@@ -2,7 +2,9 @@ package com.richo.reader.web.authentication;
 
 import com.richo.reader.backend.UserManager;
 import com.richodemus.dropwizard.jwt.model.Role;
+import com.richodemus.reader.dto.Password;
 import com.richodemus.reader.dto.UserId;
+import com.richodemus.reader.dto.Username;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +37,7 @@ public class UserServiceBridge implements com.richodemus.dropwizard.jwt.UserServ
 		return Optional.of(new Role("user"));
 	}
 
-	public void createUser(UserId username, String password)
+	public void createUser(Username username, Password password)
 	{
 		userManager.createUser(username, password);
 	}

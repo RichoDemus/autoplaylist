@@ -47,7 +47,8 @@ public class FeedResourceTest
 			.build();
 
 	@BeforeClass
-	public static void before() {
+	public static void before()
+	{
 		TARGET.getObjectMapper().registerModule(new KotlinModule());
 	}
 

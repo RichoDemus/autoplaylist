@@ -5,12 +5,12 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class UserIdTest {
+class UsernameTest {
     @Test
     fun `should serialize into just its value when used as a field in another object`() {
         val mapper = ObjectMapper()
         val result = "my-iD"
-                .let { UserId(it) }
+                .let { Username(it) }
                 .let { UserHolder(it) }
                 .let { mapper.writeValueAsString(it) }
 
@@ -20,12 +20,12 @@ class UserIdTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun `should throw exception if feed id is empty`() {
-        UserId("")
+        Username("")
     }
 
     @Test
     fun `toString should just return id`() {
-        assertThat(UserId("hello").toString()).isEqualTo("hello")
+        assertThat(Username("hello").toString()).isEqualTo("hello")
     }
 
     @Test
@@ -36,13 +36,13 @@ class UserIdTest {
         //language=JSON
         val result = mapper.readValue("{\"id\":\"Hello\"}", UserHolder::class.java)
 
-        assertThat(result).isEqualTo(UserHolder(UserId("hello")))
+        assertThat(result).isEqualTo(UserHolder(Username("hello")))
     }
 
     @Test
     fun `should serialize into just a string`() {
         val mapper = ObjectMapper()
-        val result = mapper.writeValueAsString(UserId("Hello"))
+        val result = mapper.writeValueAsString(Username("Hello"))
 
         //language=JSON
         val expected = "\"hello\""
@@ -56,24 +56,24 @@ class UserIdTest {
 
         //language=JSON
         val json = "\"Hello\""
-        val result = mapper.readValue(json, UserId::class.java)
+        val result = mapper.readValue(json, Username::class.java)
 
-        assertThat(result).isEqualTo(UserId("hello"))
+        assertThat(result).isEqualTo(Username("hello"))
     }
 
     @Test
     fun shouldAlwaysConvertToLowercase() {
-        assertThat(UserId("hello").value).isEqualTo("hello")
-        assertThat(UserId("Hello").value).isEqualTo("hello")
-        assertThat(UserId("HELLO").value).isEqualTo("hello")
+        assertThat(Username("hello").value).isEqualTo("hello")
+        assertThat(Username("Hello").value).isEqualTo("hello")
+        assertThat(Username("HELLO").value).isEqualTo("hello")
     }
 
     @Test
     fun shouldIgnoreCase() {
-        assertThat(UserId("hello")).isEqualTo(UserId("hello"))
-        assertThat(UserId("Hello")).isEqualTo(UserId("hello"))
-        assertThat(UserId("HELLO")).isEqualTo(UserId("hello"))
+        assertThat(Username("hello")).isEqualTo(Username("hello"))
+        assertThat(Username("Hello")).isEqualTo(Username("hello"))
+        assertThat(Username("HELLO")).isEqualTo(Username("hello"))
     }
 }
 
-data class UserHolder(val id: UserId)
+data class UserHolder(val id: Username)

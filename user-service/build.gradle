@@ -4,7 +4,7 @@ description = 'user-service'
 dependencies {
     compile project(':dto')
     compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
-    testCompile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
     compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
     compile "com.fasterxml.jackson.core:jackson-core:$rootProject.jacksonVersion"

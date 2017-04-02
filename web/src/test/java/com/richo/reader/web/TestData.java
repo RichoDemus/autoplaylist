@@ -1,8 +1,8 @@
 package com.richo.reader.web;
 
-import com.richodemus.reader.web.dto.FeedWithoutItems;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedName;
+import com.richodemus.reader.web.dto.FeedWithoutItems;
 
 import java.util.Arrays;
 import java.util.List;

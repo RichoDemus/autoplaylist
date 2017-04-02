@@ -27,12 +27,18 @@ public class UserServicePort implements UserRepository
 	}
 
 	@Override
+	public UserId create(Username username, Password password)
+	{
+		return userService.create(username, password);
+	}
+
+	@Override
 	public User get(UserId username) throws NoSuchUserException
 	{
-		final com.richo.reader.user_service.User user = userService.get(new Username(username.getValue()));
+		final com.richo.reader.user_service.User user = userService.find(new Username(username.getValue()));
 
 		final Map<FeedId, Set<ItemId>> feeds = convert2(user.getFeeds());
-		return new User(new UserId(user.getName().getValue()), user.getNextLabelId(), feeds, user.getLabels());
+		return new User(user.getId(), new UserId(user.getName().getValue()), user.getNextLabelId(), feeds, user.getLabels());
 	}
 
 	@Override
@@ -40,7 +46,7 @@ public class UserServicePort implements UserRepository
 	{
 		final Username username = new Username(user.getName().getValue());
 		final Map<FeedId, List<ItemId>> feeds = convert(user.getFeeds());
-		userService.update(new com.richo.reader.user_service.User(username, feeds, user.getNextLabelId(), user.getLabels()));
+		userService.update(new com.richo.reader.user_service.User(user.id, username, feeds, user.getNextLabelId(), user.getLabels()));
 	}
 
 	@Override

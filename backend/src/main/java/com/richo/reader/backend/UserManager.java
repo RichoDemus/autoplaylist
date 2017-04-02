@@ -1,10 +1,11 @@
 package com.richo.reader.backend;
 
-import com.google.common.collect.Sets;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
 import com.richo.reader.backend.user.UserRepository;
+import com.richodemus.reader.dto.Password;
 import com.richodemus.reader.dto.UserId;
+import com.richodemus.reader.dto.Username;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,11 +23,10 @@ public class UserManager
 		this.userRepository = userRepository;
 	}
 
-	public void createUser(UserId username, String password)
+	public void createUser(Username username, Password password)
 	{
 		logger.debug("Creating user {}", username);
-		userRepository.update(new User(username, Sets.newHashSet()));
-		userRepository.updatePassword(username, password);
+		userRepository.create(username, password);
 	}
 
 	public boolean checkCredentials(UserId username, String password) throws NoSuchUserException

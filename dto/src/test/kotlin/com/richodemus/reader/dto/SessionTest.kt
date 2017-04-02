@@ -28,6 +28,5 @@ class SessionTest {
         val result = mapper.readValue(json, Session::class.java)
 
         assertThat(result).isEqualToComparingFieldByField(Session(UserId("richo"), "token"))
-
     }
 }

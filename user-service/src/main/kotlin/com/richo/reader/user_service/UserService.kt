@@ -3,7 +3,9 @@ package com.richo.reader.user_service
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.LoadingCache
 import com.richodemus.reader.dto.Password
+import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.dto.Username
+import java.util.UUID
 import java.util.concurrent.TimeUnit.DAYS
 import javax.inject.Inject
 
@@ -15,12 +17,26 @@ class UserService @Inject internal constructor(private val fileSystemPersistence
             .expireAfterAccess(1, DAYS)
             .build { id: Username -> fileSystemPersistence.get(id) }
 
+    fun create(username: Username, password: Password): UserId {
+        assertUserDoesntExist(username) { "User $username already exists" }
+        val id = UserId(UUID.randomUUID().toString())
+        fileSystemPersistence.update(User(id, username, emptyMap(), 0L, listOf()))
+        updatePassword(username, password)
+        return id
+    }
 
-    fun get(id: Username): User? {
+    fun find(id: Username): User? {
         return cache.get(id)
     }
 
+    fun exists(id: Username) = cache.get(id) != null
+
     fun update(user: User) {
+        assertUserExists(user.name) { "Can't update user ${user.name} because it doesn't exist" }
+        // temporary
+        if (user.id == null) {
+            user.id = UserId(UUID.randomUUID().toString())
+        }
         fileSystemPersistence.update(user)
         cache.invalidate(user.name)
     }
@@ -28,6 +44,19 @@ class UserService @Inject internal constructor(private val fileSystemPersistence
     fun isPasswordValid(username: Username, password: Password): Boolean = password == fileSystemPersistence.getPassword(username)
 
     fun updatePassword(username: Username, password: Password) {
+        assertUserExists(username) { "Can't change password for user $username because it doesn't exist" }
         fileSystemPersistence.setPassword(username, password)
+    }
+
+    private fun assertUserExists(username: Username, msg: () -> String) {
+        if (!exists(username)) {
+            throw IllegalStateException(msg.invoke())
+        }
+    }
+
+    private fun assertUserDoesntExist(username: Username, msg: () -> String) {
+        if (exists(username)) {
+            throw IllegalStateException(msg.invoke())
+        }
     }
 }
