@@ -23,6 +23,10 @@ internal class FileSystemPersistence @Inject constructor(@Named("saveRoot") val 
     fun get(id: Username): User? {
         try {
             val file = File("$saveRoot/users/$id/data.json")
+            if (!file.exists()) {
+                logger.warn("User $id doesn't exist")
+                return null
+            }
             val user = mapper.readValue(file, User::class.java)
             return user
         } catch(e: Exception) {
