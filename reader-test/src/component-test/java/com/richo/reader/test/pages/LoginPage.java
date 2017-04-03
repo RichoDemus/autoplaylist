@@ -70,4 +70,19 @@ public class LoginPage
 				username.orElseThrow(() -> new RuntimeException("No username")),
 				token.orElseThrow(() -> new RuntimeException("No token")));
 	}
+
+	public void setToken(final String token)
+	{
+		this.token = Optional.of(token);
+	}
+
+	public void setUsername(final String username)
+	{
+		this.username = Optional.of(username);
+	}
+
+	public String getToken()
+	{
+		return token.get();
+	}
 }

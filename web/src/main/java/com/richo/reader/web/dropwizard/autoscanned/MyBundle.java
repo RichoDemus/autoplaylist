@@ -1,5 +1,6 @@
 package com.richo.reader.web.dropwizard.autoscanned;
 
+import com.richo.reader.web.authentication.UsernameCheckFilter;
 import com.richo.reader.web.dropwizard.ReaderConfiguration;
 import com.richodemus.dropwizard.jwt.AuthenticationRequestFilter;
 import io.dropwizard.ConfiguredBundle;
@@ -28,5 +29,6 @@ public class MyBundle implements ConfiguredBundle<ReaderConfiguration>
 		//Setup dropwizard-jwt
 		environment.jersey().register(AuthenticationRequestFilter.class);
 		environment.jersey().register(RolesAllowedDynamicFeature.class);
+		environment.jersey().register(UsernameCheckFilter.class);
 	}
 }
