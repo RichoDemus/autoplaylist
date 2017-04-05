@@ -5,10 +5,10 @@ import org.glassfish.jersey.server.ContainerRequest;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,9 +26,17 @@ public class UsernameCheckFilterTest
 	}
 
 	@Test
+	public void shouldNotBlockIfNotAccessingUserResource() throws Exception
+	{
+		final ContainerRequest mock = createMock("/api/admin/", VALID_USER_TOKEN);
+		target.filter(mock);
+		verify(mock, times(0)).abortWith(any());
+	}
+
+	@Test
 	public void shouldDoNothingWhenUsernamesMatch() throws Exception
 	{
-		final ContainerRequest mock = createMock("username", VALID_USER_TOKEN);
+		final ContainerRequest mock = createMockByUsername("username", VALID_USER_TOKEN);
 		target.filter(mock);
 		verify(mock, times(0)).abortWith(any());
 	}
@@ -36,7 +44,7 @@ public class UsernameCheckFilterTest
 	@Test
 	public void shouldDoNothingWhenPathIsWithoutUsername() throws Exception
 	{
-		final ContainerRequest mock = createMock(new URI("http://localhost:8080/api/users/"), VALID_USER_TOKEN);
+		final ContainerRequest mock = createMock("/api/users/", VALID_USER_TOKEN);
 		target.filter(mock);
 		verify(mock, times(0)).abortWith(any());
 	}
@@ -44,7 +52,7 @@ public class UsernameCheckFilterTest
 	@Test
 	public void shouldDoNothingWhenNoToken() throws Exception
 	{
-		final ContainerRequest mock = createMock("username", null);
+		final ContainerRequest mock = createMockByUsername("username", null);
 		target.filter(mock);
 		verify(mock, times(0)).abortWith(any());
 	}
@@ -52,20 +60,20 @@ public class UsernameCheckFilterTest
 	@Test
 	public void shouldAbortWhenUsernamesDontMatch() throws Exception
 	{
-		final ContainerRequest mock = createMock("not-username", VALID_USER_TOKEN);
+		final ContainerRequest mock = createMockByUsername("not-username", VALID_USER_TOKEN);
 		target.filter(mock);
 		verify(mock).abortWith(any());
 	}
 
-	private ContainerRequest createMock(String username, String token) throws URISyntaxException
+	private ContainerRequest createMockByUsername(String username, String token) throws URISyntaxException
 	{
-		return createMock(new URI("http://localhost:8080/api/users/" + username + "/feeds"), token);
+		return createMock("/api/users/" + username + "/feeds", token);
 	}
 
-	private ContainerRequest createMock(URI uri, String token)
+	private ContainerRequest createMock(final String path, String token)
 	{
 		final ContainerRequest requestContextMock = mock(ContainerRequest.class);
-		when(requestContextMock.getAbsolutePath()).thenReturn(uri);
+		when(requestContextMock.getPath(anyBoolean())).thenReturn(path);
 		if (token != null)
 		{
 			when(requestContextMock.getHeaderString("x-token-jwt")).thenReturn(token);

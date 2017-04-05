@@ -39,17 +39,22 @@ public class UsernameCheckFilter implements ContainerRequestFilter
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException
 	{
-		logger.debug("Checking for transgressions...");
 		//todo what do we do if this cast fails?
+		final String path = ((ContainerRequest) requestContext).getPath(true);
+		logger.debug("Checking {} for transgressions...", path);
 		//todo clean this shit
-		final String uri = ((ContainerRequest) requestContext).getAbsolutePath().toString();
-		final String[] split = uri.split("/");
-		if (split.length < 6)
+		if (!path.startsWith("/api/users"))
+		{
+			logger.debug("Not a user resource");
+			return;
+		}
+		final String[] split = path.split("/");
+		if (split.length < 4)
 		{
 			logger.debug("No username in path");
 			return;
 		}
-		final String usernameFromURI = split[5];
+		final String usernameFromURI = split[3];
 		final String rawToken = requestContext.getHeaderString("x-token-jwt");
 		if (Strings.isNullOrEmpty(rawToken))
 		{
