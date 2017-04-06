@@ -28,7 +28,7 @@ public class UsernameCheckFilterTest
 	@Test
 	public void shouldNotBlockIfNotAccessingUserResource() throws Exception
 	{
-		final ContainerRequest mock = createMock("/api/admin/", VALID_USER_TOKEN);
+		final ContainerRequest mock = createMock("admin/", VALID_USER_TOKEN);
 		target.filter(mock);
 		verify(mock, times(0)).abortWith(any());
 	}
@@ -44,7 +44,7 @@ public class UsernameCheckFilterTest
 	@Test
 	public void shouldDoNothingWhenPathIsWithoutUsername() throws Exception
 	{
-		final ContainerRequest mock = createMock("/api/users/", VALID_USER_TOKEN);
+		final ContainerRequest mock = createMock("users/", VALID_USER_TOKEN);
 		target.filter(mock);
 		verify(mock, times(0)).abortWith(any());
 	}
@@ -67,7 +67,7 @@ public class UsernameCheckFilterTest
 
 	private ContainerRequest createMockByUsername(String username, String token) throws URISyntaxException
 	{
-		return createMock("/api/users/" + username + "/feeds", token);
+		return createMock("users/" + username + "/feeds", token);
 	}
 
 	private ContainerRequest createMock(final String path, String token)

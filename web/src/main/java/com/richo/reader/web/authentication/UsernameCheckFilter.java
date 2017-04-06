@@ -43,18 +43,18 @@ public class UsernameCheckFilter implements ContainerRequestFilter
 		final String path = ((ContainerRequest) requestContext).getPath(true);
 		logger.debug("Checking {} for transgressions...", path);
 		//todo clean this shit
-		if (!path.startsWith("/api/users"))
+		if (!path.startsWith("users"))
 		{
 			logger.debug("Not a user resource");
 			return;
 		}
 		final String[] split = path.split("/");
-		if (split.length < 4)
+		if (split.length < 3)
 		{
 			logger.debug("No username in path");
 			return;
 		}
-		final String usernameFromURI = split[3];
+		final String usernameFromURI = split[1];
 		final String rawToken = requestContext.getHeaderString("x-token-jwt");
 		if (Strings.isNullOrEmpty(rawToken))
 		{
