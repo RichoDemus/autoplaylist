@@ -53,9 +53,17 @@ public class LabelTestIT
 		loginPage.login(username);
 		final FeedPage feedPage = loginPage.toFeedPage();
 
+		final List<Label> noLabels = feedPage.getLabels();
+		assertThat(noLabels).isEmpty();
+
 		final int id = feedPage.createLabel(labelName);
 
 		assertThat(id).isEqualTo(0);
+
+		final List<Label> result = feedPage.getLabels();
+
+		assertThat(result).hasSize(1);
+		assertThat(result).extracting("name").containsExactly(labelName);
 	}
 
 	@Test

@@ -8,7 +8,9 @@ import com.richodemus.reader.dto.Username
 import java.util.UUID
 import java.util.concurrent.TimeUnit.DAYS
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class UserService @Inject internal constructor(private val fileSystemPersistence: FileSystemPersistence) {
     private val CACHE_SIZE = 10000L
 
