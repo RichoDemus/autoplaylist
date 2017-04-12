@@ -56,7 +56,15 @@ public class YoutubeChannelDownloader
 	public FeedId getFeedId(final FeedUrl feedUrl)
 	{
 		final String path = feedUrl.getValue().getPath();
-		final String id = path.split("/")[2];
+		final String id;
+		if(path.startsWith("/user") || path.startsWith("/channel"))
+		{
+			id = path.split("/")[2];
+		}
+		else
+		{
+			throw new IllegalArgumentException("Unsupported format: " + feedUrl.getValue());
+		}
 		if (path.startsWith("/channel/"))
 		{
 			return new FeedId(id);
