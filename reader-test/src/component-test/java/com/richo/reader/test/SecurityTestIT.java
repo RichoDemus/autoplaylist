@@ -13,13 +13,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class SecurityTestIT
 {
 	private static final String USERNAME = "richodemus";
+	private TestableApplication youtubeMock;
 	private TestableApplication target;
 	private LoginPage loginPage;
 
 	@Before
 	public void setUp() throws Exception
 	{
-		target = new TestableApplicationProvider().readerApplication();
+		youtubeMock = new TestableApplicationProvider().youtubeMock();
+		target = new TestableApplicationProvider().readerApplication(youtubeMock.getHttpPort());
 		loginPage = new LoginPage(target.getHttpPort());
 	}
 
