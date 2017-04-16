@@ -1,7 +1,7 @@
 analyzeTestClassesDependencies.enabled = false
 
 dependencies {
-    testCompile project(':web')
+    testCompile project(':server:core:web')
     testCompile "com.google.guava:guava:$rootProject.guavaVersion"
     testCompile "com.spotify:docker-client:$rootProject.dockerClientVersion"
     testCompile "junit:junit:$rootProject.junitVersion"

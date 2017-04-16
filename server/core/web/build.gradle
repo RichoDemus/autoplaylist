@@ -2,9 +2,9 @@ apply plugin: 'kotlin'
 
 description = 'Web'
 dependencies {
-    compile project(':dto')
-    compile project(':backend')
-    compile project(':youtube-feed-service')
+    compile project(':server:common:dto')
+    compile project(':server:core:backend')
+    compile project(':server:services:youtube-feed-service')
 
     compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"

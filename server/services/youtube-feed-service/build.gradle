@@ -1,6 +1,6 @@
 description = 'youtube-feed-service'
 dependencies {
-    compile project(':dto')
+    compile project(':server:common:dto')
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
     compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
     compile "com.google.guava:guava:$rootProject.guavaVersion"

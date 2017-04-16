@@ -2,7 +2,7 @@ apply plugin: 'kotlin'
 
 description = 'user-service'
 dependencies {
-    compile project(':dto')
+    compile project(':server:common:dto')
     compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"

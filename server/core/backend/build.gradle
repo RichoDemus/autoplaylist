@@ -1,8 +1,8 @@
 description = 'Backend'
 dependencies {
-    compile project(':dto')
-    compile project(':youtube-feed-service')
-    compile project(':user-service')
+    compile project(':server:common:dto')
+    compile project(':server:services:youtube-feed-service')
+    compile project(':server:services:user-service')
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
     compile "com.google.inject:guice:$rootProject.guiceVersion"
     compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
