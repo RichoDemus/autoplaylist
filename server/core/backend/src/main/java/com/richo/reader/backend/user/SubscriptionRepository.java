@@ -6,7 +6,7 @@ import com.richodemus.reader.dto.Password;
 import com.richodemus.reader.dto.UserId;
 import com.richodemus.reader.dto.Username;
 
-public interface UserRepository
+public interface SubscriptionRepository
 {
 	User get(UserId username) throws NoSuchUserException;
 

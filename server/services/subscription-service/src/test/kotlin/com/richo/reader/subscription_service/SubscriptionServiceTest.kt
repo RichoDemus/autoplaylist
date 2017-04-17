@@ -1,4 +1,4 @@
-package com.richo.reader.user_service
+package com.richo.reader.subscription_service
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
@@ -16,7 +16,7 @@ import org.junit.Test
 import java.util.UUID
 
 
-class UserServiceTest {
+class SubscriptionServiceTest {
     private val id = UserId("id")
     private val username = Username("richodemus")
     private val password = Password("password")
@@ -24,12 +24,12 @@ class UserServiceTest {
     private val ylvis = FeedId("ylvis")
     private val ERB = FeedId("ERB")
 
-    private var target: UserService? = null
+    private var target: SubscriptionService? = null
     private fun target() = target!!
 
     @Before
     fun setUp() {
-        target = UserService(FileSystemPersistence(saveRoot = "build/saveRoots/${UUID.randomUUID()}"))
+        target = SubscriptionService(FileSystemPersistence(saveRoot = "build/saveRoots/${UUID.randomUUID()}"))
     }
 
     @Test
@@ -78,7 +78,7 @@ class UserServiceTest {
             on { get(any()) } doReturn user
         }
 
-        target = UserService(filesystemMock)
+        target = SubscriptionService(filesystemMock)
 
         target().find(Username("hello"))
         target().find(Username("hello"))

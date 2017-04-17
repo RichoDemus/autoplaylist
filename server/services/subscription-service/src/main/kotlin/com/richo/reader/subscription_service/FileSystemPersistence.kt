@@ -1,4 +1,4 @@
-package com.richo.reader.user_service
+package com.richo.reader.subscription_service
 
 import com.fasterxml.jackson.core.util.DefaultIndenter
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter

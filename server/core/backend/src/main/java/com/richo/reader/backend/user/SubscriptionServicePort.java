@@ -16,26 +16,26 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class UserServicePort implements UserRepository
+public class SubscriptionServicePort implements SubscriptionRepository
 {
-	private final com.richo.reader.user_service.UserService userService;
+	private final com.richo.reader.subscription_service.SubscriptionService subscriptionService;
 
 	@Inject
-	UserServicePort(final com.richo.reader.user_service.UserService userService)
+	SubscriptionServicePort(final com.richo.reader.subscription_service.SubscriptionService subscriptionService)
 	{
-		this.userService = userService;
+		this.subscriptionService = subscriptionService;
 	}
 
 	@Override
 	public UserId create(Username username, Password password)
 	{
-		return userService.create(username, password);
+		return subscriptionService.create(username, password);
 	}
 
 	@Override
 	public User get(UserId username) throws NoSuchUserException
 	{
-		final com.richo.reader.user_service.User user = userService.find(new Username(username.getValue()));
+		final com.richo.reader.subscription_service.User user = subscriptionService.find(new Username(username.getValue()));
 
 		final Map<FeedId, Set<ItemId>> feeds = convert2(user.getFeeds());
 		return new User(user.getId(), new UserId(user.getName().getValue()), user.getNextLabelId(), feeds, user.getLabels());
@@ -46,19 +46,19 @@ public class UserServicePort implements UserRepository
 	{
 		final Username username = new Username(user.getName().getValue());
 		final Map<FeedId, List<ItemId>> feeds = convert(user.getFeeds());
-		userService.update(new com.richo.reader.user_service.User(user.id, username, feeds, user.getNextLabelId(), user.getLabels()));
+		subscriptionService.update(new com.richo.reader.subscription_service.User(user.id, username, feeds, user.getNextLabelId(), user.getLabels()));
 	}
 
 	@Override
 	public boolean isPasswordValid(UserId username, String password)
 	{
-		return userService.isPasswordValid(new Username(username.getValue()), new Password(password));
+		return subscriptionService.isPasswordValid(new Username(username.getValue()), new Password(password));
 	}
 
 	@Override
 	public void updatePassword(UserId username, String password)
 	{
-		userService.updatePassword(new Username(username.getValue()), new Password(password));
+		subscriptionService.updatePassword(new Username(username.getValue()), new Password(password));
 	}
 
 	private Map<FeedId, List<ItemId>> convert(Map<FeedId, Set<ItemId>> feeds)

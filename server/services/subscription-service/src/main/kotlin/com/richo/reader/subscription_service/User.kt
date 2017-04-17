@@ -1,4 +1,4 @@
-package com.richo.reader.user_service
+package com.richo.reader.subscription_service
 
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.ItemId

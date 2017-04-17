@@ -1,4 +1,4 @@
-package com.richo.reader.user_service
+package com.richo.reader.subscription_service
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.LoadingCache
@@ -11,7 +11,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UserService @Inject internal constructor(private val fileSystemPersistence: FileSystemPersistence) {
+class SubscriptionService @Inject internal constructor(private val fileSystemPersistence: FileSystemPersistence) {
     private val CACHE_SIZE = 10000L
 
     val cache: LoadingCache<Username, User?> = Caffeine.newBuilder()

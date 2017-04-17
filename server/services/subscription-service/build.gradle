@@ -1,6 +1,6 @@
 apply plugin: 'kotlin'
 
-description = 'user-service'
+description = 'Subscription Service'
 dependencies {
     compile project(':server:common:dto')
     compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"

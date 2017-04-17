@@ -3,7 +3,7 @@ package com.richo.reader.backend;
 import com.richo.reader.backend.exception.NoSuchLabelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
-import com.richo.reader.backend.user.UserRepository;
+import com.richo.reader.backend.user.SubscriptionRepository;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.Label;
 import com.richodemus.reader.dto.UserId;
@@ -17,21 +17,21 @@ import java.util.List;
 public class LabelManager
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final UserRepository userRepository;
+	private final SubscriptionRepository subscriptionRepository;
 
 	@Inject
-	public LabelManager(UserRepository userRepository)
+	public LabelManager(SubscriptionRepository subscriptionRepository)
 	{
-		this.userRepository = userRepository;
+		this.subscriptionRepository = subscriptionRepository;
 	}
 
 	public Label createLabelForUser(UserId username, String labelName) throws NoSuchUserException
 	{
 		logger.info("Creating label {} for user {}", labelName, username);
-		final User user = userRepository.get(username);
+		final User user = subscriptionRepository.get(username);
 		final Label label = createLabel(user, labelName);
 		user.addLabel(label);
-		userRepository.update(user);
+		subscriptionRepository.update(user);
 		return label;
 	}
 
@@ -43,7 +43,7 @@ public class LabelManager
 	public void addFeedToLabel(UserId username, long labelId, final FeedId feedId) throws NoSuchUserException, NoSuchLabelException
 	{
 		logger.debug("Adding feed {} to label {} for user {}", feedId, labelId, username);
-		final User user = userRepository.get(username);
+		final User user = subscriptionRepository.get(username);
 		final Label label = user.getLabels().stream()
 				.filter(l -> l.getId() == labelId)
 				.findAny()
@@ -56,13 +56,13 @@ public class LabelManager
 			return;
 		}
 		label.getFeeds().add(feedId);
-		userRepository.update(user);
+		subscriptionRepository.update(user);
 	}
 
 	public List<Label> getLabels(UserId username) throws NoSuchUserException
 	{
 		logger.info("Getting labels for user {}", username);
-		final User user = userRepository.get(username);
+		final User user = subscriptionRepository.get(username);
 		return user.getLabels();
 	}
 }
