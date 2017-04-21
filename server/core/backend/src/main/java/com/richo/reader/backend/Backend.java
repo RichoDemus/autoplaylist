@@ -6,7 +6,7 @@ import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richo.reader.backend.model.FeedWithoutItems;
 import com.richo.reader.backend.model.User;
-import com.richo.reader.backend.user.SubscriptionRepository;
+import com.richo.reader.backend.subscription.SubscriptionRepository;
 import com.richo.reader.youtube_feed_service.Feed;
 import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.YoutubeFeedService;

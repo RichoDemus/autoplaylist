@@ -1,4 +1,4 @@
-package com.richo.reader.backend.user;
+package com.richo.reader.backend.subscription;
 
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;

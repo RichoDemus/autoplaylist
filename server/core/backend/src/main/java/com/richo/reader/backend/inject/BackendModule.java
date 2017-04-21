@@ -2,8 +2,8 @@ package com.richo.reader.backend.inject;
 
 import com.google.inject.AbstractModule;
 import com.richo.reader.backend.Backend;
-import com.richo.reader.backend.user.SubscriptionRepository;
-import com.richo.reader.backend.user.SubscriptionServicePort;
+import com.richo.reader.backend.subscription.SubscriptionRepository;
+import com.richo.reader.backend.subscription.SubscriptionServicePort;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;

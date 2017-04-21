@@ -2,7 +2,7 @@ package com.richo.reader.backend;
 
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
-import com.richo.reader.backend.user.SubscriptionRepository;
+import com.richo.reader.backend.subscription.SubscriptionRepository;
 import com.richodemus.reader.dto.Password;
 import com.richodemus.reader.dto.UserId;
 import com.richodemus.reader.dto.Username;
