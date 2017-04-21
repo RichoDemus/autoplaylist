@@ -5,6 +5,7 @@ dependencies {
     compile project(':server:common:dto')
     compile project(':server:core:backend')
     compile project(':server:services:youtube-feed-service')
+    compile project(':server:services:user-service')
 
     compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
