@@ -1,10 +1,9 @@
-package com.richo.reader.backend.user;
+package com.richo.reader.backend.subscription;
 
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.ItemId;
-import com.richodemus.reader.dto.Password;
 import com.richodemus.reader.dto.UserId;
 import com.richodemus.reader.dto.Username;
 
@@ -27,15 +26,13 @@ public class SubscriptionServicePort implements SubscriptionRepository
 	}
 
 	@Override
-	public UserId create(Username username, Password password)
-	{
-		return subscriptionService.create(username, password);
-	}
-
-	@Override
 	public User get(UserId username) throws NoSuchUserException
 	{
 		final com.richo.reader.subscription_service.User user = subscriptionService.find(new Username(username.getValue()));
+		if (user == null)
+		{
+			throw new NoSuchUserException("Couldn't find user " + username);
+		}
 
 		final Map<FeedId, Set<ItemId>> feeds = convert2(user.getFeeds());
 		return new User(user.getId(), new UserId(user.getName().getValue()), user.getNextLabelId(), feeds, user.getLabels());
@@ -47,18 +44,6 @@ public class SubscriptionServicePort implements SubscriptionRepository
 		final Username username = new Username(user.getName().getValue());
 		final Map<FeedId, List<ItemId>> feeds = convert(user.getFeeds());
 		subscriptionService.update(new com.richo.reader.subscription_service.User(user.id, username, feeds, user.getNextLabelId(), user.getLabels()));
-	}
-
-	@Override
-	public boolean isPasswordValid(UserId username, String password)
-	{
-		return subscriptionService.isPasswordValid(new Username(username.getValue()), new Password(password));
-	}
-
-	@Override
-	public void updatePassword(UserId username, String password)
-	{
-		subscriptionService.updatePassword(new Username(username.getValue()), new Password(password));
 	}
 
 	private Map<FeedId, List<ItemId>> convert(Map<FeedId, Set<ItemId>> feeds)

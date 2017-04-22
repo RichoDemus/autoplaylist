@@ -7,12 +7,13 @@ import com.richo.reader.backend.inject.BackendModule;
 import com.richo.reader.web.authentication.UserServiceBridge;
 import com.richo.reader.web.dropwizard.autoscanned.BackendHealthCheck;
 import com.richodemus.dropwizard.jwt.UserService;
+import com.richodemus.reader.common.chronicler_adapter.ChroniclerAdapter;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.time.Duration;
 
-class GuiceModule extends AbstractModule
+public class GuiceModule extends AbstractModule
 {
 	@Override
 	public void configure()
@@ -22,6 +23,13 @@ class GuiceModule extends AbstractModule
 		bind(Duration.class).annotatedWith(Names.named("tokenDuration")).toInstance(Duration.ofDays(30L));
 		bind(String.class).annotatedWith(Names.named("secret")).toInstance("qwel12319zxc90we23rnlsdfpsdf09sdfk323rlksdfsd");
 		bind(BackendHealthCheck.class);
+		bindEventStore();
+	}
+
+	protected void bindEventStore()
+	{
+		bind(com.richodemus.reader.user_service.EventStore.class).to(ChroniclerAdapter.class);
+		bind(com.richo.reader.subscription_service.EventStore.class).to(ChroniclerAdapter.class);
 	}
 
 	//todo move to backend guice stuff

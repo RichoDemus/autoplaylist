@@ -1,0 +1,30 @@
+apply plugin: 'kotlin'
+
+description = 'User/Login Service'
+dependencies {
+    compile project(':server:common:dto')
+    compile project(':server:common:events')
+    compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
+    testCompile 'org.jetbrains:annotations'
+    compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
+    compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
+
+    compile "io.reactivex:rxkotlin:$rootProject.rxKotlinVersion"
+    compile 'io.reactivex.rxjava2:rxjava'
+    compile 'org.mindrot:jbcrypt:0.4'
+
+
+    testCompile "junit:junit:$rootProject.junitVersion"
+    testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
+    testRuntime "org.slf4j:slf4j-simple:$rootProject.slf4jVersion"
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.kotlinVersion"
+    }
+}
