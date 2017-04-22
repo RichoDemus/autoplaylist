@@ -6,6 +6,6 @@ public class ReaderApplicationWithMocks extends ReaderApplication
 {
 	public ReaderApplicationWithMocks()
 	{
-		modules.add(new Mocks());
+		module = new Mocks();
 	}
 }

@@ -16,7 +16,7 @@ class CreateUserTest {
         val result = mapper.writeValueAsString(CreateUser(EventId(UUID.fromString("f4d911c8-0783-46e8-82a4-371ef25ae7ca")), UserId("cool-id"), Username("richo"), PasswordHash("my_password")))
 
         //language=JSON
-        val expected = "{\"eventId\":\"f4d911c8-0783-46e8-82a4-371ef25ae7ca\",\"id\":\"cool-id\",\"username\":\"richo\",\"password\":\"my_password\"}"
+        val expected = "{\"eventId\":\"f4d911c8-0783-46e8-82a4-371ef25ae7ca\",\"type\":\"CREATE_USER\",\"id\":\"cool-id\",\"username\":\"richo\",\"password\":\"my_password\"}"
         assertThat(result).isEqualTo(expected)
     }
 }

@@ -7,11 +7,7 @@ import io.reactivex.subjects.ReplaySubject
 class InMemoryEventStore : EventStore {
     private val replaySubject = ReplaySubject.create<Event>()
 
-    override fun add(event: Event) {
-        replaySubject.onNext(event)
-    }
+    override fun add(event: Event) = replaySubject.onNext(event)
 
-    override fun observe(): Observable<Event> {
-        return replaySubject
-    }
+    override fun observe(): Observable<Event> = replaySubject
 }

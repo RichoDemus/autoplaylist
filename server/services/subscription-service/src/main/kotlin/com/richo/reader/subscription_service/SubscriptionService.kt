@@ -31,7 +31,7 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
                     }
                 },
                 onError = { logger.error("Subscription service event stream failure", it) },
-                onComplete = { logger.info("Subscription service event stream closed")}
+                onComplete = { logger.info("Subscription service event stream closed") }
         )
     }
 

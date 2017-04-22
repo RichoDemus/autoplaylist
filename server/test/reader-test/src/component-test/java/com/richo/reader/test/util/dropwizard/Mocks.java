@@ -1,15 +1,14 @@
 package com.richo.reader.test.util.dropwizard;
 
-import com.google.inject.AbstractModule;
 import com.richo.reader.test.mocks.InMemoryEventStore;
-import com.richodemus.reader.user_service.EventStore;
+import com.richo.reader.web.dropwizard.GuiceModule;
 
-class Mocks extends AbstractModule
+class Mocks extends GuiceModule
 {
 	@Override
-	protected void configure()
+	protected void bindEventStore()
 	{
-		bind(EventStore.class).to(InMemoryEventStore.class);
+		bind(com.richodemus.reader.user_service.EventStore.class).to(InMemoryEventStore.class);
 		bind(com.richo.reader.subscription_service.EventStore.class).to(InMemoryEventStore.class);
 	}
 }

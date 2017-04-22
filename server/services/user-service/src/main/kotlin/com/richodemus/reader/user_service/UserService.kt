@@ -24,7 +24,7 @@ class UserService @Inject internal constructor(val eventStore: EventStore) {
                         users.put(it.username, User(it.id, it.username, it.password))
                     } else if (it is ChangePassword) {
                         val user = users.values.singleOrNull { user -> user.id == it.userId }
-                        if(user == null) {
+                        if (user == null) {
                             logger.warn("Got Change password event for non existing user ${it.userId}")
                         } else {
                             user.password = it.password
@@ -34,7 +34,7 @@ class UserService @Inject internal constructor(val eventStore: EventStore) {
                     }
                 },
                 onError = { logger.error("User service event stream failure", it) },
-                onComplete = { logger.info("User service event stream closed")}
+                onComplete = { logger.info("User service event stream closed") }
         )
     }
 
