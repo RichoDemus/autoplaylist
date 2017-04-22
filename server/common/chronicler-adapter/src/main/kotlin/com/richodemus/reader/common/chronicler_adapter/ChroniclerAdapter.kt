@@ -62,8 +62,8 @@ class ChroniclerAdapter : com.richodemus.reader.user_service.EventStore, com.ric
         val chroniclerData = mapper.writeValueAsString(ChroniclerEvent(event.eventId.value.toString(), event.type, data))
         val (request, response, result) = "http://$hostname:$port/api/events/".httpPost().body(chroniclerData).header(Pair("Content-Type", "application/json")).responseString()
         if (response.httpStatusCode != 200) {
-            logger.error("Failed to post event {}", event)
-            throw RuntimeException("Failed to post event " + event)
+            logger.error("Failed to post event {}, {}", event, result)
+            throw RuntimeException("Failed to post event $event, $result")
         }
     }
 
