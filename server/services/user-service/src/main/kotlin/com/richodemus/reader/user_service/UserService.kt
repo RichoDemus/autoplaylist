@@ -21,6 +21,7 @@ class UserService @Inject internal constructor(val eventStore: EventStore) {
         eventStore.observe().subscribeBy(
                 onNext = {
                     if (it is CreateUser) {
+                        logger.info("Adding user {}", it.username)
                         users.put(it.username, User(it.id, it.username, it.password))
                     } else if (it is ChangePassword) {
                         val user = users.values.singleOrNull { user -> user.id == it.userId }
