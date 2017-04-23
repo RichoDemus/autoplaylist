@@ -101,25 +101,22 @@ public class Backend
 		final User user = subscriptionRepository.find(username);
 
 		//Todo its now possible to add feeds that doesnt exist...
-		user.addFeed(feedId);
-		subscriptionRepository.update(user);
 		feedService.registerChannel(feedId);
+		subscriptionRepository.subscribe(user.id, feedId);
 	}
 
 	public void markAsRead(final Username username, final FeedId feedId, final ItemId itemId) throws NoSuchUserException, UserNotSubscribedToThatChannelException
 	{
 		logger.info("Marking item {} in feed {} for user {} as read", itemId, feedId, username);
 		final User user = subscriptionRepository.find(username);
-		user.markAsRead(feedId, itemId);
-		subscriptionRepository.update(user);
+		subscriptionRepository.markAsRead(user.id, feedId, itemId);
 	}
 
 	public void markAsUnread(final Username username, final FeedId feedId, ItemId itemId) throws NoSuchUserException
 	{
 		logger.info("Marking item {} in feed {} for user {} as unread", itemId, feedId, username);
 		final User user = subscriptionRepository.find(username);
-		user.markAsUnRead(feedId, itemId);
-		subscriptionRepository.update(user);
+		subscriptionRepository.markAsUnread(user.id, feedId, itemId);
 	}
 
 	public void markOlderItemsAsRead(final Username username, final FeedId feedId, final ItemId itemId) throws NoSuchChannelException, ItemNotInFeedException, UserNotSubscribedToThatChannelException
@@ -140,8 +137,6 @@ public class Backend
 		feed.getItems().stream()
 				.filter(item -> item.getUploadDate().isBefore(targetItem.getUploadDate()))
 				.map(Item::getId)
-				.forEach(id -> user.markAsRead(feedId, id));
-
-		subscriptionRepository.update(user);
+				.forEach(id -> subscriptionRepository.markAsRead(user.id, feedId, id));
 	}
 }

@@ -24,9 +24,10 @@ class SubscriptionServiceTest {
     private val id = UserId("id")
     private val username = Username("richodemus")
     private val password = PasswordHash("password")
-    private val user = User(id, username, emptyMap(), 0L, listOf())
+    private val user = User(id, username, mutableMapOf(), 0L, listOf())
     private val ylvis = FeedId("ylvis")
     private val ERB = FeedId("ERB")
+    private val coolVideo = ItemId("some_video")
 
     private var target: SubscriptionService? = null
     private fun target() = target!!
@@ -57,7 +58,7 @@ class SubscriptionServiceTest {
 
         val result = target().find(username)
 
-        val expected = User(id, username, emptyMap(), 0L, listOf())
+        val expected = User(id, username, mutableMapOf(), 0L, listOf())
 
         assertThat(result).isEqualTo(expected)
     }
@@ -70,14 +71,50 @@ class SubscriptionServiceTest {
     @Test
     fun `Should be possible to update a user`() {
         subject().onNext(CreateUser(EventId(UUID.randomUUID()), id, username, password))
-        target().update(User(id, username, mapOf(Pair(ERB, listOf<ItemId>())), 0L, listOf()))
+        target().update(User(id, username, mutableMapOf(Pair(ERB, mutableListOf<ItemId>())), 0L, listOf()))
         assertThat(target().find(user.name)?.feeds).containsOnlyKeys(ERB)
 
-        val userv2 = User(id, username, mapOf(Pair(ERB, listOf<ItemId>()), Pair(ylvis, listOf<ItemId>())), 0L, listOf())
+        val userv2 = User(id, username, mutableMapOf(Pair(ERB, mutableListOf<ItemId>()), Pair(ylvis, mutableListOf<ItemId>())), 0L, listOf())
         target().update(userv2)
 
         val result = target().find(user.name)
         assertThat(result!!.feeds).containsOnlyKeys(ylvis, ERB)
+    }
+
+    @Test
+    fun `Subscribe to feed`() {
+        subject().onNext(CreateUser(EventId(UUID.randomUUID()), id, username, password))
+
+        target().subscribe(id, ERB)
+
+        val result = target().find(username)!!
+
+        assertThat(result.feeds.keys).containsOnly(ERB)
+    }
+
+    @Test
+    fun `Watch item`() {
+        subject().onNext(CreateUser(EventId(UUID.randomUUID()), id, username, password))
+
+        target().subscribe(id, ERB)
+        target().markAsRead(id, ERB, coolVideo)
+
+        val result = target().find(username)!!
+
+        assertThat(result.feeds[ERB]).containsOnly(coolVideo)
+    }
+
+    @Test
+    fun `Unwatch item`() {
+        subject().onNext(CreateUser(EventId(UUID.randomUUID()), id, username, password))
+
+        target().subscribe(id, ERB)
+        target().markAsRead(id, ERB, coolVideo)
+        target().markAsUnread(id, ERB, coolVideo)
+
+        val result = target().find(username)!!
+
+        assertThat(result.feeds[ERB]).isEmpty()
     }
 
     @Test

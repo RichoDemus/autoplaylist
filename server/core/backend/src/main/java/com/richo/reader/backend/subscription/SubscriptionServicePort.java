@@ -4,6 +4,7 @@ import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.ItemId;
+import com.richodemus.reader.dto.UserId;
 import com.richodemus.reader.dto.Username;
 
 import javax.inject.Inject;
@@ -43,6 +44,24 @@ public class SubscriptionServicePort implements SubscriptionRepository
 		final Username username = new Username(user.getName().getValue());
 		final Map<FeedId, List<ItemId>> feeds = convert(user.getFeeds());
 		subscriptionService.update(new com.richo.reader.subscription_service.User(user.id, username, feeds, user.getNextLabelId(), user.getLabels()));
+	}
+
+	@Override
+	public void subscribe(UserId userId, FeedId feedId)
+	{
+		subscriptionService.subscribe(userId, feedId);
+	}
+
+	@Override
+	public void markAsRead(UserId userId, FeedId feedId, ItemId itemId)
+	{
+		subscriptionService.markAsRead(userId, feedId, itemId);
+	}
+
+	@Override
+	public void markAsUnread(UserId userId, FeedId feedId, ItemId itemId)
+	{
+		subscriptionService.markAsUnread(userId, feedId, itemId);
 	}
 
 	private Map<FeedId, List<ItemId>> convert(Map<FeedId, Set<ItemId>> feeds)
