@@ -29,7 +29,11 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
         eventStore.observe().subscribeBy(
                 onNext = {
                     if (it is CreateUser) {
-                        create(it.id, it.username)
+                        if (exists(it.username)) {
+                            logger.warn("User ${it.username} already exists...")
+                        } else {
+                            create(it.id, it.username)
+                        }
                     } else {
                         logger.warn("Event of type: ${it.javaClass} not handled")
                     }
@@ -61,7 +65,7 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
     }
 
     fun subscribe(userId: UserId, feedId: FeedId) {
-        assertUserExists(userId) { "User $userId can't subscribe to feed $feedId: User does not exist"}
+        assertUserExists(userId) { "User $userId can't subscribe to feed $feedId: User does not exist" }
         val user = users[userId]!!
         user.subscribe(feedId)
 
@@ -69,15 +73,15 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
     }
 
     fun markAsRead(userId: UserId, feedId: FeedId, itemId: ItemId) {
-        assertUserExists(userId) { "User $userId can't mark item $itemId as read in feed $feedId: User does not exist"}
+        assertUserExists(userId) { "User $userId can't mark item $itemId as read in feed $feedId: User does not exist" }
         val user = users[userId]!!
         user.watch(feedId, itemId)
 
         update(user)
     }
 
-    fun  markAsUnread(userId: UserId, feedId: FeedId, itemId: ItemId) {
-        assertUserExists(userId) { "User $userId can't mark item $itemId as read in feed $feedId: User does not exist"}
+    fun markAsUnread(userId: UserId, feedId: FeedId, itemId: ItemId) {
+        assertUserExists(userId) { "User $userId can't mark item $itemId as read in feed $feedId: User does not exist" }
         val user = users[userId]!!
         user.unWatch(feedId, itemId)
 

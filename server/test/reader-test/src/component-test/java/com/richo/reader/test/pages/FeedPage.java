@@ -54,7 +54,7 @@ public class FeedPage
 				.then().assertThat().statusCode(204);
 	}
 
-	public int createLabel(String labelName)
+	public String createLabel(String labelName)
 	{
 		return RestAssured
 				.given().header("x-token-jwt", token).body(labelName).contentType(ContentType.JSON)
@@ -62,7 +62,7 @@ public class FeedPage
 				.then().extract().body().jsonPath().get("id");
 	}
 
-	public void addFeedToLabel(final FeedId feedName, int labelId)
+	public void addFeedToLabel(final FeedId feedName, String labelId)
 	{
 		RestAssured
 				.given().header("x-token-jwt", token).body(feedName.toJson()).contentType(ContentType.JSON)

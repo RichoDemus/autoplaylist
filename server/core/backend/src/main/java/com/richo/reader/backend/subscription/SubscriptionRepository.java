@@ -11,9 +11,6 @@ public interface SubscriptionRepository
 {
 	User find(Username username) throws NoSuchUserException;
 
-	@Deprecated
-	void update(User user);
-
 	void subscribe(final UserId userId, final FeedId feedId);
 
 	void markAsRead(final UserId userId, final FeedId feedId, final ItemId itemId);

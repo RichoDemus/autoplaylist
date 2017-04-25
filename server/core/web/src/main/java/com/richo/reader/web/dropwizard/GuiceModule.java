@@ -28,8 +28,9 @@ public class GuiceModule extends AbstractModule
 
 	protected void bindEventStore()
 	{
-		bind(com.richodemus.reader.user_service.EventStore.class).to(ChroniclerAdapter.class);
+		bind(com.richodemus.reader.label_service.EventStore.class).to(ChroniclerAdapter.class);
 		bind(com.richo.reader.subscription_service.EventStore.class).to(ChroniclerAdapter.class);
+		bind(com.richodemus.reader.user_service.EventStore.class).to(ChroniclerAdapter.class);
 	}
 
 	//todo move to backend guice stuff
