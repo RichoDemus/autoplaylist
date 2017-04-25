@@ -47,9 +47,9 @@ class LabelService @Inject internal constructor(val eventStore: EventStore) {
     }
 
     private fun add(label: CreateLabel) {
-        logger.info("Creating label {}", label.name)
-        if (labels.find { it.id == label.id } != null) {
-            logger.warn("Label ${label.name} with id ${label.id} already exists...")
+        logger.info("Creating label {}", label.labelName)
+        if (labels.find { it.id == label.labelId } != null) {
+            logger.warn("Label ${label.labelName} with id ${label.labelId} already exists...")
             return
         }
 
@@ -64,8 +64,8 @@ class LabelService @Inject internal constructor(val eventStore: EventStore) {
     }
 
     private fun addFeedToLabel(event: AddFeedToLabel) {
-        logger.info("Adding feed ${event.feedId} to ${event.id}")
-        val label = labels.find { it.id == event.id }
+        logger.info("Adding feed ${event.feedId} to ${event.labelId}")
+        val label = labels.find { it.id == event.labelId }
         if (label == null) {
             logger.warn("Attempting to apply event $event but label doesn't exist")
             return

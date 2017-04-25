@@ -32,7 +32,7 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
                         if (exists(it.username)) {
                             logger.warn("User ${it.username} already exists...")
                         } else {
-                            create(it.id, it.username)
+                            create(it.userId, it.username)
                         }
                     } else {
                         logger.warn("Event of type: ${it.javaClass} not handled")

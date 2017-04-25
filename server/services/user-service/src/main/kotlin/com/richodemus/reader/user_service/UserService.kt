@@ -22,7 +22,7 @@ class UserService @Inject internal constructor(val eventStore: EventStore) {
                 onNext = {
                     if (it is CreateUser) {
                         logger.info("Adding user {}", it.username)
-                        users.put(it.username, User(it.id, it.username, it.password))
+                        users.put(it.username, User(it.userId, it.username, it.password))
                     } else if (it is ChangePassword) {
                         val user = users.values.singleOrNull { user -> user.id == it.userId }
                         if (user == null) {

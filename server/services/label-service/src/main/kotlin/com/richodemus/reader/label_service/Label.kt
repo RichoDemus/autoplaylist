@@ -8,7 +8,7 @@ import com.richodemus.reader.events.AddFeedToLabel
 import com.richodemus.reader.events.CreateLabel
 
 class Label(val id: LabelId, val name: LabelName, val userId: UserId, val feeds: MutableList<FeedId>) {
-    constructor(label: CreateLabel) : this(label.id, label.name, label.userId, mutableListOf())
+    constructor(label: CreateLabel) : this(label.labelId, label.labelName, label.userId, mutableListOf())
 
     fun add(event: AddFeedToLabel) {
         feeds.add(event.feedId)
