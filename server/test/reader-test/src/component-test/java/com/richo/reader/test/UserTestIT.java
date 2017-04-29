@@ -1,13 +1,18 @@
 package com.richo.reader.test;
 
 import com.richo.reader.test.pages.LoginPage;
+import com.richo.reader.test.pages.model.FeedWithoutItem;
 import com.richo.reader.test.util.TestableApplication;
 import com.richo.reader.test.util.TestableApplicationProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 
 public class UserTestIT
 {
@@ -60,6 +65,27 @@ public class UserTestIT
 		loginPage.login(USERNAME);
 
 		assertThat(loginPage.isLoggedIn()).isTrue();
+	}
+
+	@Test
+	public void shouldGetNewToken() throws Exception
+	{
+		loginPage.createUser(USERNAME);
+
+		loginPage.login(USERNAME);
+
+		final String firstToken = loginPage.getToken();
+
+		await().atMost(10, TimeUnit.SECONDS).until(() ->
+		{
+			loginPage.refreshToken();
+
+			assertThat(loginPage.getToken()).isNotEqualTo(firstToken);
+		});
+
+		final List<FeedWithoutItem> result = loginPage.toFeedPage().getAllFeeds();
+
+		assertThat(result).isNotNull();
 	}
 
 	@Test

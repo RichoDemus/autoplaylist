@@ -58,6 +58,16 @@ public class LoginPage
 				.then().extract().body().jsonPath().get("token"));
 	}
 
+	public void refreshToken()
+	{
+		final String token = this.token.orElseThrow(RuntimeException::new);
+		final String user = username.orElseThrow(RuntimeException::new);
+		this.token = Optional.ofNullable(RestAssured
+				.given().header("x-token-jwt", token).body("")
+				.when().post(baseUrl + "/api/users/" + user + "/sessions/refresh")
+				.then().extract().body().jsonPath().get("token"));
+	}
+
 	public boolean isLoggedIn()
 	{
 		return token.isPresent();
