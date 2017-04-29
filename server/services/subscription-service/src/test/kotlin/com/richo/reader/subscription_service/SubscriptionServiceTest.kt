@@ -1,10 +1,5 @@
 package com.richo.reader.subscription_service
 
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.times
-import com.nhaarman.mockito_kotlin.verify
 import com.richodemus.reader.dto.EventId
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.ItemId
@@ -12,8 +7,7 @@ import com.richodemus.reader.dto.PasswordHash
 import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.dto.Username
 import com.richodemus.reader.events.CreateUser
-import com.richodemus.reader.events.Event
-import io.reactivex.subjects.PublishSubject
+import com.richodemus.reader.label_service.InMemoryEventStore
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -32,101 +26,86 @@ class SubscriptionServiceTest {
     private var target: SubscriptionService? = null
     private fun target() = target!!
 
-    private var eventStoreMock: EventStore? = null
-    private fun eventStoreMock() = eventStoreMock!!
-
-    private var subject: PublishSubject<Event>? = null
-    private fun subject() = subject!!
+    private var eventStore : EventStore? = null
+    private fun eventStore() = eventStore!!
 
     @Before
     fun setUp() {
-        subject = PublishSubject.create<Event>()
-        eventStoreMock = mock<EventStore> {
-            on { observe() } doReturn subject()
-        }
-        target = SubscriptionService(FileSystemPersistence(saveRoot = "build/saveRoots/${UUID.randomUUID()}"), eventStoreMock())
-    }
-
-    @Test
-    fun `should return null if user doesnt exist`() {
-        assertThat(target().find(Username("unknown"))).isNull()
+        eventStore = InMemoryEventStore()
+        target = SubscriptionService(FileSystemPersistence(saveRoot = "build/saveRoots/${UUID.randomUUID()}"), eventStore())
     }
 
     @Test
     fun `Create User`() {
-        subject().onNext(CreateUser(EventId(UUID.randomUUID()), id, username, password))
+        eventStore().add(CreateUser(EventId(), id, username, password))
 
-        val result = target().find(username)
+        val result = target().get(id)
 
-        val expected = User(id, username, mutableMapOf(), 0L, listOf())
+        val expected = User(id)
 
         assertThat(result).isEqualTo(expected)
     }
 
-    @Test(expected = IllegalStateException::class)
-    fun `Should not be possible to update a non-existing user`() {
-        target().update(user)
-    }
-
-    @Test
-    fun `Should be possible to update a user`() {
-        subject().onNext(CreateUser(EventId(UUID.randomUUID()), id, username, password))
-        target().update(User(id, username, mutableMapOf(Pair(ERB, mutableListOf<ItemId>())), 0L, listOf()))
-        assertThat(target().find(user.name)?.feeds).containsOnlyKeys(ERB)
-
-        val userv2 = User(id, username, mutableMapOf(Pair(ERB, mutableListOf<ItemId>()), Pair(ylvis, mutableListOf<ItemId>())), 0L, listOf())
-        target().update(userv2)
-
-        val result = target().find(user.name)
-        assertThat(result!!.feeds).containsOnlyKeys(ylvis, ERB)
-    }
-
     @Test
     fun `Subscribe to feed`() {
-        subject().onNext(CreateUser(EventId(UUID.randomUUID()), id, username, password))
+        eventStore().add(CreateUser(EventId(), id, username, password))
 
         target().subscribe(id, ERB)
 
-        val result = target().find(username)!!
+        val result = target().get(id)!!
 
         assertThat(result.feeds.keys).containsOnly(ERB)
     }
 
+    @Test(expected = IllegalStateException::class)
+    fun `Should not be possible for a non-existing user to subscribe`() {
+        target().subscribe(id, ylvis)
+    }
+
     @Test
     fun `Watch item`() {
-        subject().onNext(CreateUser(EventId(UUID.randomUUID()), id, username, password))
+        eventStore().add(CreateUser(EventId(), id, username, password))
 
         target().subscribe(id, ERB)
         target().markAsRead(id, ERB, coolVideo)
 
-        val result = target().find(username)!!
+        val result = target().get(id)!!
 
         assertThat(result.feeds[ERB]).containsOnly(coolVideo)
     }
 
+    @Test(expected = IllegalStateException::class)
+    fun `Should not be possible for a non-existing user to watch an item`() {
+        target().markAsRead(id, ERB, coolVideo)
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `Should not be possible for a user to watch an item in a non-subscribed feed`() {
+        eventStore().add(CreateUser(EventId(), id, username, password))
+        target().markAsRead(id, ERB, coolVideo)
+    }
+
     @Test
     fun `Unwatch item`() {
-        subject().onNext(CreateUser(EventId(UUID.randomUUID()), id, username, password))
+        eventStore().add(CreateUser(EventId(), id, username, password))
 
         target().subscribe(id, ERB)
         target().markAsRead(id, ERB, coolVideo)
         target().markAsUnread(id, ERB, coolVideo)
 
-        val result = target().find(username)!!
+        val result = target().get(id)!!
 
         assertThat(result.feeds[ERB]).isEmpty()
     }
 
-    @Test
-    fun `Two consecutive gets should not both hit the filesystem`() {
-        val filesystemMock = mock<FileSystemPersistence> {
-            on { get(any()) } doReturn user
-        }
+    @Test(expected = IllegalStateException::class)
+    fun `Should not be possible for a non-existing user to unwatch an item`() {
+        target().markAsUnread(id, ERB, coolVideo)
+    }
 
-        target = SubscriptionService(filesystemMock, eventStoreMock())
-
-        target().find(Username("hello"))
-        target().find(Username("hello"))
-        verify(filesystemMock, times(1)).get(Username("hello"))
+    @Test(expected = IllegalStateException::class)
+    fun `Should not be possible for a user to unwatch an item in a non-subscribed feed`() {
+        eventStore().add(CreateUser(EventId(), id, username, password))
+        target().markAsUnread(id, ERB, coolVideo)
     }
 }

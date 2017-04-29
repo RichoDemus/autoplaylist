@@ -1,45 +1,32 @@
 package com.richo.reader.subscription_service
 
-import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.benmanes.caffeine.cache.LoadingCache
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.ItemId
 import com.richodemus.reader.dto.UserId
-import com.richodemus.reader.dto.Username
 import com.richodemus.reader.events.CreateUser
+import com.richodemus.reader.events.UserSubscribedToFeed
+import com.richodemus.reader.events.UserUnwatchedItem
+import com.richodemus.reader.events.UserWatchedItem
 import io.reactivex.rxkotlin.subscribeBy
 import org.slf4j.LoggerFactory
-import java.util.concurrent.TimeUnit.DAYS
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SubscriptionService @Inject internal constructor(private val fileSystemPersistence: FileSystemPersistence, val eventStore: EventStore) {
-    private val CACHE_SIZE = 10000L
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    val users = mutableMapOf<UserId, User>()
-
-    val cache: LoadingCache<Username, User?> = Caffeine.newBuilder()
-            .maximumSize(CACHE_SIZE)
-            .expireAfterAccess(1, DAYS)
-            .build { id: Username -> fileSystemPersistence.get(id) }
+    private val users = mutableMapOf<UserId, User>()
 
     init {
         eventStore.observe().subscribeBy(
-                onNext = {
-                    if (it is CreateUser) {
-                        if (exists(it.username)) {
-                            // todo change this, much temporary
-                            logger.warn("User ${it.username} already exists, changing it's id..")
-                            cache[it.username]?.id = it.userId
-                            users.put(it.userId, cache[it.username]!!)
-
-                        } else {
-                            create(it.userId, it.username)
-                        }
-                    } else {
-                        logger.warn("Event of type: ${it.javaClass} not handled")
+                onNext = { event ->
+                    when (event) {
+                        is CreateUser -> add(event)
+                        is UserSubscribedToFeed -> subscribe(event)
+                        is UserWatchedItem -> watch(event)
+                        is UserUnwatchedItem -> unwatch(event)
+                        else -> logger.debug("Not handling event of type {}", event.type)
                     }
                 },
                 onError = { logger.error("Subscription service event stream failure", it) },
@@ -47,61 +34,45 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
         )
     }
 
-    private fun create(id: UserId, username: Username) {
-        assertUserDoesntExist(username) { "User $username already exists" }
-        val user = User(id, username, mutableMapOf(), 0L, listOf())
-        fileSystemPersistence.update(user)
-        users.put(user.id, user)
-    }
-
-    fun find(id: Username): User? {
-        return cache.get(id)
-    }
-
-    fun exists(id: Username) = cache.get(id) != null
-    fun exists(id: UserId) = users.containsKey(id)
-
-    fun update(user: User) {
-        assertUserExists(user.name) { "Can't update user ${user.name} because it doesn't exist" }
-        fileSystemPersistence.update(user)
-        users.put(user.id, user)
-        cache.invalidate(user.name)
-    }
+    fun get(userId: UserId) = users[userId]
 
     fun subscribe(userId: UserId, feedId: FeedId) {
         assertUserExists(userId) { "User $userId can't subscribe to feed $feedId: User does not exist" }
-        val user = users[userId]!!
-        user.subscribe(feedId)
-
-        update(user)
+        eventStore.add(UserSubscribedToFeed(userId, feedId))
     }
 
     fun markAsRead(userId: UserId, feedId: FeedId, itemId: ItemId) {
         assertUserExists(userId) { "User $userId can't mark item $itemId as read in feed $feedId: User does not exist" }
-        val user = users[userId]!!
-        user.watch(feedId, itemId)
-
-        update(user)
+        assertUserSubscribedTo(userId, feedId)
+        eventStore.add(UserWatchedItem(userId, feedId, itemId))
     }
 
     fun markAsUnread(userId: UserId, feedId: FeedId, itemId: ItemId) {
         assertUserExists(userId) { "User $userId can't mark item $itemId as read in feed $feedId: User does not exist" }
-        val user = users[userId]!!
-        user.unWatch(feedId, itemId)
-
-        update(user)
+        assertUserSubscribedTo(userId, feedId)
+        eventStore.add(UserUnwatchedItem(userId, feedId, itemId))
     }
 
-    private fun assertUserExists(username: Username, msg: () -> String) {
-        if (!exists(username)) {
-            throw IllegalStateException(msg.invoke())
-        }
+    private fun add(event: CreateUser) {
+        warnIfUserAlreadyExists(event.userId)
+        users.put(event.userId, User(event.userId))
     }
 
-    private fun assertUserDoesntExist(username: Username, msg: () -> String) {
-        if (exists(username)) {
-            throw IllegalStateException(msg.invoke())
-        }
+    private fun subscribe(event: UserSubscribedToFeed) {
+        warnIfDoesntExist(event.userId)
+        users[event.userId]?.subscribe(event.feedId)
+    }
+
+    private fun watch(event: UserWatchedItem) {
+        warnIfDoesntExist(event.userId)
+        warnIfNotSubscribed(event.userId, event.feedId)
+        users[event.userId]?.watch(event.feedId, event.itemId)
+    }
+
+    private fun unwatch(event: UserUnwatchedItem) {
+        warnIfDoesntExist(event.userId)
+        warnIfNotSubscribed(event.userId, event.feedId)
+        users[event.userId]?.unWatch(event.feedId, event.itemId)
     }
 
     private fun assertUserExists(userId: UserId, msg: () -> String) {
@@ -109,4 +80,30 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
             throw IllegalStateException(msg.invoke())
         }
     }
+
+    private fun assertUserSubscribedTo(userId: UserId, feedId: FeedId) {
+        if (users[userId]?.feeds?.get(feedId) == null) {
+            throw IllegalStateException("User $userId is not subscribed to $feedId")
+        }
+    }
+
+    private fun warnIfUserAlreadyExists(userId: UserId) {
+        if (exists(userId)) {
+            logger.warn("User $userId already exists")
+        }
+    }
+
+    private fun warnIfDoesntExist(userId: UserId) {
+        if (!exists(userId)) {
+            logger.warn("User $userId doesn't exist")
+        }
+    }
+
+    private fun warnIfNotSubscribed(userId: UserId, feedId: FeedId) {
+        if (users[userId]?.feeds?.get(feedId) == null) {
+            logger.warn("User $userId is not subscribed to $feedId")
+        }
+    }
+
+    private fun exists(id: UserId) = users.containsKey(id)
 }
