@@ -30,7 +30,11 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
                 onNext = {
                     if (it is CreateUser) {
                         if (exists(it.username)) {
-                            logger.warn("User ${it.username} already exists...")
+                            // todo change this, much temporary
+                            logger.warn("User ${it.username} already exists, changing it's id..")
+                            cache[it.username]?.id = it.userId
+                            users.put(it.userId, cache[it.username]!!)
+
                         } else {
                             create(it.userId, it.username)
                         }
