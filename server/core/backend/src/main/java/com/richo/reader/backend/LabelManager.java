@@ -61,7 +61,7 @@ public class LabelManager
 		final List<Label> labels = labelService.get(user.getId()).stream()
 				.map(label -> new Label(label.getId(), label.getName(), label.getFeeds()))
 				.collect(toList());
-		logger.info("Found {} labels for user {}", labels.size(), user.getId());
+		logger.info("Found {} labels for user {} ({})", labels.size(), user.getUsername(), user.getId());
 		return labels;
 	}
 }

@@ -21,7 +21,7 @@ class UserService @Inject internal constructor(val eventStore: EventStore) {
         eventStore.observe().subscribeBy(
                 onNext = {
                     if (it is CreateUser) {
-                        logger.info("Adding user {}", it.username)
+                        logger.info("Adding user {} ({})", it.username, it.userId)
                         users.put(it.username, User(it.userId, it.username, it.password))
                     } else if (it is ChangePassword) {
                         val user = users.values.singleOrNull { user -> user.id == it.userId }
@@ -43,6 +43,7 @@ class UserService @Inject internal constructor(val eventStore: EventStore) {
         assertUserDoesntExist(username) { "User $username already exists" }
         val eventId = EventId(UUID.randomUUID())
         val userId = UserId(UUID.randomUUID().toString())
+        logger.info("Creating new user {} ({})", username, userId)
 
         eventStore.add(CreateUser(eventId, userId, username, password.hash()))
 
