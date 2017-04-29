@@ -6,7 +6,8 @@ dependencies {
     compile project(':server:common:events')
     compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
-    testCompile 'org.jetbrains:annotations'
+    compile 'org.jetbrains:annotations'
+
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
     compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
     compile "com.fasterxml.jackson.core:jackson-core:$rootProject.jacksonVersion"

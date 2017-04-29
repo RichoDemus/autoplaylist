@@ -8,7 +8,7 @@ dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
-    testCompile 'org.jetbrains:annotations'
+    compile 'org.jetbrains:annotations'
 
     compile "com.fasterxml.jackson.core:jackson-databind:$rootProject.jacksonVersion"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$rootProject.jacksonVersion"
