@@ -7,6 +7,7 @@ import com.richo.reader.backend.exception.NoSuchLabelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.Label;
+import com.richodemus.reader.dto.LabelId;
 import com.richodemus.reader.dto.Username;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.UUID;
 
 @Path("/users/{username}/labels/")
 @Produces(MediaType.APPLICATION_JSON)
@@ -66,12 +68,12 @@ public class LabelResource
 	@Consumes(MediaType.APPLICATION_JSON)
 	@PUT
 	@Path("/{labelId}")
-	public void addFeedToLabel(@PathParam("username") final Username username, @PathParam("labelId") final long labelId, final FeedId feedId)
+	public void addFeedToLabel(@PathParam("username") final Username username, @PathParam("labelId") final String labelId, final FeedId feedId)
 	{
 		logger.debug("Adding feed {} to label {} for user {}", feedId, labelId, username);
 		try
 		{
-			labelManager.addFeedToLabel(username, labelId, feedId);
+			labelManager.addFeedToLabel(new LabelId(UUID.fromString(labelId)), feedId);
 		}
 		catch (NoSuchUserException | NoSuchLabelException e)
 		{

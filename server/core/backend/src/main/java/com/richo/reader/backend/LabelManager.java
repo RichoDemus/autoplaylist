@@ -2,67 +2,65 @@ package com.richo.reader.backend;
 
 import com.richo.reader.backend.exception.NoSuchLabelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
-import com.richo.reader.backend.model.User;
-import com.richo.reader.backend.subscription.SubscriptionRepository;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.Label;
+import com.richodemus.reader.dto.LabelId;
+import com.richodemus.reader.dto.LabelName;
 import com.richodemus.reader.dto.Username;
+import com.richodemus.reader.label_service.LabelService;
+import com.richodemus.reader.user_service.User;
+import com.richodemus.reader.user_service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public class LabelManager
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final SubscriptionRepository subscriptionRepository;
+	private final UserService userService;
+	private final LabelService labelService;
 
 	@Inject
-	public LabelManager(SubscriptionRepository subscriptionRepository)
+	public LabelManager(final UserService userService,
+						final LabelService labelService)
 	{
-		this.subscriptionRepository = subscriptionRepository;
+		this.userService = userService;
+		this.labelService = labelService;
 	}
 
 	public Label createLabelForUser(Username username, String labelName) throws NoSuchUserException
 	{
 		logger.info("Creating label {} for user {}", labelName, username);
-		final User user = subscriptionRepository.find(username);
-		final Label label = createLabel(user, labelName);
-		user.addLabel(label);
-		subscriptionRepository.update(user);
-		return label;
-	}
-
-	private Label createLabel(User user, String labelName)
-	{
-		return new Label(user.incrementAndGetNextLabelId(), labelName, new ArrayList<>());
-	}
-
-	public void addFeedToLabel(Username username, long labelId, final FeedId feedId) throws NoSuchUserException, NoSuchLabelException
-	{
-		logger.debug("Adding feed {} to label {} for user {}", feedId, labelId, username);
-		final User user = subscriptionRepository.find(username);
-		final Label label = user.getLabels().stream()
-				.filter(l -> l.getId() == labelId)
-				.findAny()
-				.orElseThrow(() -> new NoSuchLabelException("User " + user.getName() + " does not have a label with the id " + labelId));
-
-		//todo validate that the feed actually exists
-		if (label.getFeeds().contains(feedId))
+		final User user = userService.find(username);
+		if (user == null)
 		{
-			logger.info("Feed {} already in label {}, skipping...", feedId, label.getName());
-			return;
+			throw new NoSuchUserException("No such user: " + username);
 		}
-		label.getFeeds().add(feedId);
-		subscriptionRepository.update(user);
+		final LabelName name = new LabelName(labelName);
+		final LabelId labelId = labelService.create(name, user.getId());
+		return new Label(labelId, name);
+	}
+
+	public void addFeedToLabel(LabelId labelId, final FeedId feedId) throws NoSuchUserException, NoSuchLabelException
+	{
+		logger.debug("Adding feed {} to label {}", feedId, labelId);
+		labelService.addFeedToLabel(labelId, feedId);
 	}
 
 	public List<Label> getLabels(Username username) throws NoSuchUserException
 	{
 		logger.info("Getting labels for user {}", username);
-		final User user = subscriptionRepository.find(username);
-		return user.getLabels();
+		final User user = userService.find(username);
+		if (user == null)
+		{
+			throw new NoSuchUserException("No such user: " + username);
+		}
+		return labelService.get(user.getId()).stream()
+				.map(label -> new Label(label.getId(), label.getName(), label.getFeeds()))
+				.collect(toList());
 	}
 }

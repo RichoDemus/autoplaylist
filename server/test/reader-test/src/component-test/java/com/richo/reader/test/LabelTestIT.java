@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.jayway.restassured.RestAssured.post;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -56,9 +57,9 @@ public class LabelTestIT
 		final List<Label> noLabels = feedPage.getLabels();
 		assertThat(noLabels).isEmpty();
 
-		final int id = feedPage.createLabel(labelName);
+		final UUID id = UUID.fromString(feedPage.createLabel(labelName));
 
-		assertThat(id).isEqualTo(0);
+		assertThat(id).isNotNull();
 
 		final List<Label> result = feedPage.getLabels();
 
@@ -83,7 +84,7 @@ public class LabelTestIT
 
 		await().atMost(1, MINUTES).until(() -> assertThat(feedPage.getItemNames(FEED_ID)).isNotEmpty());
 
-		final int labelId = feedPage.createLabel(labelName);
+		final String labelId = feedPage.createLabel(labelName);
 		feedPage.addFeedToLabel(FEED_ID, labelId);
 
 		final List<Label> result = feedPage.getLabels();

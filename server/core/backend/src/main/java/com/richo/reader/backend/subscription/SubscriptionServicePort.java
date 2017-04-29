@@ -4,10 +4,10 @@ import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.ItemId;
+import com.richodemus.reader.dto.UserId;
 import com.richodemus.reader.dto.Username;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -38,16 +38,21 @@ public class SubscriptionServicePort implements SubscriptionRepository
 	}
 
 	@Override
-	public void update(User user)
+	public void subscribe(UserId userId, FeedId feedId)
 	{
-		final Username username = new Username(user.getName().getValue());
-		final Map<FeedId, List<ItemId>> feeds = convert(user.getFeeds());
-		subscriptionService.update(new com.richo.reader.subscription_service.User(user.id, username, feeds, user.getNextLabelId(), user.getLabels()));
+		subscriptionService.subscribe(userId, feedId);
 	}
 
-	private Map<FeedId, List<ItemId>> convert(Map<FeedId, Set<ItemId>> feeds)
+	@Override
+	public void markAsRead(UserId userId, FeedId feedId, ItemId itemId)
 	{
-		return feeds.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> new ArrayList<>(e.getValue())));
+		subscriptionService.markAsRead(userId, feedId, itemId);
+	}
+
+	@Override
+	public void markAsUnread(UserId userId, FeedId feedId, ItemId itemId)
+	{
+		subscriptionService.markAsUnread(userId, feedId, itemId);
 	}
 
 	private Map<FeedId, Set<ItemId>> convert2(Map<FeedId, List<ItemId>> feeds)

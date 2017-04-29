@@ -3,11 +3,15 @@ package com.richodemus.reader.common.chronicler_adapter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.github.kittinunf.fuel.httpPost
+import com.richodemus.reader.events.AddFeedToLabel
 import com.richodemus.reader.events.ChangePassword
+import com.richodemus.reader.events.CreateLabel
 import com.richodemus.reader.events.CreateUser
 import com.richodemus.reader.events.Event
 import com.richodemus.reader.events.EventType
+import com.richodemus.reader.events.EventType.ADD_FEED_TO_LABEL
 import com.richodemus.reader.events.EventType.CHANGE_PASSWORD
+import com.richodemus.reader.events.EventType.CREATE_LABEL
 import com.richodemus.reader.events.EventType.CREATE_USER
 import io.reactivex.Observable
 import io.reactivex.subjects.ReplaySubject
@@ -17,7 +21,7 @@ import org.slf4j.LoggerFactory
 import javax.ws.rs.client.ClientBuilder
 
 
-class ChroniclerAdapter : com.richodemus.reader.user_service.EventStore, com.richo.reader.subscription_service.EventStore {
+class ChroniclerAdapter : com.richodemus.reader.user_service.EventStore, com.richo.reader.subscription_service.EventStore, com.richodemus.reader.label_service.EventStore {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val hostname = System.getProperty("CHRONICLER_HOST", "chronicler")
     private val port = System.getProperty("CHRONICLER_PORT", "8080")
@@ -41,6 +45,8 @@ class ChroniclerAdapter : com.richodemus.reader.user_service.EventStore, com.ric
                 val event = when (figureOutType(data)) {
                     CREATE_USER -> mapper.readValue(data, CreateUser::class.java)
                     CHANGE_PASSWORD -> mapper.readValue(data, ChangePassword::class.java)
+                    CREATE_LABEL -> mapper.readValue(data, CreateLabel::class.java)
+                    ADD_FEED_TO_LABEL -> mapper.readValue(data, AddFeedToLabel::class.java)
                 }
                 replaySubject.onNext(event)
             }
@@ -53,6 +59,12 @@ class ChroniclerAdapter : com.richodemus.reader.user_service.EventStore, com.ric
         }
         if (eventString.contains("CHANGE_PASSWORD")) {
             return CHANGE_PASSWORD
+        }
+        if (eventString.contains("CREATE_LABEL")) {
+            return CREATE_LABEL
+        }
+        if (eventString.contains("ADD_FEED_TO_LABEL")) {
+            return ADD_FEED_TO_LABEL
         }
         throw IllegalStateException("Can't parse $eventString")
     }

@@ -11,6 +11,7 @@ import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.YoutubeFeedService;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedName;
+import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.UserId;
 import com.richodemus.reader.dto.Username;
@@ -30,7 +31,10 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class BackendTest
@@ -73,6 +77,19 @@ public class BackendTest
 	}
 
 	@Test
+	public void testAddFeed() throws Exception
+	{
+		final FeedUrl url = new FeedUrl("http://asd.com");
+		final FeedId id = new FeedId("id");
+		when(feedService.getFeedId(eq(url))).thenReturn(id);
+
+		target.addFeed(EXISTING_USER.getName(), url);
+
+		verify(feedService).registerChannel(eq(id));
+		verify(subscriptionRepository).subscribe(EXISTING_USER.id, id);
+	}
+
+	@Test
 	public void getFeedShouldReturnFeed() throws Exception
 	{
 		final List<com.richo.reader.backend.model.Item> unwatchedItems = FEED_1.getItems()
@@ -98,6 +115,14 @@ public class BackendTest
 		assertThat(result).extracting(FeedWithoutItems::getId).isEqualTo(expected);
 	}
 
+	@Test
+	public void shouldContainCorrectAmountOfUnreadItems() throws Exception
+	{
+		final List<FeedWithoutItems> result = target.getAllFeedsWithoutItems(EXISTING_USER.getName());
+
+		assertThat(result).extracting(FeedWithoutItems::getNumberOfAvailableItems).containsOnly(3, 1);
+	}
+
 	@Test(expected = NoSuchUserException.class)
 	public void getFeedShouldThrowNoSuchUserExceptionIfUserDoesntExist() throws Exception
 	{
@@ -113,44 +138,28 @@ public class BackendTest
 	}
 
 	@Test
-	public void getFeedShouldNotReturnFeedsMarkedAsRead() throws Exception
+	public void shouldMarkItemAsRead() throws Exception
 	{
 		target.markAsRead(EXISTING_USER.getName(), FEED_1.getId(), ITEM_TO_MARK_AS_READ.getId());
-		final com.richo.reader.backend.model.Feed result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId()).get();
-
-		assertThat(result.getItems()).extracting("id").doesNotContain(ITEM_TO_MARK_AS_READ.getId());
+		verify(subscriptionRepository).markAsRead(EXISTING_USER.id, FEED_1.getId(), ITEM_TO_MARK_AS_READ.getId());
 	}
 
 	@Test
-	public void markingAnItemAsReadShouldUpdateNumberOfUnreadItems() throws Exception
+	public void shouldMarkItemAsUnread() throws Exception
 	{
-		target.markAsRead(EXISTING_USER.getName(), FEED_1.getId(), ITEM_TO_MARK_AS_READ.getId());
-
-		final int result = target.getAllFeedsWithoutItems(EXISTING_USER.getName())
-				.stream()
-				.filter(f -> f.getId().equals(FEED_1.getId()))
-				.map(FeedWithoutItems::getNumberOfAvailableItems)
-				.findAny()
-				.get();
-
-		assertThat(result).isEqualTo(2);
-	}
-
-	@Test
-	public void markAsUnreadShouldLeadToThatItemBeingReturnedAgain() throws Exception
-	{
-		target.markAsUnread(EXISTING_USER.getName(), FEED_1.getId(), ITEM_THAT_SHOULD_BE_READ.getId());
-		final com.richo.reader.backend.model.Feed result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId()).get();
-
-		assertThat(result.getItems()).extracting("id").contains(ITEM_THAT_SHOULD_BE_READ.getId());
+		target.markAsUnread(EXISTING_USER.getName(), FEED_1.getId(), ITEM_TO_MARK_AS_READ.getId());
+		verify(subscriptionRepository).markAsUnread(EXISTING_USER.id, FEED_1.getId(), ITEM_TO_MARK_AS_READ.getId());
 	}
 
 	@Test
 	public void markOlderItemsAsUnreadShouldLeadToOlderItemsNotBeingReturned() throws Exception
 	{
-		target.markOlderItemsAsRead(EXISTING_USER.getName(), FEED_1.getId(), new ItemId("item-id-4"));
-		final com.richo.reader.backend.model.Feed result = target.getFeed(EXISTING_USER.getName(), FEED_1.getId()).get();
+		final ItemId id = new ItemId("item-id-4");
+		target.markOlderItemsAsRead(EXISTING_USER.getName(), FEED_1.getId(), id);
 
-		assertThat(result.getItems()).extracting("id").containsOnly(new ItemId("item-id-4"));
+		verify(subscriptionRepository).markAsRead(EXISTING_USER.id, FEED_1.getId(), new ItemId("item-id-1"));
+		verify(subscriptionRepository).markAsRead(EXISTING_USER.id, FEED_1.getId(), new ItemId("item-id-2"));
+		verify(subscriptionRepository).markAsRead(EXISTING_USER.id, FEED_1.getId(), new ItemId("item-id-3"));
+		verify(subscriptionRepository, never()).markAsRead(EXISTING_USER.id, FEED_1.getId(), new ItemId("item-id-4"));
 	}
 }

@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.ItemId;
-import com.richodemus.reader.dto.Label;
+import com.richodemus.reader.dto.LegacyLabel;
 import com.richodemus.reader.dto.UserId;
 import com.richodemus.reader.dto.Username;
 
@@ -20,10 +20,10 @@ public class User
 	public final UserId id;
 	private final Username name;
 	private final Map<FeedId, Set<ItemId>> feeds;
-	private final List<Label> labels;
+	private final List<LegacyLabel> labels;
 	private long nextLabelId;
 
-	public User(final UserId id, final Username username, final long nextLabelId, final Map<FeedId, Set<ItemId>> feedsIds, final List<Label> labels)
+	public User(final UserId id, final Username username, final long nextLabelId, final Map<FeedId, Set<ItemId>> feedsIds, final List<LegacyLabel> labels)
 	{
 		this.id = id;
 		this.name = username;
@@ -86,12 +86,12 @@ public class User
 		return nextLabelId++;
 	}
 
-	public List<Label> getLabels()
+	public List<LegacyLabel> getLabels()
 	{
 		return labels;
 	}
 
-	public void addLabel(Label label)
+	public void addLabel(LegacyLabel label)
 	{
 		labels.add(label);
 	}
