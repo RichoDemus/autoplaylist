@@ -5,6 +5,7 @@ logging:
   loggers:
     com.richo.reader: INFO
     io.dropwizard: INFO
+    org.eclipse.jetty.server: INFO
   appenders:
     - type: console
 
