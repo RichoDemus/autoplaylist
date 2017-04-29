@@ -53,14 +53,15 @@ public class LabelManager
 
 	public List<Label> getLabels(Username username) throws NoSuchUserException
 	{
-		logger.info("Getting labels for user {}", username);
 		final User user = userService.find(username);
 		if (user == null)
 		{
 			throw new NoSuchUserException("No such user: " + username);
 		}
-		return labelService.get(user.getId()).stream()
+		final List<Label> labels = labelService.get(user.getId()).stream()
 				.map(label -> new Label(label.getId(), label.getName(), label.getFeeds()))
 				.collect(toList());
+		logger.info("Found {} labels for user {}", labels.size(), user.getId());
+		return labels;
 	}
 }
