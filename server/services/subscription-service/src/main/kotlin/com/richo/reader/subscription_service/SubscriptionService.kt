@@ -2,15 +2,10 @@ package com.richo.reader.subscription_service
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.github.benmanes.caffeine.cache.LoadingCache
-import com.richodemus.reader.dto.EventId
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.ItemId
-import com.richodemus.reader.dto.LabelId
-import com.richodemus.reader.dto.LabelName
 import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.dto.Username
-import com.richodemus.reader.events.AddFeedToLabel
-import com.richodemus.reader.events.CreateLabel
 import com.richodemus.reader.events.CreateUser
 import io.reactivex.rxkotlin.subscribeBy
 import org.slf4j.LoggerFactory
@@ -50,22 +45,6 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
                 onError = { logger.error("Subscription service event stream failure", it) },
                 onComplete = { logger.info("Subscription service event stream closed") }
         )
-
-        // todo remove, mega temporary
-        val user = cache[Username("Richodemus")]
-        user?.let {
-            it.labels.forEach { label ->
-                val labelId = LabelId()
-                eventStore.add(CreateLabel(EventId(), labelId, LabelName(label.name), user.id))
-                logger.info("Created label {}", label.name)
-
-                label.feeds.forEach { feed ->
-                    eventStore.add(AddFeedToLabel(EventId(), labelId, feed))
-                    logger.info("Added feed {} to label {}", feed, labelId)
-                }
-            }
-        }
-
     }
 
     private fun create(id: UserId, username: Username) {
