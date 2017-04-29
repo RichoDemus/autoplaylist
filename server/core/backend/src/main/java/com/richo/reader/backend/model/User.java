@@ -6,6 +6,7 @@ import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.Label;
 import com.richodemus.reader.dto.UserId;
+import com.richodemus.reader.dto.Username;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,12 +18,12 @@ import java.util.Set;
 public class User
 {
 	public final UserId id;
-	private final UserId name;
+	private final Username name;
 	private final Map<FeedId, Set<ItemId>> feeds;
 	private final List<Label> labels;
 	private long nextLabelId;
 
-	public User(final UserId id, final UserId username, final long nextLabelId, final Map<FeedId, Set<ItemId>> feedsIds, final List<Label> labels)
+	public User(final UserId id, final Username username, final long nextLabelId, final Map<FeedId, Set<ItemId>> feedsIds, final List<Label> labels)
 	{
 		this.id = id;
 		this.name = username;
@@ -31,7 +32,7 @@ public class User
 		this.labels = labels;
 	}
 
-	public User(final UserId userId, UserId username, Set<FeedId> feedIds)
+	public User(final UserId userId, Username username, Set<FeedId> feedIds)
 	{
 		this.id = userId;
 		this.name = username;
@@ -50,7 +51,7 @@ public class User
 		feeds.put(feedId, new HashSet<>());
 	}
 
-	public UserId getName()
+	public Username getName()
 	{
 		return name;
 	}

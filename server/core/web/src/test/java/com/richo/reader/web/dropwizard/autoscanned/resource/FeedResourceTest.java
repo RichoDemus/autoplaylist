@@ -7,7 +7,7 @@ import com.richo.reader.web.TestData;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
-import com.richodemus.reader.dto.UserId;
+import com.richodemus.reader.dto.Username;
 import com.richodemus.reader.web.BackendPort;
 import com.richodemus.reader.web.dto.FeedWithoutItems;
 import com.richodemus.reader.web.dto.ItemOperation;
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 
 public class FeedResourceTest
 {
-	private static final UserId USERNAME = new UserId("user");
+	private static final Username USERNAME = new Username("user");
 	private static final FeedId FEED = new FeedId("my-feed");
 	private static final ItemId ITEM = new ItemId("my-item");
 

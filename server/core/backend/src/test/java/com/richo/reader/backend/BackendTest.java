@@ -13,6 +13,7 @@ import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedName;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.UserId;
+import com.richodemus.reader.dto.Username;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,7 +35,7 @@ import static org.mockito.Mockito.when;
 
 public class BackendTest
 {
-	private static final UserId NON_EXISTING_USER = new UserId("non_existing_user");
+	private static final Username NON_EXISTING_USER = new Username("non_existing_user");
 	private static final Item ITEM_THAT_SHOULD_BE_READ = new Item(new ItemId("item-id-1"), "item-title-1", "item-desc-1", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC), LocalDateTime.now(), Duration.ZERO, 0L);
 	private static final Item ITEM_TO_MARK_AS_READ = new Item(new ItemId("item-id-2"), "item-title-2", "item-desc-2", LocalDateTime.ofEpochSecond(200L, 0, ZoneOffset.UTC), LocalDateTime.now(), Duration.ZERO, 0L);
 	private static final Feed FEED_1 = new Feed(
@@ -52,7 +53,7 @@ public class BackendTest
 			Collections.singletonList(new Item(new ItemId("feed2-item1"), "title", "desc", LocalDateTime.ofEpochSecond(100L, 0, ZoneOffset.UTC), LocalDateTime.now(), Duration.ZERO, 0L)), 0L);
 
 
-	private static final User EXISTING_USER = new User(new UserId("id"), new UserId("existing_user"), 0L, ImmutableMap.of(FEED_1.getId(), Sets.newHashSet(ITEM_THAT_SHOULD_BE_READ.getId()), FEED_2.getId(), new HashSet<>()), new ArrayList<>());
+	private static final User EXISTING_USER = new User(new UserId("id"), new Username("existing_user"), 0L, ImmutableMap.of(FEED_1.getId(), Sets.newHashSet(ITEM_THAT_SHOULD_BE_READ.getId()), FEED_2.getId(), new HashSet<>()), new ArrayList<>());
 
 	private Backend target;
 	private SubscriptionRepository subscriptionRepository;
@@ -66,7 +67,7 @@ public class BackendTest
 		target = new Backend(subscriptionRepository, feedService);
 
 
-		when(subscriptionRepository.get(EXISTING_USER.getName())).thenReturn(EXISTING_USER);
+		when(subscriptionRepository.find(EXISTING_USER.getName())).thenReturn(EXISTING_USER);
 		when(feedService.getChannel(FEED_1.getId())).thenReturn(Optional.of(FEED_1));
 		when(feedService.getChannel(FEED_2.getId())).thenReturn(Optional.of(FEED_2));
 	}
@@ -100,14 +101,14 @@ public class BackendTest
 	@Test(expected = NoSuchUserException.class)
 	public void getFeedShouldThrowNoSuchUserExceptionIfUserDoesntExist() throws Exception
 	{
-		when(subscriptionRepository.get(NON_EXISTING_USER)).thenThrow(new NoSuchUserException(""));
+		when(subscriptionRepository.find(NON_EXISTING_USER)).thenThrow(new NoSuchUserException(""));
 		target.getFeed(NON_EXISTING_USER, FEED_1.getId());
 	}
 
 	@Test(expected = NoSuchUserException.class)
 	public void getAllFeedsWithoutItemsShouldThrowNoSuchUserExceptionIfUserDoesntExist() throws Exception
 	{
-		when(subscriptionRepository.get(NON_EXISTING_USER)).thenThrow(new NoSuchUserException(""));
+		when(subscriptionRepository.find(NON_EXISTING_USER)).thenThrow(new NoSuchUserException(""));
 		target.getAllFeedsWithoutItems(NON_EXISTING_USER);
 	}
 

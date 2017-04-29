@@ -6,7 +6,7 @@ import com.richo.reader.backend.model.User;
 import com.richo.reader.backend.subscription.SubscriptionRepository;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.Label;
-import com.richodemus.reader.dto.UserId;
+import com.richodemus.reader.dto.Username;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,10 +25,10 @@ public class LabelManager
 		this.subscriptionRepository = subscriptionRepository;
 	}
 
-	public Label createLabelForUser(UserId username, String labelName) throws NoSuchUserException
+	public Label createLabelForUser(Username username, String labelName) throws NoSuchUserException
 	{
 		logger.info("Creating label {} for user {}", labelName, username);
-		final User user = subscriptionRepository.get(username);
+		final User user = subscriptionRepository.find(username);
 		final Label label = createLabel(user, labelName);
 		user.addLabel(label);
 		subscriptionRepository.update(user);
@@ -40,10 +40,10 @@ public class LabelManager
 		return new Label(user.incrementAndGetNextLabelId(), labelName, new ArrayList<>());
 	}
 
-	public void addFeedToLabel(UserId username, long labelId, final FeedId feedId) throws NoSuchUserException, NoSuchLabelException
+	public void addFeedToLabel(Username username, long labelId, final FeedId feedId) throws NoSuchUserException, NoSuchLabelException
 	{
 		logger.debug("Adding feed {} to label {} for user {}", feedId, labelId, username);
-		final User user = subscriptionRepository.get(username);
+		final User user = subscriptionRepository.find(username);
 		final Label label = user.getLabels().stream()
 				.filter(l -> l.getId() == labelId)
 				.findAny()
@@ -59,10 +59,10 @@ public class LabelManager
 		subscriptionRepository.update(user);
 	}
 
-	public List<Label> getLabels(UserId username) throws NoSuchUserException
+	public List<Label> getLabels(Username username) throws NoSuchUserException
 	{
 		logger.info("Getting labels for user {}", username);
-		final User user = subscriptionRepository.get(username);
+		final User user = subscriptionRepository.find(username);
 		return user.getLabels();
 	}
 }

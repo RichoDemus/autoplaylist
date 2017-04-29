@@ -11,6 +11,7 @@ import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.Label;
 import com.richodemus.reader.dto.UserId;
+import com.richodemus.reader.dto.Username;
 import com.richodemus.reader.web.BackendPort;
 import com.richodemus.reader.web.dto.Feed;
 import com.richodemus.reader.web.dto.FeedWithoutItems;
@@ -52,7 +53,7 @@ public class FeedResource
 
 	@Timed
 	@GET
-	public User getAllFeedsAndLabels(@PathParam("username") final UserId username)
+	public User getAllFeedsAndLabels(@PathParam("username") final Username username)
 	{
 		try
 		{
@@ -75,7 +76,7 @@ public class FeedResource
 	@Timed
 	@GET
 	@Path("/{feed}/")
-	public Feed getFeed(@PathParam("username") final UserId username, @PathParam("feed") final FeedId feedId)
+	public Feed getFeed(@PathParam("username") final Username username, @PathParam("feed") final FeedId feedId)
 	{
 		return Optional.ofNullable(backendPort.getFeed(username, feedId))
 				.orElseThrow(() -> new BadRequestException("Couldn't find feed " + feedId));
@@ -84,7 +85,7 @@ public class FeedResource
 	@Timed
 	@POST
 	@Path("/{feed}/items/{item}/")
-	public void performFeedOperation(@PathParam("username") final UserId username, @PathParam("feed") final FeedId feedId, @PathParam("item") final ItemId itemId, final ItemOperation operation)
+	public void performFeedOperation(@PathParam("username") final Username username, @PathParam("feed") final FeedId feedId, @PathParam("item") final ItemId itemId, final ItemOperation operation)
 	{
 		logger.info("Received item operation {} for feed {}, item {}", operation, feedId, itemId);
 		try
@@ -119,7 +120,7 @@ public class FeedResource
 
 	@Timed
 	@POST //todo shouldnt this be a put
-	public void addFeed(@PathParam("username") final UserId username, final FeedUrl feedUrl)
+	public void addFeed(@PathParam("username") final Username username, final FeedUrl feedUrl)
 	{
 		if (feedUrl == null)
 		{

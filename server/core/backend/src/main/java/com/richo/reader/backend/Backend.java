@@ -13,7 +13,7 @@ import com.richo.reader.youtube_feed_service.YoutubeFeedService;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
-import com.richodemus.reader.dto.UserId;
+import com.richodemus.reader.dto.Username;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,11 +37,11 @@ public class Backend
 		this.feedService = feedService;
 	}
 
-	public Optional<com.richo.reader.backend.model.Feed> getFeed(UserId username, FeedId feedId)
+	public Optional<com.richo.reader.backend.model.Feed> getFeed(Username username, FeedId feedId)
 	{
 		logger.debug("Getting feed {} for user {}", feedId, username);
 
-		final User user = subscriptionRepository.get(username);
+		final User user = subscriptionRepository.find(username);
 		if (!user.getFeeds().containsKey(feedId))
 		{
 			logger.warn("{} is not subscrbed to feed {}", username, feedId);
@@ -58,11 +58,11 @@ public class Backend
 		return Optional.of(new com.richo.reader.backend.model.Feed(feed.getId(), feed.getName(), unwatchedItems));
 	}
 
-	public List<FeedWithoutItems> getAllFeedsWithoutItems(UserId username)
+	public List<FeedWithoutItems> getAllFeedsWithoutItems(Username username)
 	{
 		logger.debug("Getting all feeds for user {}", username);
 
-		final User user = subscriptionRepository.get(username);
+		final User user = subscriptionRepository.find(username);
 
 		return user.getFeeds().keySet().stream()
 				.map(feedService::getChannel)
@@ -93,12 +93,12 @@ public class Backend
 		return allItemIds.size();
 	}
 
-	public void addFeed(final UserId username, final FeedUrl feedUrl) throws NoSuchChannelException, NoSuchUserException
+	public void addFeed(final Username username, final FeedUrl feedUrl) throws NoSuchChannelException, NoSuchUserException
 	{
 		logger.info("Add feed: {} for user {}", feedUrl, username);
 
 		final FeedId feedId = feedService.getFeedId(feedUrl);
-		final User user = subscriptionRepository.get(username);
+		final User user = subscriptionRepository.find(username);
 
 		//Todo its now possible to add feeds that doesnt exist...
 		user.addFeed(feedId);
@@ -106,26 +106,26 @@ public class Backend
 		feedService.registerChannel(feedId);
 	}
 
-	public void markAsRead(final UserId username, final FeedId feedId, final ItemId itemId) throws NoSuchUserException, UserNotSubscribedToThatChannelException
+	public void markAsRead(final Username username, final FeedId feedId, final ItemId itemId) throws NoSuchUserException, UserNotSubscribedToThatChannelException
 	{
 		logger.info("Marking item {} in feed {} for user {} as read", itemId, feedId, username);
-		final User user = subscriptionRepository.get(username);
+		final User user = subscriptionRepository.find(username);
 		user.markAsRead(feedId, itemId);
 		subscriptionRepository.update(user);
 	}
 
-	public void markAsUnread(final UserId username, final FeedId feedId, ItemId itemId) throws NoSuchUserException
+	public void markAsUnread(final Username username, final FeedId feedId, ItemId itemId) throws NoSuchUserException
 	{
 		logger.info("Marking item {} in feed {} for user {} as unread", itemId, feedId, username);
-		final User user = subscriptionRepository.get(username);
+		final User user = subscriptionRepository.find(username);
 		user.markAsUnRead(feedId, itemId);
 		subscriptionRepository.update(user);
 	}
 
-	public void markOlderItemsAsRead(final UserId username, final FeedId feedId, final ItemId itemId) throws NoSuchChannelException, ItemNotInFeedException, UserNotSubscribedToThatChannelException
+	public void markOlderItemsAsRead(final Username username, final FeedId feedId, final ItemId itemId) throws NoSuchChannelException, ItemNotInFeedException, UserNotSubscribedToThatChannelException
 	{
 		logger.info("Marking items older than {} in feed {} for user {} as read", itemId, feedId, username);
-		final User user = subscriptionRepository.get(username);
+		final User user = subscriptionRepository.find(username);
 		final Feed feed = feedService.getChannel(feedId).orElseThrow(() ->
 		{
 			logger.error("No such channel: {}", feedId);

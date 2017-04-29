@@ -4,7 +4,7 @@ import com.richo.reader.backend.Backend
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.FeedUrl
 import com.richodemus.reader.dto.ItemId
-import com.richodemus.reader.dto.UserId
+import com.richodemus.reader.dto.Username
 import com.richodemus.reader.web.dto.Feed
 import com.richodemus.reader.web.dto.FeedWithoutItems
 import com.richodemus.reader.web.dto.Item
@@ -12,25 +12,25 @@ import java.util.Optional
 import javax.inject.Inject
 
 class BackendPort @Inject constructor(val backend: Backend) {
-    fun getAllFeedsWithoutItems(username: UserId) = backend.getAllFeedsWithoutItems(username).map { f -> f.toDto() }
+    fun getAllFeedsWithoutItems(username: Username) = backend.getAllFeedsWithoutItems(username).map { f -> f.toDto() }
 
-    fun getFeed(username: UserId, feedId: FeedId): Feed? {
+    fun getFeed(username: Username, feedId: FeedId): Feed? {
         return backend.getFeed(username, feedId).toDto()
     }
 
-    fun addFeed(username: UserId, feedUrl: FeedUrl) {
+    fun addFeed(username: Username, feedUrl: FeedUrl) {
         backend.addFeed(username, feedUrl)
     }
 
-    fun markAsRead(username: UserId, feedId: FeedId, itemId: ItemId) {
+    fun markAsRead(username: Username, feedId: FeedId, itemId: ItemId) {
         backend.markAsRead(username, feedId, itemId)
     }
 
-    fun markAsUnread(username: UserId, feedId: FeedId, itemId: ItemId) {
+    fun markAsUnread(username: Username, feedId: FeedId, itemId: ItemId) {
         backend.markAsUnread(username, feedId, itemId)
     }
 
-    fun markOlderItemsAsRead(username: UserId, feedId: FeedId, itemId: ItemId) {
+    fun markOlderItemsAsRead(username: Username, feedId: FeedId, itemId: ItemId) {
         backend.markOlderItemsAsRead(username, feedId, itemId)
     }
 

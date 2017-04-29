@@ -10,7 +10,7 @@ class SessionTest {
     fun `Test Serialization`() {
         val mapper = ObjectMapper()
 
-        val result = mapper.writeValueAsString(Session(UserId("richo"), "token"))
+        val result = mapper.writeValueAsString(Session(Username("richo"), "token"))
 
         //language=JSON
         val expected = "{\"username\":\"richo\",\"token\":\"token\"}"
@@ -27,6 +27,6 @@ class SessionTest {
 
         val result = mapper.readValue(json, Session::class.java)
 
-        assertThat(result).isEqualToComparingFieldByField(Session(UserId("richo"), "token"))
+        assertThat(result).isEqualToComparingFieldByField(Session(Username("richo"), "token"))
     }
 }

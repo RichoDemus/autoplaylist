@@ -4,7 +4,6 @@ import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.model.User;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.ItemId;
-import com.richodemus.reader.dto.UserId;
 import com.richodemus.reader.dto.Username;
 
 import javax.inject.Inject;
@@ -26,16 +25,16 @@ public class SubscriptionServicePort implements SubscriptionRepository
 	}
 
 	@Override
-	public User get(UserId username) throws NoSuchUserException
+	public User find(Username username) throws NoSuchUserException
 	{
-		final com.richo.reader.subscription_service.User user = subscriptionService.find(new Username(username.getValue()));
+		final com.richo.reader.subscription_service.User user = subscriptionService.find(username);
 		if (user == null)
 		{
 			throw new NoSuchUserException("Couldn't find user " + username);
 		}
 
 		final Map<FeedId, Set<ItemId>> feeds = convert2(user.getFeeds());
-		return new User(user.getId(), new UserId(user.getName().getValue()), user.getNextLabelId(), feeds, user.getLabels());
+		return new User(user.getId(), new Username(user.getName().getValue()), user.getNextLabelId(), feeds, user.getLabels());
 	}
 
 	@Override

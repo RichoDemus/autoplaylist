@@ -7,7 +7,7 @@ import com.richo.reader.backend.exception.NoSuchLabelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.Label;
-import com.richodemus.reader.dto.UserId;
+import com.richodemus.reader.dto.Username;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class LabelResource
 
 	@Timed
 	@POST
-	public Label createLabel(@PathParam("username") final UserId username, final String labelName)
+	public Label createLabel(@PathParam("username") final Username username, final String labelName)
 	{
 		if (Strings.isNullOrEmpty(labelName))
 		{
@@ -66,7 +66,7 @@ public class LabelResource
 	@Consumes(MediaType.APPLICATION_JSON)
 	@PUT
 	@Path("/{labelId}")
-	public void addFeedToLabel(@PathParam("username") final UserId username, @PathParam("labelId") final long labelId, final FeedId feedId)
+	public void addFeedToLabel(@PathParam("username") final Username username, @PathParam("labelId") final long labelId, final FeedId feedId)
 	{
 		logger.debug("Adding feed {} to label {} for user {}", feedId, labelId, username);
 		try
