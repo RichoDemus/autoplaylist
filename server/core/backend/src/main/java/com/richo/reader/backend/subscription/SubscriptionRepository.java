@@ -1,15 +1,17 @@
 package com.richo.reader.backend.subscription;
 
-import com.richo.reader.backend.exception.NoSuchUserException;
-import com.richo.reader.backend.model.User;
+import com.richo.reader.backend.model.Feed;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.UserId;
-import com.richodemus.reader.dto.Username;
+
+import java.util.List;
 
 public interface SubscriptionRepository
 {
-	User find(Username username) throws NoSuchUserException;
+	List<Feed> get(final UserId userId);
+
+	List<ItemId> get(final UserId userId, final FeedId feedId);
 
 	void subscribe(final UserId userId, final FeedId feedId);
 
