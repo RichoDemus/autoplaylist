@@ -126,7 +126,7 @@ public class YoutubeDownloadManager
 								item.getUploadDate(),
 								item.getAdded(),
 								durationAndViewcount.duration,
-								durationAndViewcount.viewCount);
+								durationAndViewcount.viewCount!=0L?durationAndViewcount.viewCount:item.getViews());
 					}
 
 					final Map<ItemId, DurationAndViewcount> newStatistics = youtubeChannelDownloader.getStatistics(item.getId());

@@ -295,6 +295,11 @@ public class YoutubeChannelDownloader
 			logger.error("Unable to convert view count of {} to a long for video {}", views, video.getId());
 			return views.longValue();
 		}
+		catch (NullPointerException e)
+		{
+			logger.warn("No view count for video {}", video.getId());
+			return 0L;
+		}
 	}
 
 	public DurationAndViewcount getDurationAndViewCount(final String itemId)
