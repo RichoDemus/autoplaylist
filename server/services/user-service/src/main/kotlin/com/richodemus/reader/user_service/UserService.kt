@@ -31,7 +31,7 @@ class UserService @Inject internal constructor(val eventStore: EventStore) {
                             user.password = it.password
                         }
                     } else {
-                        logger.warn("Event of type: ${it.javaClass} not handled")
+                        logger.debug("Event of type: ${it.javaClass} not handled")
                     }
                 },
                 onError = { logger.error("User service event stream failure", it) },

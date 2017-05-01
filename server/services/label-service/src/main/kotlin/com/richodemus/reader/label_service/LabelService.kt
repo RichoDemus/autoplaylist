@@ -27,7 +27,7 @@ class LabelService @Inject internal constructor(val eventStore: EventStore) {
                     } else if (it is AddFeedToLabel) {
                         addFeedToLabel(it)
                     } else {
-                        logger.warn("Event of type: ${it.javaClass} not handled")
+                        logger.debug("Event of type: ${it.javaClass} not handled")
                     }
                 },
                 onError = { logger.error("Label service event stream failure", it) },
