@@ -3,6 +3,7 @@ package com.richo.reader.backend.model;
 import com.richodemus.reader.dto.ItemId;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class Item
@@ -100,5 +101,10 @@ public class Item
 	public int hashCode()
 	{
 		return Objects.hash(id, title, description, uploadDate, url);
+	}
+
+	public boolean isBefore(Item targetItem)
+	{
+		return LocalDate.parse(uploadDate).isBefore(LocalDate.parse(targetItem.getUploadDate()));
 	}
 }

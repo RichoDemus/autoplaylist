@@ -35,11 +35,7 @@ public class LabelManager
 	public Label createLabelForUser(Username username, String labelName) throws NoSuchUserException
 	{
 		logger.info("Creating label {} for user {}", labelName, username);
-		final User user = userService.find(username);
-		if (user == null)
-		{
-			throw new NoSuchUserException("No such user: " + username);
-		}
+		final User user = getUser(username);
 		final LabelName name = new LabelName(labelName);
 		final LabelId labelId = labelService.create(name, user.getId());
 		return new Label(labelId, name);
@@ -53,15 +49,21 @@ public class LabelManager
 
 	public List<Label> getLabels(Username username) throws NoSuchUserException
 	{
-		final User user = userService.find(username);
-		if (user == null)
-		{
-			throw new NoSuchUserException("No such user: " + username);
-		}
+		final User user = getUser(username);
 		final List<Label> labels = labelService.get(user.getId()).stream()
 				.map(label -> new Label(label.getId(), label.getName(), label.getFeeds()))
 				.collect(toList());
 		logger.info("Found {} labels for user {} ({})", labels.size(), user.getUsername(), user.getId());
 		return labels;
+	}
+
+	private User getUser(Username username)
+	{
+		final User user = userService.find(username);
+		if (user == null)
+		{
+			throw new NoSuchUserException("No such user: " + username);
+		}
+		return user;
 	}
 }

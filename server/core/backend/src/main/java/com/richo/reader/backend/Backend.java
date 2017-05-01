@@ -4,126 +4,116 @@ import com.richo.reader.backend.exception.ItemNotInFeedException;
 import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
+import com.richo.reader.backend.feed.FeedRepository;
+import com.richo.reader.backend.model.Feed;
 import com.richo.reader.backend.model.FeedWithoutItems;
-import com.richo.reader.backend.model.User;
+import com.richo.reader.backend.model.Item;
 import com.richo.reader.backend.subscription.SubscriptionRepository;
-import com.richo.reader.youtube_feed_service.Feed;
-import com.richo.reader.youtube_feed_service.Item;
-import com.richo.reader.youtube_feed_service.YoutubeFeedService;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.Username;
+import com.richodemus.reader.user_service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toList;
 
 public class Backend
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final SubscriptionRepository subscriptionRepository;
-	private final YoutubeFeedService feedService;
+	private final FeedRepository feedRepository;
+	private final UserService userService;
 
 	@Inject
-	public Backend(final SubscriptionRepository subscriptionRepository, YoutubeFeedService feedService)
+	public Backend(final SubscriptionRepository subscriptionRepository,
+				   FeedRepository feedRepository,
+				   UserService userService)
 	{
 		this.subscriptionRepository = subscriptionRepository;
-		this.feedService = feedService;
+		this.feedRepository = feedRepository;
+		this.userService = userService;
 	}
 
 	public Optional<com.richo.reader.backend.model.Feed> getFeed(Username username, FeedId feedId)
 	{
 		logger.debug("Getting feed {} for user {}", feedId, username);
-
-		final User user = subscriptionRepository.find(username);
-		if (!user.getFeeds().containsKey(feedId))
+		final com.richodemus.reader.user_service.User user = getUser(username);
+		final Optional<Feed> feed = feedRepository.getFeed(feedId);
+		if (!feed.isPresent())
 		{
-			logger.warn("{} is not subscrbed to feed {}", username, feedId);
+			logger.warn("No such feed {}", feedId);
+			return Optional.empty();
 		}
 
-		final Feed feed = feedService.getChannel(feedId).orElseThrow(() -> new NoSuchChannelException("Couldn find feed " + feedId));
-		logger.debug("Found feed: {}", feed);
+		final List<ItemId> watchedItems = subscriptionRepository.get(user.getId(), feedId);
+		final List<Item> items = feed.get().getItems().stream().filter(item -> !watchedItems.contains(item.getId())).collect(toList());
 
-		final List<com.richo.reader.backend.model.Item> unwatchedItems = feed.getItems().stream()
-				.filter(i -> !user.getFeeds().get(feedId).contains(i.getId()))
-				.map(i -> new com.richo.reader.backend.model.Item(i.getId(), i.getTitle(), i.getDescription(), i.getUploadDate().toString(), "https://youtube.com/watch?v=" + i.getId(), i.getDuration(), i.getViews()))
-				.collect(Collectors.toList());
-
-		return Optional.of(new com.richo.reader.backend.model.Feed(feed.getId(), feed.getName(), unwatchedItems));
+		return Optional.of(new Feed(feedId, feed.get().getName(), items));
 	}
 
 	public List<FeedWithoutItems> getAllFeedsWithoutItems(Username username)
 	{
 		logger.debug("Getting all feeds for user {}", username);
+		final com.richodemus.reader.user_service.User user = getUser(username);
 
-		final User user = subscriptionRepository.find(username);
+		return subscriptionRepository.get(user.getId()).stream()
+				.map(feedWithoutItems ->
+				{
+					try
+					{
+						final List<ItemId> watchedItems = feedWithoutItems.getItems().stream().map(Item::getId).collect(toList());
+						final Feed feed = feedRepository.getFeed(feedWithoutItems.getId()).orElseThrow(() -> new IllegalStateException("No such feed: " + feedWithoutItems.getId() + ", " + feedWithoutItems.getName()));
+						final List<Item> items = feed.getItems().stream().filter(item -> !watchedItems.contains(item.getId())).collect(toList());
 
-		return user.getFeeds().keySet().stream()
-				.map(feedService::getChannel)
-				.flatMap(this::toStream)
-				.map(f -> new FeedWithoutItems(f.getId(), f.getName(), calculateNumberOfItems(user, f)))
-				.collect(Collectors.toList());
-	}
-
-	private Stream<Feed> toStream(Optional<Feed> o)
-	{
-		return o.isPresent() ? Stream.of(o.get()) : Stream.empty();
-	}
-
-	//todo make more functional
-	private int calculateNumberOfItems(final User user, final Feed feed)
-	{
-		if (!user.getFeeds().containsKey(feed.getId()))
-		{
-			return 0;
-		}
-
-		final Set<ItemId> readItems = user.getFeeds().get(feed.getId());
-
-		final List<ItemId> allItemIds = feed.getItems().stream().map(Item::getId).collect(Collectors.toList());
-
-		allItemIds.removeAll(readItems);
-
-		return allItemIds.size();
+						return new FeedWithoutItems(feedWithoutItems.getId(), feed.getName(), items.size());
+					}
+					catch (IllegalStateException e)
+					{
+						throw e;
+					}
+				})
+				.collect(toList());
 	}
 
 	public void addFeed(final Username username, final FeedUrl feedUrl) throws NoSuchChannelException, NoSuchUserException
 	{
 		logger.info("Add feed: {} for user {}", feedUrl, username);
 
-		final FeedId feedId = feedService.getFeedId(feedUrl);
-		final User user = subscriptionRepository.find(username);
+		final FeedId feedId = feedRepository.getFeedId(feedUrl);
+		final com.richodemus.reader.user_service.User user = getUser(username);
 
 		//Todo its now possible to add feeds that doesnt exist...
-		feedService.registerChannel(feedId);
-		subscriptionRepository.subscribe(user.id, feedId);
+		feedRepository.registerChannel(feedId);
+		subscriptionRepository.subscribe(user.getId(), feedId);
 	}
 
 	public void markAsRead(final Username username, final FeedId feedId, final ItemId itemId) throws NoSuchUserException, UserNotSubscribedToThatChannelException
 	{
 		logger.info("Marking item {} in feed {} for user {} as read", itemId, feedId, username);
-		final User user = subscriptionRepository.find(username);
-		subscriptionRepository.markAsRead(user.id, feedId, itemId);
+		final com.richodemus.reader.user_service.User user = getUser(username);
+		subscriptionRepository.markAsRead(user.getId(), feedId, itemId);
 	}
 
 	public void markAsUnread(final Username username, final FeedId feedId, ItemId itemId) throws NoSuchUserException
 	{
 		logger.info("Marking item {} in feed {} for user {} as unread", itemId, feedId, username);
-		final User user = subscriptionRepository.find(username);
-		subscriptionRepository.markAsUnread(user.id, feedId, itemId);
+		final com.richodemus.reader.user_service.User user = getUser(username);
+		subscriptionRepository.markAsUnread(user.getId(), feedId, itemId);
 	}
 
 	public void markOlderItemsAsRead(final Username username, final FeedId feedId, final ItemId itemId) throws NoSuchChannelException, ItemNotInFeedException, UserNotSubscribedToThatChannelException
 	{
 		logger.info("Marking items older than {} in feed {} for user {} as read", itemId, feedId, username);
-		final User user = subscriptionRepository.find(username);
-		final Feed feed = feedService.getChannel(feedId).orElseThrow(() ->
+		final com.richodemus.reader.user_service.User user = getUser(username);
+
+
+		final Feed feed = feedRepository.getFeed(feedId).orElseThrow(() ->
 		{
 			logger.error("No such channel: {}", feedId);
 			return new NoSuchChannelException("No such channel: " + feedId);
@@ -135,8 +125,18 @@ public class Backend
 				.orElseThrow(() -> new ItemNotInFeedException("Item " + itemId + " is not in feed " + feedId));
 
 		feed.getItems().stream()
-				.filter(item -> item.getUploadDate().isBefore(targetItem.getUploadDate()))
+				.filter(item -> item.isBefore(targetItem))
 				.map(Item::getId)
-				.forEach(id -> subscriptionRepository.markAsRead(user.id, feedId, id));
+				.forEach(id -> subscriptionRepository.markAsRead(user.getId(), feedId, id));
+	}
+
+	private com.richodemus.reader.user_service.User getUser(Username username)
+	{
+		final com.richodemus.reader.user_service.User user = userService.find(username);
+		if (user == null)
+		{
+			throw new NoSuchUserException("No such user: " + username);
+		}
+		return user;
 	}
 }

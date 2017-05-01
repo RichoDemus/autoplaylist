@@ -12,30 +12,31 @@ import com.richodemus.reader.events.EventType.ADD_FEED_TO_LABEL
 import com.richodemus.reader.events.EventType.CHANGE_PASSWORD
 import com.richodemus.reader.events.EventType.CREATE_LABEL
 import com.richodemus.reader.events.EventType.CREATE_USER
+import com.richodemus.reader.events.EventType.USER_SUBSCRIBED_TO_FEED
+import com.richodemus.reader.events.EventType.USER_UNWATCHED_ITEM
+import com.richodemus.reader.events.EventType.USER_WATCHED_ITEM
+import com.richodemus.reader.events.UserSubscribedToFeed
+import com.richodemus.reader.events.UserUnwatchedItem
+import com.richodemus.reader.events.UserWatchedItem
 
 internal val mapper = ObjectMapper().apply { registerModule(KotlinModule()) }
 
-internal fun String.toEvent() : Event {
+internal fun String.toEvent(): Event {
     return when (figureOutType(this)) {
         CREATE_USER -> mapper.readValue(this, CreateUser::class.java)
         CHANGE_PASSWORD -> mapper.readValue(this, ChangePassword::class.java)
         CREATE_LABEL -> mapper.readValue(this, CreateLabel::class.java)
         ADD_FEED_TO_LABEL -> mapper.readValue(this, AddFeedToLabel::class.java)
+        USER_SUBSCRIBED_TO_FEED -> mapper.readValue(this, UserSubscribedToFeed::class.java)
+        USER_WATCHED_ITEM -> mapper.readValue(this, UserWatchedItem::class.java)
+        USER_UNWATCHED_ITEM -> mapper.readValue(this, UserUnwatchedItem::class.java)
     }
 }
 
+// todo make this dynbamic by iterating trhrough enum
 private fun figureOutType(eventString: String): EventType {
-     if (eventString.contains("CREATE_USER")) {
-         return CREATE_USER
-     }
-     if (eventString.contains("CHANGE_PASSWORD")) {
-         return CHANGE_PASSWORD
-     }
-     if (eventString.contains("CREATE_LABEL")) {
-         return CREATE_LABEL
-     }
-     if (eventString.contains("ADD_FEED_TO_LABEL")) {
-         return ADD_FEED_TO_LABEL
-     }
-     throw IllegalStateException("Can't parse $eventString")
- }
+    EventType.values()
+            .filter { eventString.contains(it.name) }
+            .forEach { return it }
+    throw IllegalStateException("Can't parse $eventString")
+}
