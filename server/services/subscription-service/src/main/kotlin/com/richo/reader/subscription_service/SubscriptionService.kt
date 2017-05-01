@@ -35,17 +35,41 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
         )
 
 
-        fileSystemPersistence.get(Username("RichoDemus"))?.let { user ->
+        val user = fileSystemPersistence.get(Username("RichoDemus"))!!
+        user.let { user ->
             user.feeds.forEach { feed ->
                 logger.info("User ${user.id} subbing to ${feed.key}")
                 subscribe(user.id, feed.key)
+                Thread.sleep(1000L)
                 feed.value.forEach { item ->
                     logger.info("Marking item $item in feed ${feed.key} as read")
                     markAsRead(user.id, feed.key, item)
+                    Thread.sleep(10L)
                 }
+                logger.info("Done with feed {}", feed.key)
             }
         }
         logger.info("Done converting data to events")
+
+        Thread.sleep(10000L)
+
+        logger.info("Comparing old and new data")
+        val newUser = users[user.id]!!
+        val missingFeeds = user.feeds.keys.minus(newUser.feeds.keys)
+        if (missingFeeds.isNotEmpty()) {
+            logger.warn("Missing feeds {}", missingFeeds)
+            throw IllegalStateException("Mssing feeds: " + missingFeeds)
+        }
+
+        user.feeds.forEach { feedId, watchedItems ->
+            val missingWatchedItems = watchedItems.minus(newUser.feeds[feedId]!!)
+            if (missingWatchedItems.isNotEmpty()) {
+                logger.warn("Missing items in feed {}: {}", feedId, missingWatchedItems)
+                throw IllegalStateException("Missing items in feed $feedId: $missingWatchedItems")
+            }
+        }
+
+        logger.info("Done comparing, all is ok")
     }
 
     fun get(userId: UserId) = users[userId]
