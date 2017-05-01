@@ -3,6 +3,7 @@ package com.richo.reader.subscription_service
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.ItemId
 import com.richodemus.reader.dto.UserId
+import com.richodemus.reader.dto.Username
 import com.richodemus.reader.events.CreateUser
 import com.richodemus.reader.events.UserSubscribedToFeed
 import com.richodemus.reader.events.UserUnwatchedItem
@@ -32,6 +33,19 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
                 onError = { logger.error("Subscription service event stream failure", it) },
                 onComplete = { logger.info("Subscription service event stream closed") }
         )
+
+
+        fileSystemPersistence.get(Username("RichoDemus"))?.let { user ->
+            user.feeds.forEach { feed ->
+                logger.info("User ${user.id} subbing to ${feed.key}")
+                subscribe(user.id, feed.key)
+                feed.value.forEach { item ->
+                    logger.info("Marking item $item in feed ${feed.key} as read")
+                    markAsRead(user.id, feed.key, item)
+                }
+            }
+        }
+        logger.info("Done converting data to events")
     }
 
     fun get(userId: UserId) = users[userId]

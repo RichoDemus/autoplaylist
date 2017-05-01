@@ -65,11 +65,18 @@ public class Backend
 		return subscriptionRepository.get(user.getId()).stream()
 				.map(feedWithoutItems ->
 				{
-					final List<ItemId> watchedItems = feedWithoutItems.getItems().stream().map(Item::getId).collect(toList());
-					final Feed feed = feedRepository.getFeed(feedWithoutItems.getId()).get();
-					final List<Item> items = feed.getItems().stream().filter(item -> !watchedItems.contains(item.getId())).collect(toList());
+					try
+					{
+						final List<ItemId> watchedItems = feedWithoutItems.getItems().stream().map(Item::getId).collect(toList());
+						final Feed feed = feedRepository.getFeed(feedWithoutItems.getId()).orElseThrow(() -> new IllegalStateException("No such feed: " + feedWithoutItems.getId() + ", " + feedWithoutItems.getName()));
+						final List<Item> items = feed.getItems().stream().filter(item -> !watchedItems.contains(item.getId())).collect(toList());
 
-					return new FeedWithoutItems(feedWithoutItems.getId(), feed.getName(), items.size());
+						return new FeedWithoutItems(feedWithoutItems.getId(), feed.getName(), items.size());
+					}
+					catch (IllegalStateException e)
+					{
+						throw e;
+					}
 				})
 				.collect(toList());
 	}
