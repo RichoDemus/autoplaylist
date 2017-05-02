@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -129,7 +130,21 @@ public class Backend
 		final Timer.Context context = mergeFeedsTimer.time();
 		try
 		{
-			return feeds.stream()
+			List<FeedWithoutItems> results = new ArrayList<>();
+
+			for (Feed feed : feeds)
+			{
+				final List<Item> watchedItems = feed.getItems();
+				final Feed feedFromFeedService = feedsWithItems.get(feed.getId());
+				final List<Item> allItems = new ArrayList<>(feedFromFeedService.getItems());
+
+				allItems.removeAll(watchedItems);
+
+				results.add(new FeedWithoutItems(feed.getId(), feedFromFeedService.getName(), allItems.size()));
+			}
+
+			return results;
+/*			return feeds.stream()
 					.map(feedWithoutItems ->
 					{
 						final List<ItemId> watchedItems = feedWithoutItems.getItems().stream().map(Item::getId).collect(toList());
@@ -138,7 +153,7 @@ public class Backend
 
 						return new FeedWithoutItems(feedWithoutItems.getId(), feed.getName(), items.size());
 					})
-					.collect(toList());
+					.collect(toList());*/
 		}
 		finally
 		{

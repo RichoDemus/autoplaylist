@@ -90,17 +90,13 @@ public class Item
 			return false;
 		}
 		Item item = (Item) o;
-		return Objects.equals(id, item.id) &&
-				Objects.equals(title, item.title) &&
-				Objects.equals(description, item.description) &&
-				Objects.equals(uploadDate, item.uploadDate) &&
-				Objects.equals(url, item.url);
+		return Objects.equals(id, item.id);
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return Objects.hash(id, title, description, uploadDate, url);
+		return id.hashCode();
 	}
 
 	public boolean isBefore(Item targetItem)
