@@ -1,5 +1,6 @@
 package com.richo.reader.backend;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.richo.reader.backend.exception.NoSuchUserException;
@@ -71,7 +72,7 @@ public class BackendTest
 		feedRepository = mock(FeedRepository.class);
 		subscriptionRepository = mock(SubscriptionRepository.class);
 		userService = mock(UserService.class);
-		target = new Backend(subscriptionRepository, feedRepository, userService);
+		target = new Backend(subscriptionRepository, feedRepository, userService, new MetricRegistry());
 
 
 		when(userService.find(EXISTING_USER.getName())).thenReturn(new com.richodemus.reader.user_service.User(EXISTING_USER.id, EXISTING_USER.getName(), new PasswordHash("asd")));

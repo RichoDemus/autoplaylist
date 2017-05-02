@@ -1,5 +1,7 @@
 package com.richo.reader.backend;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.richo.reader.backend.exception.ItemNotInFeedException;
 import com.richo.reader.backend.exception.NoSuchChannelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
@@ -21,6 +23,7 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Optional;
 
+import static com.codahale.metrics.MetricRegistry.name;
 import static java.util.stream.Collectors.toList;
 
 public class Backend
@@ -29,56 +32,79 @@ public class Backend
 	private final SubscriptionRepository subscriptionRepository;
 	private final FeedRepository feedRepository;
 	private final UserService userService;
+	private Timer getAllFeedsWithoutItemsTimer;
+	private Timer getFeedTimer;
 
 	@Inject
 	public Backend(final SubscriptionRepository subscriptionRepository,
 				   FeedRepository feedRepository,
-				   UserService userService)
+				   UserService userService,
+				   final MetricRegistry registry)
 	{
 		this.subscriptionRepository = subscriptionRepository;
 		this.feedRepository = feedRepository;
 		this.userService = userService;
+
+		getAllFeedsWithoutItemsTimer = registry.timer(name(Backend.class, "getAllFeedsWithoutItems"));
+		getFeedTimer = registry.timer(name(Backend.class, "getFeed"));
 	}
 
 	public Optional<com.richo.reader.backend.model.Feed> getFeed(Username username, FeedId feedId)
 	{
-		logger.debug("Getting feed {} for user {}", feedId, username);
-		final com.richodemus.reader.user_service.User user = getUser(username);
-		final Optional<Feed> feed = feedRepository.getFeed(feedId);
-		if (!feed.isPresent())
+		final Timer.Context context = getFeedTimer.time();
+		try
 		{
-			logger.warn("No such feed {}", feedId);
-			return Optional.empty();
+			logger.debug("Getting feed {} for user {}", feedId, username);
+			final com.richodemus.reader.user_service.User user = getUser(username);
+			final Optional<Feed> feed = feedRepository.getFeed(feedId);
+			if (!feed.isPresent())
+			{
+				logger.warn("No such feed {}", feedId);
+				return Optional.empty();
+			}
+
+			final List<ItemId> watchedItems = subscriptionRepository.get(user.getId(), feedId);
+			final List<Item> items = feed.get().getItems().stream().filter(item -> !watchedItems.contains(item.getId())).collect(toList());
+
+			return Optional.of(new Feed(feedId, feed.get().getName(), items));
 		}
-
-		final List<ItemId> watchedItems = subscriptionRepository.get(user.getId(), feedId);
-		final List<Item> items = feed.get().getItems().stream().filter(item -> !watchedItems.contains(item.getId())).collect(toList());
-
-		return Optional.of(new Feed(feedId, feed.get().getName(), items));
+		finally
+		{
+			context.stop();
+		}
 	}
 
 	public List<FeedWithoutItems> getAllFeedsWithoutItems(Username username)
 	{
-		logger.debug("Getting all feeds for user {}", username);
-		final com.richodemus.reader.user_service.User user = getUser(username);
+		final Timer.Context context = getAllFeedsWithoutItemsTimer.time();
+		try
+		{
+			logger.debug("Getting all feeds for user {}", username);
+			final com.richodemus.reader.user_service.User user = getUser(username);
 
-		return subscriptionRepository.get(user.getId()).stream()
-				.map(feedWithoutItems ->
-				{
-					try
+			return subscriptionRepository.get(user.getId()).stream()
+					.map(feedWithoutItems ->
 					{
-						final List<ItemId> watchedItems = feedWithoutItems.getItems().stream().map(Item::getId).collect(toList());
-						final Feed feed = feedRepository.getFeed(feedWithoutItems.getId()).orElseThrow(() -> new IllegalStateException("No such feed: " + feedWithoutItems.getId() + ", " + feedWithoutItems.getName()));
-						final List<Item> items = feed.getItems().stream().filter(item -> !watchedItems.contains(item.getId())).collect(toList());
+						try
+						{
+							final List<ItemId> watchedItems = feedWithoutItems.getItems().stream().map(Item::getId).collect(toList());
+							final Feed feed = feedRepository.getFeed(feedWithoutItems.getId()).orElseThrow(() -> new IllegalStateException("No such feed: " + feedWithoutItems.getId() + ", " + feedWithoutItems.getName()));
+							final List<Item> items = feed.getItems().stream().filter(item -> !watchedItems.contains(item.getId())).collect(toList());
 
-						return new FeedWithoutItems(feedWithoutItems.getId(), feed.getName(), items.size());
-					}
-					catch (IllegalStateException e)
-					{
-						throw e;
-					}
-				})
-				.collect(toList());
+							return new FeedWithoutItems(feedWithoutItems.getId(), feed.getName(), items.size());
+						}
+						catch (IllegalStateException e)
+						{
+							throw e;
+						}
+					})
+					.collect(toList());
+
+		}
+		finally
+		{
+			context.stop();
+		}
 	}
 
 	public void addFeed(final Username username, final FeedUrl feedUrl) throws NoSuchChannelException, NoSuchUserException

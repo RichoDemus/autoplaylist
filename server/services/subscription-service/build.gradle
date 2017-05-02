@@ -15,6 +15,7 @@ dependencies {
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$rootProject.jacksonVersion"
     compile "io.reactivex:rxkotlin:$rootProject.rxKotlinVersion"
     compile 'io.reactivex.rxjava2:rxjava'
+    compile "io.dropwizard.metrics:metrics-core:$rootProject.dropwizardMetricsVersion"
 
     testCompile "junit:junit:$rootProject.junitVersion"
     testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"

@@ -1,5 +1,6 @@
 package com.richo.reader.subscription_service
 
+import com.codahale.metrics.MetricRegistry
 import com.richodemus.reader.dto.EventId
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.ItemId
@@ -32,7 +33,7 @@ class SubscriptionServiceTest {
     @Before
     fun setUp() {
         eventStore = InMemoryEventStore()
-        target = SubscriptionService(FileSystemPersistence(saveRoot = "build/saveRoots/${UUID.randomUUID()}"), eventStore())
+        target = SubscriptionService(FileSystemPersistence(saveRoot = "build/saveRoots/${UUID.randomUUID()}"), eventStore(), MetricRegistry())
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.richo.reader.youtube_feed_service;
 
+import com.codahale.metrics.MetricRegistry;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedName;
 import org.junit.Before;
@@ -31,7 +32,7 @@ public class YoutubeFeedServiceTest
 		fileSystemPersistence.updateChannel(CHANNEL_ON_DISK);
 		final FeedCache cache = new FeedCache(fileSystemPersistence);
 		cache.update(CACHED_CHANNEL);
-		target = new YoutubeFeedService(cache, null);
+		target = new YoutubeFeedService(cache, null, new MetricRegistry());
 	}
 
 	@Test
@@ -55,7 +56,7 @@ public class YoutubeFeedServiceTest
 		when(fileSystemPersistence.getChannel(CHANNEL_ON_DISK.getId())).thenReturn(Optional.of(CHANNEL_ON_DISK));
 		final FeedCache cache = new FeedCache(fileSystemPersistence);
 		cache.update(CACHED_CHANNEL);
-		target = new YoutubeFeedService(cache, null);
+		target = new YoutubeFeedService(cache, null, new MetricRegistry());
 
 		target.getChannel(CHANNEL_ON_DISK.getId());
 		target.getChannel(CHANNEL_ON_DISK.getId());

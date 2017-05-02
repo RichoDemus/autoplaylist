@@ -1,5 +1,8 @@
 package com.richo.reader.subscription_service
 
+import com.codahale.metrics.Gauge
+import com.codahale.metrics.MetricRegistry
+import com.codahale.metrics.MetricRegistry.name
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.ItemId
 import com.richodemus.reader.dto.UserId
@@ -9,12 +12,14 @@ import com.richodemus.reader.events.UserUnwatchedItem
 import com.richodemus.reader.events.UserWatchedItem
 import io.reactivex.rxkotlin.subscribeBy
 import org.slf4j.LoggerFactory
+import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SubscriptionService @Inject internal constructor(private val fileSystemPersistence: FileSystemPersistence, val eventStore: EventStore) {
+class SubscriptionService @Inject internal constructor(private val fileSystemPersistence: FileSystemPersistence, val eventStore: EventStore, registry: MetricRegistry) {
     private val logger = LoggerFactory.getLogger(javaClass)
+    private var page = AtomicLong()
 
     private val users = mutableMapOf<UserId, User>()
 
@@ -28,10 +33,13 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
                         is UserUnwatchedItem -> unwatch(event)
                         else -> logger.debug("Not handling event of type {}", event.type)
                     }
+                    // todo actually read page from Chronicler
+                    page.incrementAndGet()
                 },
                 onError = { logger.error("Subscription service event stream failure", it) },
                 onComplete = { logger.info("Subscription service event stream closed") }
         )
+        registry.register(name(SubscriptionService::class.java, "page"), Gauge<Long> { page.get() })
     }
 
     fun get(userId: UserId) = users[userId]

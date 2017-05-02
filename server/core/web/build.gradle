@@ -21,7 +21,8 @@ dependencies {
     compile "io.dropwizard:dropwizard-lifecycle:$rootProject.dropwizardVersion"
     compile "io.dropwizard:dropwizard-servlets:$rootProject.dropwizardVersion"
     compile 'io.dropwizard.modules:dropwizard-java8:0.9.0-1'
-    compile 'io.dropwizard.metrics:metrics-healthchecks:3.1.2'
+    compile "io.dropwizard.metrics:metrics-core:$rootProject.dropwizardMetricsVersion"
+    compile "io.dropwizard.metrics:metrics-healthchecks:$rootProject.dropwizardMetricsVersion"
     compile "io.dropwizard.metrics:metrics-annotation:$rootProject.dropwizardMetricsVersion"
     compile 'ru.vyarus:dropwizard-guicey:4.0.1'
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"

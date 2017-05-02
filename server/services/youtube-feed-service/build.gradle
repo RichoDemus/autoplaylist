@@ -9,6 +9,7 @@ dependencies {
     compile "com.google.apis:google-api-services-youtube:$rootProject.youtubeApiVersion"
     compile "com.google.http-client:google-http-client-jackson2:$rootProject.googleHttpClientVersion"
     compile "com.google.http-client:google-http-client:$rootProject.googleHttpClientVersion"
+    compile "io.dropwizard.metrics:metrics-core:$rootProject.dropwizardMetricsVersion"
 
     testCompile "junit:junit:$rootProject.junitVersion"
     testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
