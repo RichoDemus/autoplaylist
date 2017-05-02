@@ -23,10 +23,10 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class Backend
 {
@@ -107,7 +107,16 @@ public class Backend
 		try
 		{
 			return feeds.stream()
-					.collect(Collectors.toMap(Feed::getId, feed -> feedRepository.getFeed(feed.getId()).orElseThrow(() -> new IllegalStateException("No such feed: " + feed.getId() + ", " + feed.getName()))));
+					.collect(toMap(Feed::getId, feed ->
+					{
+						final Optional<Feed> retrievedFeed = feedRepository.getFeed(feed.getId());
+						if (!retrievedFeed.isPresent())
+						{
+							logger.error("No such feed {}", feed.getId());
+							throw new IllegalStateException("no such feed: " + feed.getId());
+						}
+						return retrievedFeed.get();
+					}));
 		}
 		finally
 		{
