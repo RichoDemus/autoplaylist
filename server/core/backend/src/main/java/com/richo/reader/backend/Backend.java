@@ -134,9 +134,9 @@ public class Backend
 
 			for (Feed feed : feeds)
 			{
-				final List<Item> watchedItems = feed.getItems();
+				final List<String> watchedItems = feed.getItems().stream().map(item -> item.getId().getValue().intern()).collect(toList());
 				final Feed feedFromFeedService = feedsWithItems.get(feed.getId());
-				final List<Item> allItems = new ArrayList<>(feedFromFeedService.getItems());
+				final List<String> allItems = feedFromFeedService.getItems().stream().map(item -> item.getId().getValue().intern()).collect(toList());
 
 				allItems.removeAll(watchedItems);
 
