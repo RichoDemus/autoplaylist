@@ -21,7 +21,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.codahale.metrics.MetricRegistry.name;
 import static java.util.stream.Collectors.toList;
@@ -34,6 +36,8 @@ public class Backend
 	private final UserService userService;
 	private Timer getAllFeedsWithoutItemsTimer;
 	private Timer getFeedTimer;
+	private Timer getFeedsForUserTimer;
+	private Timer mergeFeedsTimer;
 
 	@Inject
 	public Backend(final SubscriptionRepository subscriptionRepository,
@@ -47,6 +51,8 @@ public class Backend
 
 		getAllFeedsWithoutItemsTimer = registry.timer(name(Backend.class, "getAllFeedsWithoutItems"));
 		getFeedTimer = registry.timer(name(Backend.class, "getFeed"));
+		getFeedsForUserTimer = registry.timer(name(Backend.class, "getFeedsForUser"));
+		mergeFeedsTimer = registry.timer(name(Backend.class, "mergeFeeds"));
 	}
 
 	public Optional<com.richo.reader.backend.model.Feed> getFeed(Username username, FeedId feedId)
@@ -82,24 +88,48 @@ public class Backend
 			logger.debug("Getting all feeds for user {}", username);
 			final com.richodemus.reader.user_service.User user = getUser(username);
 
-			return subscriptionRepository.get(user.getId()).stream()
+			final List<Feed> feeds = subscriptionRepository.get(user.getId());
+
+			final Map<FeedId, Feed> feedsWithItems = getAllFeedsForUser(feeds);
+
+			return mergeFeeds(feeds, feedsWithItems);
+
+		}
+		finally
+		{
+			context.stop();
+		}
+	}
+
+	private Map<FeedId, Feed> getAllFeedsForUser(List<Feed> feeds)
+	{
+		final Timer.Context context = getFeedsForUserTimer.time();
+		try
+		{
+			return feeds.stream()
+					.collect(Collectors.toMap(Feed::getId, feed -> feedRepository.getFeed(feed.getId()).orElseThrow(() -> new IllegalStateException("No such feed: " + feed.getId() + ", " + feed.getName()))));
+		}
+		finally
+		{
+			context.stop();
+		}
+	}
+
+	private List<FeedWithoutItems> mergeFeeds(List<Feed> feeds, Map<FeedId, Feed> feedsWithItems)
+	{
+		final Timer.Context context = mergeFeedsTimer.time();
+		try
+		{
+			return feeds.stream()
 					.map(feedWithoutItems ->
 					{
-						try
-						{
-							final List<ItemId> watchedItems = feedWithoutItems.getItems().stream().map(Item::getId).collect(toList());
-							final Feed feed = feedRepository.getFeed(feedWithoutItems.getId()).orElseThrow(() -> new IllegalStateException("No such feed: " + feedWithoutItems.getId() + ", " + feedWithoutItems.getName()));
-							final List<Item> items = feed.getItems().stream().filter(item -> !watchedItems.contains(item.getId())).collect(toList());
+						final List<ItemId> watchedItems = feedWithoutItems.getItems().stream().map(Item::getId).collect(toList());
+						final Feed feed = Optional.ofNullable(feedsWithItems.get(feedWithoutItems.getId())).orElseThrow(() -> new IllegalStateException("No such feed: " + feedWithoutItems.getId() + ", " + feedWithoutItems.getName()));
+						final List<Item> items = feed.getItems().stream().filter(item -> !watchedItems.contains(item.getId())).collect(toList());
 
-							return new FeedWithoutItems(feedWithoutItems.getId(), feed.getName(), items.size());
-						}
-						catch (IllegalStateException e)
-						{
-							throw e;
-						}
+						return new FeedWithoutItems(feedWithoutItems.getId(), feed.getName(), items.size());
 					})
 					.collect(toList());
-
 		}
 		finally
 		{
