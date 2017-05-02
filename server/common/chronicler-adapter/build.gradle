@@ -11,6 +11,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
     compile 'org.jetbrains:annotations'
 
+    compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
     compile "com.fasterxml.jackson.core:jackson-databind:$rootProject.jacksonVersion"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$rootProject.jacksonVersion"
     compile 'org.glassfish.jersey.media:jersey-media-sse:2.25.1'

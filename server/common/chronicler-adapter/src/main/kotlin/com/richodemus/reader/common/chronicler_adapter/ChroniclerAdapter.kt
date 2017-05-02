@@ -7,9 +7,11 @@ import io.reactivex.subjects.ReplaySubject
 import org.glassfish.jersey.media.sse.EventInput
 import org.glassfish.jersey.media.sse.SseFeature
 import org.slf4j.LoggerFactory
+import javax.inject.Singleton
 import javax.ws.rs.client.ClientBuilder
 
 
+@Singleton
 class ChroniclerAdapter : com.richodemus.reader.user_service.EventStore, com.richo.reader.subscription_service.EventStore, com.richodemus.reader.label_service.EventStore {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val hostname = System.getProperty("CHRONICLER_HOST", "chronicler")
