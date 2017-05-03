@@ -38,13 +38,11 @@ class ChroniclerAdapter : com.richodemus.reader.user_service.EventStore, com.ric
         }).start()
     }
 
-
-
     override fun add(event: Event) {
         val data = mapper.writeValueAsString(event)
         val chroniclerData = mapper.writeValueAsString(ChroniclerEvent(event.eventId.value.toString(), event.type, data))
         logger.info("Posting event {}", chroniclerData)
-        val (request, response, result) = "http://$hostname:$port/api/events/".httpPost().body(chroniclerData).header(Pair("Content-Type", "application/json")).responseString()
+        val (_, response, result) = "http://$hostname:$port/api/events/".httpPost().body(chroniclerData).header(Pair("Content-Type", "application/json")).responseString()
         if (response.httpStatusCode != 200) {
             logger.error("Failed to post event {}, {}", event, result)
             throw RuntimeException("Failed to post event $event, $result")
