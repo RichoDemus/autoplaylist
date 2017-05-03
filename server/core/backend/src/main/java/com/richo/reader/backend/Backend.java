@@ -12,7 +12,6 @@ import com.richo.reader.backend.model.FeedWithoutItems;
 import com.richo.reader.backend.model.Item;
 import com.richo.reader.backend.subscription.SubscriptionRepository;
 import com.richodemus.reader.dto.FeedId;
-import com.richodemus.reader.dto.FeedName;
 import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.Username;
@@ -92,7 +91,7 @@ public class Backend
 
 			final List<Feed> feeds = subscriptionRepository.get(user.getId());
 
-			final Map<FeedId, List<ItemId>> feedIds = getAllFeedsForUser(feeds);
+			final Map<FeedId, Feed> feedIds = getAllFeedsForUser(feeds);
 
 			return mergeFeeds(feeds, feedIds);
 
@@ -103,13 +102,13 @@ public class Backend
 		}
 	}
 
-	private Map<FeedId, List<ItemId>> getAllFeedsForUser(List<Feed> feeds)
+	private Map<FeedId, Feed> getAllFeedsForUser(List<Feed> feeds)
 	{
 		final Timer.Context context = getFeedsForUserTimer.time();
 		try
 		{
 			return feeds.stream()
-					.collect(toMap(Feed::getId, feed -> feedRepository.getItemIds(feed.getId())));
+					.collect(toMap(Feed::getId, feed -> feedRepository.getFeed(feed.getId()).orElseThrow(() -> new IllegalStateException("No such feed: " + feed))));
 		}
 		finally
 		{
@@ -117,7 +116,7 @@ public class Backend
 		}
 	}
 
-	private List<FeedWithoutItems> mergeFeeds(List<Feed> feeds, Map<FeedId, List<ItemId>> feedsWithItems)
+	private List<FeedWithoutItems> mergeFeeds(List<Feed> feeds, Map<FeedId, Feed> feedsWithItems)
 	{
 		final Timer.Context context = mergeFeedsTimer.time();
 		try
@@ -126,25 +125,30 @@ public class Backend
 
 			for (Feed feed : feeds)
 			{
-				final List<ItemId> watchedItems = feed.getItems().stream().map(Item::getId).collect(toList());
-				final List<ItemId> itemIds = feedsWithItems.get(feed.getId());
+				final List<Item> watchedItems = new ArrayList<>(feed.getItems());
+				final Feed repoFeed = feedsWithItems.get(feed.getId());
+				final List<Item> itemIds = repoFeed.getItems();
 
-				itemIds.removeAll(watchedItems);
+				int numberOfUnwatchedItems = itemIds.size();
 
-				results.add(new FeedWithoutItems(feed.getId(), new FeedName("UNKNOWN_FEED"), itemIds.size()));
+				for (Item item : itemIds)
+				{
+					for (int i = 0; i < watchedItems.size(); i++)
+					{
+
+						if (item.getId().equals(watchedItems.get(i).getId()))
+						{
+							numberOfUnwatchedItems--;
+							watchedItems.remove(i);
+							break;
+						}
+					}
+				}
+
+				results.add(new FeedWithoutItems(feed.getId(), repoFeed.getName(), numberOfUnwatchedItems));
 			}
 
 			return results;
-/*			return feeds.stream()
-					.map(feedWithoutItems ->
-					{
-						final List<ItemId> watchedItems = feedWithoutItems.getItems().stream().map(Item::getId).collect(toList());
-						final Feed feed = Optional.ofNullable(feedsWithItems.get(feedWithoutItems.getId())).orElseThrow(() -> new IllegalStateException("No such feed: " + feedWithoutItems.getId() + ", " + feedWithoutItems.getName()));
-						final List<Item> items = feed.getItems().stream().filter(item -> !watchedItems.contains(item.getId())).collect(toList());
-
-						return new FeedWithoutItems(feedWithoutItems.getId(), feed.getName(), items.size());
-					})
-					.collect(toList());*/
 		}
 		finally
 		{
