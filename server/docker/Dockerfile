@@ -7,6 +7,7 @@ COPY build/dependencies /reader/jars
 WORKDIR /reader
 ENTRYPOINT []
 CMD ["java",\
+"-Xmx2G",\
 "-Dcom.sun.management.jmxremote",\
 "-Dcom.sun.management.jmxremote.port=9010",\
 "-Dcom.sun.management.jmxremote.local.only=false",\
