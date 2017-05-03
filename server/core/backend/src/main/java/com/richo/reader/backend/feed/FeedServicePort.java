@@ -5,8 +5,10 @@ import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.YoutubeFeedService;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedUrl;
+import com.richodemus.reader.dto.ItemId;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +29,17 @@ public class FeedServicePort implements FeedRepository
 	{
 		return feedService.getChannel(feedId)
 				.map(feed -> new Feed(feed.getId(), feed.getName(), convertItems(feed.getItems())));
+	}
+
+	@Override
+	public List<ItemId> getItemIds(FeedId feedId)
+	{
+		return feedService.getChannel(feedId)
+				.map(com.richo.reader.youtube_feed_service.Feed::getItems)
+				.orElseGet(ArrayList::new)
+				.stream()
+				.map(Item::getId)
+				.collect(toList());
 	}
 
 	@Override

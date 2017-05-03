@@ -12,6 +12,7 @@ import com.richo.reader.backend.model.FeedWithoutItems;
 import com.richo.reader.backend.model.Item;
 import com.richo.reader.backend.subscription.SubscriptionRepository;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedName;
 import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.Username;
@@ -91,9 +92,9 @@ public class Backend
 
 			final List<Feed> feeds = subscriptionRepository.get(user.getId());
 
-			final Map<FeedId, Feed> feedsWithItems = getAllFeedsForUser(feeds);
+			final Map<FeedId, List<ItemId>> feedIds = getAllFeedsForUser(feeds);
 
-			return mergeFeeds(feeds, feedsWithItems);
+			return mergeFeeds(feeds, feedIds);
 
 		}
 		finally
@@ -102,22 +103,13 @@ public class Backend
 		}
 	}
 
-	private Map<FeedId, Feed> getAllFeedsForUser(List<Feed> feeds)
+	private Map<FeedId, List<ItemId>> getAllFeedsForUser(List<Feed> feeds)
 	{
 		final Timer.Context context = getFeedsForUserTimer.time();
 		try
 		{
 			return feeds.stream()
-					.collect(toMap(Feed::getId, feed ->
-					{
-						final Optional<Feed> retrievedFeed = feedRepository.getFeed(feed.getId());
-						if (!retrievedFeed.isPresent())
-						{
-							logger.error("No such feed {}", feed.getId());
-							throw new IllegalStateException("no such feed: " + feed.getId());
-						}
-						return retrievedFeed.get();
-					}));
+					.collect(toMap(Feed::getId, feed -> feedRepository.getItemIds(feed.getId())));
 		}
 		finally
 		{
@@ -125,7 +117,7 @@ public class Backend
 		}
 	}
 
-	private List<FeedWithoutItems> mergeFeeds(List<Feed> feeds, Map<FeedId, Feed> feedsWithItems)
+	private List<FeedWithoutItems> mergeFeeds(List<Feed> feeds, Map<FeedId, List<ItemId>> feedsWithItems)
 	{
 		final Timer.Context context = mergeFeedsTimer.time();
 		try
@@ -134,13 +126,12 @@ public class Backend
 
 			for (Feed feed : feeds)
 			{
-				final List<String> watchedItems = feed.getItems().stream().map(item -> item.getId().getValue().intern()).collect(toList());
-				final Feed feedFromFeedService = feedsWithItems.get(feed.getId());
-				final List<String> allItems = feedFromFeedService.getItems().stream().map(item -> item.getId().getValue().intern()).collect(toList());
+				final List<ItemId> watchedItems = feed.getItems().stream().map(Item::getId).collect(toList());
+				final List<ItemId> itemIds = feedsWithItems.get(feed.getId());
 
-				allItems.removeAll(watchedItems);
+				itemIds.removeAll(watchedItems);
 
-				results.add(new FeedWithoutItems(feed.getId(), feedFromFeedService.getName(), allItems.size()));
+				results.add(new FeedWithoutItems(feed.getId(), new FeedName("UNKNOWN_FEED"), itemIds.size()));
 			}
 
 			return results;
