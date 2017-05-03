@@ -108,7 +108,15 @@ public class Backend
 		try
 		{
 			return feeds.stream()
-					.collect(toMap(Feed::getId, feed -> feedRepository.getFeed(feed.getId()).orElseThrow(() -> new IllegalStateException("No such feed: " + feed))));
+					.collect(toMap(Feed::getId, feed ->
+					{
+						final Optional<Feed> feedRepositoryFeed = feedRepository.getFeed(feed.getId());
+						if (!feedRepositoryFeed.isPresent())
+						{
+							throw new IllegalStateException("No such feed: " + feed);
+						}
+						return feedRepositoryFeed.get();
+					}));
 		}
 		finally
 		{
