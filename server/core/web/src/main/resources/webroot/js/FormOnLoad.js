@@ -1,7 +1,5 @@
 $(function ()
 {
-    Authentication.setLoginFormBehaviour();
-    Authentication.setSignupFormBehaviour();
     $('#adminModal').on('shown.bs.modal', function (e)
     {
         Api.getDownloadJobStatus(status =>

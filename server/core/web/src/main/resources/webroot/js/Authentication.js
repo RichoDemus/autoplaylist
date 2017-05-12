@@ -9,28 +9,6 @@ var Authentication = (function()
 	pub.token = null;
 
 	//Public method
-	pub.setLoginFormBehaviour = function()
-	{
-		console.log("setting up login form");
-		$("#loginForm").submit(function(event)
-		{
-			console.log("logging in");
-			Buttons.login();
-			event.preventDefault();
-		});
-	};
-
-	pub.setSignupFormBehaviour = function()
-	{
-		console.log("setting up signup form");
-		$("#signupForm").submit(function(event)
-		{
-			console.log("Signing Up");
-			Buttons.signup();
-			event.preventDefault();
-		});
-	};
-
 	pub.loggedIn = function(username_param, token_param)
 	{
 		Authentication.token = {};

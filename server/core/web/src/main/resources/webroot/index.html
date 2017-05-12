@@ -80,21 +80,21 @@
 
         <h3>Login</h3>
 
-        <form id="loginForm">
-            Username: <input type="text" name="username" id="nameInput"/> <br/>
-            Password: <input type="password" name="password" id="passwordInput"/> <br/>
-            <input type="submit" id="loginSubmit" value="Login"/>
-        </form>
+        <div>
+            <label for="nameInput">Username</label><input type="text" name="username" id="nameInput"/> <br/>
+            <label for="passwordInput">Password</label><input type="password" name="password" id="passwordInput"/> <br/>
+            <button id="loginButton" type="button" class="btn" onclick="Buttons.login()">Login</button>
+        </div>
     </div>
     <div class="mainDiv" id="signupDiv">
         <h3>Create new account</h3>
-        <form id="signupForm">
-            Username: <input type="text" name="username" id="signupNameInput"/> <br/>
-            Password: <input type="password" name="password" id="signupPasswordInput"/> <br/>
-            Confirm Password: <input type="password" name="password2" id="signupPasswordInput2"/> <br/>
-            Invite Code: <input type="text" name="inviteCode" id="inviteCode"/> <br/>
-            <input type="submit" id="signupSubmit" value="Login"/>
-        </form>
+        <div>
+            <label for="signupNameInput">Username</label><input type="text" name="username" id="signupNameInput"/> <br/>
+            <label for="signupPasswordInput">Password</label><input type="password" name="password" id="signupPasswordInput"/> <br/>
+            <label for="signupPasswordInput2">Confirm Password</label><input type="password" name="password2" id="signupPasswordInput2"/> <br/>
+            <label for="inviteCode">Invite Code</label><input type="text" name="inviteCode" id="inviteCode"/> <br/>
+            <button id="createUserButton" type="button" class="btn" onclick="Buttons.signup()">Create User</button>
+        </div>
     </div>
     <div class="mainDiv" id="mainPageDiv" style="display:none">
         <!-- Main jumbotron for a primary marketing message or call to action -->
@@ -111,9 +111,9 @@
         </div>
         <div class="row">
             <div class="col-md-6">
-                Create label: <input id="createLabelInput" type="text" name="label">
+                <label for="createLabelInput">Create label</label><input id="createLabelInput" type="text" name="label">
                 <button type="button" class="btn btn-xs btn-default" onclick="Buttons.createLabel()">Add</button> <br/>
-                Add Feed <input id="feedToBeAddedToLabelInput" type="text" name="feedToAddToLabel"> to Label: <input id="labelForFeedToBeAddedTo" type="text" name="labelForFeedToBeAddedTo">
+                <label for="feedToBeAddedToLabelInput">Add Feed</label><input id="feedToBeAddedToLabelInput" type="text" name="feedToAddToLabel"><label for="labelForFeedToBeAddedTo">to Label</label><input id="labelForFeedToBeAddedTo" type="text" name="labelForFeedToBeAddedTo">
                 <button type="button" class="btn btn-xs btn-default" onclick="Buttons.addFeedToLabel()">Add</button> <br/>
             </div>
         </div>
