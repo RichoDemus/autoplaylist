@@ -66,6 +66,10 @@ var Api = (function()
 			headers: { 'x-token-jwt': Authentication.token.raw },
 			success: function(){
 				//
+			},
+			error: function()
+			{
+				alert("Marking all items older than item " + itemId + " as read failed");
 			}
 		});
 	};
@@ -82,6 +86,10 @@ var Api = (function()
 			headers: { 'x-token-jwt': Authentication.token.raw },
 			success: function(){
 				//
+			},
+			error: function()
+			{
+				alert("Marking item " + itemId + " as unread failed");
 			}
 		});
 	};
@@ -97,6 +105,10 @@ var Api = (function()
 			headers: { 'x-token-jwt': Authentication.token.raw },
 			success: function(){
 				//
+			},
+			error: function()
+			{
+				alert("Adding feed " + feedName + " failed");
 			}
 		});
 	};
@@ -151,7 +163,11 @@ var Api = (function()
 			data: label,
 			type: "POST",
 			headers: { 'x-token-jwt': Authentication.token.raw },
-			success: callback
+			success: callback,
+			error: function()
+			{
+				alert("Creating label " + label + " failed");
+			}
 		});
 	};
 
@@ -164,7 +180,11 @@ var Api = (function()
 			data: JSON.stringify(feedId),
 			type: "PUT",
 			headers: { 'x-token-jwt': Authentication.token.raw },
-			success: callback
+			success: callback,
+			error: function()
+			{
+				alert("Adding feed " + feedId + " to label " + label + " failed");
+			}
 		});
 	};
 
@@ -190,10 +210,13 @@ var Api = (function()
             url: "api/admin/download",
             type: "POST",
             headers: { 'x-token-jwt': Authentication.token.raw },
-            success: callback
+            success: callback,
+			error: function()
+			{
+				alert("Failed running job");
+			}
         });
     };
 
 	return pub;
 }());
-
