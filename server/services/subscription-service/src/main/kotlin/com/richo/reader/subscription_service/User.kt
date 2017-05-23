@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 // todo rewrite this
 data class User(var id: UserId, val name: Username, val feeds: MutableMap<FeedId, MutableList<ItemId>>, val nextLabelId: Long, val labels: List<LegacyLabel>) {
     constructor(userId: UserId) : this(userId, Username("unknown"), mutableMapOf(), 0L, emptyList())
+
     private val logger = LoggerFactory.getLogger(javaClass)
 
     internal fun subscribe(feedId: FeedId) {

@@ -26,7 +26,7 @@ class SubscriptionServiceTest {
     private var target: SubscriptionService? = null
     private fun target() = target!!
 
-    private var eventStore : EventStore? = null
+    private var eventStore: EventStore? = null
     private fun eventStore() = eventStore!!
 
     @Before
