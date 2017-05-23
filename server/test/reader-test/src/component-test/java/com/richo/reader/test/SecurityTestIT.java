@@ -74,16 +74,16 @@ public class SecurityTestIT
 		assertThatThrownBy(() -> hackingAttemptPage.toFeedPage().getAllFeeds()).isInstanceOf(AssertionError.class).hasMessageContaining("Expected status code <200> doesn't match actual status code <401>.");
 	}
 
-		@Test
-		public void shouldNotBePossibleToUseWithValidTokenButUnownUserName() throws Exception
-		{
-			// this is a token with user: not_richodemus
-			final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTYwNjgzNDcsInVzZXIiOiJub3RfcmljaG9kZW11cyIsInJvbGUiOiJ1c2VyIn0.KOYnbURz-qco0uVLUESBcWWRJaOVYu3Ti0_IWaI-H4Q";
+	@Test
+	public void shouldNotBePossibleToUseWithValidTokenButUnownUserName() throws Exception
+	{
+		// this is a token with user: not_richodemus
+		final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTYwNjgzNDcsInVzZXIiOiJub3RfcmljaG9kZW11cyIsInJvbGUiOiJ1c2VyIn0.KOYnbURz-qco0uVLUESBcWWRJaOVYu3Ti0_IWaI-H4Q";
 
-			loginPage.setUsername("not_richodemus");
-			loginPage.setToken(token);
+		loginPage.setUsername("not_richodemus");
+		loginPage.setToken(token);
 
-			assertThatThrownBy(loginPage::refreshToken);
-		}
+		assertThatThrownBy(loginPage::refreshToken);
+	}
 
 }

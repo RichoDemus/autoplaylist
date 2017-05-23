@@ -10,7 +10,6 @@ import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.Label;
-import com.richodemus.reader.dto.UserId;
 import com.richodemus.reader.dto.Username;
 import com.richodemus.reader.web.BackendPort;
 import com.richodemus.reader.web.dto.Feed;

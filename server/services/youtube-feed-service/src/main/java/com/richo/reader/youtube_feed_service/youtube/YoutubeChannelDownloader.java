@@ -57,7 +57,7 @@ public class YoutubeChannelDownloader
 	{
 		final String path = feedUrl.getValue().getPath();
 		final String id;
-		if(path.startsWith("/user") || path.startsWith("/channel"))
+		if (path.startsWith("/user") || path.startsWith("/channel"))
 		{
 			id = path.split("/")[2];
 		}
