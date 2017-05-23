@@ -60,6 +60,6 @@ public class Feed
 	@Override
 	public String toString()
 	{
-		return name + ", " + items.size() + " items";
+		return name + "(" + id + "), " + items.size() + " items";
 	}
 }
