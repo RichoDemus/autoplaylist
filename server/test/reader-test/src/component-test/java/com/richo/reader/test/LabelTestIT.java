@@ -82,7 +82,7 @@ public class LabelTestIT
 		final int adminPort = target.getAdminPort();
 		post("http://localhost:" + adminPort + "/tasks/download").then().statusCode(200);
 
-		await().atMost(1, MINUTES).until(() -> assertThat(feedPage.getItemNames(FEED_ID)).isNotEmpty());
+		await().atMost(1, MINUTES).untilAsserted(() -> assertThat(feedPage.getItemNames(FEED_ID)).isNotEmpty());
 
 		final String labelId = feedPage.createLabel(labelName);
 		feedPage.addFeedToLabel(FEED_ID, labelId);

@@ -76,7 +76,7 @@ public class UserTestIT
 
 		final String firstToken = loginPage.getToken();
 
-		await().atMost(10, TimeUnit.SECONDS).until(() ->
+		await().atMost(10, TimeUnit.SECONDS).untilAsserted(() ->
 		{
 			loginPage.refreshToken();
 

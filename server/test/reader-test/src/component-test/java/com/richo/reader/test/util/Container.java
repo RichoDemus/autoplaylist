@@ -18,7 +18,6 @@ import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.awaitility.Awaitility.await;
 
@@ -64,7 +63,7 @@ public class Container implements AutoCloseable
 
 	public void awaitStartup(final BooleanSupplier supplier)
 	{
-		await().atMost(1, MINUTES).until(() -> assertThat(isRunning(supplier)).isTrue());
+		await().atMost(1, MINUTES).until(() -> isRunning(supplier));
 	}
 
 	private boolean isRunning(BooleanSupplier supplier)
