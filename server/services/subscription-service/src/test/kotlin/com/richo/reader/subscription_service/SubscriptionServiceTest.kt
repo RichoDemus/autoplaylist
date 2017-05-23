@@ -8,7 +8,6 @@ import com.richodemus.reader.dto.PasswordHash
 import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.dto.Username
 import com.richodemus.reader.events.CreateUser
-import com.richodemus.reader.label_service.InMemoryEventStore
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test

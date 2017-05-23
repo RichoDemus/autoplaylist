@@ -1,6 +1,5 @@
-package com.richodemus.reader.label_service
+package com.richo.reader.subscription_service
 
-import com.richo.reader.subscription_service.EventStore
 import com.richodemus.reader.events.Event
 import io.reactivex.Observable
 import io.reactivex.subjects.ReplaySubject

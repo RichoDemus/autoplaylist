@@ -22,7 +22,6 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -142,11 +141,6 @@ public class YoutubeDownloadManagerTest
 		assertThat(result.getViews()).isEqualTo(newViewCount);
 		assertThat(result.getDuration()).isEqualTo(newDuration);
 		assertThat(result).isEqualToIgnoringGivenFields(originalItem, "views", "duration");
-	}
-
-	private Stream<Feed> toStream(Optional<Feed> o)
-	{
-		return o.isPresent() ? Stream.of(o.get()) : Stream.empty();
 	}
 
 	private YoutubeChannelDownloader getYoutubeChannelDownloaderMock()

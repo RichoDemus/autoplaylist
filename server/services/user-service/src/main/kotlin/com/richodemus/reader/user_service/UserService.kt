@@ -24,7 +24,7 @@ class UserService @Inject internal constructor(val eventStore: EventStore) {
                         logger.info("Adding user {} ({})", it.username, it.userId)
                         users.put(it.username, User(it.userId, it.username, it.password))
                     } else if (it is ChangePassword) {
-                        val user = users.values.singleOrNull { user -> user.id == it.userId }
+                        val user = users.values.singleOrNull { (id) -> id == it.userId }
                         if (user == null) {
                             logger.warn("Got Change password event for non existing user ${it.userId}")
                         } else {

@@ -12,7 +12,6 @@ import org.awaitility.Awaitility.await
 import org.junit.Ignore
 import org.junit.Test
 import java.util.UUID
-import java.util.concurrent.Callable
 import java.util.concurrent.TimeUnit
 
 class ChroniclerAdapterTest {
@@ -27,10 +26,9 @@ class ChroniclerAdapterTest {
         val id = EventId(UUID.randomUUID())
         target.add(CreateUser(id, UserId("user-id"), Username("username"), PasswordHash("hash")))
 
-        await().atMost(10, TimeUnit.SECONDS).until(Callable { receivedEvents.isNotEmpty() })
+        await().atMost(10, TimeUnit.SECONDS).until { receivedEvents.isNotEmpty() }
 
         assertThat(receivedEvents).isNotEmpty
         assertThat(receivedEvents.map { it.eventId }).contains(id)
-
     }
 }

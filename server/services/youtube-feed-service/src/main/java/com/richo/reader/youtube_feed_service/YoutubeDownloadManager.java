@@ -86,7 +86,7 @@ public class YoutubeDownloadManager
 		}
 		final List<Item> itemsToAddWithStatistics = addStatistics(itemsToAdd);
 
-		itemsToAddWithStatistics.forEach(items::add);
+		items.addAll(itemsToAddWithStatistics);
 		cache.update(new Feed(feed.getId(), feedName.orElseGet(feed::getName), items, LocalDateTime.now()));
 		logger.info("Downloaded {} new videos from the channel {}", itemsToAdd.size(), feedId);
 	}
