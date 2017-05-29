@@ -19,10 +19,10 @@ var Table = ((()=>
         });
         itemListTableSelector.on('order.dt', ()=>
         {
-            var order = itemListTableSelector.DataTable().order();
+            const order = itemListTableSelector.DataTable().order();
             Persistence.storeSortOrder(order);
         });
-        var order = Persistence.loadSortOrder();
+        const order = Persistence.loadSortOrder();
         if (order) {
             itemListTableSelector.DataTable().order(order).draw();
         }
@@ -33,11 +33,11 @@ var Table = ((()=>
         const count = feed.availableItems();
         if (feed.id === selectedFeed) {
             $('#feedListTable').find('> tbody:last')
-                .append("<tr data-feed-id=\"" + feed.id + "\" onclick=\"Buttons.filterFeedButtonClicked(this)\"><td bgcolor=\"#FF0000\">" + feed.name + "(" + count + ")</td></tr>");
+                .append("<tr id=\"" + feed.id + "\" data-feed-id=\"" + feed.id + "\" onclick=\"Buttons.filterFeedButtonClicked(this)\"><td bgcolor=\"#FF0000\">" + feed.name + "(" + count + ")</td></tr>");
         }
         else {
             $('#feedListTable').find('> tbody:last')
-                .append("<tr data-feed-id=\"" + feed.id + "\" onclick=\"Buttons.filterFeedButtonClicked(this)\"><td>" + feed.name + "(" + count + ")</td></tr>");
+                .append("<tr id=\"" + feed.id + "\" data-feed-id=\"" + feed.id + "\" onclick=\"Buttons.filterFeedButtonClicked(this)\"><td>" + feed.name + "(" + count + ")</td></tr>");
         }
     };
 

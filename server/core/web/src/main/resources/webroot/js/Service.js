@@ -80,6 +80,8 @@ var Service = (function()
 			return;
 		}
 
+		const feed = document.getElementById(feedId);
+		feed.style.backgroundColor = "#ff8e90";
 		Api.getFeed(feedId, function(feed)
 		{
 			selectedFeed.items = feed.items;
