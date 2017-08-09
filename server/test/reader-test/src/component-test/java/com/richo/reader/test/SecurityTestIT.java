@@ -75,7 +75,7 @@ public class SecurityTestIT
 	}
 
 	@Test
-	public void shouldNotBePossibleToUseWithValidTokenButUnownUserName() throws Exception
+	public void shouldNotBePossibleToUseWithValidTokenButUnknownUserName() throws Exception
 	{
 		// this is a token with user: not_richodemus
 		final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTYwNjgzNDcsInVzZXIiOiJub3RfcmljaG9kZW11cyIsInJvbGUiOiJ1c2VyIn0.KOYnbURz-qco0uVLUESBcWWRJaOVYu3Ti0_IWaI-H4Q";
@@ -83,7 +83,7 @@ public class SecurityTestIT
 		loginPage.setUsername("not_richodemus");
 		loginPage.setToken(token);
 
-		assertThatThrownBy(loginPage::refreshToken);
+		assertThatThrownBy(() -> loginPage.toFeedPage().getAllFeeds()).isInstanceOf(AssertionError.class).hasMessageContaining("Expected status code <200> doesn't match actual status code <400>.");
 	}
 
 }
