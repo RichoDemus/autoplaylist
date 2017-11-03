@@ -9,6 +9,10 @@ task copyDependencies(type: Copy) {
     into 'build/dependencies'
 }
 
+docker {
+    url = "unix:///var/run/docker.sock"
+}
+
 task buildImage(type: DockerBuildImage, dependsOn: copyDependencies) {
     description = "Build Docker Image, use -Ptag=X to tag with X instead of latest"
     switch(osdetector.arch) {

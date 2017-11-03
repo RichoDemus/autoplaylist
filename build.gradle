@@ -1,4 +1,5 @@
 apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'ca.cutterslade.analyze'
 
 defaultTasks 'check'
 
