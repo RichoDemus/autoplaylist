@@ -19,7 +19,7 @@ ext {
     // test dependencies
     junitVersion = '4.12'
     assertjVersion = '3.8.0'
-    mockitoVersion = '2.8.9'
+    mockitoVersion = '2.11.0'
     restassuredVersion = '2.9.0'
     dockerClientVersion = '6.1.0'
     awaitilityVersion = '3.0.0'
