@@ -25,7 +25,7 @@ ext {
     awaitilityVersion = '3.0.0'
 
     // plugins
-    gradleVersionsPluginVersion = '0.14.0'
+    gradleVersionsPluginVersion = '0.17.0'
     gradleDependencyAnalyzePluginVersion = '1.1.0'
     gradleDockerPluginVersion = '3.0.7'
     osdetectorGradlePluginVersion = '1.4.0'
