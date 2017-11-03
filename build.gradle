@@ -19,6 +19,11 @@ subprojects {
         all*.exclude group: 'org.glassfish.hk2.external', module: 'javax.inject'
         all*.exclude group: 'com.google.guava', module: 'guava-jdk5'
     }
+    configurations.all {
+        resolutionStrategy {
+            force "org.jetbrains.kotlin:kotlin-reflect:$rootProject.kotlinVersion"
+        }
+    }
 }
 
 buildscript {

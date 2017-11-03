@@ -1,6 +1,6 @@
 ext {
     // compile dependencies
-    kotlinVersion = '1.1.2-4'
+    kotlinVersion = '1.1.51'
     dropwizardVersion = '1.1.1'
     dropwizardMetricsVersion = '3.2.2'
     jacksonVersion = '2.8.5'
