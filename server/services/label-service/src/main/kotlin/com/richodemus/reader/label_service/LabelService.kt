@@ -16,18 +16,15 @@ import javax.inject.Singleton
 @Singleton
 class LabelService @Inject internal constructor(val eventStore: EventStore) {
     private val logger = LoggerFactory.getLogger(javaClass)
-    private val users = mutableMapOf<UserId, User>()
     private val labels = mutableListOf<Label>()
 
     init {
         eventStore.observe().subscribeBy(
                 onNext = {
-                    if (it is CreateLabel) {
-                        add(it)
-                    } else if (it is AddFeedToLabel) {
-                        addFeedToLabel(it)
-                    } else {
-                        logger.debug("Event of type: ${it.javaClass} not handled")
+                    when (it) {
+                        is CreateLabel -> add(it)
+                        is AddFeedToLabel -> addFeedToLabel(it)
+                        else -> logger.debug("Event of type: ${it.javaClass} not handled")
                     }
                 },
                 onError = { logger.error("Label service event stream failure", it) },
@@ -87,12 +84,6 @@ class LabelService @Inject internal constructor(val eventStore: EventStore) {
     private fun assertLabelDoesntExist(userId: UserId, name: LabelName) {
         if (labels.find { it.name == name && it.userId == userId } != null) {
             throw IllegalStateException("User $userId already has a label named $name")
-        }
-    }
-
-    private fun assertUserExists(userId: UserId, msg: () -> String) {
-        if (users.values.map(User::id).contains(userId).not()) {
-            throw IllegalStateException(msg.invoke())
         }
     }
 }
