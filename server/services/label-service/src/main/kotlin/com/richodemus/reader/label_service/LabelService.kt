@@ -16,7 +16,7 @@ import javax.inject.Singleton
 @Singleton
 class LabelService @Inject internal constructor(val eventStore: EventStore) {
     private val logger = LoggerFactory.getLogger(javaClass)
-    private val labels = mutableListOf<Label>()
+    private var labels = emptyList<Label>()
 
     init {
         eventStore.consume {
@@ -46,7 +46,7 @@ class LabelService @Inject internal constructor(val eventStore: EventStore) {
             return
         }
 
-        labels.add(Label(label))
+        labels = labels.plus(Label(label))
     }
 
     fun addFeedToLabel(id: LabelId, feedId: FeedId) {
@@ -64,7 +64,7 @@ class LabelService @Inject internal constructor(val eventStore: EventStore) {
             return
         }
 
-        label.add(event)
+        labels = labels.map { it.process(event) }
     }
 
     fun get(userId: UserId): List<Label> {
