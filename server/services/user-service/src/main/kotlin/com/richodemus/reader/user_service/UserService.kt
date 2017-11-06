@@ -1,42 +1,29 @@
 package com.richodemus.reader.user_service
 
+import com.richodemus.reader.common.kafka_adapter.EventStore
 import com.richodemus.reader.dto.EventId
 import com.richodemus.reader.dto.Password
 import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.dto.Username
 import com.richodemus.reader.events.ChangePassword
 import com.richodemus.reader.events.CreateUser
-import io.reactivex.rxkotlin.subscribeBy
 import org.slf4j.LoggerFactory
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UserService @Inject internal constructor(val eventStore: EventStore) {
+class UserService @Inject internal constructor(private val eventStore: EventStore) {
     private val logger = LoggerFactory.getLogger(javaClass)
-    private val users = mutableMapOf<Username, User>()
+    private var users = mapOf<Username, User>()
 
     init {
-        eventStore.observe().subscribeBy(
-                onNext = {
-                    if (it is CreateUser) {
-                        logger.info("Adding user {} ({})", it.username, it.userId)
-                        users.put(it.username, User(it.userId, it.username, it.password))
-                    } else if (it is ChangePassword) {
-                        val user = users.values.singleOrNull { (id) -> id == it.userId }
-                        if (user == null) {
-                            logger.warn("Got Change password event for non existing user ${it.userId}")
-                        } else {
-                            user.password = it.password
-                        }
-                    } else {
-                        logger.debug("Event of type: ${it.javaClass} not handled")
-                    }
-                },
-                onError = { logger.error("User service event stream failure", it) },
-                onComplete = { logger.info("User service event stream closed") }
-        )
+        eventStore.consume() { event ->
+            if (event is CreateUser) {
+                users = users.plus(Pair(event.username, User(event.userId, event.username, event.password)))
+            }
+            users = users.mapValues { user -> user.value.process(event) }
+        }
     }
 
     fun create(username: Username, password: Password): UserId {
@@ -45,8 +32,7 @@ class UserService @Inject internal constructor(val eventStore: EventStore) {
         val userId = UserId(UUID.randomUUID().toString())
         logger.info("Creating new user {} ({})", username, userId)
 
-        eventStore.add(CreateUser(eventId, userId, username, password.hash()))
-
+        eventStore.produce(CreateUser(eventId, userId, username, password.hash()))
         return userId
     }
 
@@ -62,7 +48,7 @@ class UserService @Inject internal constructor(val eventStore: EventStore) {
         assertUserExists(userId) { "No user with id $userId" }
 
         val eventId = EventId(UUID.randomUUID())
-        eventStore.add(ChangePassword(eventId, userId, password.hash()))
+        eventStore.produce(ChangePassword(eventId, userId, password.hash()))
     }
 
     private fun assertUserExists(userId: UserId, msg: () -> String) {

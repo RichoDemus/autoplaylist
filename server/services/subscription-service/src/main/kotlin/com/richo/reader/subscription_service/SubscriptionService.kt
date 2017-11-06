@@ -3,6 +3,7 @@ package com.richo.reader.subscription_service
 import com.codahale.metrics.Gauge
 import com.codahale.metrics.MetricRegistry
 import com.codahale.metrics.MetricRegistry.name
+import com.richodemus.reader.common.kafka_adapter.EventStore
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.ItemId
 import com.richodemus.reader.dto.UserId
@@ -10,7 +11,6 @@ import com.richodemus.reader.events.CreateUser
 import com.richodemus.reader.events.UserSubscribedToFeed
 import com.richodemus.reader.events.UserUnwatchedItem
 import com.richodemus.reader.events.UserWatchedItem
-import io.reactivex.rxkotlin.subscribeBy
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
@@ -24,8 +24,7 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
     private val users = mutableMapOf<UserId, User>()
 
     init {
-        eventStore.observe().subscribeBy(
-                onNext = { event ->
+        eventStore.consume() { event ->
                     when (event) {
                         is CreateUser -> add(event)
                         is UserSubscribedToFeed -> subscribe(event)
@@ -35,10 +34,7 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
                     }
                     // todo actually read page from Chronicler
                     page.incrementAndGet()
-                },
-                onError = { logger.error("Subscription service event stream failure", it) },
-                onComplete = { logger.info("Subscription service event stream closed") }
-        )
+                }
         registry.register(name(SubscriptionService::class.java, "page"), Gauge<Long> { page.get() })
     }
 
@@ -46,19 +42,19 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
 
     fun subscribe(userId: UserId, feedId: FeedId) {
         assertUserExists(userId) { "User $userId can't subscribe to feed $feedId: User does not exist" }
-        eventStore.add(UserSubscribedToFeed(userId, feedId))
+        eventStore.produce(UserSubscribedToFeed(userId, feedId))
     }
 
     fun markAsRead(userId: UserId, feedId: FeedId, itemId: ItemId) {
         assertUserExists(userId) { "User $userId can't mark item $itemId as read in feed $feedId: User does not exist" }
         assertUserSubscribedTo(userId, feedId)
-        eventStore.add(UserWatchedItem(userId, feedId, itemId))
+        eventStore.produce(UserWatchedItem(userId, feedId, itemId))
     }
 
     fun markAsUnread(userId: UserId, feedId: FeedId, itemId: ItemId) {
         assertUserExists(userId) { "User $userId can't mark item $itemId as read in feed $feedId: User does not exist" }
         assertUserSubscribedTo(userId, feedId)
-        eventStore.add(UserUnwatchedItem(userId, feedId, itemId))
+        eventStore.produce(UserUnwatchedItem(userId, feedId, itemId))
     }
 
     private fun add(event: CreateUser) {

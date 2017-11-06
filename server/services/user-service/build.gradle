@@ -4,6 +4,7 @@ description = 'User/Login Service'
 dependencies {
     compile project(':server:common:dto')
     compile project(':server:common:events')
+    compile project(':server:common:kafka-adapter')
     compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
     compile 'org.jetbrains:annotations'
@@ -11,8 +12,6 @@ dependencies {
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
     compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
 
-    compile "io.reactivex:rxkotlin:$rootProject.rxKotlinVersion"
-    compile 'io.reactivex.rxjava2:rxjava'
     compile 'org.mindrot:jbcrypt:0.4'
 
 

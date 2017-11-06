@@ -1,5 +1,6 @@
 package com.richodemus.reader.label_service
 
+import com.richodemus.reader.common.kafka_adapter.EventStore
 import com.richodemus.reader.dto.EventId
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.LabelId
@@ -7,7 +8,6 @@ import com.richodemus.reader.dto.LabelName
 import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.events.AddFeedToLabel
 import com.richodemus.reader.events.CreateLabel
-import io.reactivex.rxkotlin.subscribeBy
 import org.slf4j.LoggerFactory
 import java.util.UUID
 import javax.inject.Inject
@@ -19,17 +19,13 @@ class LabelService @Inject internal constructor(val eventStore: EventStore) {
     private val labels = mutableListOf<Label>()
 
     init {
-        eventStore.observe().subscribeBy(
-                onNext = {
-                    when (it) {
-                        is CreateLabel -> add(it)
-                        is AddFeedToLabel -> addFeedToLabel(it)
-                        else -> logger.debug("Event of type: ${it.javaClass} not handled")
-                    }
-                },
-                onError = { logger.error("Label service event stream failure", it) },
-                onComplete = { logger.info("Label service event stream closed") }
-        )
+        eventStore.consume {
+            when (it) {
+                is CreateLabel -> add(it)
+                is AddFeedToLabel -> addFeedToLabel(it)
+                else -> logger.debug("Event of type: ${it.javaClass} not handled")
+            }
+        }
     }
 
     fun create(name: LabelName, userId: UserId): LabelId {
@@ -38,7 +34,7 @@ class LabelService @Inject internal constructor(val eventStore: EventStore) {
         val eventId = EventId(UUID.randomUUID())
         val labelId = LabelId(UUID.randomUUID())
 
-        eventStore.add(CreateLabel(eventId, labelId, name, userId))
+        eventStore.produce(CreateLabel(eventId, labelId, name, userId))
 
         return labelId
     }
@@ -57,7 +53,7 @@ class LabelService @Inject internal constructor(val eventStore: EventStore) {
         assertLabelExists(id) { "Can't add feed $feedId to non-existing label $id" }
 
         val eventId = EventId(UUID.randomUUID())
-        eventStore.add(AddFeedToLabel(eventId, id, feedId))
+        eventStore.produce(AddFeedToLabel(eventId, id, feedId))
     }
 
     private fun addFeedToLabel(event: AddFeedToLabel) {

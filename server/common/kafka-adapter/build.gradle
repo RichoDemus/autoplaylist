@@ -3,28 +3,21 @@ apply plugin: 'kotlin'
 dependencies {
     compile project(':server:common:dto')
     compile project(':server:common:events')
-    compile project(':server:services:user-service')
-    compile project(':server:services:subscription-service')
-    compile project(':server:services:label-service')
 
     compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
     compile 'org.jetbrains:annotations'
 
+    compile 'org.apache.kafka:kafka-clients:0.11.0.1'
+
     compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
     compile "com.fasterxml.jackson.core:jackson-databind:$rootProject.jacksonVersion"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$rootProject.jacksonVersion"
-    compile 'org.glassfish.jersey.media:jersey-media-sse:2.25.1'
-    compile 'io.reactivex.rxjava2:rxjava'
-    compile 'com.github.kittinunf.fuel:fuel:1.5.0'
-    compile 'com.github.kittinunf.result:result'
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
-    compile 'javax.ws.rs:javax.ws.rs-api'
 
-    testCompile "junit:junit:$rootProject.junitVersion"
-    testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
-    testCompile "org.awaitility:awaitility:$rootProject.awaitilityVersion"
-    testCompile "io.reactivex:rxkotlin:$rootProject.rxKotlinVersion"
+//    testCompile "junit:junit:$rootProject.junitVersion"
+//    testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
+//    testCompile "org.awaitility:awaitility:$rootProject.awaitilityVersion"
 }
 
 buildscript {

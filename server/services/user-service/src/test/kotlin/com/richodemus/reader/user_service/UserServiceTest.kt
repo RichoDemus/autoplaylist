@@ -1,5 +1,6 @@
 package com.richodemus.reader.user_service
 
+import com.richodemus.reader.common.kafka_adapter.InMemoryEventStore
 import com.richodemus.reader.dto.Password
 import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.dto.Username

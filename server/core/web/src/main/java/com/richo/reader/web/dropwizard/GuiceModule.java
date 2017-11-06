@@ -7,7 +7,8 @@ import com.richo.reader.backend.inject.BackendModule;
 import com.richo.reader.web.authentication.UserServiceBridge;
 import com.richo.reader.web.dropwizard.autoscanned.BackendHealthCheck;
 import com.richodemus.dropwizard.jwt.UserService;
-import com.richodemus.reader.common.chronicler_adapter.ChroniclerAdapter;
+import com.richodemus.reader.common.kafka_adapter.EventStore;
+import com.richodemus.reader.common.kafka_adapter.KafkaAdapter;
 import ru.vyarus.dropwizard.guice.module.support.DropwizardAwareModule;
 
 import javax.inject.Inject;
@@ -30,9 +31,7 @@ public class GuiceModule extends DropwizardAwareModule<ReaderConfiguration>
 
 	protected void bindEventStore()
 	{
-		bind(com.richodemus.reader.label_service.EventStore.class).to(ChroniclerAdapter.class);
-		bind(com.richo.reader.subscription_service.EventStore.class).to(ChroniclerAdapter.class);
-		bind(com.richodemus.reader.user_service.EventStore.class).to(ChroniclerAdapter.class);
+		bind(EventStore.class).to(KafkaAdapter.class);
 	}
 
 	//todo move to backend guice stuff
