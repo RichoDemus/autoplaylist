@@ -18,7 +18,7 @@ class UserService @Inject internal constructor(private val eventStore: EventStor
     private var users = mapOf<Username, User>()
 
     init {
-        eventStore.consume() { event ->
+        eventStore.consume { event ->
             if (event is CreateUser) {
                 users = users.plus(Pair(event.username, User(event.userId, event.username, event.password)))
             }

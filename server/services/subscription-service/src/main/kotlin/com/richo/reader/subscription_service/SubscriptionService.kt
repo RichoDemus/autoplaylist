@@ -24,7 +24,7 @@ class SubscriptionService @Inject internal constructor(private val fileSystemPer
     private val users = mutableMapOf<UserId, User>()
 
     init {
-        eventStore.consume() { event ->
+        eventStore.consume { event ->
                     when (event) {
                         is CreateUser -> add(event)
                         is UserSubscribedToFeed -> subscribe(event)
