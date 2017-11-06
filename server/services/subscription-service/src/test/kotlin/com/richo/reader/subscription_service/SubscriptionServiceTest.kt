@@ -3,7 +3,6 @@ package com.richo.reader.subscription_service
 import com.codahale.metrics.MetricRegistry
 import com.richodemus.reader.common.kafka_adapter.EventStore
 import com.richodemus.reader.common.kafka_adapter.InMemoryEventStore
-import com.richodemus.reader.dto.EventId
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.ItemId
 import com.richodemus.reader.dto.PasswordHash
@@ -37,7 +36,7 @@ class SubscriptionServiceTest {
 
     @Test
     fun `Create User`() {
-        eventStore().produce(CreateUser(EventId(), id, username, password))
+        eventStore().produce(CreateUser(id, username, password))
 
         val result = target().get(id)
 
@@ -48,7 +47,7 @@ class SubscriptionServiceTest {
 
     @Test
     fun `Subscribe to feed`() {
-        eventStore().produce(CreateUser(EventId(), id, username, password))
+        eventStore().produce(CreateUser(id, username, password))
 
         target().subscribe(id, ERB)
 
@@ -64,7 +63,7 @@ class SubscriptionServiceTest {
 
     @Test
     fun `Watch item`() {
-        eventStore().produce(CreateUser(EventId(), id, username, password))
+        eventStore().produce(CreateUser(id, username, password))
 
         target().subscribe(id, ERB)
         target().markAsRead(id, ERB, coolVideo)
@@ -81,13 +80,13 @@ class SubscriptionServiceTest {
 
     @Test(expected = IllegalStateException::class)
     fun `Should not be possible for a user to watch an item in a non-subscribed feed`() {
-        eventStore().produce(CreateUser(EventId(), id, username, password))
+        eventStore().produce(CreateUser(id, username, password))
         target().markAsRead(id, ERB, coolVideo)
     }
 
     @Test
     fun `Unwatch item`() {
-        eventStore().produce(CreateUser(EventId(), id, username, password))
+        eventStore().produce(CreateUser(id, username, password))
 
         target().subscribe(id, ERB)
         target().markAsRead(id, ERB, coolVideo)
@@ -105,7 +104,7 @@ class SubscriptionServiceTest {
 
     @Test(expected = IllegalStateException::class)
     fun `Should not be possible for a user to unwatch an item in a non-subscribed feed`() {
-        eventStore().produce(CreateUser(EventId(), id, username, password))
+        eventStore().produce(CreateUser(id, username, password))
         target().markAsUnread(id, ERB, coolVideo)
     }
 }

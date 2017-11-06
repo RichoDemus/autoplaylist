@@ -1,7 +1,6 @@
 package com.richodemus.reader.user_service
 
 import com.richodemus.reader.common.kafka_adapter.EventStore
-import com.richodemus.reader.dto.EventId
 import com.richodemus.reader.dto.Password
 import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.dto.Username
@@ -28,11 +27,10 @@ class UserService @Inject internal constructor(private val eventStore: EventStor
 
     fun create(username: Username, password: Password): UserId {
         assertUserDoesntExist(username) { "User $username already exists" }
-        val eventId = EventId(UUID.randomUUID())
         val userId = UserId(UUID.randomUUID().toString())
         logger.info("Creating new user {} ({})", username, userId)
 
-        eventStore.produce(CreateUser(eventId, userId, username, password.hash()))
+        eventStore.produce(CreateUser(userId, username, password.hash()))
         return userId
     }
 
@@ -47,8 +45,7 @@ class UserService @Inject internal constructor(private val eventStore: EventStor
     fun changePassword(userId: UserId, password: Password) {
         assertUserExists(userId) { "No user with id $userId" }
 
-        val eventId = EventId(UUID.randomUUID())
-        eventStore.produce(ChangePassword(eventId, userId, password.hash()))
+        eventStore.produce(ChangePassword(userId, password.hash()))
     }
 
     private fun assertUserExists(userId: UserId, msg: () -> String) {

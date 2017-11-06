@@ -1,7 +1,6 @@
 package com.richodemus.reader.label_service
 
 import com.richodemus.reader.common.kafka_adapter.EventStore
-import com.richodemus.reader.dto.EventId
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.LabelId
 import com.richodemus.reader.dto.LabelName
@@ -31,10 +30,9 @@ class LabelService @Inject internal constructor(val eventStore: EventStore) {
     fun create(name: LabelName, userId: UserId): LabelId {
         assertLabelDoesntExist(userId, name)
 
-        val eventId = EventId(UUID.randomUUID())
         val labelId = LabelId(UUID.randomUUID())
 
-        eventStore.produce(CreateLabel(eventId, labelId, name, userId))
+        eventStore.produce(CreateLabel(labelId, name, userId))
 
         return labelId
     }
@@ -52,8 +50,7 @@ class LabelService @Inject internal constructor(val eventStore: EventStore) {
     fun addFeedToLabel(id: LabelId, feedId: FeedId) {
         assertLabelExists(id) { "Can't add feed $feedId to non-existing label $id" }
 
-        val eventId = EventId(UUID.randomUUID())
-        eventStore.produce(AddFeedToLabel(eventId, id, feedId))
+        eventStore.produce(AddFeedToLabel(id, feedId))
     }
 
     private fun addFeedToLabel(event: AddFeedToLabel) {
