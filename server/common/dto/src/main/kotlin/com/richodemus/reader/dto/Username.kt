@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonValue
 
 class Username(value: String) {
-    @get:JsonIgnore val value: String
+    @get:JsonIgnore
+    val value: String
 
     init {
         require(value.isNotBlank()) { "Username can't be empty" }

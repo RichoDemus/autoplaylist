@@ -1,5 +1,6 @@
 package com.richodemus.reader.label_service
 
+import com.richodemus.reader.common.kafka_adapter.InMemoryEventStore
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.LabelId
 import com.richodemus.reader.dto.LabelName
@@ -9,7 +10,6 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
 import org.junit.Test
 import java.util.UUID
-import com.richodemus.reader.common.kafka_adapter.InMemoryEventStore
 
 class LabelServiceTest {
     private val userId = UserId("user-id")

@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonValue
 import java.net.URL
 
 class FeedUrl(url: String) {
-    @get:JsonIgnore val value = URL(url)
+    @get:JsonIgnore
+    val value = URL(url)
+
     @JsonValue override fun toString() = value.toString()
 
     override fun equals(other: Any?): Boolean {
