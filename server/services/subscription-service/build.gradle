@@ -11,9 +11,6 @@ dependencies {
 
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
     compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
-    compile "com.fasterxml.jackson.core:jackson-core:$rootProject.jacksonVersion"
-    compile "com.fasterxml.jackson.core:jackson-databind:$rootProject.jacksonVersion"
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$rootProject.jacksonVersion"
     compile "io.dropwizard.metrics:metrics-core:$rootProject.dropwizardMetricsVersion"
 
     testCompile "junit:junit:$rootProject.junitVersion"

@@ -13,14 +13,12 @@ import com.richodemus.reader.events.CreateUser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import java.util.UUID
 
 
 class SubscriptionServiceTest {
     private val id = UserId("id")
     private val username = Username("richodemus")
     private val password = PasswordHash("password")
-    private val user = User(id, username, mutableMapOf(), 0L, listOf())
     private val ylvis = FeedId("ylvis")
     private val ERB = FeedId("ERB")
     private val coolVideo = ItemId("some_video")
@@ -34,7 +32,7 @@ class SubscriptionServiceTest {
     @Before
     fun setUp() {
         eventStore = InMemoryEventStore()
-        target = SubscriptionService(FileSystemPersistence(saveRoot = "build/saveRoots/${UUID.randomUUID()}"), eventStore(), MetricRegistry())
+        target = SubscriptionService(eventStore(), MetricRegistry())
     }
 
     @Test
@@ -56,7 +54,7 @@ class SubscriptionServiceTest {
 
         val result = target().get(id)!!
 
-        assertThat(result.feeds.keys).containsOnly(ERB)
+        assertThat(result.feeds.map { it.id }).containsOnly(ERB)
     }
 
     @Test(expected = IllegalStateException::class)
@@ -73,7 +71,7 @@ class SubscriptionServiceTest {
 
         val result = target().get(id)!!
 
-        assertThat(result.feeds[ERB]).containsOnly(coolVideo)
+        assertThat(result.feeds.first { it.id == ERB }.watchedItems).containsOnly(coolVideo)
     }
 
     @Test(expected = IllegalStateException::class)
@@ -97,7 +95,7 @@ class SubscriptionServiceTest {
 
         val result = target().get(id)!!
 
-        assertThat(result.feeds[ERB]).isEmpty()
+        assertThat(result.feeds.first { it.id == ERB }.watchedItems).isEmpty()
     }
 
     @Test(expected = IllegalStateException::class)

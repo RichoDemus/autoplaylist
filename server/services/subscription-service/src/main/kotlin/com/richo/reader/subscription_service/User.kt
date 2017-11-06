@@ -1,37 +1,45 @@
 package com.richo.reader.subscription_service
 
-import com.richodemus.reader.dto.FeedId
-import com.richodemus.reader.dto.ItemId
-import com.richodemus.reader.dto.LegacyLabel
 import com.richodemus.reader.dto.UserId
-import com.richodemus.reader.dto.Username
+import com.richodemus.reader.events.Event
+import com.richodemus.reader.events.UserSubscribedToFeed
+import com.richodemus.reader.events.UserUnwatchedItem
+import com.richodemus.reader.events.UserWatchedItem
 import org.slf4j.LoggerFactory
 
-// todo rewrite this
-data class User(var id: UserId, val name: Username, val feeds: MutableMap<FeedId, MutableList<ItemId>>, val nextLabelId: Long, val labels: List<LegacyLabel>) {
-    constructor(userId: UserId) : this(userId, Username("unknown"), mutableMapOf(), 0L, emptyList())
+data class User(val id: UserId,
+                val feeds: List<Feed>) {
+    constructor(userId: UserId) : this(userId, emptyList())
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    internal fun subscribe(feedId: FeedId) {
-        if (feeds.containsKey(feedId)) {
-            logger.info("User $id is already subscribed to $feedId")
-            return
+    internal fun process(evt: Event): User {
+        return when {
+            evt is UserSubscribedToFeed && evt.userId == id -> subscribe(evt)
+            evt is UserWatchedItem && evt.userId == id -> watch(evt)
+            evt is UserUnwatchedItem && evt.userId == id -> unwatch(evt)
+            else -> this
         }
-        feeds.put(feedId, mutableListOf())
     }
 
-    internal fun watch(feedId: FeedId, itemId: ItemId) {
-        if (!feeds.containsKey(feedId)) {
-            throw IllegalStateException("User $id is not subscribed to $feedId")
-        }
-        feeds[feedId]!!.add(itemId)
+    private fun subscribe(evt: UserSubscribedToFeed): User {
+        if (feeds.any { it.id == evt.feedId }) logger.warn("User $id is already subscribed to ${evt.feedId}")
+        return this.copy(feeds = feeds.plus(Feed(evt.feedId)))
     }
 
-    internal fun unWatch(feedId: FeedId, itemId: ItemId) {
-        if (!feeds.containsKey(feedId)) {
-            throw IllegalStateException("User $id is not subscribed to $feedId")
+    private fun watch(evt: UserWatchedItem): User {
+        if (feeds.none { it.id == evt.feedId }) {
+            logger.warn("User $id was not subscribed to feed ${evt.feedId} when watching item ${evt.itemId}")
+            return this
         }
-        feeds[feedId]!!.remove(itemId)
+        return this.copy(feeds = feeds.map { it.process(evt) })
+    }
+
+    private fun unwatch(evt: UserUnwatchedItem): User {
+        if (feeds.none { it.id == evt.feedId }) {
+            logger.warn("User $id was not subscribed to feed ${evt.feedId} when watching item ${evt.itemId}")
+            return this
+        }
+        return this.copy(feeds = feeds.map { it.process(evt) })
     }
 }

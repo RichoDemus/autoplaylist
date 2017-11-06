@@ -37,11 +37,11 @@ public class SubscriptionServicePort implements SubscriptionRepository
 			throw new NoSuchUserException("No such user " + userId);
 		}
 
-		return user.getFeeds().entrySet().stream()
-				.map(entry ->
+		return user.getFeeds().stream()
+				.map(feed ->
 				{
-					final FeedId id = entry.getKey();
-					final List<Item> watchedItems = entry.getValue().stream().map(i -> new Item(i, "", "", "", "", Duration.ZERO, 0L)).collect(toList());
+					final FeedId id = feed.getId();
+					final List<Item> watchedItems = feed.getWatchedItems().stream().map(i -> new Item(i, "", "", "", "", Duration.ZERO, 0L)).collect(toList());
 					return new Feed(id, null, watchedItems);
 				})
 				.collect(toList());
@@ -56,9 +56,9 @@ public class SubscriptionServicePort implements SubscriptionRepository
 			throw new NoSuchUserException("No such user " + userId);
 		}
 
-		return user.getFeeds().entrySet().stream()
-				.filter(feed -> feed.getKey().equals(feedId))
-				.map(Map.Entry::getValue)
+		return user.getFeeds().stream()
+				.filter(feed -> feed.getId().equals(feedId))
+				.map(com.richo.reader.subscription_service.Feed::getWatchedItems)
 				.findAny()
 				.orElseThrow(() -> new IllegalStateException("User " + userId + " not subscribed to " + feedId));
 	}
