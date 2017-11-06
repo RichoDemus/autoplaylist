@@ -26,7 +26,7 @@ class KafkaAdapter : EventStore {
     private var running = true
 
     init {
-        val kafkaHost = System.getProperty("reader.kafka.host", "localhost")
+        val kafkaHost = System.getProperty("reader.kafka.host", "kafka")
         val kafkaServer = "$kafkaHost:9092"
 
         val producerProperties = Properties()
