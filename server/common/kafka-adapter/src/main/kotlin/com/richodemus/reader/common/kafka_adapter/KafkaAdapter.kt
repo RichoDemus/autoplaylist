@@ -26,8 +26,11 @@ class KafkaAdapter : EventStore {
     private var running = true
 
     init {
+        val kafkaHost = System.getProperty("reader.kafka.host", "localhost")
+        val kafkaServer = "$kafkaHost:9092"
+
         val producerProperties = Properties()
-        producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
+        producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer)
         producerProperties.put(ProducerConfig.CLIENT_ID_CONFIG, "KafkaExampleProducer-${UUID.randomUUID()}")
         producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java.name)
         producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java.name)
@@ -35,7 +38,7 @@ class KafkaAdapter : EventStore {
         producer = KafkaProducer(producerProperties)
 
         val consumerProperties = Properties()
-        consumerProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
+        consumerProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer)
         consumerProperties.put(ConsumerConfig.CLIENT_ID_CONFIG, "KafkaExampleConsumer-${UUID.randomUUID()}")
         consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)

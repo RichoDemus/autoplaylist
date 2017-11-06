@@ -2,6 +2,9 @@
 
 ## Instructions
 
+### Run
+`docker run yadda yadda -e KAFKA_HOST=kafka`
+
 ### Compile and run all test
 `./gradlew`
 

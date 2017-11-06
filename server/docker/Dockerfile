@@ -7,6 +7,7 @@ COPY build/dependencies /reader/jars
 WORKDIR /reader
 ENTRYPOINT []
 CMD ["java",\
+"-Dreader.kakfa.host=$KAFKA_HOST", \
 "-Xmx2G",\
 "-Dcom.sun.management.jmxremote",\
 "-Dcom.sun.management.jmxremote.port=9010",\
