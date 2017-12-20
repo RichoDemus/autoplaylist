@@ -1,9 +1,9 @@
 ext {
     // compile dependencies
-    kotlinVersion = '1.1.51'
+    kotlinVersion = '1.2.10'
     dropwizardVersion = '1.1.1'
     dropwizardMetricsVersion = '3.2.2'
-    jacksonVersion = '2.8.5'
+    jacksonVersion = '2.9.2'
     slf4jVersion = '1.7.21'
     guavaVersion = '22.0'
     javaxInjectVersion = '1'

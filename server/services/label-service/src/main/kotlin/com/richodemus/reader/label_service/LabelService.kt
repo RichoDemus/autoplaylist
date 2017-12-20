@@ -5,8 +5,8 @@ import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.LabelId
 import com.richodemus.reader.dto.LabelName
 import com.richodemus.reader.dto.UserId
-import com.richodemus.reader.events.AddFeedToLabel
-import com.richodemus.reader.events.CreateLabel
+import com.richodemus.reader.events_v2.FeedAddedToLabel
+import com.richodemus.reader.events_v2.LabelCreated
 import org.slf4j.LoggerFactory
 import java.util.UUID
 import javax.inject.Inject
@@ -20,8 +20,8 @@ class LabelService @Inject internal constructor(val eventStore: EventStore) {
     init {
         eventStore.consume {
             when (it) {
-                is CreateLabel -> add(it)
-                is AddFeedToLabel -> addFeedToLabel(it)
+                is LabelCreated -> add(it)
+                is FeedAddedToLabel -> addFeedToLabel(it)
                 else -> logger.debug("Event of type: ${it.javaClass} not handled")
             }
         }
@@ -32,12 +32,12 @@ class LabelService @Inject internal constructor(val eventStore: EventStore) {
 
         val labelId = LabelId(UUID.randomUUID())
 
-        eventStore.produce(CreateLabel(labelId, name, userId))
+        eventStore.produce(LabelCreated(labelId, name, userId))
 
         return labelId
     }
 
-    private fun add(label: CreateLabel) {
+    private fun add(label: LabelCreated) {
         logger.info("Creating label {}", label.labelName)
         if (labels.find { it.id == label.labelId } != null) {
             logger.warn("Label ${label.labelName} with id ${label.labelId} already exists...")
@@ -50,10 +50,10 @@ class LabelService @Inject internal constructor(val eventStore: EventStore) {
     fun addFeedToLabel(id: LabelId, feedId: FeedId) {
         assertLabelExists(id) { "Can't add feed $feedId to non-existing label $id" }
 
-        eventStore.produce(AddFeedToLabel(id, feedId))
+        eventStore.produce(FeedAddedToLabel(id, feedId))
     }
 
-    private fun addFeedToLabel(event: AddFeedToLabel) {
+    private fun addFeedToLabel(event: FeedAddedToLabel) {
         logger.info("Adding feed ${event.feedId} to ${event.labelId}")
         val label = labels.find { it.id == event.labelId }
         if (label == null) {
