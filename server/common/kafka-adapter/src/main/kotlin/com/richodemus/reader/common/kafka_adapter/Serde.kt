@@ -12,9 +12,13 @@ import com.richodemus.reader.events_v2.EventType.USER_CREATED
 import com.richodemus.reader.events_v2.EventType.USER_SUBSCRIBED_TO_FEED
 import com.richodemus.reader.events_v2.EventType.USER_UNWATCHED_ITEM
 import com.richodemus.reader.events_v2.EventType.USER_WATCHED_ITEM
+import com.richodemus.reader.events_v2.FeedAddedToLabel
 import com.richodemus.reader.events_v2.LabelCreated
 import com.richodemus.reader.events_v2.PasswordChanged
 import com.richodemus.reader.events_v2.UserCreated
+import com.richodemus.reader.events_v2.UserSubscribedToFeed
+import com.richodemus.reader.events_v2.UserUnwatchedItem
+import com.richodemus.reader.events_v2.UserWatchedItem
 import org.apache.kafka.common.serialization.Deserializer
 import org.apache.kafka.common.serialization.Serializer
 
@@ -43,10 +47,10 @@ class EventDeserializer : Deserializer<Event> {
             str isType USER_CREATED -> mapper.readValue<UserCreated>(data)
             str isType PASSWORD_CHANGED -> mapper.readValue<PasswordChanged>(data)
             str isType LABEL_CREATED -> mapper.readValue<LabelCreated>(data)
-            str isType FEED_ADDED_TO_LABEL -> mapper.readValue<LabelCreated>(data)
-            str isType USER_SUBSCRIBED_TO_FEED -> mapper.readValue<LabelCreated>(data)
-            str isType USER_WATCHED_ITEM -> mapper.readValue<LabelCreated>(data)
-            str isType USER_UNWATCHED_ITEM -> mapper.readValue<LabelCreated>(data)
+            str isType FEED_ADDED_TO_LABEL -> mapper.readValue<FeedAddedToLabel>(data)
+            str isType USER_SUBSCRIBED_TO_FEED -> mapper.readValue<UserSubscribedToFeed>(data)
+            str isType USER_WATCHED_ITEM -> mapper.readValue<UserWatchedItem>(data)
+            str isType USER_UNWATCHED_ITEM -> mapper.readValue<UserUnwatchedItem>(data)
             else -> throw IllegalStateException()
         }
     }
@@ -75,7 +79,9 @@ class EventIdDeserializer : Deserializer<EventId> {
     }
 
     override fun deserialize(topic: String?, data: ByteArray): EventId {
-        return mapper.readValue(String(data))
+        val content = String(data)
+        val resut = mapper.readValue<EventId>(content)
+        return resut
     }
 
     override fun close() {

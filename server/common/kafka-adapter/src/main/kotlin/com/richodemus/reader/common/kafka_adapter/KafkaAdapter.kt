@@ -8,6 +8,8 @@ import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.errors.WakeupException
+import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.kafka.common.serialization.StringSerializer
 import org.slf4j.LoggerFactory
 import java.util.Properties
 import java.util.UUID
@@ -22,7 +24,6 @@ class KafkaAdapter : EventStore {
 
     private val consumer: KafkaConsumer<EventId, Event>
     private val producer: KafkaProducer<EventId, Event>
-    private var running = true
 
     init {
         val propOrEmpty: String? = System.getProperty("reader.kafka.host", "")
@@ -32,16 +33,16 @@ class KafkaAdapter : EventStore {
         val producerProperties = Properties()
         producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer)
         producerProperties.put(ProducerConfig.CLIENT_ID_CONFIG, "KafkaExampleProducer-${UUID.randomUUID()}")
-        producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, EventIdSerializer::javaClass)
-        producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, EventSerializer::javaClass)
+        producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer().javaClass)
+        producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, EventSerializer().javaClass)
 
         producer = KafkaProducer(producerProperties)
 
         val consumerProperties = Properties()
         consumerProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer)
         consumerProperties.put(ConsumerConfig.CLIENT_ID_CONFIG, "KafkaExampleConsumer-${UUID.randomUUID()}")
-        consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, EventIdDeserializer::javaClass)
-        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, EventDeserializer::javaClass)
+        consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer().javaClass)
+        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, EventDeserializer().javaClass)
         consumerProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
         consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false")
         consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, UUID.randomUUID().toString())
@@ -53,7 +54,7 @@ class KafkaAdapter : EventStore {
         consumer.subscribe(listOf(topic))
         thread(name = "KafkaConsumer") {
             try {
-                while (running) {
+                while (true) {
                     val records = consumer.poll(Long.MAX_VALUE)
 
                     if (records.isEmpty) {
@@ -84,7 +85,6 @@ class KafkaAdapter : EventStore {
 
     override fun close() {
         logger.info("Closing producer and consumer...")
-        running = false
         producer.flush()
         producer.close()
         consumer.wakeup()
