@@ -15,7 +15,7 @@ import com.richodemus.reader.events_v2.EventType.USER_CREATED
 import com.richodemus.reader.events_v2.EventType.USER_SUBSCRIBED_TO_FEED
 import com.richodemus.reader.events_v2.EventType.USER_UNWATCHED_ITEM
 import com.richodemus.reader.events_v2.EventType.USER_WATCHED_ITEM
-import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 data class UserCreated(val id: EventId,
@@ -119,4 +119,4 @@ data class UserUnwatchedItem(val id: EventId,
     override fun type() = type
 }
 
-private fun now() = ZonedDateTime.now(ZoneId.of("UTC")).toString()
+private fun now() = ZonedDateTime.now(ZoneOffset.UTC).toString()

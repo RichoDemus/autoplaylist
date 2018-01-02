@@ -1,6 +1,5 @@
 package com.richodemus.reader.common.kafka_adapter
 
-import com.richodemus.reader.dto.EventId
 import com.richodemus.reader.events_v2.Event
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
@@ -22,8 +21,8 @@ class KafkaAdapter : EventStore {
     private val logger = LoggerFactory.getLogger(javaClass.name)
     private val topic = "events_v2"
 
-    private val consumer: KafkaConsumer<EventId, Event>
-    private val producer: KafkaProducer<EventId, Event>
+    private val consumer: KafkaConsumer<String, Event>
+    private val producer: KafkaProducer<String, Event>
 
     init {
         val propOrEmpty: String? = System.getProperty("reader.kafka.host", "")
@@ -77,7 +76,8 @@ class KafkaAdapter : EventStore {
     }
 
     override fun produce(event: Event) {
-        val record: ProducerRecord<EventId, Event> = ProducerRecord(topic, event.id(), event)
+        // todo create EventId serde instead of using String
+        val record: ProducerRecord<String, Event> = ProducerRecord(topic, event.id().value.toString(), event)
 
         val recordMetadata = producer.send(record).get()
         logger.debug(recordMetadata.toString())
