@@ -1,7 +1,6 @@
 package com.richodemus.reader.common.kafka_adapter
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.richodemus.reader.events.Event
+import com.richodemus.reader.events_v2.Event
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.KafkaConsumer
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -13,17 +12,17 @@ import org.apache.kafka.common.serialization.StringSerializer
 import org.slf4j.LoggerFactory
 import java.util.Properties
 import java.util.UUID
+import kotlin.concurrent.thread
 
 /**
  * Helper class to consume messages from a topic
  */
 class KafkaAdapter : EventStore {
     private val logger = LoggerFactory.getLogger(javaClass.name)
+    private val topic = "events_v2"
 
-    private val mapper = jacksonObjectMapper()
-    private val consumer: KafkaConsumer<String, String>
-    private val producer: KafkaProducer<String, String>
-    private var running = true
+    private val consumer: KafkaConsumer<String, Event>
+    private val producer: KafkaProducer<String, Event>
 
     init {
         val propOrEmpty: String? = System.getProperty("reader.kafka.host", "")
@@ -33,16 +32,16 @@ class KafkaAdapter : EventStore {
         val producerProperties = Properties()
         producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer)
         producerProperties.put(ProducerConfig.CLIENT_ID_CONFIG, "KafkaExampleProducer-${UUID.randomUUID()}")
-        producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java.name)
-        producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java.name)
+        producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer().javaClass)
+        producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, EventSerializer().javaClass)
 
         producer = KafkaProducer(producerProperties)
 
         val consumerProperties = Properties()
         consumerProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer)
         consumerProperties.put(ConsumerConfig.CLIENT_ID_CONFIG, "KafkaExampleConsumer-${UUID.randomUUID()}")
-        consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
-        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
+        consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer().javaClass)
+        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, EventDeserializer().javaClass)
         consumerProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
         consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false")
         consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, UUID.randomUUID().toString())
@@ -51,10 +50,10 @@ class KafkaAdapter : EventStore {
     }
 
     override fun consume(messageListener: (Event) -> Unit) {
-        consumer.subscribe(listOf("events"))
-        Thread {
+        consumer.subscribe(listOf(topic))
+        thread(name = "KafkaConsumer") {
             try {
-                while (running) {
+                while (true) {
                     val records = consumer.poll(Long.MAX_VALUE)
 
                     if (records.isEmpty) {
@@ -66,9 +65,6 @@ class KafkaAdapter : EventStore {
                         logger.debug("Received: {}: {}", it.key(), it.value())
                         it.value()
                     }
-                            .map { mapper.readValue(it, WrapperEvent::class.java) }
-                            .map { it.data }
-                            .map { it.toEvent() }
                             .forEach { messageListener.invoke(it) }
                 }
             } catch (e: WakeupException) {
@@ -76,13 +72,12 @@ class KafkaAdapter : EventStore {
             } finally {
                 consumer.close()
             }
-        }.start()
+        }
     }
 
     override fun produce(event: Event) {
-        val data = mapper.writeValueAsString(event)
-        val chroniclerData = mapper.writeValueAsString(ChroniclerEvent(event.eventId.value.toString(), event.type, data))
-        val record: ProducerRecord<String, String> = ProducerRecord("events", event.eventId.toString(), chroniclerData)
+        // todo create EventId serde instead of using String
+        val record: ProducerRecord<String, Event> = ProducerRecord(topic, event.id().value.toString(), event)
 
         val recordMetadata = producer.send(record).get()
         logger.debug(recordMetadata.toString())
@@ -90,7 +85,6 @@ class KafkaAdapter : EventStore {
 
     override fun close() {
         logger.info("Closing producer and consumer...")
-        running = false
         producer.flush()
         producer.close()
         consumer.wakeup()

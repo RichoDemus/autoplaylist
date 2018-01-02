@@ -12,6 +12,7 @@ import com.richo.reader.backend.model.FeedWithoutItems;
 import com.richo.reader.backend.model.Item;
 import com.richo.reader.backend.subscription.SubscriptionRepository;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedName;
 import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 import com.richodemus.reader.dto.Username;
@@ -20,12 +21,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static com.codahale.metrics.MetricRegistry.name;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -56,7 +59,7 @@ public class Backend
 		mergeFeedsTimer = registry.timer(name(Backend.class, "mergeFeeds"));
 	}
 
-	public Optional<com.richo.reader.backend.model.Feed> getFeed(Username username, FeedId feedId)
+	public Optional<Feed> getFeed(Username username, FeedId feedId)
 	{
 		final Timer.Context context = getFeedTimer.time();
 		try
@@ -111,11 +114,7 @@ public class Backend
 					.collect(toMap(Feed::getId, feed ->
 					{
 						final Optional<Feed> feedRepositoryFeed = feedRepository.getFeed(feed.getId());
-						if (!feedRepositoryFeed.isPresent())
-						{
-							throw new IllegalStateException("No such feed: " + feed);
-						}
-						return feedRepositoryFeed.get();
+						return feedRepositoryFeed.orElseGet(() -> new Feed(feed.getId(), new FeedName("404: " + feed.getId()), emptyList()));
 					}));
 		}
 		finally

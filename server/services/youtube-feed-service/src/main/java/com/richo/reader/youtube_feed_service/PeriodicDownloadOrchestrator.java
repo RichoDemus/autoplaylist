@@ -101,6 +101,7 @@ public class PeriodicDownloadOrchestrator
 		try
 		{
 			logger.info("Midnight, time to download");
+			// todo get all feedIds from event store instead of disk
 			final List<FeedId> feedIds = cache.getAllFeedIds();
 			feedIds.sort(Comparator.comparing(FeedId::getValue));
 			logger.info("{} feeds to download", feedIds.size());

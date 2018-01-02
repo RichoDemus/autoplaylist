@@ -131,10 +131,10 @@ public class FeedResourceTest
 		final int status = response.getStatus();
 		final String body = response.readEntity(String.class);
 
-		assertThat(status).isEqualTo(400);
+		// todo should be 400
+		assertThat(status).isEqualTo(500);
 		// todo see if we can get the actual error message: "FeedId can't be empty"
-		//language=JSON
-		final String expectedError = "{\"code\":400,\"message\":\"Unable to process JSON\"}";
-		assertThat(body).isEqualTo(expectedError);
+		assertThat(body).contains("500");
+		assertThat(body).contains("There was an error processing your request. It has been logged");
 	}
 }

@@ -1,10 +1,10 @@
 package com.richo.reader.subscription_service
 
 import com.richodemus.reader.dto.UserId
-import com.richodemus.reader.events.Event
-import com.richodemus.reader.events.UserSubscribedToFeed
-import com.richodemus.reader.events.UserUnwatchedItem
-import com.richodemus.reader.events.UserWatchedItem
+import com.richodemus.reader.events_v2.Event
+import com.richodemus.reader.events_v2.UserSubscribedToFeed
+import com.richodemus.reader.events_v2.UserUnwatchedItem
+import com.richodemus.reader.events_v2.UserWatchedItem
 import org.slf4j.LoggerFactory
 
 data class User(val id: UserId,

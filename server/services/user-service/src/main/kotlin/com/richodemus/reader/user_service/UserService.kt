@@ -4,8 +4,8 @@ import com.richodemus.reader.common.kafka_adapter.EventStore
 import com.richodemus.reader.dto.Password
 import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.dto.Username
-import com.richodemus.reader.events.ChangePassword
-import com.richodemus.reader.events.CreateUser
+import com.richodemus.reader.events_v2.PasswordChanged
+import com.richodemus.reader.events_v2.UserCreated
 import org.slf4j.LoggerFactory
 import java.util.UUID
 import javax.inject.Inject
@@ -18,7 +18,7 @@ class UserService @Inject internal constructor(private val eventStore: EventStor
 
     init {
         eventStore.consume { event ->
-            if (event is CreateUser) {
+            if (event is UserCreated) {
                 users = users.plus(Pair(event.username, User(event.userId, event.username, event.password)))
             }
             users = users.mapValues { user -> user.value.process(event) }
@@ -30,7 +30,7 @@ class UserService @Inject internal constructor(private val eventStore: EventStor
         val userId = UserId(UUID.randomUUID().toString())
         logger.info("Creating new user {} ({})", username, userId)
 
-        eventStore.produce(CreateUser(userId, username, password.hash()))
+        eventStore.produce(UserCreated(userId, username, password.hash()))
         return userId
     }
 
@@ -45,7 +45,7 @@ class UserService @Inject internal constructor(private val eventStore: EventStor
     fun changePassword(userId: UserId, password: Password) {
         assertUserExists(userId) { "No user with id $userId" }
 
-        eventStore.produce(ChangePassword(userId, password.hash()))
+        eventStore.produce(PasswordChanged(userId, password.hash()))
     }
 
     private fun assertUserExists(userId: UserId, msg: () -> String) {
