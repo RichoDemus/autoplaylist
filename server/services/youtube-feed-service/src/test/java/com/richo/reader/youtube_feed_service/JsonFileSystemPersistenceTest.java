@@ -17,51 +17,46 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JsonFileSystemPersistenceTest
-{
-	private JsonFileSystemPersistence target;
+public class JsonFileSystemPersistenceTest {
+    private JsonFileSystemPersistence target;
 
-	@Before
-	public void setUp() throws Exception
-	{
-		target = new JsonFileSystemPersistence("target/data/" + UUID.randomUUID());
+    @Before
+    public void setUp() throws Exception {
+        target = new JsonFileSystemPersistence("target/data/" + UUID.randomUUID());
 
-	}
+    }
 
-	@Test
-	public void shouldSaveStuffInTheRightPlace() throws Exception
-	{
-		target.updateChannel(new Feed(new FeedId("id"), new FeedName("name"), new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC)));
-		Assert.assertTrue(new File("target/data/").exists());
-	}
+    @Test
+    public void shouldSaveStuffInTheRightPlace() throws Exception {
+        target.updateChannel(new Feed(new FeedId("id"), new FeedName("name"), new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC)));
+        Assert.assertTrue(new File("target/data/").exists());
+    }
 
-	@Test
-	public void shouldBeAbleToLoadSavedData() throws Exception
-	{
-		final FeedId feedId = new FeedId("my-channel");
-		final FeedName feedName = new FeedName("my-channel");
-		final Item firstVideo = new Item("id1", "title1", "desc1", 0L, 0L, 0L, 0L);
-		final Item secondVideo = new Item("id2", "title2", "desc2", 0L, 0L, 0L, 0L);
-		final Feed expected = new Feed(feedId, feedName, Arrays.asList(firstVideo, secondVideo), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC));
-		target.updateChannel(expected);
+    @Test
+    public void shouldBeAbleToLoadSavedData() throws Exception {
+        final FeedId feedId = new FeedId("my-channel");
+        final FeedName feedName = new FeedName("my-channel");
+        final Item firstVideo = new Item("id1", "title1", "desc1", 0L, 0L, 0L, 0L);
+        final Item secondVideo = new Item("id2", "title2", "desc2", 0L, 0L, 0L, 0L);
+        final Feed expected = new Feed(feedId, feedName, Arrays.asList(firstVideo, secondVideo), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC));
+        target.updateChannel(expected);
 
-		final Optional<Feed> maybeResult = target.getChannel(feedId);
+        final Optional<Feed> maybeResult = target.getChannel(feedId);
 
-		Assert.assertTrue("Should've gotten a channel", maybeResult.isPresent());
-		final Feed result = maybeResult.get();
-		Assert.assertEquals(expected, result);
-		assertThat(result.getItems()).isEqualTo(expected.getItems());
-	}
+        Assert.assertTrue("Should've gotten a channel", maybeResult.isPresent());
+        final Feed result = maybeResult.get();
+        Assert.assertEquals(expected, result);
+        assertThat(result.getItems()).isEqualTo(expected.getItems());
+    }
 
-	@Test
-	public void shouldReturnAllChanelIds() throws Exception
-	{
-		final List<Feed> feeds = Arrays.asList(new Feed(new FeedId("feed1"), new FeedName("qwe"), new ArrayList<>(), 0L), new Feed(new FeedId("feed2"), new FeedName("qwe"), new ArrayList<>(), 0L));
+    @Test
+    public void shouldReturnAllChanelIds() throws Exception {
+        final List<Feed> feeds = Arrays.asList(new Feed(new FeedId("feed1"), new FeedName("qwe"), new ArrayList<>(), 0L), new Feed(new FeedId("feed2"), new FeedName("qwe"), new ArrayList<>(), 0L));
 
-		feeds.forEach(target::updateChannel);
+        feeds.forEach(target::updateChannel);
 
-		final List<FeedId> result = target.getAllFeedIds();
+        final List<FeedId> result = target.getAllFeedIds();
 
-		assertThat(result).containsOnly(new FeedId("feed1"), new FeedId("feed2"));
-	}
+        assertThat(result).containsOnly(new FeedId("feed1"), new FeedId("feed2"));
+    }
 }

@@ -11,40 +11,34 @@ import java.util.Optional;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
-public class YoutubeFeedService
-{
-	private final FeedCache cache;
-	private final YoutubeChannelDownloader youtubeChannelDownloader;
-	private Timer getChannelTimer;
+public class YoutubeFeedService {
+    private final FeedCache cache;
+    private final YoutubeChannelDownloader youtubeChannelDownloader;
+    private Timer getChannelTimer;
 
-	@Inject
-	public YoutubeFeedService(FeedCache cache, YoutubeChannelDownloader youtubeChannelDownloader, final MetricRegistry registry)
-	{
-		this.cache = cache;
-		this.youtubeChannelDownloader = youtubeChannelDownloader;
-		this.getChannelTimer = registry.timer(name(YoutubeFeedService.class, "getChannel"));
-	}
+    @Inject
+    public YoutubeFeedService(final FeedCache cache,
+                              final YoutubeChannelDownloader youtubeChannelDownloader,
+                              final MetricRegistry registry) {
+        this.cache = cache;
+        this.youtubeChannelDownloader = youtubeChannelDownloader;
+        this.getChannelTimer = registry.timer(name(YoutubeFeedService.class, "getChannel"));
+    }
 
-	public void registerChannel(final FeedId feedId)
-	{
-		cache.add(feedId);
-	}
+    public void registerChannel(final FeedId feedId) {
+        cache.add(feedId);
+    }
 
-	public Optional<Feed> getChannel(final FeedId feedId)
-	{
-		final Timer.Context context = getChannelTimer.time();
-		try
-		{
-			return cache.get(feedId);
-		}
-		finally
-		{
-			context.stop();
-		}
-	}
+    public Optional<Feed> getChannel(final FeedId feedId) {
+        final Timer.Context context = getChannelTimer.time();
+        try {
+            return cache.get(feedId);
+        } finally {
+            context.stop();
+        }
+    }
 
-	public FeedId getFeedId(final FeedUrl feedUrl)
-	{
-		return youtubeChannelDownloader.getFeedId(feedUrl);
-	}
+    public FeedId getFeedId(final FeedUrl feedUrl) {
+        return youtubeChannelDownloader.getFeedId(feedUrl);
+    }
 }

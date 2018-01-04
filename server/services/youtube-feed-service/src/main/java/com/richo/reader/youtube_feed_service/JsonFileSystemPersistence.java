@@ -20,78 +20,64 @@ import java.util.stream.Collectors;
 import static java.util.Collections.singletonList;
 
 
-public class JsonFileSystemPersistence
-{
-	private final Logger logger = LoggerFactory.getLogger(getClass());
+public class JsonFileSystemPersistence {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	private final String saveRoot;
-	private ObjectMapper objectMapper;
+    private final String saveRoot;
+    private ObjectMapper objectMapper;
 
-	/**
-	 * Just used to create some test data
-	 */
-	public static void main(String[] args)
-	{
-		new JsonFileSystemPersistence("data/").updateChannel(
-				new Feed(new FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw"),
-						new FeedName("richodemus"), singletonList(new Item("id", "title", "desc", 0L, 0L, 60L, 100L)),
-						0L));
-	}
+    /**
+     * Just used to create some test data
+     */
+    public static void main(String[] args) {
+        new JsonFileSystemPersistence("data/").updateChannel(
+                new Feed(new FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw"),
+                        new FeedName("richodemus"), singletonList(new Item("id", "title", "desc", 0L, 0L, 60L, 100L)),
+                        0L));
+    }
 
-	@Inject
-	public JsonFileSystemPersistence(@Named("saveRoot") String saveRoot)
-	{
-		this.saveRoot = saveRoot;
-		this.objectMapper = new ObjectMapper();
-	}
+    @Inject
+    public JsonFileSystemPersistence(@Named("saveRoot") String saveRoot) {
+        this.saveRoot = saveRoot;
+        this.objectMapper = new ObjectMapper();
+    }
 
-	public Optional<Feed> getChannel(FeedId feedId)
-	{
-		try
-		{
-			final File file = new File(saveRoot + "/feeds/" + feedId + "/data.json");
-			if (!file.exists())
-			{
-				logger.debug("Feed {} not on disk", feedId);
-				return Optional.empty();
-			}
-			logger.trace("Reading feed {} from disk", feedId);
-			return Optional.ofNullable(objectMapper.readValue(file, Feed.class));
-		}
-		catch (Exception e)
-		{
-			logger.warn("Unable to load feed: {}", feedId, e);
-			return Optional.empty();
-		}
-	}
+    public Optional<Feed> getChannel(FeedId feedId) {
+        try {
+            final File file = new File(saveRoot + "/feeds/" + feedId + "/data.json");
+            if (!file.exists()) {
+                logger.debug("Feed {} not on disk", feedId);
+                return Optional.empty();
+            }
+            logger.trace("Reading feed {} from disk", feedId);
+            return Optional.ofNullable(objectMapper.readValue(file, Feed.class));
+        } catch (Exception e) {
+            logger.warn("Unable to load feed: {}", feedId, e);
+            return Optional.empty();
+        }
+    }
 
-	void updateChannel(final Feed feed)
-	{
-		try
-		{
-			feed.getItems().sort(Comparator.comparing(Item::getUploadDate));
+    void updateChannel(final Feed feed) {
+        try {
+            feed.getItems().sort(Comparator.comparing(Item::getUploadDate));
 
-			final String path = saveRoot + "/feeds/" + feed.getId();
-			final boolean success = new File(path).mkdirs();
-			logger.trace("Creating {} successful: {}", path, success);
-			objectMapper.writeValue(new File(path + "/data.json"), feed);
-		}
-		catch (IOException e)
-		{
-			logger.warn("Unable to write feed {} to disk", feed.getId(), e);
-		}
-	}
+            final String path = saveRoot + "/feeds/" + feed.getId();
+            final boolean success = new File(path).mkdirs();
+            logger.trace("Creating {} successful: {}", path, success);
+            objectMapper.writeValue(new File(path + "/data.json"), feed);
+        } catch (IOException e) {
+            logger.warn("Unable to write feed {} to disk", feed.getId(), e);
+        }
+    }
 
-	List<FeedId> getAllFeedIds()
-	{
-		final File[] directories = new File(saveRoot + "/feeds/").listFiles(File::isDirectory);
-		if (directories == null)
-		{
-			return new ArrayList<>();
-		}
-		return Arrays.stream(directories)
-				.map(File::getName)
-				.map(FeedId::new)
-				.collect(Collectors.toList());
-	}
+    List<FeedId> getAllFeedIds() {
+        final File[] directories = new File(saveRoot + "/feeds/").listFiles(File::isDirectory);
+        if (directories == null) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(directories)
+                .map(File::getName)
+                .map(FeedId::new)
+                .collect(Collectors.toList());
+    }
 }
