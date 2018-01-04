@@ -28,6 +28,4 @@ ext {
     gradleVersionsPluginVersion = '0.17.0'
     gradleDependencyAnalyzePluginVersion = '1.2.1'
     gradleDockerPluginVersion = '3.2.0'
-    osdetectorGradlePluginVersion = '1.4.0'
 }
-

@@ -14,10 +14,6 @@
 ### Check for outdated dependencies
     ./gradlew dependencyUpdates
 
-## reader-test on raspberry:
-* Add -H tcp://127.0.0.1:2375 to the docker process (like DOCKER_OPTS or systemd)
-* Add the env variable DOCKER_HOST=tcp://127.0.0.1:2375
-
 ## Features TODO
 * Use my classpath scanner
 * add a captcha for signups

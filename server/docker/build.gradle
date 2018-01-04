@@ -2,35 +2,15 @@ import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
 apply plugin: 'java'
 apply plugin: 'com.bmuschko.docker-remote-api'
-apply plugin: 'com.google.osdetector'
 
 task copyDependencies(type: Copy) {
     from configurations.compile
     into 'build/dependencies'
 }
 
-docker {
-    url = "unix:///var/run/docker.sock"
-}
-
 task buildImage(type: DockerBuildImage, dependsOn: copyDependencies) {
     description = "Build Docker Image, use -Ptag=X to tag with X instead of latest"
-    switch(osdetector.arch) {
-        case 'x86_64':
-            println "You have an 64b processor"
-            dockerFile = file('./Dockerfile')
-            break
-        case 'arm_32':
-            println "You have an arm processor"
-            dockerFile = file('./Dockerfile_arm')
-            break
-
-        default:
-            println "Unrecognized architechture: $osdetector.arch"
-            throw new GradleException("Unrecognized architechture: $osdetector.arch")
-        break
-
-    }
+    dockerFile = file('./Dockerfile')
     inputDir = file('.')
     def customTag = project.hasProperty('tag') ? project.tag : 'latest'
     tag = "richodemus/reader:${customTag}"
@@ -47,17 +27,5 @@ buildscript {
     }
     dependencies {
         classpath "com.bmuschko:gradle-docker-plugin:$rootProject.gradleDockerPluginVersion"
-        classpath "com.google.gradle:osdetector-gradle-plugin:$rootProject.osdetectorGradlePluginVersion"
     }
 }
-
-
-/*
-task buildImage(type: DockerBuildImage, dependsOn: copyDependencies) {
-    description = "Build Docker Image, use -Ptag=X to tag with X instead of latest"
-    dockerFile = file('./Dockerfile')
-    inputDir = file('.')
-    def customTag = project.hasProperty('tag') ? project.tag : 'latest'
-    tag = "richodemus/chronicler:${customTag}"
-}
-*/
