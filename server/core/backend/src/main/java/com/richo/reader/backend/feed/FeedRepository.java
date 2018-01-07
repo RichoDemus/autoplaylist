@@ -8,13 +8,10 @@ import com.richodemus.reader.dto.ItemId;
 import java.util.List;
 import java.util.Optional;
 
-public interface FeedRepository
-{
-	Optional<Feed> getFeed(FeedId feedId);
+public interface FeedRepository {
+    Optional<Feed> getFeed(FeedId feedId);
 
-	List<ItemId> getItemIds(FeedId feedId);
+    List<ItemId> getItemIds(FeedId feedId);
 
-	void registerChannel(FeedId feedId);
-
-	FeedId getFeedId(FeedUrl feedUrl);
+    FeedId getFeedId(FeedUrl feedUrl);
 }

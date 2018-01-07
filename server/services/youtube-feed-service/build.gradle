@@ -1,6 +1,9 @@
 description = 'youtube-feed-service'
 dependencies {
     compile project(':server:common:dto')
+    compile project(':server:common:events')
+    compile project(':server:common:kafka-adapter')
+    compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
     compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
     compile "com.google.guava:guava:$rootProject.guavaVersion"

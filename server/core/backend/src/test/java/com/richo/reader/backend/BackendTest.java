@@ -96,7 +96,6 @@ public class BackendTest
 
 		target.addFeed(EXISTING_USER.getName(), url);
 
-		verify(feedRepository).registerChannel(eq(id));
 		verify(subscriptionRepository).subscribe(EXISTING_USER.id, id);
 	}
 

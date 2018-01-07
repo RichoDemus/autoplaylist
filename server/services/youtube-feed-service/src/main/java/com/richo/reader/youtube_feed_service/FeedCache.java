@@ -9,9 +9,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Singleton
 public class FeedCache {
@@ -37,12 +37,12 @@ public class FeedCache {
         fileSystemPersistence.updateChannel(feed);
     }
 
-    List<FeedId> getAllFeedIds() {
-        return fileSystemPersistence.getAllFeedIds();
+    Set<FeedId> getAllFeedIds() {
+        return cache.keySet();
     }
 
     public void add(FeedId feedId) {
-        final Feed feed = new Feed(feedId, new FeedName("UNKNOWN_FEED"), new ArrayList<>(), 0L);
-        fileSystemPersistence.updateChannel(feed);
+        logger.info("Adding feed {}", feedId);
+        cache.putIfAbsent(feedId, new Feed(feedId, new FeedName("UNKNOWN_FEED"), new ArrayList<>(), 0L));
     }
 }

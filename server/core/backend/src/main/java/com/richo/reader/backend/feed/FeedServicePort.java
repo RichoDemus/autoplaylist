@@ -43,12 +43,6 @@ public class FeedServicePort implements FeedRepository
 	}
 
 	@Override
-	public void registerChannel(FeedId feedId)
-	{
-		feedService.registerChannel(feedId);
-	}
-
-	@Override
 	public FeedId getFeedId(FeedUrl feedUrl)
 	{
 		return feedService.getFeedId(feedUrl);

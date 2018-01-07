@@ -13,8 +13,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -88,9 +87,7 @@ public class PeriodicDownloadOrchestrator {
         isRunning = true;
         try {
             logger.info("Midnight, time to download");
-            // todo get all feedIds from event store instead of disk
-            final List<FeedId> feedIds = cache.getAllFeedIds();
-            feedIds.sort(Comparator.comparing(FeedId::getValue));
+            final LinkedHashSet<FeedId> feedIds = new LinkedHashSet<>(cache.getAllFeedIds());
             logger.info("{} feeds to download", feedIds.size());
 
             feedIds.forEach(feedId -> runWithExceptionHandling(feedId, downloader::downloadFeed));

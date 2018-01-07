@@ -1,6 +1,7 @@
 package com.richo.reader.youtube_feed_service;
 
 import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader;
+import com.richodemus.reader.dto.FeedId;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -36,7 +37,10 @@ public class PeriodicDownloadOrchestratorTest {
             running = false;
             return null;
         }).when(downloaderMock).downloadFeed(any());
-        final PeriodicDownloadOrchestrator target = new PeriodicDownloadOrchestrator(new FeedCache(new JsonFileSystemPersistence(saveRoot)), downloaderMock, ZonedDateTime.now());
+        final FeedCache cache = new FeedCache(new JsonFileSystemPersistence(saveRoot));
+        cache.add(new FeedId("richodemus"));
+        final PeriodicDownloadOrchestrator target = new PeriodicDownloadOrchestrator(cache, downloaderMock, ZonedDateTime.now());
+
         target.start();
         System.out.println("Sleeping...");
         while (running) {

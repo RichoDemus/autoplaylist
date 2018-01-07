@@ -171,7 +171,6 @@ public class Backend
 		final com.richodemus.reader.user_service.User user = getUser(username);
 
 		//Todo its now possible to add feeds that doesnt exist...
-		feedRepository.registerChannel(feedId);
 		subscriptionRepository.subscribe(user.getId(), feedId);
 	}
 
