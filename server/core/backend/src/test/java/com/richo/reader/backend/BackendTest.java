@@ -10,14 +10,13 @@ import com.richo.reader.backend.model.FeedWithoutItems;
 import com.richo.reader.backend.model.Item;
 import com.richo.reader.backend.model.User;
 import com.richo.reader.backend.subscription.SubscriptionRepository;
+import com.richo.reader.backend.user.UserRepository;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedName;
 import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
-import com.richodemus.reader.dto.PasswordHash;
 import com.richodemus.reader.dto.UserId;
 import com.richodemus.reader.dto.Username;
-import com.richodemus.reader.user_service.UserService;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -63,7 +62,7 @@ public class BackendTest
 
 	private Backend target;
 	private SubscriptionRepository subscriptionRepository;
-	private UserService userService;
+	private UserRepository userRepository;
 	private FeedRepository feedRepository;
 
 	@Before
@@ -71,20 +70,14 @@ public class BackendTest
 	{
 		feedRepository = mock(FeedRepository.class);
 		subscriptionRepository = mock(SubscriptionRepository.class);
-		userService = mock(UserService.class);
-		target = new Backend(subscriptionRepository, feedRepository, userService, new MetricRegistry());
+		userRepository = mock(UserRepository.class);
+		target = new Backend(subscriptionRepository, feedRepository, userRepository, new MetricRegistry());
 
-
-		when(userService.find(EXISTING_USER.getName())).thenReturn(new com.richodemus.reader.user_service.User(EXISTING_USER.id, EXISTING_USER.getName(), new PasswordHash("asd")));
-		when(userService.find(NON_EXISTING_USER)).thenReturn(null);
+		when(userRepository.getUserId(EXISTING_USER.getName())).thenReturn((EXISTING_USER.id));
+		when(userRepository.getUserId(NON_EXISTING_USER)).thenThrow(NoSuchUserException.class);
 		when(feedRepository.getFeed(FEED_1.getId())).thenReturn(Optional.of(FEED_1));
 		when(feedRepository.getFeed(FEED_2.getId())).thenReturn(Optional.of(FEED_2));
 		when(subscriptionRepository.get(EXISTING_USER.id)).thenReturn(Arrays.asList(FEED_1, FEED_2));
-	}
-
-	private FeedWithoutItems withoutItems(Feed feed)
-	{
-		return new FeedWithoutItems(feed.getId(), null, feed.getItems().size());
 	}
 
 	@Test

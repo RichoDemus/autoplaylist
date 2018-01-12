@@ -3,7 +3,6 @@ package com.richo.reader.web.dropwizard.autoscanned.resource;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import com.richo.reader.backend.LabelManager;
-import com.richo.reader.backend.exception.NoSuchLabelException;
 import com.richo.reader.backend.exception.NoSuchUserException;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.Label;
@@ -75,7 +74,7 @@ public class LabelResource
 		{
 			labelManager.addFeedToLabel(new LabelId(UUID.fromString(labelId)), feedId);
 		}
-		catch (NoSuchUserException | NoSuchLabelException e)
+		catch (NoSuchUserException e)
 		{
 			throw new BadRequestException(e);
 		}

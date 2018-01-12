@@ -2,7 +2,6 @@ package com.richo.reader.youtube_feed_service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.richodemus.reader.dto.FeedId;
-import com.richodemus.reader.dto.FeedName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,34 +9,18 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static java.util.Collections.singletonList;
 
 
 public class JsonFileSystemPersistence {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final String saveRoot;
-    private ObjectMapper objectMapper;
-
-    /**
-     * Just used to create some test data
-     */
-    public static void main(String[] args) {
-        new JsonFileSystemPersistence("data/").updateChannel(
-                new Feed(new FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw"),
-                        new FeedName("richodemus"), singletonList(new Item("id", "title", "desc", 0L, 0L, 60L, 100L)),
-                        0L));
-    }
+    private final ObjectMapper objectMapper;
 
     @Inject
-    public JsonFileSystemPersistence(@Named("saveRoot") String saveRoot) {
+    JsonFileSystemPersistence(@Named("saveRoot") String saveRoot) {
         this.saveRoot = saveRoot;
         this.objectMapper = new ObjectMapper();
     }
@@ -68,16 +51,5 @@ public class JsonFileSystemPersistence {
         } catch (IOException e) {
             logger.warn("Unable to write feed {} to disk", feed.getId(), e);
         }
-    }
-
-    List<FeedId> getAllFeedIds() {
-        final File[] directories = new File(saveRoot + "/feeds/").listFiles(File::isDirectory);
-        if (directories == null) {
-            return new ArrayList<>();
-        }
-        return Arrays.stream(directories)
-                .map(File::getName)
-                .map(FeedId::new)
-                .collect(Collectors.toList());
     }
 }

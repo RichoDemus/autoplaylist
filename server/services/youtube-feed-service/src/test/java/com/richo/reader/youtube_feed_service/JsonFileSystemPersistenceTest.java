@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -47,16 +46,5 @@ public class JsonFileSystemPersistenceTest {
         final Feed result = maybeResult.get();
         Assert.assertEquals(expected, result);
         assertThat(result.getItems()).isEqualTo(expected.getItems());
-    }
-
-    @Test
-    public void shouldReturnAllChanelIds() throws Exception {
-        final List<Feed> feeds = Arrays.asList(new Feed(new FeedId("feed1"), new FeedName("qwe"), new ArrayList<>(), 0L), new Feed(new FeedId("feed2"), new FeedName("qwe"), new ArrayList<>(), 0L));
-
-        feeds.forEach(target::updateChannel);
-
-        final List<FeedId> result = target.getAllFeedIds();
-
-        assertThat(result).containsOnly(new FeedId("feed1"), new FeedId("feed2"));
     }
 }

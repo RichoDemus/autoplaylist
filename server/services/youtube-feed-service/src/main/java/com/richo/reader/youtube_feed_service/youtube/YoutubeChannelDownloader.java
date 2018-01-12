@@ -65,11 +65,6 @@ public class YoutubeChannelDownloader {
         return usernameToChannel(id);
     }
 
-    // todo remove this
-    public FeedId nameToId(final FeedName feedName) {
-        return usernameToChannel(feedName.getValue());
-    }
-
     public Optional<FeedName> getName(final FeedId feedId) {
         final List<Channel> channels;
         try {

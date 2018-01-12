@@ -32,7 +32,6 @@ public class FeedCache {
 
     public void update(Feed feed) {
         logger.debug("Updating feed: {}, {} items", feed.getId(), feed.getItems().size());
-        feed.getItems().forEach(i -> logger.trace("item: {}", i));
         cache.put(feed.getId(), feed);
         fileSystemPersistence.updateChannel(feed);
     }
@@ -41,7 +40,7 @@ public class FeedCache {
         return cache.keySet();
     }
 
-    public void add(FeedId feedId) {
+    void add(FeedId feedId) {
         logger.info("Adding feed {}", feedId);
         cache.putIfAbsent(feedId, new Feed(feedId, new FeedName("UNKNOWN_FEED"), new ArrayList<>(), 0L));
     }

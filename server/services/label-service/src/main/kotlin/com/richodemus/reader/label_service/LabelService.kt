@@ -13,7 +13,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class LabelService @Inject internal constructor(val eventStore: EventStore) {
+class LabelService @Inject internal constructor(private val eventStore: EventStore) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private var labels = emptyList<Label>()
 

@@ -6,6 +6,8 @@ import com.richo.reader.backend.feed.FeedRepository;
 import com.richo.reader.backend.feed.FeedServicePort;
 import com.richo.reader.backend.subscription.SubscriptionRepository;
 import com.richo.reader.backend.subscription.SubscriptionServicePort;
+import com.richo.reader.backend.user.UserRepository;
+import com.richo.reader.backend.user.UserServicePort;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -22,5 +24,6 @@ public class BackendModule extends AbstractModule
 		bind(String.class).annotatedWith(named("apiKey")).toInstance("AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
 		bind(SubscriptionRepository.class).to(SubscriptionServicePort.class);
 		bind(FeedRepository.class).to(FeedServicePort.class);
+		bind(UserRepository.class).to(UserServicePort.class);
 	}
 }
