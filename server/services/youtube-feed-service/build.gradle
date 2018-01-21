@@ -1,9 +1,13 @@
+apply plugin: 'kotlin'
+
 description = 'youtube-feed-service'
 dependencies {
     compile project(':server:common:dto')
     compile project(':server:common:events')
     compile project(':server:common:kafka-adapter')
     compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
+    compile 'org.jetbrains:annotations'
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
     compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
     compile "com.google.guava:guava:$rootProject.guavaVersion"
@@ -22,4 +26,13 @@ dependencies {
 
 repositories {
     maven { url "http://google-api-client-libraries.appspot.com/mavenrepo" }
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.kotlinVersion"
+    }
 }
