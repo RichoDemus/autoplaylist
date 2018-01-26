@@ -1,6 +1,7 @@
 package com.richo.reader.youtube_feed_service;
 
 import com.codahale.metrics.MetricRegistry;
+import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader;
 import com.richodemus.reader.common.kafka_adapter.InMemoryEventStore;
 import com.richodemus.reader.dto.EventId;
 import com.richodemus.reader.dto.FeedId;
@@ -37,7 +38,7 @@ public class YoutubeFeedServiceTest {
         final FeedCache cache = new FeedCache(fileSystemPersistence);
         cache.update(CACHED_CHANNEL);
         eventStore = new InMemoryEventStore();
-        target = new YoutubeFeedService(cache, null, new MetricRegistry(), eventStore);
+        target = new YoutubeFeedService(cache, mock(YoutubeChannelDownloader.class), new MetricRegistry(), eventStore);
     }
 
     @Test
@@ -76,7 +77,7 @@ public class YoutubeFeedServiceTest {
         when(fileSystemPersistence.getChannel(CHANNEL_ON_DISK.getId())).thenReturn(Optional.of(CHANNEL_ON_DISK));
         final FeedCache cache = new FeedCache(fileSystemPersistence);
         cache.update(CACHED_CHANNEL);
-        target = new YoutubeFeedService(cache, null, new MetricRegistry(), new InMemoryEventStore());
+        target = new YoutubeFeedService(cache, mock(YoutubeChannelDownloader.class), new MetricRegistry(), new InMemoryEventStore());
 
         target.getChannel(CHANNEL_ON_DISK.getId());
         target.getChannel(CHANNEL_ON_DISK.getId());
