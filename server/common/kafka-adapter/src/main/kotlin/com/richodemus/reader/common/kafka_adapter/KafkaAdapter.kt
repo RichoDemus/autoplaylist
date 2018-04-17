@@ -26,8 +26,9 @@ class KafkaAdapter : EventStore {
 
     init {
         val propOrEmpty: String? = System.getProperty("reader.kafka.host", "")
-        val kafkaHost = if (propOrEmpty.isNullOrBlank()) "kafka" else propOrEmpty
+        val kafkaHost = if (propOrEmpty.isNullOrBlank()) "reader" else propOrEmpty
         val kafkaServer = "$kafkaHost:9092"
+        logger.info("Connecting to kafka at $kafkaServer")
 
         val producerProperties = Properties()
         producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer)
