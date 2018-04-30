@@ -1,6 +1,6 @@
 ext {
     // compile dependencies
-    kotlinVersion = '1.2.10'
+    kotlinVersion = '1.2.41'
     dropwizardVersion = '1.2.2'
     dropwizardMetricsVersion = '3.2.2'
     jacksonVersion = '2.9.2'
@@ -26,6 +26,6 @@ ext {
 
     // plugins
     gradleVersionsPluginVersion = '0.17.0'
-    gradleDependencyAnalyzePluginVersion = '1.2.1'
+    gradleDependencyAnalyzePluginVersion = '1.2.2'
     gradleDockerPluginVersion = '3.2.0'
 }
