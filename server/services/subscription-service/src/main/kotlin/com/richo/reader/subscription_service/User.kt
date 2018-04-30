@@ -23,7 +23,10 @@ data class User(val id: UserId,
     }
 
     private fun subscribe(evt: UserSubscribedToFeed): User {
-        if (feeds.any { it.id == evt.feedId }) logger.warn("User $id is already subscribed to ${evt.feedId}")
+        if (feeds.any { it.id == evt.feedId }) {
+            logger.warn("User $id is already subscribed to ${evt.feedId}")
+            return this
+        }
         return this.copy(feeds = feeds.plus(Feed(evt.feedId)))
     }
 
