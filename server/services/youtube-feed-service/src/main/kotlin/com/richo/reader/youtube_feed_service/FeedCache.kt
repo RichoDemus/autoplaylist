@@ -31,6 +31,8 @@ internal class FeedCache
 
     fun add(feedId: FeedId) {
         logger.info("Adding feed {}", feedId)
-        cache.putIfAbsent(feedId, Feed(feedId, FeedName("UNKNOWN_FEED"), ArrayList(), 0L))
+        cache.computeIfAbsent(feedId) {
+            fileSystemPersistence.getChannel(feedId).orElse(Feed(feedId, FeedName("UNKNOWN_FEED"), ArrayList(), 0L))
+        }
     }
 }
