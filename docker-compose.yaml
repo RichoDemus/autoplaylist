@@ -7,10 +7,3 @@ services:
     ports:
       - "8080:8080"
       - "8081:8081"
-      - "9010:9010"
-  chronicler:
-    image: richodemus/chronicler:latest
-    ports:
-      - "8090:8080"
-    volumes:
-      - "./data/events:/chronicler/data"
