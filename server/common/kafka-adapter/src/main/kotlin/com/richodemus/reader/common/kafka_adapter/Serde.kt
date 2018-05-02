@@ -80,8 +80,7 @@ class EventIdDeserializer : Deserializer<EventId> {
 
     override fun deserialize(topic: String?, data: ByteArray): EventId {
         val content = String(data)
-        val resut = mapper.readValue<EventId>(content)
-        return resut
+        return mapper.readValue(content)
     }
 
     override fun close() {

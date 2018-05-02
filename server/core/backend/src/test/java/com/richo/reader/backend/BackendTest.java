@@ -66,8 +66,7 @@ public class BackendTest
 	private FeedRepository feedRepository;
 
 	@Before
-	public void setUp() throws Exception
-	{
+	public void setUp() {
 		feedRepository = mock(FeedRepository.class);
 		subscriptionRepository = mock(SubscriptionRepository.class);
 		userRepository = mock(UserRepository.class);
@@ -81,8 +80,7 @@ public class BackendTest
 	}
 
 	@Test
-	public void testAddFeed() throws Exception
-	{
+	public void testAddFeed() {
 		final FeedUrl url = new FeedUrl("http://asd.com");
 		final FeedId id = new FeedId("id");
 		when(feedRepository.getFeedId(eq(url))).thenReturn(id);
@@ -94,8 +92,7 @@ public class BackendTest
 
 	@Ignore
 	@Test
-	public void getFeedShouldReturnFeed() throws Exception
-	{
+	public void getFeedShouldReturnFeed() {
 		final List<com.richo.reader.backend.model.Item> unwatchedItems = FEED_1.getItems()
 				.stream()
 				.filter(i -> !EXISTING_USER.isRead(FEED_1.getId(), i.getId()))
@@ -108,8 +105,7 @@ public class BackendTest
 	}
 
 	@Test
-	public void getFeedsShouldReturnSubscribedFeeds() throws Exception
-	{
+	public void getFeedsShouldReturnSubscribedFeeds() {
 		final List<FeedId> expected = Stream.of(FEED_1, FEED_2)
 				.map(Feed::getId)
 				.collect(toList());
@@ -120,34 +116,29 @@ public class BackendTest
 	}
 
 	@Test(expected = NoSuchUserException.class)
-	public void getFeedShouldThrowNoSuchUserExceptionIfUserDoesntExist() throws Exception
-	{
+	public void getFeedShouldThrowNoSuchUserExceptionIfUserDoesntExist() {
 		target.getFeed(NON_EXISTING_USER, FEED_1.getId());
 	}
 
 	@Test(expected = NoSuchUserException.class)
-	public void getAllFeedsWithoutItemsShouldThrowNoSuchUserExceptionIfUserDoesntExist() throws Exception
-	{
+	public void getAllFeedsWithoutItemsShouldThrowNoSuchUserExceptionIfUserDoesntExist() {
 		target.getAllFeedsWithoutItems(NON_EXISTING_USER);
 	}
 
 	@Test
-	public void shouldMarkItemAsRead() throws Exception
-	{
+	public void shouldMarkItemAsRead() {
 		target.markAsRead(EXISTING_USER.getName(), FEED_1.getId(), ITEM_TO_MARK_AS_READ.getId());
 		verify(subscriptionRepository).markAsRead(EXISTING_USER.id, FEED_1.getId(), ITEM_TO_MARK_AS_READ.getId());
 	}
 
 	@Test
-	public void shouldMarkItemAsUnread() throws Exception
-	{
+	public void shouldMarkItemAsUnread() {
 		target.markAsUnread(EXISTING_USER.getName(), FEED_1.getId(), ITEM_TO_MARK_AS_READ.getId());
 		verify(subscriptionRepository).markAsUnread(EXISTING_USER.id, FEED_1.getId(), ITEM_TO_MARK_AS_READ.getId());
 	}
 
 	@Test
-	public void markOlderItemsAsUnreadShouldLeadToOlderItemsNotBeingReturned() throws Exception
-	{
+	public void markOlderItemsAsUnreadShouldLeadToOlderItemsNotBeingReturned() {
 		final ItemId id = new ItemId("item-id-4");
 		target.markOlderItemsAsRead(EXISTING_USER.getName(), FEED_1.getId(), id);
 

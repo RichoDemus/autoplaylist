@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.io.PrintWriter;
 
+@SuppressWarnings("unused")
 class DownloadYoutubeChannelsTask extends Task
 {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -22,8 +23,7 @@ class DownloadYoutubeChannelsTask extends Task
 	}
 
 	@Override
-	public void execute(ImmutableMultimap<String, String> immutableMultimap, PrintWriter printWriter) throws Exception
-	{
+	public void execute(ImmutableMultimap<String, String> immutableMultimap, PrintWriter printWriter) {
 		logger.info("Execute...");
 		orchestrator.downloadEverythingOnce();
 	}

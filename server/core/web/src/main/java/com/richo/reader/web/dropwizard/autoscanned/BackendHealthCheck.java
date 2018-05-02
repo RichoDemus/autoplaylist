@@ -28,8 +28,7 @@ public class BackendHealthCheck extends NamedHealthCheck
 	}
 
 	@Override
-	protected Result check() throws Exception
-	{
+	protected Result check() {
 		final List<FeedWithoutItems> feeds;
 		try
 		{

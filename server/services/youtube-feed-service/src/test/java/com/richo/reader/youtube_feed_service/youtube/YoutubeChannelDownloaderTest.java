@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class YoutubeChannelDownloaderTest {
     @Ignore("This test uses the live youtube api")
     @Test
-    public void testDownloadVideosFromSingleVideoChannel() throws Exception {
+    public void testDownloadVideosFromSingleVideoChannel() {
 
         final YoutubeChannelDownloader downloader = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
 
@@ -34,7 +34,7 @@ public class YoutubeChannelDownloaderTest {
 
     @Ignore("This test uses the live youtube api")
     @Test
-    public void testDownloadVideosFromChannelWithLotsOfVideos() throws Exception {
+    public void testDownloadVideosFromChannelWithLotsOfVideos() {
         final YoutubeChannelDownloader downloader = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
 
         final YoutubeVideoChunk chunk = downloader.getVideoChunk(new FeedId("Thunderf00t")).get();
@@ -52,7 +52,7 @@ public class YoutubeChannelDownloaderTest {
 
     @Ignore("This test uses the live youtube api")
     @Test
-    public void shouldGetFeedName() throws Exception {
+    public void shouldGetFeedName() {
         final YoutubeChannelDownloader target = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
 
         final FeedName result = target.getName(new FeedId("UCf1iroepad-o5w2il-06Gjg")).get();

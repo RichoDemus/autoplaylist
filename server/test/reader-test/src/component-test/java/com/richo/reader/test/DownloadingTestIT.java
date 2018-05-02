@@ -26,23 +26,20 @@ public class DownloadingTestIT
 	private LoginPage loginPage;
 
 	@Before
-	public void setUp() throws Exception
-	{
+	public void setUp() {
 		youtubeMock = new TestableApplicationProvider().youtubeMock();
 		target = new TestableApplicationProvider().readerApplication(youtubeMock.getHttpPort());
 		loginPage = new LoginPage(target.getHttpPort());
 	}
 
 	@After
-	public void tearDown() throws Exception
-	{
+	public void tearDown() {
 		target.close();
 		youtubeMock.close();
 	}
 
 	@Test
-	public void newlyAddedFeedShouldNotContainItems() throws Exception
-	{
+	public void newlyAddedFeedShouldNotContainItems() {
 		final String username = "richodemus";
 
 		loginPage.createUser(username);
@@ -56,8 +53,7 @@ public class DownloadingTestIT
 	}
 
 	@Test
-	public void shouldDownloadItemsAndAddThemToList() throws Exception
-	{
+	public void shouldDownloadItemsAndAddThemToList() {
 		final String username = "richodemus";
 
 		loginPage.createUser(username);

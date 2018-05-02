@@ -17,7 +17,7 @@ class YoutubeVideoChunkMock extends YoutubeVideoChunk {
     private final List<PlaylistItem> chunks;
 
     YoutubeVideoChunkMock(List<PlaylistItem> items) {
-        super(null, null, null, null, null);
+        super(null, null, null);
         this.chunks = new LinkedList<>();
         chunks.addAll(items);
     }

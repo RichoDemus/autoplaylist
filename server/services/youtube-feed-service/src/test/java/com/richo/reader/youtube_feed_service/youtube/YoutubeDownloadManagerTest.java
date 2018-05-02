@@ -68,7 +68,7 @@ public class YoutubeDownloadManagerTest {
     private FeedCache cache;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         channelDownloaderMock = getYoutubeChannelDownloaderMock();
         when(channelDownloaderMock.getStatistics(anyString())).thenReturn(ImmutableMap.of(
                 CACHED_CHANNEL_FIRST_VIDEO.getId(), new DurationAndViewcount(Duration.ofMinutes(1), 1000L),
@@ -86,7 +86,7 @@ public class YoutubeDownloadManagerTest {
     }
 
     @Test
-    public void testGetChannelThatWasNotPreviouslyDownloaded() throws Exception {
+    public void testGetChannelThatWasNotPreviouslyDownloaded() {
         target.downloadFeed(UNCACHED_CHANNEL.getId());
         final Feed result = cache.get(UNCACHED_CHANNEL.getId()).get();
         assertThat(result).isEqualTo(UNCACHED_CHANNEL);
@@ -94,7 +94,7 @@ public class YoutubeDownloadManagerTest {
     }
 
     @Test
-    public void shouldOnlyDownloadNewItemsFromYoutube() throws Exception {
+    public void shouldOnlyDownloadNewItemsFromYoutube() {
         target.downloadFeed(OUTDATED_CHANNEL_WITH_NEW_ITEM.getId());
         final Feed result = cache.get(OUTDATED_CHANNEL_WITH_NEW_ITEM.getId()).get();
         assertThat(result).isEqualTo(OUTDATED_CHANNEL_WITH_NEW_ITEM);
@@ -102,14 +102,14 @@ public class YoutubeDownloadManagerTest {
     }
 
     @Test
-    public void shouldAppendNewVideosToChannelInCache() throws Exception {
+    public void shouldAppendNewVideosToChannelInCache() {
         target.downloadFeed(OUTDATED_CHANNEL_WITH_NEW_ITEM.getId());
         final Feed result = cache.get(OUTDATED_CHANNEL_WITH_NEW_ITEM.getId()).get();
         assertThat(result).isEqualTo(OUTDATED_CHANNEL_WITH_NEW_ITEM);
     }
 
     @Test
-    public void shouldUpdateVideoStatistics() throws Exception {
+    public void shouldUpdateVideoStatistics() {
         final long newViewCount = 1000L;
         final Duration newDuration = Duration.ofMinutes(1L);
         final Feed originalFeed = cache.get(CACHED_CHANNEL.getId())

@@ -29,8 +29,7 @@ public class LabelTestIT
 	private LoginPage loginPage;
 
 	@Before
-	public void setUp() throws Exception
-	{
+	public void setUp() {
 		youtubeMock = new TestableApplicationProvider().youtubeMock();
 		target = new TestableApplicationProvider().readerApplication(youtubeMock.getHttpPort());
 		baseUrl = "http://localhost:" + target.getHttpPort();
@@ -38,15 +37,13 @@ public class LabelTestIT
 	}
 
 	@After
-	public void tearDown() throws Exception
-	{
+	public void tearDown() {
 		target.close();
 		youtubeMock.close();
 	}
 
 	@Test
-	public void shouldCreateLabel() throws Exception
-	{
+	public void shouldCreateLabel() {
 		final String username = "richodemus";
 		final String labelName = "my-label";
 
@@ -68,8 +65,7 @@ public class LabelTestIT
 	}
 
 	@Test
-	public void shouldAddFeedToLabel() throws Exception
-	{
+	public void shouldAddFeedToLabel() {
 		final String username = "richodemus";
 		final String labelName = "my-label";
 

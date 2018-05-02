@@ -11,7 +11,7 @@ import com.richodemus.reader.web.dto.Item
 import java.util.Optional
 import javax.inject.Inject
 
-class BackendPort @Inject constructor(val backend: Backend) {
+class BackendPort @Inject constructor(private val backend: Backend) {
     fun getAllFeedsWithoutItems(username: Username) = backend.getAllFeedsWithoutItems(username).map { f -> f.toDto() }
 
     fun getFeed(username: Username, feedId: FeedId): Feed? {

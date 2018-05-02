@@ -23,7 +23,7 @@ class Item(val id: ItemId,
     private fun toDoubleDigitSeconds(seconds: Long): String {
         val string = seconds.toString()
         if (string.length == 1) {
-            return "0" + string
+            return "0$string"
         }
         return string
     }

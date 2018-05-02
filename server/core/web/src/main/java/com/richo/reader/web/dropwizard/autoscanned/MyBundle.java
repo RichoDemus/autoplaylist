@@ -24,8 +24,7 @@ public class MyBundle implements ConfiguredBundle<ReaderConfiguration>
 	}
 
 	@Override
-	public void run(ReaderConfiguration configuration, Environment environment) throws Exception
-	{
+	public void run(ReaderConfiguration configuration, Environment environment) {
 		//Setup dropwizard-jwt
 		environment.jersey().register(AuthenticationRequestFilter.class);
 		environment.jersey().register(RolesAllowedDynamicFeature.class);

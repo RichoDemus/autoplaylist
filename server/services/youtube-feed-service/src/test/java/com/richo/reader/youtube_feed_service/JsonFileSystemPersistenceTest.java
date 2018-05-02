@@ -20,19 +20,19 @@ public class JsonFileSystemPersistenceTest {
     private JsonFileSystemPersistence target;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         target = new JsonFileSystemPersistence("target/data/" + UUID.randomUUID());
 
     }
 
     @Test
-    public void shouldSaveStuffInTheRightPlace() throws Exception {
+    public void shouldSaveStuffInTheRightPlace() {
         target.updateChannel(new Feed(new FeedId("id"), new FeedName("name"), new ArrayList<>(), LocalDateTime.ofEpochSecond(0L, 0, ZoneOffset.UTC)));
         Assert.assertTrue(new File("target/data/").exists());
     }
 
     @Test
-    public void shouldBeAbleToLoadSavedData() throws Exception {
+    public void shouldBeAbleToLoadSavedData() {
         final FeedId feedId = new FeedId("my-channel");
         final FeedName feedName = new FeedName("my-channel");
         final Item firstVideo = new Item("id1", "title1", "desc1", 0L, 0L, 0L, 0L);

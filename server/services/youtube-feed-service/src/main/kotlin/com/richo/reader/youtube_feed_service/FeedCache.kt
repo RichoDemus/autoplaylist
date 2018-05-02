@@ -25,7 +25,7 @@ internal class FeedCache
 
     fun update(feed: Feed) {
         logger.debug("Updating feed: {}, {} items", feed.id, feed.items.size)
-        cache.put(feed.id, feed)
+        cache[feed.id] = feed
         fileSystemPersistence.updateChannel(feed)
     }
 

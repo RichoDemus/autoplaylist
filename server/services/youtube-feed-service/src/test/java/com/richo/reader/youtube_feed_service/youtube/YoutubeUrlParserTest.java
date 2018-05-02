@@ -50,13 +50,13 @@ public class YoutubeUrlParserTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         target = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
     }
 
     @Ignore("This test uses the live youtube api")
     @Test
-    public void shouldParseUrlToFeedId() throws Exception {
+    public void shouldParseUrlToFeedId() {
         final FeedId result = target.getFeedId(url);
         assertThat(result).isEqualTo(id);
     }

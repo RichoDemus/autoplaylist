@@ -206,7 +206,7 @@ public class YoutubeChannelDownloader {
             return Optional.empty();
         }
 
-        return Optional.of(new YoutubeVideoChunk(youtube, durationParser, playlistId.get(), apiKey, this));
+        return Optional.of(new YoutubeVideoChunk(youtube, playlistId.get(), apiKey));
     }
 
     public Map<ItemId, DurationAndViewcount> getStatistics(final ItemId id) {

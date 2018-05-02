@@ -5,6 +5,7 @@ import io.dropwizard.lifecycle.Managed;
 
 import javax.inject.Inject;
 
+@SuppressWarnings("unused")
 class DownloadManager implements Managed
 {
 	private final PeriodicDownloadOrchestrator orchestrator;
@@ -16,14 +17,12 @@ class DownloadManager implements Managed
 	}
 
 	@Override
-	public void start() throws Exception
-	{
+	public void start() {
 		orchestrator.start();
 	}
 
 	@Override
-	public void stop() throws Exception
-	{
+	public void stop() {
 		orchestrator.stop();
 	}
 }

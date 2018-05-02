@@ -26,8 +26,7 @@ public class Container implements AutoCloseable
 	private final DefaultDockerClient docker;
 	private final String id;
 
-	public Container(final String image) throws Exception
-	{
+	public Container(final String image) {
 		this(image, new HashSet<>());
 	}
 

@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class YoutubeVideoChunkMockTest {
     @Test
-    public void shouldReturnNewestItemWhenCreatedWithOlderFirst() throws Exception {
+    public void shouldReturnNewestItemWhenCreatedWithOlderFirst() {
         final PlaylistItem older = new PlaylistItem().setSnippet(new PlaylistItemSnippet().setTitle("older").setPublishedAt(new DateTime(10000L)));
         final PlaylistItem newer = new PlaylistItem().setSnippet(new PlaylistItemSnippet().setTitle("newer").setPublishedAt(new DateTime(20000L)));
 
@@ -26,7 +26,7 @@ public class YoutubeVideoChunkMockTest {
     }
 
     @Test
-    public void shouldReturnNewestItemWhenCreatedWithNewerFirst() throws Exception {
+    public void shouldReturnNewestItemWhenCreatedWithNewerFirst() {
         final PlaylistItem older = new PlaylistItem().setSnippet(new PlaylistItemSnippet().setTitle("older").setPublishedAt(new DateTime(10000L)));
         final PlaylistItem newer = new PlaylistItem().setSnippet(new PlaylistItemSnippet().setTitle("newer").setPublishedAt(new DateTime(20000L)));
 
@@ -40,7 +40,7 @@ public class YoutubeVideoChunkMockTest {
     }
 
     @Test
-    public void shouldReturnEmptyListWhenEmpty() throws Exception {
+    public void shouldReturnEmptyListWhenEmpty() {
         final YoutubeVideoChunkMock target = new YoutubeVideoChunkMock(Lists.emptyList());
         assertThat(target.chunksLeft()).isEqualTo(0);
         assertThat(target.getNextVideoChunk()).isEmpty();

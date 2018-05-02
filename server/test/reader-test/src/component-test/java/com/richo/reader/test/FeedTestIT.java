@@ -29,8 +29,7 @@ public class FeedTestIT
 	private LoginPage loginPage;
 
 	@Before
-	public void setUp() throws Exception
-	{
+	public void setUp() {
 		youtubeMock = new TestableApplicationProvider().youtubeMock();
 		target = new TestableApplicationProvider().readerApplication(youtubeMock.getHttpPort());
 		baseUrl = "http://localhost:" + target.getHttpPort();
@@ -38,15 +37,13 @@ public class FeedTestIT
 	}
 
 	@After
-	public void tearDown() throws Exception
-	{
+	public void tearDown() {
 		target.close();
 		youtubeMock.close();
 	}
 
 	@Test
-	public void shouldReturnZeroFeedsIfNoneAreDownloaded() throws Exception
-	{
+	public void shouldReturnZeroFeedsIfNoneAreDownloaded() {
 		final String username = "richodemus";
 		loginPage.createUser(username);
 		loginPage.login(username);
@@ -58,8 +55,7 @@ public class FeedTestIT
 	}
 
 	@Test
-	public void shouldNotReturnFeedsWithoutToken() throws Exception
-	{
+	public void shouldNotReturnFeedsWithoutToken() {
 		RestAssured
 				.given()
 				.when().get(baseUrl + "/api/users/richodemus/feeds/")
@@ -67,8 +63,7 @@ public class FeedTestIT
 	}
 
 	@Test
-	public void newlyAddedFieldShouldHaveSpecialName() throws Exception
-	{
+	public void newlyAddedFieldShouldHaveSpecialName() {
 		final String username = "richodemus";
 		loginPage.createUser(username);
 		loginPage.login(username);
@@ -82,8 +77,7 @@ public class FeedTestIT
 
 
 	@Test
-	public void shouldNotContainItemMarkedAsRead() throws Exception
-	{
+	public void shouldNotContainItemMarkedAsRead() {
 		final String username = "richodemus";
 
 		loginPage.createUser(username);

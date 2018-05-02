@@ -10,8 +10,7 @@ import java.time.Duration;
 public class ItemTest
 {
 	@Test
-	public void shouldDisplayTimeCorrectly() throws Exception
-	{
+	public void shouldDisplayTimeCorrectly() {
 		assertDuration(Duration.ofHours(2), "120:00");
 		assertDuration(Duration.ofHours(1), "60:00");
 		assertDuration(Duration.ofMinutes(1), "1:00");

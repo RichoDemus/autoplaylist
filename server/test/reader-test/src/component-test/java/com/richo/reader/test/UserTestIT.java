@@ -21,35 +21,30 @@ public class UserTestIT
 	private LoginPage loginPage;
 
 	@Before
-	public void setUp() throws Exception
-	{
+	public void setUp() {
 		target = new TestableApplicationProvider().readerApplication();
 		loginPage = new LoginPage(target.getHttpPort());
 	}
 
 	@After
-	public void tearDown() throws Exception
-	{
+	public void tearDown() {
 		target.close();
 	}
 
 	@Test
-	public void shouldNotBeAbleToLoginIfUserDoesntExist() throws Exception
-	{
+	public void shouldNotBeAbleToLoginIfUserDoesntExist() {
 		loginPage.login(USERNAME);
 
 		assertThat(loginPage.isLoggedIn()).isFalse();
 	}
 
 	@Test
-	public void shouldCreateUser() throws Exception
-	{
+	public void shouldCreateUser() {
 		loginPage.createUser(USERNAME);
 	}
 
 	@Test
-	public void shouldNotCreateUserWithInvalidInviteCode() throws Exception
-	{
+	public void shouldNotCreateUserWithInvalidInviteCode() {
 		final int status = loginPage.createUser(USERNAME, "wrong code");
 		assertThat(status).isEqualTo(403);
 
@@ -58,8 +53,7 @@ public class UserTestIT
 	}
 
 	@Test
-	public void shouldLoginUser() throws Exception
-	{
+	public void shouldLoginUser() {
 		loginPage.createUser(USERNAME);
 
 		loginPage.login(USERNAME);
@@ -68,8 +62,7 @@ public class UserTestIT
 	}
 
 	@Test
-	public void shouldGetNewToken() throws Exception
-	{
+	public void shouldGetNewToken() {
 		loginPage.createUser(USERNAME);
 
 		loginPage.login(USERNAME);
@@ -89,8 +82,7 @@ public class UserTestIT
 	}
 
 	@Test
-	public void usernamesShouldBeCaseInsensitive() throws Exception
-	{
+	public void usernamesShouldBeCaseInsensitive() {
 		loginPage.createUser("UPPERCASE");
 		loginPage.login("uppercase");
 		assertThat(loginPage.isLoggedIn()).isTrue();
@@ -102,8 +94,7 @@ public class UserTestIT
 	}
 
 	@Test
-	public void shouldNotLoginUserWithInvalidPassword() throws Exception
-	{
+	public void shouldNotLoginUserWithInvalidPassword() {
 		loginPage.createUser(USERNAME);
 
 		loginPage.login(USERNAME, "not_the_right_password");

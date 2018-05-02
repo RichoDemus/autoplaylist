@@ -53,8 +53,7 @@ public class FeedResourceTest
 	}
 
 	@Before
-	public void setUp() throws Exception
-	{
+	public void setUp() {
 		reset(backendMock);
 		reset(labelManagerMock);
 		when(backendMock.getAllFeedsWithoutItems(USERNAME)).thenReturn(TestData.FEEDS);
@@ -62,29 +61,25 @@ public class FeedResourceTest
 	}
 
 	@Test
-	public void testMarkAsRead() throws Exception
-	{
+	public void testMarkAsRead() {
 		TARGET.client().target("/users/" + USERNAME + "/feeds/" + FEED + "/items/" + ITEM + "/").request().post(Entity.entity(ItemOperation.Companion.getMARK_AS_READ(), MediaType.APPLICATION_JSON));
 		verify(backendMock).markAsRead(USERNAME, FEED, ITEM);
 	}
 
 	@Test
-	public void testMarkAsUnRead() throws Exception
-	{
+	public void testMarkAsUnRead() {
 		TARGET.client().target("/users/" + USERNAME + "/feeds/" + FEED + "/items/" + ITEM + "/").request().post(Entity.entity(ItemOperation.Companion.getMARK_AS_UNREAD(), MediaType.APPLICATION_JSON));
 		verify(backendMock).markAsUnread(USERNAME, FEED, ITEM);
 	}
 
 	@Test
-	public void testMarkOlderItemsAsRead() throws Exception
-	{
+	public void testMarkOlderItemsAsRead() {
 		TARGET.client().target("/users/" + USERNAME + "/feeds/" + FEED + "/items/" + ITEM + "/").request().post(Entity.entity(ItemOperation.Companion.getMARK_OLDER_ITEMS_AS_READ(), MediaType.APPLICATION_JSON));
 		verify(backendMock).markOlderItemsAsRead(USERNAME, FEED, ITEM);
 	}
 
 	@Test
-	public void getFeedsShouldReturnTheFeedsFromBackend() throws Exception
-	{
+	public void getFeedsShouldReturnTheFeedsFromBackend() {
 		final User result = TARGET.client().target("/users/" + USERNAME + "/feeds/").request().get(User.class);
 
 		//todo write better asserts
@@ -96,15 +91,13 @@ public class FeedResourceTest
 	}
 
 	@Test
-	public void feedsShouldNotContainItems() throws Exception
-	{
+	public void feedsShouldNotContainItems() {
 		final String result = TARGET.client().target("/users/" + USERNAME + "/feeds/").request().get(String.class);
 		assertThat(result).doesNotContain("\"items:\"");
 	}
 
 	@Test
-	public void feedsReturnedShouldContainNumberOfUnreadItems() throws Exception
-	{
+	public void feedsReturnedShouldContainNumberOfUnreadItems() {
 		final User result = TARGET.client().target("/users/" + USERNAME + "/feeds/").request().get(User.class);
 
 		final FeedWithoutItems feed1 = result.getFeeds().stream().filter(f -> f.getName().equals(FEED1.getName())).findFirst().orElseThrow(() -> new RuntimeException("Couldn't find feed1"));
@@ -115,8 +108,7 @@ public class FeedResourceTest
 	}
 
 	@Test
-	public void shouldAddFeed() throws Exception
-	{
+	public void shouldAddFeed() {
 		//language=JSON
 		final String feedUrl = "\"https://www.youtube.com/user/richodemus\"";
 		TARGET.client().target("/users/" + USERNAME + "/feeds/").request().post(Entity.json(feedUrl));
@@ -125,8 +117,7 @@ public class FeedResourceTest
 	}
 
 	@Test
-	public void shouldRespondWithUserErrorWhenAddingEmptyFeed() throws Exception
-	{
+	public void shouldRespondWithUserErrorWhenAddingEmptyFeed() {
 		final Response response = TARGET.client().target("/users/" + USERNAME + "/feeds/").request().post(Entity.json("\"\""));
 		final int status = response.getStatus();
 		final String body = response.readEntity(String.class);

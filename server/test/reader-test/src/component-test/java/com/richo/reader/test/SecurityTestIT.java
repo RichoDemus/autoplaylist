@@ -18,22 +18,19 @@ public class SecurityTestIT
 	private LoginPage loginPage;
 
 	@Before
-	public void setUp() throws Exception
-	{
+	public void setUp() {
 		youtubeMock = new TestableApplicationProvider().youtubeMock();
 		target = new TestableApplicationProvider().readerApplication(youtubeMock.getHttpPort());
 		loginPage = new LoginPage(target.getHttpPort());
 	}
 
 	@After
-	public void tearDown() throws Exception
-	{
+	public void tearDown() {
 		target.close();
 	}
 
 	@Test
-	public void shouldNotBeAbleToAccessStuffUsingAlgNoneToken() throws Exception
-	{
+	public void shouldNotBeAbleToAccessStuffUsingAlgNoneToken() {
 		// this is a token with alg: none, user: richodemus, role: user and exp: 9493827929
 		final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJub25lIn0.eyJleHAiOjk0OTM4Mjc5MjgsInVzZXIiOiJyaWNob2RlbXVzIiwicm9sZSI6InVzZXIifQ.ASBDxK66U1hIPIUKCHOXjCq38UjJt0Gqf0DlZRygCRY";
 
@@ -46,8 +43,7 @@ public class SecurityTestIT
 	}
 
 	@Test
-	public void shouldNotBePossibleToTouchOtherUsersStuff() throws Exception
-	{
+	public void shouldNotBePossibleToTouchOtherUsersStuff() {
 		final String victim = USERNAME;
 		final String secondAccount = "other";
 
@@ -75,8 +71,7 @@ public class SecurityTestIT
 	}
 
 	@Test
-	public void shouldNotBePossibleToUseWithValidTokenButUnknownUserName() throws Exception
-	{
+	public void shouldNotBePossibleToUseWithValidTokenButUnknownUserName() {
 		// this is a token with user: not_richodemus
 		final String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE0OTYwNjgzNDcsInVzZXIiOiJub3RfcmljaG9kZW11cyIsInJvbGUiOiJ1c2VyIn0.KOYnbURz-qco0uVLUESBcWWRJaOVYu3Ti0_IWaI-H4Q";
 

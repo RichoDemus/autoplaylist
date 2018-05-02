@@ -13,20 +13,17 @@ public class StatusTestIT
 	private TestableApplication target;
 
 	@Before
-	public void setUp() throws Exception
-	{
+	public void setUp() {
 		target = new TestableApplicationProvider().readerApplication();
 	}
 
 	@After
-	public void tearDown() throws Exception
-	{
+	public void tearDown() {
 		target.close();
 	}
 
 	@Test
-	public void shouldReturn200OK() throws Exception
-	{
+	public void shouldReturn200OK() {
 		get("http://localhost:" + target.getAdminPort() + "/").then().assertThat().statusCode(200);
 	}
 }

@@ -28,8 +28,7 @@ public class UsernameCheckFilterTest
 	private UserService userServiceMock;
 
 	@Before
-	public void setUp() throws Exception
-	{
+	public void setUp() {
 		userServiceMock = mock(UserService.class);
 		when(userServiceMock.find(new Username(EXISTING_VALID_USER))).thenReturn(new User(new UserId("id"), new Username(EXISTING_VALID_USER), new PasswordHash("asd")));
 		target = new UsernameCheckFilter(new AuthenticationManager(null, null, "secret_used_for_testing"), userServiceMock);
@@ -84,8 +83,7 @@ public class UsernameCheckFilterTest
 		verify(mock).abortWith(any());
 	}
 
-	private ContainerRequest createMockByUsername(String username, String token) throws URISyntaxException
-	{
+	private ContainerRequest createMockByUsername(String username, String token) {
 		return createMock("users/" + username + "/feeds", token);
 	}
 

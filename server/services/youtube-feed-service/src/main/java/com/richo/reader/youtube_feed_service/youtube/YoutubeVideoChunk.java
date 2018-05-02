@@ -15,20 +15,16 @@ import java.util.Optional;
 // it's pretty much similiar except you can probably do functional stuff or observables on it
 public class YoutubeVideoChunk {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final DurationParser durationParser;
     private final YouTube youtube;
     private final String playlistId;
     private final String apiKey;
-    private final YoutubeChannelDownloader youtubeChannelDownloader;
 
     private Optional<String> nextPageToken;
 
-    YoutubeVideoChunk(YouTube youtube, DurationParser durationParser, String playlistId, String apiKey, YoutubeChannelDownloader youtubeChannelDownloader) {
+    YoutubeVideoChunk(YouTube youtube, String playlistId, String apiKey) {
         this.youtube = youtube;
-        this.durationParser = durationParser;
         this.playlistId = playlistId;
         this.apiKey = apiKey;
-        this.youtubeChannelDownloader = youtubeChannelDownloader;
         nextPageToken = Optional.of("");
     }
 

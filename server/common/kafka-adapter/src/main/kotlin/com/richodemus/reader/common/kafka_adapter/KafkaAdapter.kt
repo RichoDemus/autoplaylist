@@ -31,21 +31,21 @@ class KafkaAdapter : EventStore {
         logger.info("Connecting to kafka at $kafkaServer")
 
         val producerProperties = Properties()
-        producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer)
-        producerProperties.put(ProducerConfig.CLIENT_ID_CONFIG, "KafkaExampleProducer-${UUID.randomUUID()}")
-        producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer().javaClass)
-        producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, EventSerializer().javaClass)
+        producerProperties[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = kafkaServer
+        producerProperties[ProducerConfig.CLIENT_ID_CONFIG] = "KafkaExampleProducer-${UUID.randomUUID()}"
+        producerProperties[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer().javaClass
+        producerProperties[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = EventSerializer().javaClass
 
         producer = KafkaProducer(producerProperties)
 
         val consumerProperties = Properties()
-        consumerProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer)
-        consumerProperties.put(ConsumerConfig.CLIENT_ID_CONFIG, "KafkaExampleConsumer-${UUID.randomUUID()}")
-        consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer().javaClass)
-        consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, EventDeserializer().javaClass)
-        consumerProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
-        consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false")
-        consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, UUID.randomUUID().toString())
+        consumerProperties[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = kafkaServer
+        consumerProperties[ConsumerConfig.CLIENT_ID_CONFIG] = "KafkaExampleConsumer-${UUID.randomUUID()}"
+        consumerProperties[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer().javaClass
+        consumerProperties[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = EventDeserializer().javaClass
+        consumerProperties[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
+        consumerProperties[ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG] = "false"
+        consumerProperties[ConsumerConfig.GROUP_ID_CONFIG] = UUID.randomUUID().toString()
         consumer = KafkaConsumer(consumerProperties)
         Runtime.getRuntime().addShutdownHook(Thread { close() })
     }

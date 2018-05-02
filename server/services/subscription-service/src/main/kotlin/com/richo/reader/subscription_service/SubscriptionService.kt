@@ -18,7 +18,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SubscriptionService @Inject internal constructor(val eventStore: EventStore, registry: MetricRegistry) {
+class SubscriptionService @Inject internal constructor(private val eventStore: EventStore, registry: MetricRegistry) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private var processedEvents = AtomicLong()
 

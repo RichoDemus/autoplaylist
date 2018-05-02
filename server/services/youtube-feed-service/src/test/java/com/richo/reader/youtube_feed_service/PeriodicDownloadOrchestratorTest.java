@@ -21,7 +21,7 @@ public class PeriodicDownloadOrchestratorTest {
     private boolean running;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         running = true;
         saveRoot = "target/data/" + UUID.randomUUID();
         new File(saveRoot + "/feeds/richodemus").mkdirs();

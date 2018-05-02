@@ -41,8 +41,7 @@ public class UsernameCheckFilter implements ContainerRequestFilter
 	}
 
 	@Override
-	public void filter(ContainerRequestContext requestContext) throws IOException
-	{
+	public void filter(ContainerRequestContext requestContext) {
 		//todo what do we do if this cast fails?
 		final String path = ((ContainerRequest) requestContext).getPath(true);
 		logger.debug("Checking {} for transgressions...", path);
