@@ -19,11 +19,12 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
 
 @Singleton
 public class PeriodicDownloadOrchestrator {
-    private static final long MILLISECONDS_IN_A_DAY = 1000 * 60 * 60 * 24;
+    private static final long MILLISECONDS_IN_A_DAY = Duration.of(1, DAYS).toMillis();
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final FeedCache cache;
     private final YoutubeDownloadManager downloader;
