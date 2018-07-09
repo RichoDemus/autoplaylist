@@ -1,11 +1,11 @@
 package com.richo.reader.test.pages;
 
-import com.jayway.restassured.RestAssured;
-import com.jayway.restassured.http.ContentType;
 import com.richo.reader.test.pages.model.FeedId;
 import com.richo.reader.test.pages.model.FeedUrl;
 import com.richo.reader.test.pages.model.FeedWithoutItem;
 import com.richo.reader.test.pages.model.Label;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 
 import java.util.List;
 

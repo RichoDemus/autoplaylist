@@ -3,9 +3,12 @@ apply plugin: 'ca.cutterslade.analyze'
 
 defaultTasks 'check', 'build'
 
+allprojects {
+//    apply plugin: 'ca.cutterslade.analyze'
+}
+
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'ca.cutterslade.analyze'
     apply from: "$rootProject.projectDir/dependencies.gradle"
     repositories {
         jcenter()
@@ -20,7 +23,8 @@ subprojects {
         all*.exclude group: 'com.google.guava', module: 'guava-jdk5'
     }
     dependencies {
-        permitUnusedDeclared "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
+//        permitUnusedDeclared "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
+//        permitUnusedDeclared project(':server:core:web')
     }
     configurations.all {
         resolutionStrategy {

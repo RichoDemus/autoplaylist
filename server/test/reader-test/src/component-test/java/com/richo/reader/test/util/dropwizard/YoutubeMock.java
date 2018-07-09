@@ -1,8 +1,8 @@
 package com.richo.reader.test.util.dropwizard;
 
-import com.jayway.restassured.RestAssured;
 import com.richo.reader.test.util.TestableApplication;
 import com.xebialabs.restito.server.StubServer;
+import io.restassured.RestAssured;
 import org.glassfish.grizzly.http.util.HttpStatus;
 
 import static com.xebialabs.restito.builder.stub.StubHttp.whenHttp;

@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 
 import java.util.HashSet;
 
-import static com.jayway.restassured.RestAssured.get;
+import static io.restassured.RestAssured.get;
 
 public class DropwizardContainer implements AutoCloseable, TestableApplication
 {

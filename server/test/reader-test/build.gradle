@@ -1,4 +1,4 @@
-analyzeTestClassesDependencies.enabled = false
+//analyzeTestClassesDependencies.enabled = false
 
 dependencies {
     testCompile project(':server:core:web')
@@ -6,11 +6,11 @@ dependencies {
     testCompile "com.spotify:docker-client:$rootProject.dockerClientVersion"
     testCompile "junit:junit:$rootProject.junitVersion"
     testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
-    testCompile "com.jayway.restassured:rest-assured:$rootProject.restassuredVersion"
-    testCompile "com.jayway.restassured:json-path:$rootProject.restassuredVersion"
+    testCompile "io.rest-assured:rest-assured:$rootProject.restassuredVersion"
+    testCompile "io.rest-assured:json-path:$rootProject.restassuredVersion"
     testCompile "org.awaitility:awaitility:$rootProject.awaitilityVersion"
     testCompile "io.dropwizard:dropwizard-testing:$rootProject.dropwizardVersion"
-    testCompile 'com.xebialabs.restito:restito:0.9.0'
+    testCompile 'com.xebialabs.restito:restito:0.9.3'
 }
 
 sourceSets {

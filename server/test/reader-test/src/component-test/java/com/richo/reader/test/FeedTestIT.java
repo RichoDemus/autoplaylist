@@ -1,6 +1,5 @@
 package com.richo.reader.test;
 
-import com.jayway.restassured.RestAssured;
 import com.richo.reader.test.pages.FeedPage;
 import com.richo.reader.test.pages.LoginPage;
 import com.richo.reader.test.pages.model.FeedId;
@@ -8,13 +7,14 @@ import com.richo.reader.test.pages.model.FeedUrl;
 import com.richo.reader.test.pages.model.FeedWithoutItem;
 import com.richo.reader.test.util.TestableApplication;
 import com.richo.reader.test.util.TestableApplicationProvider;
+import io.restassured.RestAssured;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
 
-import static com.jayway.restassured.RestAssured.post;
+import static io.restassured.RestAssured.post;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;

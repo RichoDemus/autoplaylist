@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static com.jayway.restassured.RestAssured.post;
+import static io.restassured.RestAssured.post;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;

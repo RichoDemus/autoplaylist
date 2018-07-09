@@ -39,7 +39,7 @@ public class SecurityTestIT
 		loginPage.setUsername(USERNAME);
 		loginPage.setToken(token);
 
-		assertThatThrownBy(() -> loginPage.toFeedPage().getAllFeeds()).isInstanceOf(AssertionError.class).hasMessageContaining("Expected status code <200> doesn't match actual status code <400>.");
+		assertThatThrownBy(() -> loginPage.toFeedPage().getAllFeeds()).isInstanceOf(AssertionError.class).hasMessageContaining("Expected status code <200> but was <400>.");
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class SecurityTestIT
 		hackingAttemptPage.setToken(otherUserToken);
 
 		// attempt to get feeds for another account than the token is issued for
-		assertThatThrownBy(() -> hackingAttemptPage.toFeedPage().getAllFeeds()).isInstanceOf(AssertionError.class).hasMessageContaining("Expected status code <200> doesn't match actual status code <401>.");
+		assertThatThrownBy(() -> hackingAttemptPage.toFeedPage().getAllFeeds()).isInstanceOf(AssertionError.class).hasMessageContaining("Expected status code <200> but was <401>.");
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class SecurityTestIT
 		loginPage.setUsername("not_richodemus");
 		loginPage.setToken(token);
 
-		assertThatThrownBy(() -> loginPage.toFeedPage().getAllFeeds()).isInstanceOf(AssertionError.class).hasMessageContaining("Expected status code <200> doesn't match actual status code <400>.");
+		assertThatThrownBy(() -> loginPage.toFeedPage().getAllFeeds()).isInstanceOf(AssertionError.class).hasMessageContaining("Expected status code <200> but was <400>.");
 	}
 
 }

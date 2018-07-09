@@ -10,8 +10,8 @@ dependencies {
     testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
     testCompile "com.fasterxml.jackson.core:jackson-databind:$rootProject.jacksonVersion"
     testCompile "com.fasterxml.jackson.module:jackson-module-kotlin:$rootProject.jacksonVersion"
-    testCompile "org.jetbrains.kotlin:kotlin-reflect:$rootProject.kotlinVersion"
-    permitTestUnusedDeclared "org.jetbrains.kotlin:kotlin-reflect:$rootProject.kotlinVersion"
+//    testCompile "org.jetbrains.kotlin:kotlin-reflect:$rootProject.kotlinVersion"
+//    permitTestUnusedDeclared "org.jetbrains.kotlin:kotlin-reflect:$rootProject.kotlinVersion"
 }
 
 buildscript {

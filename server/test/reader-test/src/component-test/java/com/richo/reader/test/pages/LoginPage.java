@@ -1,7 +1,7 @@
 package com.richo.reader.test.pages;
 
 import com.google.common.collect.ImmutableMap;
-import com.jayway.restassured.RestAssured;
+import io.restassured.RestAssured;
 
 import java.util.Optional;
 
