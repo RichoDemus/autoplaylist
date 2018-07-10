@@ -1,4 +1,4 @@
-FROM openjdk:8u92-jre-alpine
+FROM openjdk:10-jre-slim
 
 RUN mkdir /reader
 RUN mkdir /reader/data
