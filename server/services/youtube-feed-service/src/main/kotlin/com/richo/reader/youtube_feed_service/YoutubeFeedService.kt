@@ -3,13 +3,15 @@ package com.richo.reader.youtube_feed_service
 import com.codahale.metrics.MetricRegistry
 import com.codahale.metrics.MetricRegistry.name
 import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader
-import com.richodemus.reader.common.kafka_adapter.EventStore
+import com.richodemus.reader.common.google_cloud_storage_adapter.EventStore
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.FeedUrl
 import com.richodemus.reader.events_v2.EventType.USER_SUBSCRIBED_TO_FEED
 import com.richodemus.reader.events_v2.UserSubscribedToFeed
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class YoutubeFeedService @Inject
 internal constructor(private val cache: FeedCache,
             private val youtubeChannelDownloader: YoutubeChannelDownloader,

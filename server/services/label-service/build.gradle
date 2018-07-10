@@ -4,7 +4,7 @@ description = 'Label Service'
 dependencies {
     compile project(':server:common:dto')
     compile project(':server:common:events')
-    compile project(':server:common:kafka-adapter')
+    compile project(':server:common:google-cloud-storage-adapter')
     compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
     compile 'org.jetbrains:annotations'

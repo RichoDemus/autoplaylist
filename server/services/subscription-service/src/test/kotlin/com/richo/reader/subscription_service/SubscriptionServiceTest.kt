@@ -1,8 +1,8 @@
 package com.richo.reader.subscription_service
 
 import com.codahale.metrics.MetricRegistry
-import com.richodemus.reader.common.kafka_adapter.EventStore
-import com.richodemus.reader.common.kafka_adapter.InMemoryEventStore
+import com.richodemus.reader.common.google_cloud_storage_adapter.EventStore
+import com.richodemus.reader.common.google_cloud_storage_adapter.InMemoryEventStore
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.ItemId
 import com.richodemus.reader.dto.PasswordHash

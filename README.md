@@ -3,7 +3,7 @@
 ## Instructions
 
 ### Run
-`docker run yadda yadda -e KAFKA_HOST=kafka`
+`docker run yadda yadda -e GCS_PROJECT=X -e GCS_BUCKET=Y`
 
 ### Compile and run all test
 `./gradlew`

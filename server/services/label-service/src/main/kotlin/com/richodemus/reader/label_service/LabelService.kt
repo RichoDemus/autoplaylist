@@ -1,6 +1,6 @@
 package com.richodemus.reader.label_service
 
-import com.richodemus.reader.common.kafka_adapter.EventStore
+import com.richodemus.reader.common.google_cloud_storage_adapter.EventStore
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.LabelId
 import com.richodemus.reader.dto.LabelName

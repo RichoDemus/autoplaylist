@@ -3,7 +3,7 @@ apply plugin: 'kotlin'
 description = 'Web'
 dependencies {
     compile project(':server:common:dto')
-    compile project(':server:common:kafka-adapter')
+    compile project(':server:common:google-cloud-storage-adapter')
     compile project(':server:core:backend')
     compile project(':server:services:youtube-feed-service')
     compile project(':server:services:user-service')
@@ -34,6 +34,10 @@ dependencies {
     compile "javax.ws.rs:javax.ws.rs-api:$rootProject.javaxWsRsApiVersion"
     compile "javax.servlet:javax.servlet-api:$rootProject.javaxServletApiVersion"
     compile "com.google.guava:guava:$rootProject.guavaVersion"
+    // needed for some classnotfoundexception
+    runtime 'javax.xml.bind:jaxb-api:2.3.0'
+    // needed for some classnotfoundexception
+    runtime 'javax.activation:activation:1.1.1'
 
     testCompile "io.dropwizard:dropwizard-testing:$rootProject.dropwizardVersion"
     testCompile "junit:junit:$rootProject.junitVersion"

@@ -7,7 +7,8 @@ COPY build/dependencies /reader/jars
 WORKDIR /reader
 ENTRYPOINT []
 CMD java \
--Dreader.kafka.host=$KAFKA_HOST \
+-Dreader.gcs.project=$GCS_PROJECT \
+-Dreader.gcs.bucket=$GCS_BUCKET \
 -Xmx2G \
 -XX:+UseConcMarkSweepGC \
 -XX:+CMSParallelRemarkEnabled \

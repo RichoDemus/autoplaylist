@@ -2,7 +2,7 @@ package com.richo.reader.youtube_feed_service;
 
 import com.codahale.metrics.MetricRegistry;
 import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader;
-import com.richodemus.reader.common.kafka_adapter.InMemoryEventStore;
+import com.richodemus.reader.common.google_cloud_storage_adapter.InMemoryEventStore;
 import com.richodemus.reader.dto.EventId;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedName;

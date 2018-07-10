@@ -1,4 +1,4 @@
-package com.richodemus.reader.common.kafka_adapter
+package com.richodemus.reader.common.google_cloud_storage_adapter
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -19,29 +19,27 @@ import com.richodemus.reader.events_v2.UserCreated
 import com.richodemus.reader.events_v2.UserSubscribedToFeed
 import com.richodemus.reader.events_v2.UserUnwatchedItem
 import com.richodemus.reader.events_v2.UserWatchedItem
-import org.apache.kafka.common.serialization.Deserializer
-import org.apache.kafka.common.serialization.Serializer
 
 private val mapper = jacksonObjectMapper()
 
-class EventSerializer : Serializer<Event> {
-    override fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
+class EventSerializer {
+     fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
     }
 
-    override fun serialize(topic: String?, data: Event): ByteArray {
+     fun serialize(topic: String?, data: Event): ByteArray {
         return mapper.writeValueAsBytes(data)
     }
 
-    override fun close() {
+     fun close() {
     }
 
 }
 
-class EventDeserializer : Deserializer<Event> {
-    override fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
+class EventDeserializer {
+     fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
     }
 
-    override fun deserialize(topic: String?, data: ByteArray): Event {
+     fun deserialize(topic: String?, data: ByteArray): Event {
         val str = String(data)
         return when {
             str isType USER_CREATED -> mapper.readValue<UserCreated>(data)
@@ -55,34 +53,34 @@ class EventDeserializer : Deserializer<Event> {
         }
     }
 
-    override fun close() {
+     fun close() {
     }
 
     private infix fun String.isType(type: EventType) = type.toString() in this // todo use regexp
 }
 
 
-class EventIdSerializer : Serializer<EventId> {
-    override fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
+class EventIdSerializer  {
+     fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
     }
 
-    override fun serialize(topic: String?, data: EventId): ByteArray {
+     fun serialize(topic: String?, data: EventId): ByteArray {
         return mapper.writeValueAsBytes(data)
     }
 
-    override fun close() {
+     fun close() {
     }
 }
 
-class EventIdDeserializer : Deserializer<EventId> {
-    override fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
+class EventIdDeserializer {
+     fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
     }
 
-    override fun deserialize(topic: String?, data: ByteArray): EventId {
+     fun deserialize(topic: String?, data: ByteArray): EventId {
         val content = String(data)
         return mapper.readValue(content)
     }
 
-    override fun close() {
+     fun close() {
     }
 }

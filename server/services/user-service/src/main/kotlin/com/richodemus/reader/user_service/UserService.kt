@@ -1,6 +1,6 @@
 package com.richodemus.reader.user_service
 
-import com.richodemus.reader.common.kafka_adapter.EventStore
+import com.richodemus.reader.common.google_cloud_storage_adapter.EventStore
 import com.richodemus.reader.dto.Password
 import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.dto.Username
