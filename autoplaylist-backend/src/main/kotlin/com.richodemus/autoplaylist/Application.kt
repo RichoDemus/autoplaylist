@@ -1,6 +1,5 @@
 package com.richodemus.autoplaylist
 
-import io.github.vjames19.futures.jdk8.Future
 import io.github.vjames19.futures.jdk8.flatMap
 import io.github.vjames19.futures.jdk8.map
 import io.github.vjames19.futures.jdk8.recover
@@ -24,7 +23,6 @@ import javax.servlet.http.HttpSession
 @SpringBootApplication
 open class Application {
     private val logger = LoggerFactory.getLogger(Application::class.java)
-    private val userIds = mutableMapOf<AccessToken, UserId>()
 
     @PostMapping("/sessions")
     internal fun createSession(session: HttpSession, @RequestBody request: CreateSessionRequest): CreateSessionResponse {
@@ -45,7 +43,7 @@ open class Application {
     internal fun getUser(session: HttpSession): CompletableFuture<UserId> {
         val accessToken = session.getAttribute("accessToken") as AccessToken
         logger.info("Session {} with token {}", session.id, accessToken)
-        return getUserIdFromCache(accessToken)
+        return getUserIdMemoized(accessToken)
     }
 
     @GetMapping("/playlists")
@@ -61,7 +59,7 @@ open class Application {
     ): CompletableFuture<CreatePlaylistResponse> {
         logger.info("Asked to create playlist {} with tracks by {}", request.name, request.artist)
         val accessToken = session.getAttribute("accessToken") as AccessToken
-        return getUserIdFromCache(accessToken)
+        return getUserIdMemoized(accessToken)
                 .flatMap { userId ->
                     createPlayListFromArtist(accessToken, userId, request.name, request.artist)
                 }
@@ -78,13 +76,7 @@ open class Application {
 
     }
 
-    private fun getUserIdFromCache(accessToken: AccessToken): CompletableFuture<UserId> {
-        return Future {
-            userIds.computeIfAbsent(accessToken) {
-                getUserId(accessToken).join()
-            }
-        }
-    }
+    private val getUserIdMemoized = { accessToken: AccessToken -> getUserId(accessToken)}.memoize()
 }
 
 data class CreateSessionRequest(val code: String)
