@@ -1,15 +1,17 @@
 package com.richodemus.autoplaylist
 
+import com.richodemus.autoplaylist.dto.RefreshToken
+import com.richodemus.autoplaylist.dto.SpotifyUserId
 import io.github.vjames19.futures.jdk8.map
 
 private val rToken = RefreshToken("enter-a-refresh-token")
 
 fun main_rename_to_just_main(args: Array<String>) {
-    val validToken = refreshToken(rToken).map { it.accessToken }
+    val validToken = getAccessToken(rToken).map { it.accessToken }
 
     validToken.map { println("Token: $it") }
 
-    val userId = UserId("your-username-here")
+    val userId = SpotifyUserId("your-username-here")
     val artist = ArtistName("Gloryhammer")
 
     val tracksFutures = getTracks(validToken.join(), artist)

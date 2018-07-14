@@ -7,6 +7,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.result.Result
+import com.richodemus.autoplaylist.dto.RefreshToken
+import com.richodemus.autoplaylist.dto.SpotifyUserId
 import io.github.vjames19.futures.jdk8.map
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -40,7 +42,7 @@ internal fun getToken(code: String): CompletableFuture<Tokens> {
             .deserialize()
 }
 
-internal fun getUserId(accessToken: AccessToken): CompletableFuture<UserId> {
+internal fun getUserId(accessToken: AccessToken): CompletableFuture<SpotifyUserId> {
     return Fuel.get("https://api.spotify.com/v1/me")
             .header("Content-Type" to "application/json")
             .header("Authorization" to "Bearer $accessToken")
@@ -55,7 +57,7 @@ internal fun getPlaylists(accessToken: AccessToken): CompletableFuture<PlayLists
             .deserialize()
 }
 
-internal fun refreshToken(refreshToken: RefreshToken): CompletableFuture<Tokens> {
+private fun refreshToken(refreshToken: RefreshToken): CompletableFuture<Tokens> {
     return Fuel.post("https://accounts.spotify.com/api/token",
             listOf(
                     "grant_type" to "refresh_token",
@@ -64,6 +66,8 @@ internal fun refreshToken(refreshToken: RefreshToken): CompletableFuture<Tokens>
             .header("Authorization" to authString)
             .deserialize()
 }
+
+internal fun getAccessToken(refreshToken: RefreshToken) = refreshToken(refreshToken)
 
 internal fun findArtist(accessToken: AccessToken, name: ArtistName): CompletableFuture<List<Artist>> {
     return Fuel.get("https://api.spotify.com/v1/search",
@@ -94,11 +98,11 @@ internal fun getTracks(accessToken: AccessToken, album: AlbumId): CompletableFut
 }
 
 internal fun createPlaylist(accessToken: AccessToken,
-                            userId: UserId,
+                            spotifyUserId: SpotifyUserId,
                             name: PlaylistName,
                             description: String,
                             public: Boolean): CompletableFuture<PlayList> {
-    return Fuel.post("https://api.spotify.com/v1/users/$userId/playlists")
+    return Fuel.post("https://api.spotify.com/v1/users/$spotifyUserId/playlists")
             .header("Content-Type" to "application/json")
             .header("Authorization" to "Bearer $accessToken")
             .body("""
@@ -112,7 +116,7 @@ internal fun createPlaylist(accessToken: AccessToken,
 }
 
 internal fun addTracks(accessToken: AccessToken,
-                       user: UserId,
+                       user: SpotifyUserId,
                        playList: PlayListId,
                        tracks: List<TrackUri>): CompletableFuture<SnapshotId> {
     val request = AddTracksToPlaylistRequest(tracks)
@@ -171,24 +175,7 @@ internal data class AccessToken(@get:JsonIgnore val value: String) {
     override fun toString() = value
 }
 
-internal data class RefreshToken(@get:JsonIgnore val value: String) {
-    init {
-        require(value.isNotBlank()) { "AccessToken can't be empty" }
-    }
-
-    @JsonValue
-    override fun toString() = value
-}
-
-internal data class User(val id: UserId)
-internal data class UserId(@get:JsonIgnore val value: String) {
-    init {
-        require(value.isNotBlank()) { "UserId can't be empty" }
-    }
-
-    @JsonValue
-    override fun toString() = value
-}
+internal data class User(val id: SpotifyUserId)
 
 internal data class PlayListsResponse(val items: List<PlayList>, val total: Int)
 internal data class PlayList(val id: PlayListId, val name: PlaylistName)
