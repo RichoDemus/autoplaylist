@@ -1,55 +1,41 @@
+defaultTasks 'build'
+
+subprojects {
+    apply plugin: 'kotlin'
+
+    repositories {
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+        sourceCompatibility = JavaVersion.VERSION_1_10
+        targetCompatibility = JavaVersion.VERSION_1_10
+
+        kotlinOptions {
+            jvmTarget = "1.8"
+//        apiVersion = "1.2"
+//        languageVersion = "1.2"
+        }
+
+    }
+
+    configurations {
+        all*.exclude group: 'org.glassfish.hk2.external', module: 'javax.inject'
+        all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+        all*.exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre7'
+        all*.exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre8'
+    }
+}
+
 buildscript {
     ext.kotlin_version = '1.2.51'
     ext.spring_boot_version = '2.0.3.RELEASE'
+    ext.jackson_version = '2.9.+'
     repositories {
         jcenter()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Required for Kotlin integration
-        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
-        // See https://kotlinlang.org/docs/reference/compiler-plugins.html#kotlin-spring-compiler-plugin
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
     }
-}
-
-defaultTasks 'build'
-
-apply plugin: 'kotlin' // Required for Kotlin integration
-apply plugin: "kotlin-spring" // See https://kotlinlang.org/docs/reference/compiler-plugins.html#kotlin-spring-compiler-plugin
-apply plugin: 'org.springframework.boot'
-
-//sourceCompatibility = 10
-//targetCompatibility = 10
-
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-    sourceCompatibility = JavaVersion.VERSION_1_10
-    targetCompatibility = JavaVersion.VERSION_1_10
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-//        apiVersion = "1.2"
-//        languageVersion = "1.2"
-    }
-
-}
-
-repositories {
-    jcenter()
-    maven { url 'https://jitpack.io' }
-}
-
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    compile 'com.github.kittinunf.fuel:fuel:1.13.0'
-    compile 'com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+'
-    compile 'com.github.vjames19.kotlin-futures:kotlin-futures-jdk8:0.4.0'
-    compile "org.springframework.boot:spring-boot-starter-web:$spring_boot_version"
-    compile 'com.github.jsr-330:core:1.4.0'
-    testCompile("org.springframework.boot:spring-boot-starter-test:$spring_boot_version")
-}
-
-configurations {
-    all*.exclude group: 'org.glassfish.hk2.external', module: 'javax.inject'
-    all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }

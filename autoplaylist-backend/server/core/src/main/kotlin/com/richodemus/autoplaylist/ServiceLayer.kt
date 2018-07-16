@@ -1,12 +1,6 @@
 package com.richodemus.autoplaylist
 
-import com.richodemus.autoplaylist.dto.SpotifyUserId
-import io.github.vjames19.futures.jdk8.Future
-import io.github.vjames19.futures.jdk8.flatMap
-import io.github.vjames19.futures.jdk8.map
-import io.github.vjames19.futures.jdk8.zip
-import java.util.concurrent.CompletableFuture
-
+/*
 internal fun createPlayListFromArtist(
         accessToken: AccessToken,
         spotifyUserId: SpotifyUserId,
@@ -74,3 +68,4 @@ internal fun createPlaylist(
                 }
             }
 }
+        */

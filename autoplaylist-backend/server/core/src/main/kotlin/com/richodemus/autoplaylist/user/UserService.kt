@@ -2,15 +2,19 @@ package com.richodemus.autoplaylist.user
 
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
+import com.richodemus.autoplaylist.spotify.SpotifyPort
 import io.github.vjames19.futures.jdk8.Future
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Service
 import java.util.concurrent.CompletableFuture
+import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-@Service
-internal class UserService {
+@Named
+class UserService @Inject internal constructor(
+        val spotifyPort: SpotifyPort
+) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val users = mutableListOf<User>()
 
@@ -24,7 +28,7 @@ internal class UserService {
                 matchingUsers[0]
             }
             if (matchingUsers.isEmpty()) {
-                matchingUsers = listOf(User(UserId(), spotifyUserId))
+                matchingUsers = listOf(User(spotifyPort, UserId(), spotifyUserId))
                 users.addAll(matchingUsers)
             }
             matchingUsers[0]

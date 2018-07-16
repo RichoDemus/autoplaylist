@@ -3,4 +3,11 @@
 !gradle
 !build.gradle
 !settings.gradle
-!src
+!server/dto/build.gradle
+!server/dto/src
+!server/core/build.gradle
+!server/core/src
+!server/spring/build.gradle
+!server/spring/src
+!server/spotify-adapter/build.gradle
+!server/spotify-adapter/src

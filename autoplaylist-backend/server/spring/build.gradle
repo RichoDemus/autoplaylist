@@ -1,0 +1,24 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
+    }
+}
+
+apply plugin: "kotlin-spring"
+apply plugin: 'org.springframework.boot'
+
+dependencies {
+    compile project(':server:core')
+    compile project(':server:spotify-adapter')
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
+    compile 'com.github.vjames19.kotlin-futures:kotlin-futures-jdk8:0.4.0'
+    compile "org.springframework.boot:spring-boot-starter-web:$spring_boot_version"
+    compile 'com.github.jsr-330:core:1.4.0'
+    testCompile("org.springframework.boot:spring-boot-starter-test:$spring_boot_version")
+}
