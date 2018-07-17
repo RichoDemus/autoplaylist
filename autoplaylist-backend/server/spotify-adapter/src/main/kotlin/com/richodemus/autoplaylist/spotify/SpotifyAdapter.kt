@@ -10,7 +10,6 @@ import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import io.github.vjames19.futures.jdk8.map
 import org.slf4j.LoggerFactory
-import java.net.URLEncoder
 import java.util.Base64
 import java.util.concurrent.CompletableFuture
 import javax.inject.Named

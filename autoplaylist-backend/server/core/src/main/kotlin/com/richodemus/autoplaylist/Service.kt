@@ -40,7 +40,7 @@ class Service @Inject internal constructor(
             user.refreshToken = it
         }
 
-        logger.info("Created user: {}", user)
+        logger.info("Logged in user: {}", user)
 
         return userFuture.map { it.userId }
     }

@@ -33,4 +33,8 @@ class User internal constructor(
             }
         }
     }
+
+    override fun toString(): String {
+        return "User(userId=$userId, spotifyUserId=$spotifyUserId)"
+    }
 }

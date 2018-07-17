@@ -1,0 +1,6 @@
+dependencies {
+    compile project(':server:dto')
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jackson_version"
+    compile 'com.github.jsr-330:core:1.4.0'
+}
