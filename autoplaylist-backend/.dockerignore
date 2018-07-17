@@ -11,3 +11,5 @@
 !server/spring/src
 !server/spotify-adapter/build.gradle
 !server/spotify-adapter/src
+!server/event-store/build.gradle
+!server/event-store/src

@@ -20,7 +20,6 @@ class UserService @Inject internal constructor(
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val users = mutableMapOf<UserId, User>()
-    private val futures = mutableMapOf<SpotifyUserId, MutableList<CompletableFuture<User>>>()
 
     init {
         eventStore.consume {
@@ -48,7 +47,13 @@ class UserService @Inject internal constructor(
         // User does not exist, need to create it
         logger.info("Creating user for spotify id {}", spotifyUserId)
         val future = CompletableFuture<User>()
-        futures.computeIfAbsent(spotifyUserId) { mutableListOf() }.add(future)
+        eventStore.addTemporaryListener { event ->
+            if (event is UserCreated && event.spotifyUserId == spotifyUserId) {
+                future.complete(users[event.userId])
+                return@addTemporaryListener true
+            }
+            return@addTemporaryListener false
+        }
         eventStore.produce(UserCreated(spotifyUserId = spotifyUserId))
         return future
     }
@@ -64,7 +69,5 @@ class UserService @Inject internal constructor(
         } else {
             users[user.userId] = user
         }
-        futures[user.spotifyUserId]?.forEach { it.complete(user) }
-        futures.remove(user.spotifyUserId)
     }
 }
