@@ -19,7 +19,7 @@ class UserService @Inject internal constructor(
         private val spotifyPort: SpotifyPort
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
-    private val users = mutableListOf<User>()
+    private val users = mutableMapOf<UserId, User>()
     private val futures = mutableMapOf<SpotifyUserId, MutableList<CompletableFuture<User>>>()
 
     init {
@@ -34,7 +34,7 @@ class UserService @Inject internal constructor(
     // todo better synchronization
     @Synchronized
     fun findOrCreateUser(spotifyUserId: SpotifyUserId): CompletableFuture<User> {
-        val matchingUsers = users.filter { it.spotifyUserId == spotifyUserId }
+        val matchingUsers = users.values.filter { it.spotifyUserId == spotifyUserId }
         if (matchingUsers.size > 1) {
             logger.warn("There seems to be more than 1 user stored with the id {}", spotifyUserId)
             return Future { matchingUsers[0] }
@@ -53,19 +53,17 @@ class UserService @Inject internal constructor(
         return future
     }
 
-    fun getUser(userId: UserId): User? {
-        val matchingUsers = users.filter { it.userId == userId }
-        if (matchingUsers.size > 1) {
-            logger.warn("{} users with the id {}", matchingUsers.size, userId)
-        }
-        return matchingUsers.firstOrNull()
-    }
+    fun getUser(userId: UserId) = users[userId]
 
     @Synchronized
     private fun add(userCreated: UserCreated) {
         logger.info("Creating user: {}", userCreated)
         val user = User(spotifyPort, userCreated.userId, userCreated.spotifyUserId)
-        users.add(user)
+        if (users.contains(user.userId)) {
+            logger.warn("There is already a user with this id, existing: {}, new: {}", users[user.userId], user)
+        } else {
+            users[user.userId] = user
+        }
         futures[user.spotifyUserId]?.forEach { it.complete(user) }
         futures.remove(user.spotifyUserId)
     }
