@@ -36,7 +36,7 @@ import javax.servlet.http.HttpSession
 open class Application @Inject internal constructor(private val service: Service) {
     private val logger = LoggerFactory.getLogger(Application::class.java)
 
-    @PostMapping("/sessions")
+    @PostMapping("/v1/sessions")
     internal fun createSession(session: HttpSession, @RequestBody request: CreateSessionRequest
     ): CompletableFuture<ResponseEntity<CreateSessionResponse>> {
         logger.info("req: $request")
@@ -58,7 +58,7 @@ open class Application @Inject internal constructor(private val service: Service
 
     internal data class CreateSessionResponse(val msg: String)
 
-    @GetMapping("/users/me")
+    @GetMapping("/v1/users/me")
     internal fun getUser(session: HttpSession): CompletableFuture<ResponseEntity<SpotifyUserId>> {
         val userId = session.getUserId() ?: return Future { ResponseEntity<SpotifyUserId>(FORBIDDEN) }
 
@@ -71,7 +71,7 @@ open class Application @Inject internal constructor(private val service: Service
                 }
     }
 
-    @GetMapping("/playlists")
+    @GetMapping("/v1/playlists")
     internal fun getPlaylists(session: HttpSession): CompletableFuture<ResponseEntity<List<PlayList>>> {
         val userId = session.getUserId() ?: return Future { ResponseEntity<List<PlayList>>(FORBIDDEN) }
 

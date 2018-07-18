@@ -9,7 +9,7 @@ export const getFrontendBaseUrl = () => {
 
 export const getBackendBaseUrl = () => {
     if (window.location.hostname === "localhost") {
-        return "http://localhost:8080"
+        return "http://localhost:8080/v1"
     }
     return "https://api.autoplaylists.richodemus.com"
 };
