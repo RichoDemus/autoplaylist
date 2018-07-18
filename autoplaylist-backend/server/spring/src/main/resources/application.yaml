@@ -4,3 +4,11 @@ server:
       cookie:
         max-age: 90d
 #        secure: true # use a special production profile with this flag
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - "info"
+          - "health"
+          - "metrics"
