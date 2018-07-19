@@ -20,7 +20,8 @@ class UserService @Inject internal constructor(
         private val spotifyPort: SpotifyPort
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
-    private val users = mutableMapOf<UserId, User>()
+    var users = mapOf<UserId, User>()
+        private set
 
     init {
         eventStore.consume {
@@ -65,8 +66,9 @@ class UserService @Inject internal constructor(
         val user = User(eventStore, spotifyPort, userCreated.userId, userCreated.spotifyUserId, userCreated.refreshToken)
         if (users.contains(user.userId)) {
             logger.warn("There is already a user with this id, existing: {}, new: {}", users[user.userId], user)
+        } else {
+            users = users.plus(user.userId to user)
         }
-        users.putIfAbsent(user.userId, user)
         return user
     }
 }
