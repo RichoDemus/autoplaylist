@@ -1,6 +1,7 @@
 package com.richodemus.autoplaylist.event
 
 import io.micrometer.core.instrument.MeterRegistry
+import org.slf4j.LoggerFactory
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -8,6 +9,7 @@ import javax.inject.Singleton
 @Singleton
 @Named
 internal class InMemoryEventStore @Inject constructor(registry: MeterRegistry) : EventStore {
+    private val logger = LoggerFactory.getLogger(javaClass)
     private val messageListeners = mutableListOf<(Event) -> Unit>()
     private val temporaryListeners = mutableListOf<(Event) -> Boolean>()
 
@@ -20,6 +22,7 @@ internal class InMemoryEventStore @Inject constructor(registry: MeterRegistry) :
     }
 
     override fun produce(event: Event) {
+        logger.info("New Event: {}", event)
         messageListeners.forEach { it(event) }
 
         val successfulListeners = temporaryListeners.map { listener ->

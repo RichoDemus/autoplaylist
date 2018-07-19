@@ -3,16 +3,19 @@ package com.richodemus.autoplaylist.user
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
+import com.richodemus.autoplaylist.event.EventStore
+import com.richodemus.autoplaylist.event.RefreshTokenUpdated
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import java.time.Duration
 import java.time.Instant
 
 class User internal constructor(
-        val spotifyPort: SpotifyPort,
+        private val eventStore: EventStore,
+        private val spotifyPort: SpotifyPort,
         val userId: UserId,
         val spotifyUserId: SpotifyUserId,
-        var refreshToken: RefreshToken? = null,
+        refreshToken: RefreshToken,
         accessToken: AccessToken? = null,
         private var tokenExpiration: Instant = Instant.MIN
 ) {
@@ -23,14 +26,18 @@ class User internal constructor(
         }
         private set
 
+    internal var refreshToken = refreshToken
+        internal set(value) {
+            field = value
+            eventStore.produce(RefreshTokenUpdated(userId = userId, refreshToken = value))
+        }
+
     @Synchronized
     private fun renewAccessToken() {
         if (Instant.now().isAfter(tokenExpiration)) {
-            refreshToken?.let {
-                val (accessToken1, _, _, expiresIn, _) = spotifyPort.refreshToken(it).join()
-                accessToken = accessToken1
-                tokenExpiration = Instant.now().plus(Duration.ofSeconds(expiresIn.toLong()))
-            }
+            val (accessToken1, _, _, expiresIn, _) = spotifyPort.refreshToken(refreshToken).join()
+            accessToken = accessToken1
+            tokenExpiration = Instant.now().plus(Duration.ofSeconds(expiresIn.toLong()))
         }
     }
 

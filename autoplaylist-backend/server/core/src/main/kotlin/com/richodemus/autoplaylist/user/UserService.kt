@@ -1,5 +1,6 @@
 package com.richodemus.autoplaylist.user
 
+import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
 import com.richodemus.autoplaylist.event.EventStore
@@ -32,42 +33,40 @@ class UserService @Inject internal constructor(
 
     // todo better synchronization
     @Synchronized
-    fun findOrCreateUser(spotifyUserId: SpotifyUserId): CompletableFuture<User> {
-        val matchingUsers = users.values.filter { it.spotifyUserId == spotifyUserId }
-        if (matchingUsers.size > 1) {
-            logger.warn("There seems to be more than 1 user stored with the id {}", spotifyUserId)
-            return Future { matchingUsers[0] }
-        }
-
-        if (matchingUsers.size == 1) {
-            logger.info("User for spotify id {} already exists", spotifyUserId)
-            return Future { matchingUsers[0] }
-        }
-
-        // User does not exist, need to create it
-        logger.info("Creating user for spotify id {}", spotifyUserId)
-        val future = CompletableFuture<User>()
-        eventStore.addTemporaryListener { event ->
-            if (event is UserCreated && event.spotifyUserId == spotifyUserId) {
-                future.complete(users[event.userId])
-                return@addTemporaryListener true
+    fun findOrCreateUser(spotifyUserId: SpotifyUserId, refreshToken: RefreshToken): CompletableFuture<User> {
+        return Future {
+            val matchingUsers = users.values.filter { it.spotifyUserId == spotifyUserId }
+            if (matchingUsers.isNotEmpty()) {
+                if (matchingUsers.size > 1) {
+                    logger.warn("There seems to be more than 1 user stored with the id {}", spotifyUserId)
+                }
+                if (matchingUsers.size == 1) {
+                    logger.info("User for spotify id {} already exists", spotifyUserId)
+                    val user = matchingUsers[0]
+                    user.refreshToken = refreshToken
+                    return@Future user
+                }
             }
-            return@addTemporaryListener false
+
+            // User does not exist, need to create it
+            logger.info("Creating user for spotify id {}", spotifyUserId)
+            val event = UserCreated(spotifyUserId = spotifyUserId, refreshToken = refreshToken)
+            val user = add(event)
+            eventStore.produce(event)
+            return@Future user
         }
-        eventStore.produce(UserCreated(spotifyUserId = spotifyUserId))
-        return future
     }
 
     fun getUser(userId: UserId) = users[userId]
 
     @Synchronized
-    private fun add(userCreated: UserCreated) {
+    private fun add(userCreated: UserCreated): User {
         logger.info("Creating user: {}", userCreated)
-        val user = User(spotifyPort, userCreated.userId, userCreated.spotifyUserId)
+        val user = User(eventStore, spotifyPort, userCreated.userId, userCreated.spotifyUserId, userCreated.refreshToken)
         if (users.contains(user.userId)) {
             logger.warn("There is already a user with this id, existing: {}, new: {}", users[user.userId], user)
-        } else {
-            users[user.userId] = user
         }
+        users.putIfAbsent(user.userId, user)
+        return user
     }
 }

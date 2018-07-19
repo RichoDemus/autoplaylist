@@ -25,6 +25,7 @@ class Service @Inject internal constructor(
     private val logger = LoggerFactory.getLogger(javaClass)
 
     fun login(oAuthCode: String): CompletableFuture<UserId> {
+        // todo refactor this method....
         logger.info("login: $oAuthCode")
         val tokenFuture = spotifyPort.getToken(oAuthCode)
                 .map {
@@ -32,13 +33,15 @@ class Service @Inject internal constructor(
                     it
                 }
 
-        val userFuture = tokenFuture.flatMap { getUserIdMemoized(it.accessToken) }
-                .flatMap { userService.findOrCreateUser(it) }
+        val userIdFuture = tokenFuture.flatMap { getUserIdMemoized(it.accessToken) }
+
+        val tokens = tokenFuture.join()
+        val refreshToken = tokens.refreshToken
+                ?: return IllegalStateException("No refresh token for user ${userIdFuture.join()}").toCompletableFuture()
+        val userFuture = userIdFuture
+                .flatMap { userService.findOrCreateUser(it, refreshToken) }
 
         val user = userFuture.join()
-        tokenFuture.join().refreshToken?.let {
-            user.refreshToken = it
-        }
 
         logger.info("Logged in user: {}", user)
 
