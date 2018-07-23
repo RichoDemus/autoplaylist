@@ -12,6 +12,7 @@ import com.richodemus.autoplaylist.user.UserService
 import io.github.vjames19.futures.jdk8.Future
 import io.github.vjames19.futures.jdk8.flatMap
 import io.github.vjames19.futures.jdk8.map
+import io.github.vjames19.futures.jdk8.onFailure
 import io.github.vjames19.futures.jdk8.toCompletableFuture
 import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletableFuture
@@ -69,6 +70,9 @@ class Service @Inject internal constructor(
                 ?: return IllegalStateException("No user with id $userId").toCompletableFuture()
 
         val playlist = user.createPlaylist(name, artist)
+        playlist.onFailure {
+            logger.error("User {} failed to create playlist named {} from artist {}", arrayOf(user, name, artist))
+        }
         playlist.map { it.sync() }
         return playlist
                 .flatMap { it.albumsWithTracks() }

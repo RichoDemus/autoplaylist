@@ -54,13 +54,17 @@ class Playlist private constructor(
      */
     fun sync() {
         // todo maybe add new tracks to the top of the paylist?
-        logger.info("Sync playlist $name to Spotify")
+        try {
+            logger.info("Sync playlist $name to Spotify")
 
-        val expectedTracks = albumsWithTracks().join().flatMap { it.tracks }
-        val actualTracks = spotifyPort.getTracks(accessToken, spotifyUserId, id).join()
+            val expectedTracks = albumsWithTracks().join().flatMap { it.tracks }
+            val actualTracks = spotifyPort.getTracks(accessToken, spotifyUserId, id).join()
 
-        val missingTracks = expectedTracks.filterNot { it.id in actualTracks }
-        val snapshotId = spotifyPort.addTracksToPlaylist(accessToken, spotifyUserId, id, missingTracks.map { it.uri }).join()
-        print("Done: $snapshotId")
+            val missingTracks = expectedTracks.filterNot { it.id in actualTracks }
+            val snapshotId = spotifyPort.addTracksToPlaylist(accessToken, spotifyUserId, id, missingTracks.map { it.uri }).join()
+            print("Done: $snapshotId")
+        } catch (e: Exception) {
+            logger.error("Failed to create and fill {}", this, e)
+        }
     }
 }
