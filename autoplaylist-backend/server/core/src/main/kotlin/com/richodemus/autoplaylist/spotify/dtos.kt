@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import com.richodemus.autoplaylist.dto.RefreshToken
+import com.richodemus.autoplaylist.dto.TrackId
+import com.richodemus.autoplaylist.dto.TrackName
+import com.richodemus.autoplaylist.dto.TrackUri
 
 data class Tokens(
         @JsonProperty("access_token") val accessToken: AccessToken,
@@ -41,39 +44,12 @@ data class PlayListId(@get:JsonIgnore val value: String) {
     override fun toString() = value
 }
 
-data class ArtistName(@get:JsonIgnore val value: String) {
-    init {
-        require(value.isNotBlank()) { "ArtistName can't be empty" }
-    }
-
-    @JsonValue
-    override fun toString() = value
-}
-
-data class TrackName(@get:JsonIgnore val value: String) {
-    init {
-        require(value.isNotBlank()) { "TrackName can't be empty" }
-    }
-
-    @JsonValue
-    override fun toString() = value
-}
-
 data class Track(val id: TrackId, val name: TrackName, val uri: TrackUri)
 
-data class TrackId(@get:JsonIgnore val value: String) {
+// todo remove or figure out if we use this
+data class SnapshotId(@get:JsonIgnore val value: String) {
     init {
-        require(value.isNotBlank()) { "TrackId can't be empty" }
-    }
-
-    @JsonValue
-    override fun toString() = value
-}
-
-
-data class TrackUri(@get:JsonIgnore val value: String) {
-    init {
-        require(value.isNotBlank()) { "TrackUri can't be empty" }
+        require(value.isNotBlank()) { "SnapshotId can't be empty" }
     }
 
     @JsonValue

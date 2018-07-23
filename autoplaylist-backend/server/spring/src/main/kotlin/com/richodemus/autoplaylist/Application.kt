@@ -1,11 +1,11 @@
 package com.richodemus.autoplaylist
 
+import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
-import com.richodemus.autoplaylist.spotify.ArtistName
+import com.richodemus.autoplaylist.playlist.PlaylistWithAlbums
 import com.richodemus.autoplaylist.spotify.PlayList
 import com.richodemus.autoplaylist.spotify.PlaylistName
-import com.richodemus.autoplaylist.spotify.TrackName
 import io.github.vjames19.futures.jdk8.Future
 import io.github.vjames19.futures.jdk8.flatMap
 import io.github.vjames19.futures.jdk8.map
@@ -74,13 +74,28 @@ open class Application @Inject internal constructor(private val service: Service
     @GetMapping("/v1/playlists")
     internal fun getPlaylists(session: HttpSession): CompletableFuture<ResponseEntity<List<PlayList>>> {
         val userId = session.getUserId() ?: return Future { ResponseEntity<List<PlayList>>(FORBIDDEN) }
-
+        logger.info("Get playlists for user {}", userId)
         return Future { userId }
                 .flatMap { service.getPlaylists(it) }
                 .map { ResponseEntity(it, OK) }
                 .recover { exception ->
                     logger.error("getPlaylists failed: {}", exception.message, exception)
                     ResponseEntity(INTERNAL_SERVER_ERROR)
+                }
+    }
+
+    @PostMapping("/v1/playlists")
+    internal fun createPlaylist(session: HttpSession, @RequestBody request: CreatePlaylistRequest
+    ): CompletableFuture<ResponseEntity<CreatePlaylistResponse>> {
+        val userId = session.getUserId() ?: return Future { ResponseEntity<CreatePlaylistResponse>(FORBIDDEN) }
+        logger.info("Create playlist {}", request)
+        return service.createPlaylist(userId, request.name, request.artist)
+                .map { ResponseEntity.ok(CreatePlaylistResponse(playList = it)) }
+                .recover {
+                    ResponseEntity(
+                            CreatePlaylistResponse(false, null),
+                            INTERNAL_SERVER_ERROR
+                    )
                 }
     }
 
@@ -94,7 +109,7 @@ data class CreateSessionRequest(val code: String)
 
 internal data class CreatePlaylistRequest(val name: PlaylistName, val artist: ArtistName)
 
-internal data class CreatePlaylistResponse(val successful: Boolean, val tracks: List<TrackName> = emptyList())
+internal data class CreatePlaylistResponse(val successful: Boolean = true, val playList: PlaylistWithAlbums?)
 
 fun main(args: Array<String>) {
     SpringApplication.run(Application::class.java, *args)

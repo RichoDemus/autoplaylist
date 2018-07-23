@@ -5,4 +5,9 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile 'com.github.vjames19.kotlin-futures:kotlin-futures-jdk8:0.4.0'
     compile 'com.github.jsr-330:core:1.4.0'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:3.10.0'
+    testCompile 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.0.0-RC1'
+    testCompile 'org.slf4j:slf4j-simple:1.7.25'
 }

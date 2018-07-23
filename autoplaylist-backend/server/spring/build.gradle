@@ -12,6 +12,7 @@ apply plugin: "kotlin-spring"
 apply plugin: 'org.springframework.boot'
 
 dependencies {
+    compile project(':server:dto')
     compile project(':server:core')
     compile project(':server:spotify-adapter')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

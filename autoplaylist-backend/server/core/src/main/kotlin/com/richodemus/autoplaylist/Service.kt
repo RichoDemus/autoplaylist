@@ -1,9 +1,12 @@
 package com.richodemus.autoplaylist
 
+import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
+import com.richodemus.autoplaylist.playlist.PlaylistWithAlbums
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.PlayList
+import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.user.UserService
 import io.github.vjames19.futures.jdk8.Future
@@ -59,6 +62,17 @@ class Service @Inject internal constructor(
                 ?: return IllegalStateException("No such user").toCompletableFuture()
 
         return spotifyPort.getPlaylists(accessToken)
+    }
+
+    fun createPlaylist(userId: UserId, name: PlaylistName, artist: ArtistName): CompletableFuture<PlaylistWithAlbums> {
+        val user = userService.getUser(userId)
+                ?: return IllegalStateException("No user with id $userId").toCompletableFuture()
+
+        val playlist = user.createPlaylist(name, artist)
+        playlist.map { it.sync() }
+        return playlist
+                .flatMap { it.albumsWithTracks() }
+                .map { PlaylistWithAlbums(it) }
     }
 
     private val getUserIdMemoized = { accessToken: AccessToken -> spotifyPort.getUserId(accessToken) }.memoize()

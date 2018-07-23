@@ -10,12 +10,15 @@ class App extends Component {
         super(props);
 
         this.logout = this.logout.bind(this);
+        this.createPlaylist = this.createPlaylist.bind(this);
 
         this.state = {
             loggedIn: false,
             userId: null,
             playLists: [],
-            error: null
+            error: null,
+            inputArtist: "",
+            inputPlaylist: ""
         };
 
         if (window.location.pathname === "/callback") {
@@ -46,7 +49,7 @@ class App extends Component {
 
             loginPromise
                 .then(() => {
-                    fetch(getBackendBaseUrl() + '/users/me',{
+                    fetch(getBackendBaseUrl() + '/users/me', {
                         credentials: 'include'
                     })
                         .then(response => response.json())
@@ -66,22 +69,7 @@ class App extends Component {
 
             loginPromise
                 .then(() => {
-                    fetch(getBackendBaseUrl() + '/playlists',{
-                        credentials: 'include'
-                    })
-                        .then(response => response.json())
-                        .then(playlists => {
-                            if (playlists.error) {
-                                console.log("error:", playlists.error);
-                                this.setState({
-                                    error: playlists.error
-                                });
-                            } else {
-                                this.setState({
-                                    playLists: playlists
-                                });
-                            }
-                        });
+                    this.refreshPlaylist();
                 });
         }
     }
@@ -107,6 +95,26 @@ class App extends Component {
                         ))}
                     </ul>
                 </div>
+                {this.state.loggedIn && (
+                    <div>
+                        <input
+                            type="text"
+                            name="artist"
+                            placeholder="Artist name"
+                            value={this.state.inputArtist}
+                            onChange={evt => this.updateInputArtist(evt)}
+                        />
+                        <input
+                            type="text"
+                            name="playlist"
+                            placeholder="Playlist name"
+                            value={this.state.inputPlaylist}
+                            onChange={evt => this.updateInputPlaylist(evt)}
+                        />
+                        <button onClick={this.createPlaylist}>Create playlist
+                        </button>
+                    </div>
+                )}
                 {(this.state.loggedIn || this.state.error) && (
                     <button onClick={this.logout}>
                         Log out
@@ -116,12 +124,69 @@ class App extends Component {
         );
     }
 
+    createPlaylist() {
+        const artistName = this.state.inputArtist;
+        const playlistName = this.state.inputPlaylist;
+        if (window.confirm('Create playlist "' + playlistName + '" from artist "' + artistName + '"')) {
+            fetch(getBackendBaseUrl() + '/playlists', {
+                credentials: 'include',
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    artist: artistName,
+                    name: playlistName
+                })
+            })
+                .then(response => response.json())
+                .then(result => {
+                    console.log("Created playlist:", result);
+                    this.refreshPlaylist()
+                }).catch(error => alert(error));
+        }
+    }
+
+    refreshPlaylist() {
+        fetch(getBackendBaseUrl() + '/playlists', {
+            credentials: 'include'
+        })
+            .then(response => response.json())
+            .then(playlists => {
+                if (playlists.error) {
+                    console.log("error:", playlists.error);
+                    this.setState({
+                        error: playlists.error
+                    });
+                } else {
+                    this.setState({
+                        playLists: playlists
+                    });
+                }
+            });
+    }
+
+    updateInputArtist(evt) {
+        this.setState({
+            inputArtist: evt.target.value
+        });
+    }
+
+    updateInputPlaylist(evt) {
+        this.setState({
+            inputPlaylist: evt.target.value
+        });
+    }
+
     logout() {
         this.setState({
             loggedIn: false,
             userId: null,
             playLists: [],
-            error: null
+            error: null,
+            inputArtist: "",
+            inputPlaylist: ""
         });
     }
 }

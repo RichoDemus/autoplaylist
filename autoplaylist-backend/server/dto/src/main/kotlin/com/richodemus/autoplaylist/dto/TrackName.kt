@@ -1,0 +1,13 @@
+package com.richodemus.autoplaylist.dto
+
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonValue
+
+data class TrackName(@get:JsonIgnore val value: String) {
+    init {
+        require(value.isNotBlank()) { "TrackName can't be empty" }
+    }
+
+    @JsonValue
+    override fun toString() = value
+}

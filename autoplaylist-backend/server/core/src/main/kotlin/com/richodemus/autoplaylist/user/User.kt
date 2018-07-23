@@ -1,14 +1,19 @@
 package com.richodemus.autoplaylist.user
 
+import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
 import com.richodemus.autoplaylist.event.EventStore
 import com.richodemus.autoplaylist.event.RefreshTokenUpdated
+import com.richodemus.autoplaylist.playlist.Playlist
 import com.richodemus.autoplaylist.spotify.AccessToken
+import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
+import io.github.vjames19.futures.jdk8.map
 import java.time.Duration
 import java.time.Instant
+import java.util.concurrent.CompletableFuture
 
 class User internal constructor(
         private val eventStore: EventStore,
@@ -32,6 +37,9 @@ class User internal constructor(
             eventStore.produce(RefreshTokenUpdated(userId = userId, refreshToken = value))
         }
 
+    var playlists = emptyList<Playlist>()
+        private set
+
     @Synchronized
     private fun renewAccessToken() {
         if (Instant.now().isAfter(tokenExpiration)) {
@@ -39,6 +47,17 @@ class User internal constructor(
             accessToken = accessToken1
             tokenExpiration = Instant.now().plus(Duration.ofSeconds(expiresIn.toLong()))
         }
+    }
+
+
+    fun createPlaylist(name: PlaylistName, artist: ArtistName): CompletableFuture<Playlist> {
+        // todo don't use accessToken!!!
+        val playlist = Playlist.create(name, spotifyUserId, artist, accessToken!!, spotifyPort)
+        return playlist
+                .map {
+                    playlists = playlists.plus(it)
+                    it
+                }
     }
 
     override fun toString(): String {
