@@ -61,8 +61,7 @@ class Playlist private constructor(
             val actualTracks = spotifyPort.getTracks(accessToken, spotifyUserId, id).join()
 
             val missingTracks = expectedTracks.filterNot { it.id in actualTracks }
-            val snapshotId = spotifyPort.addTracksToPlaylist(accessToken, spotifyUserId, id, missingTracks.map { it.uri }).join()
-            print("Done: $snapshotId")
+            spotifyPort.addTracksToPlaylist(accessToken, spotifyUserId, id, missingTracks.map { it.uri }).join()
         } catch (e: Exception) {
             logger.error("Failed to create and fill {}", this, e)
         }
