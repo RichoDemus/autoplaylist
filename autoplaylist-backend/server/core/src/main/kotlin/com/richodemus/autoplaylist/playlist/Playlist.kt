@@ -19,9 +19,9 @@ import java.util.concurrent.CompletableFuture
  */
 class Playlist private constructor(
         val id: PlayListId,
-        val spotifyUserId: SpotifyUserId,
+        private val spotifyUserId: SpotifyUserId,
         val name: PlaylistName,
-        val artist: ArtistName,
+        private val artist: ArtistName,
         private val accessToken: AccessToken,
         private val spotifyPort: SpotifyPort
 ) {

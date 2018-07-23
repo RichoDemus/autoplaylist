@@ -33,9 +33,10 @@ import javax.servlet.http.HttpSession
 )
 @RestController
 @SpringBootApplication
-open class Application @Inject internal constructor(private val service: Service) {
-    private val logger = LoggerFactory.getLogger(Application::class.java)
+class Application @Inject internal constructor(private val service: Service) {
+    private val logger = LoggerFactory.getLogger(javaClass)
 
+    @Suppress("unused")
     @PostMapping("/v1/sessions")
     internal fun createSession(session: HttpSession, @RequestBody request: CreateSessionRequest
     ): CompletableFuture<ResponseEntity<CreateSessionResponse>> {
@@ -58,6 +59,7 @@ open class Application @Inject internal constructor(private val service: Service
 
     internal data class CreateSessionResponse(val msg: String)
 
+    @Suppress("unused")
     @GetMapping("/v1/users/me")
     internal fun getUser(session: HttpSession): CompletableFuture<ResponseEntity<SpotifyUserId>> {
         val userId = session.getUserId() ?: return Future { ResponseEntity<SpotifyUserId>(FORBIDDEN) }
@@ -71,6 +73,7 @@ open class Application @Inject internal constructor(private val service: Service
                 }
     }
 
+    @Suppress("unused")
     @GetMapping("/v1/playlists")
     internal fun getPlaylists(session: HttpSession): CompletableFuture<ResponseEntity<List<PlayList>>> {
         val userId = session.getUserId() ?: return Future { ResponseEntity<List<PlayList>>(FORBIDDEN) }
@@ -84,6 +87,7 @@ open class Application @Inject internal constructor(private val service: Service
                 }
     }
 
+    @Suppress("unused")
     @PostMapping("/v1/playlists")
     internal fun createPlaylist(session: HttpSession, @RequestBody request: CreatePlaylistRequest
     ): CompletableFuture<ResponseEntity<CreatePlaylistResponse>> {

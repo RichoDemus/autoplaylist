@@ -37,8 +37,7 @@ class User internal constructor(
             eventStore.produce(RefreshTokenUpdated(userId = userId, refreshToken = value))
         }
 
-    var playlists = emptyList<Playlist>()
-        private set
+    private var playlists = emptyList<Playlist>()
 
     @Synchronized
     private fun renewAccessToken() {

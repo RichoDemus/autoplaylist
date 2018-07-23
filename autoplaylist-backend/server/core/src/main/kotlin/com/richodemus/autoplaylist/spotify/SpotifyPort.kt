@@ -1,7 +1,6 @@
 package com.richodemus.autoplaylist.spotify
 
 import com.richodemus.autoplaylist.dto.Album
-import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.ArtistId
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.RefreshToken

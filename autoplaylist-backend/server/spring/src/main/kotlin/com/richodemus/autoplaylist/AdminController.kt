@@ -21,6 +21,7 @@ import javax.servlet.http.HttpSession
 class AdminController @Inject internal constructor(val userService: UserService) {
     private val logger = LoggerFactory.getLogger(AdminController::class.java)
 
+    @Suppress("unused")
     @GetMapping("/v1/admin/users")
     internal fun getUsers(session: HttpSession): ResponseEntity<List<WebUser>> {
         logger.info("Get users")
