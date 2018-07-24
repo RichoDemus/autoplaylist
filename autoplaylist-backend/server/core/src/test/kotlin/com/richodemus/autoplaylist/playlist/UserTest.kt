@@ -40,7 +40,7 @@ class UserTest {
             on { createPlaylist(any(), any(), any()) } doReturn Future {
                 PlayList(PlayListId("p"), PlaylistName("n"))
             }
-            on { addTracksToPlaylist(any(), any(), any(), any()) } doReturn Future { emptyList<SnapshotId>() }
+            on { addTracksToPlaylist(any(), any(), any(), any()) } doReturn Future { Unit }
         }
         val user = User(
                 mock {},

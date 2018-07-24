@@ -10,6 +10,7 @@ import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import io.github.vjames19.futures.jdk8.flatMap
 import io.github.vjames19.futures.jdk8.map
+import io.github.vjames19.futures.jdk8.toCompletableFuture
 import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletableFuture
 
@@ -52,18 +53,29 @@ class Playlist private constructor(
     /**
      * Make sure all tracks are in the spotify playlist
      */
-    fun sync() {
+    fun sync(): CompletableFuture<Unit> {
         // todo maybe add new tracks to the top of the paylist?
+        // todo rewrite this function
         try {
             logger.info("Sync playlist $name to Spotify")
 
-            val expectedTracks = albumsWithTracks().join().flatMap { it.tracks }
-            val actualTracks = spotifyPort.getTracks(accessToken, spotifyUserId, id).join()
+            val albumsWithTracksFuture = albumsWithTracks()
+            val actualTracksFuture = spotifyPort.getTracks(accessToken, spotifyUserId, id)
+
+            val expectedTracks = albumsWithTracksFuture.join().flatMap { it.tracks }
+            val actualTracks = actualTracksFuture.join()
 
             val missingTracks = expectedTracks.filterNot { it.id in actualTracks }
-            spotifyPort.addTracksToPlaylist(accessToken, spotifyUserId, id, missingTracks.map { it.uri }).join()
+            val addTracksToPlaylistFuture = spotifyPort.addTracksToPlaylist(accessToken, spotifyUserId, id, missingTracks
+                    .map { it.uri })
+            addTracksToPlaylistFuture
+                    .map { logger.info("Done syncing {}", this) }
+            // to catch the exception or something
+            addTracksToPlaylistFuture.join()
+            return addTracksToPlaylistFuture
         } catch (e: Exception) {
             logger.error("Failed to create and fill {}", this, e)
+            return RuntimeException("Failed to create and fill $this", e).toCompletableFuture()
         }
     }
 }

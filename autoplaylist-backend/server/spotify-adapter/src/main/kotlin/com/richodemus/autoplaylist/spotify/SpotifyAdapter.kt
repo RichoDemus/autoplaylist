@@ -53,9 +53,10 @@ internal class SpotifyAdapter(private val spotifyClient: SpotifyClient) : Spotif
             spotifyUserId: SpotifyUserId,
             id: PlayListId,
             tracks: List<TrackUri>
-    ) = Future<List<SnapshotId>> {
+    ) = Future<Unit> {
         tracks.chunked(100)
                 .map { spotifyClient.addTracks(accessToken, spotifyUserId, id, it) }.map { it.join() }
+                .map { Unit }
     }
 
     private fun Iterable<com.richodemus.autoplaylist.spotify.Track>.toDtoTrack() = map { Track(it.id, it.name, it.uri) }

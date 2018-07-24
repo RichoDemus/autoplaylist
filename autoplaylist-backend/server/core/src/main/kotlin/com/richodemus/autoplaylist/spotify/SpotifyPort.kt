@@ -33,5 +33,5 @@ interface SpotifyPort {
             spotifyUserId: SpotifyUserId,
             id: PlayListId,
             tracks: List<TrackUri>
-    ): CompletableFuture<List<SnapshotId>>
+    ): CompletableFuture<Unit>
 }
