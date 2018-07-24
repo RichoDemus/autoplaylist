@@ -1,5 +1,7 @@
 package com.richodemus.autoplaylist.spotify
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonValue
 import com.richodemus.autoplaylist.dto.AlbumId
 import com.richodemus.autoplaylist.dto.AlbumName
 import com.richodemus.autoplaylist.dto.ArtistId
@@ -19,7 +21,7 @@ internal data class Artist(val id: ArtistId, val name: ArtistName)
 
 
 internal data class GetAlbumsResponse(val items: List<Album>, val total: Int)
-data class Album(
+internal data class Album(
         val id: AlbumId,
         val name: AlbumName,
         val album_group: String
@@ -31,3 +33,12 @@ internal data class GetTracksResponse(val items: List<Track>, val total: Int)
 internal data class AddTracksToPlaylistRequest(val uris: List<TrackUri>)
 internal data class AddTracksToPlaylistRespose(val snapshot_id: SnapshotId)
 
+// todo remove or figure out if we use this
+internal data class SnapshotId(@get:JsonIgnore val value: String) {
+    init {
+        require(value.isNotBlank()) { "SnapshotId can't be empty" }
+    }
+
+    @JsonValue
+    override fun toString() = value
+}

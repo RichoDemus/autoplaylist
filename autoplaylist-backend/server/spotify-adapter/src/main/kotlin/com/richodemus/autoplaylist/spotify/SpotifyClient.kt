@@ -22,14 +22,14 @@ import javax.inject.Singleton
 
 @Singleton
 @Named
-class SpotifyClient {
+internal class SpotifyClient {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     private val mapper = jacksonObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     private val s = "${clientId()}:${clientSecret()}"
     private val authString = "Basic " + Base64.getEncoder().encodeToString(s.toByteArray())
-    fun getToken(code: String): CompletableFuture<Tokens> {
+    internal fun getToken(code: String): CompletableFuture<Tokens> {
         return Fuel.post("https://accounts.spotify.com/api/token",
                 listOf(
                         "grant_type" to "authorization_code",
@@ -41,7 +41,7 @@ class SpotifyClient {
                 .deserialize()
     }
 
-    fun getUserId(accessToken: AccessToken): CompletableFuture<SpotifyUserId> {
+    internal fun getUserId(accessToken: AccessToken): CompletableFuture<SpotifyUserId> {
         return Fuel.get("https://api.spotify.com/v1/me")
                 .header("Content-Type" to "application/json")
                 .header("Authorization" to "Bearer $accessToken")
@@ -49,7 +49,7 @@ class SpotifyClient {
                 .map { it.id }
     }
 
-    fun getPlaylists(accessToken: AccessToken): CompletableFuture<List<PlayList>> {
+    internal fun getPlaylists(accessToken: AccessToken): CompletableFuture<List<PlayList>> {
         return Fuel.get("https://api.spotify.com/v1/me/playlists")
                 .header("Content-Type" to "application/json")
                 .header("Authorization" to "Bearer $accessToken")
@@ -57,7 +57,7 @@ class SpotifyClient {
                 .map { it.items }
     }
 
-    fun refreshToken(refreshToken: RefreshToken): CompletableFuture<Tokens> {
+    internal fun refreshToken(refreshToken: RefreshToken): CompletableFuture<Tokens> {
         return Fuel.post("https://accounts.spotify.com/api/token",
                 listOf(
                         "grant_type" to "refresh_token",
@@ -67,7 +67,7 @@ class SpotifyClient {
                 .deserialize()
     }
 
-    fun findArtist(accessToken: AccessToken, name: ArtistName): CompletableFuture<List<ArtistId>> {
+    internal fun findArtist(accessToken: AccessToken, name: ArtistName): CompletableFuture<List<ArtistId>> {
         return Fuel.get("https://api.spotify.com/v1/search",
                 listOf(
                         "q" to name,
@@ -80,7 +80,7 @@ class SpotifyClient {
                 .map { it.map { it.id } }
     }
 
-    fun getAlbums(accessToken: AccessToken, artistId: ArtistId): CompletableFuture<List<Album>> {
+    internal fun getAlbums(accessToken: AccessToken, artistId: ArtistId): CompletableFuture<List<Album>> {
         return Fuel.get("https://api.spotify.com/v1/artists/$artistId/albums")
                 .header("Content-Type" to "application/json")
                 .header("Authorization" to "Bearer $accessToken")

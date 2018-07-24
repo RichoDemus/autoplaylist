@@ -14,7 +14,6 @@ import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.PlayList
 import com.richodemus.autoplaylist.spotify.PlayListId
 import com.richodemus.autoplaylist.spotify.PlaylistName
-import com.richodemus.autoplaylist.spotify.SnapshotId
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.spotify.Tokens
 import com.richodemus.autoplaylist.user.User

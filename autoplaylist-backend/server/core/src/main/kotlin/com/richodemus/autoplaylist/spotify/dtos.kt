@@ -45,13 +45,3 @@ data class PlayListId(@get:JsonIgnore val value: String) {
 }
 
 data class Track(val id: TrackId, val name: TrackName, val uri: TrackUri)
-
-// todo remove or figure out if we use this
-data class SnapshotId(@get:JsonIgnore val value: String) {
-    init {
-        require(value.isNotBlank()) { "SnapshotId can't be empty" }
-    }
-
-    @JsonValue
-    override fun toString() = value
-}
