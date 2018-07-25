@@ -27,8 +27,10 @@ internal class SpotifyClient {
 
     private val mapper = jacksonObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    private val s = "${clientId()}:${clientSecret()}"
-    private val authString = "Basic " + Base64.getEncoder().encodeToString(s.toByteArray())
+    // These were made unlazy so that the tests doesn't fail when these are initialized
+    // todo remove this once SpotifyClient is mocked properly or these are set via spring or something
+    private val s by lazy { "${clientId()}:${clientSecret()}" }
+    private val authString by lazy { "Basic " + Base64.getEncoder().encodeToString(s.toByteArray()) }
     internal fun getToken(code: String): CompletableFuture<Tokens> {
         return Fuel.post("https://accounts.spotify.com/api/token",
                 listOf(
