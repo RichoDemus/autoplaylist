@@ -53,15 +53,15 @@ class App extends Component {
                         credentials: 'include'
                     })
                         .then(response => response.json())
-                        .then(userId => {
-                            if (userId.error) {
-                                console.log("error:", userId.error);
+                        .then(response => {
+                            if (response.error) {
+                                console.log("error:", response.error);
                                 this.setState({
-                                    error: userId.error
+                                    error: response.error
                                 });
                             } else {
                                 this.setState({
-                                    userId: userId
+                                    userId: response.userId
                                 });
                             }
                         });

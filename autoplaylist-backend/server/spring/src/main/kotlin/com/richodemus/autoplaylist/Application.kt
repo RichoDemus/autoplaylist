@@ -59,14 +59,20 @@ class Application @Inject internal constructor(private val service: Service) {
 
     internal data class CreateSessionResponse(val msg: String)
 
+    internal data class GetUserIdResponse(val userId: SpotifyUserId)
+
     @Suppress("unused")
     @GetMapping("/v1/users/me")
-    internal fun getUser(session: HttpSession): CompletableFuture<ResponseEntity<SpotifyUserId>> {
-        val userId = session.getUserId() ?: return Future { ResponseEntity<SpotifyUserId>(FORBIDDEN) }
+    internal fun getUser(session: HttpSession): CompletableFuture<ResponseEntity<GetUserIdResponse>> {
+        val userId = session.getUserId()
+        if (userId == null) {
+            logger.warn("No user for session {}", session.id)
+            return Future { ResponseEntity<GetUserIdResponse>(FORBIDDEN) }
+        }
 
         return Future { userId }
-                .flatMap { service.getSpotifyUserId(it) }
-                .map { ResponseEntity(it, OK) }
+                .flatMap { service.getSpotifyUserId(it!!) }
+                .map { ResponseEntity(GetUserIdResponse(it), OK) }
                 .recover { exception ->
                     logger.error("getSpotifyUserId failed: {}", exception.message, exception)
                     ResponseEntity(INTERNAL_SERVER_ERROR)
