@@ -1,6 +1,7 @@
 package com.richodemus.autoplaylist.test
 
 import com.richodemus.autoplaylist.dto.SpotifyUserId
+import com.richodemus.autoplaylist.playlist.PlaylistWithAlbums
 import com.richodemus.autoplaylist.spotify.PlayList
 import com.richodemus.autoplaylist.spotify.PlayListId
 import com.richodemus.autoplaylist.spotify.PlaylistName
@@ -53,5 +54,14 @@ internal class ServiceTest {
         )
 
         assertThat(result).isEqualTo(expected)
+    }
+
+    @Test
+    fun `Create playlist`() {
+        val mainPage = loginPage.login(spotifyPort.oAuth2Code)
+        val result = mainPage.createPlaylist(PlaylistName("new-playlist"), ARTIST.name)
+
+        assertThat(result).isEqualTo(PlaylistWithAlbums(ARTIST.albums))
+        // assertThat(mainPage.getPlaylists()).extracting("name").contains("new-playlist")
     }
 }
