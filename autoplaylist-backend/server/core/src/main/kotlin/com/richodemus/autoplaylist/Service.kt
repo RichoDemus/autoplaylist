@@ -73,11 +73,8 @@ class Service @Inject internal constructor(
         playlist.onFailure {
             logger.error("User {} failed to create playlist named {} from artist {}", arrayOf(user, name, artist))
         }
-        //todo sync should return the state of the playlist and it sohuld be used as the return thing
-        playlist.map { it.sync() }
-        return playlist
-                .flatMap { it.albumsWithTracks() }
-                .map { PlaylistWithAlbums(it) }
+        val playlistContents = playlist.flatMap { it.sync() }
+        return playlistContents.map { PlaylistWithAlbums(it) }
     }
 
     private val getUserIdMemoized = { accessToken: AccessToken -> spotifyPort.getUserId(accessToken) }.memoize()

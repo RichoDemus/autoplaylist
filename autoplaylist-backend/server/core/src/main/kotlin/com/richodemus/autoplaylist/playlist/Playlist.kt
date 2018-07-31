@@ -53,14 +53,14 @@ class Playlist private constructor(
     /**
      * Make sure all tracks are in the spotify playlist
      */
-    fun sync(): CompletableFuture<Unit> {
+    fun sync(): CompletableFuture<List<Album>> {
         // todo maybe add new tracks to the top of the paylist?
         // todo rewrite this function
         try {
             logger.info("Sync playlist $name to Spotify")
 
-            val albumsWithTracksFuture = albumsWithTracks()
             val actualTracksFuture = spotifyPort.getTracks(accessToken, spotifyUserId, id)
+            val albumsWithTracksFuture = albumsWithTracks()
 
             val expectedTracks = albumsWithTracksFuture.join().flatMap { it.tracks }
             val actualTracks = actualTracksFuture.join()
@@ -72,7 +72,7 @@ class Playlist private constructor(
                     .map { logger.info("Done syncing {}", this) }
             // to catch the exception or something
             addTracksToPlaylistFuture.join()
-            return addTracksToPlaylistFuture
+            return albumsWithTracksFuture
         } catch (e: Exception) {
             logger.error("Failed to create and fill {}", this, e)
             return RuntimeException("Failed to create and fill $this", e).toCompletableFuture()
