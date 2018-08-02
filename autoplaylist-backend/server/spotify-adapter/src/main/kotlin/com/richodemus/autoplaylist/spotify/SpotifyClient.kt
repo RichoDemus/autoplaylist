@@ -152,7 +152,6 @@ internal class SpotifyClient {
             when (result) {
                 is Result.Failure -> {
                     val ex = result.getException()
-                    logger.error("Call failed: ${result.error.response}", ex)
                     if (result.error.response.statusCode == 429) {
                         logger.warn("Rate limit exceeded")
                         val retryAfter = result.error.response.headers["Retry-After"]?.get(0)
@@ -164,6 +163,7 @@ internal class SpotifyClient {
                         future.completeExceptionally(RateLimitExceededException(retryAfter.toLong()))
                         return@responseString
                     }
+                    logger.error("Call failed: ${result.error.response}", ex)
                     future.completeExceptionally(ex)
                 }
                 is Result.Success -> {
