@@ -10,7 +10,9 @@ import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import io.github.vjames19.futures.jdk8.flatMap
 import io.github.vjames19.futures.jdk8.map
-import io.github.vjames19.futures.jdk8.toCompletableFuture
+import io.github.vjames19.futures.jdk8.onFailure
+import io.github.vjames19.futures.jdk8.onSuccess
+import io.github.vjames19.futures.jdk8.zip
 import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletableFuture
 
@@ -55,27 +57,23 @@ class Playlist private constructor(
      */
     fun sync(): CompletableFuture<List<Album>> {
         // todo maybe add new tracks to the top of the paylist?
-        // todo rewrite this function
-        try {
-            logger.info("Sync playlist $name to Spotify")
+        logger.info("Sync playlist $name to Spotify")
 
-            val actualTracksFuture = spotifyPort.getTracks(accessToken, spotifyUserId, id)
-            val albumsWithTracksFuture = albumsWithTracks()
+        val actualTracksFuture = spotifyPort.getTracks(accessToken, spotifyUserId, id)
+        val albumsWithTracksFuture = albumsWithTracks()
 
-            val expectedTracks = albumsWithTracksFuture.join().flatMap { it.tracks }
-            val actualTracks = actualTracksFuture.join()
-
-            val missingTracks = expectedTracks.filterNot { it.id in actualTracks }
-            val addTracksToPlaylistFuture = spotifyPort.addTracksToPlaylist(accessToken, spotifyUserId, id, missingTracks
-                    .map { it.uri })
-            addTracksToPlaylistFuture
-                    .map { logger.info("Done syncing {}", this) }
-            // to catch the exception or something
-            addTracksToPlaylistFuture.join()
-            return albumsWithTracksFuture
-        } catch (e: Exception) {
-            logger.error("Failed to create and fill {}", this, e)
-            return RuntimeException("Failed to create and fill $this", e).toCompletableFuture()
+        val expectedTracksFuture = albumsWithTracksFuture.map { it.flatMap { it.tracks } }
+        val missingTracksFuture = actualTracksFuture.zip(expectedTracksFuture) { actual, expected ->
+            expected.filterNot { it.id in actual }
         }
+
+        val addTracksToPlaylistFuture = missingTracksFuture.flatMap {
+            spotifyPort.addTracksToPlaylist(accessToken, spotifyUserId, id, it.map { it.uri })
+        }
+
+        addTracksToPlaylistFuture.onSuccess { logger.info("Done syncing {}", this) }
+        addTracksToPlaylistFuture.onFailure { logger.error("Failed to create and fill {}", this, it) }
+
+        return albumsWithTracksFuture
     }
 }
