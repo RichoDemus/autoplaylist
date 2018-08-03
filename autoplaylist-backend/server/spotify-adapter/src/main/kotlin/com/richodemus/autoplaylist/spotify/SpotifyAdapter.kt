@@ -27,7 +27,9 @@ internal class SpotifyAdapter(private val spotifyClient: SpotifyClient) : Spotif
 
     override fun refreshToken(refreshToken: RefreshToken) = withRetry { spotifyClient.refreshToken(refreshToken) }
 
-    override fun findArtist(accessToken: AccessToken, name: ArtistName) = withRetry { spotifyClient.findArtist(accessToken, name) }
+    override fun findArtist(accessToken: AccessToken, name: ArtistName) = withRetry {
+        spotifyClient.findArtist(accessToken, name).map { it.map { artist -> artist.toDtoArtist() } }
+    }
 
     override fun getAlbums(accessToken: AccessToken, artistId: ArtistId): CompletableFuture<List<Album>> {
         return withRetry {
@@ -89,4 +91,6 @@ internal class SpotifyAdapter(private val spotifyClient: SpotifyClient) : Spotif
             throw RuntimeException("Call $function failed after 10 attempts")
         }
     }
+
+    private fun Artist.toDtoArtist() = com.richodemus.autoplaylist.dto.Artist(this.id, this.name)
 }

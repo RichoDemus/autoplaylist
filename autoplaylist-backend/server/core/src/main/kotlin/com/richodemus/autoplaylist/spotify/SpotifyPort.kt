@@ -1,6 +1,7 @@
 package com.richodemus.autoplaylist.spotify
 
 import com.richodemus.autoplaylist.dto.Album
+import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.ArtistId
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.RefreshToken
@@ -14,7 +15,7 @@ interface SpotifyPort {
     fun getUserId(accessToken: AccessToken): CompletableFuture<SpotifyUserId>
     fun getPlaylists(accessToken: AccessToken): CompletableFuture<List<PlayList>>
     fun refreshToken(refreshToken: RefreshToken): CompletableFuture<Tokens>
-    fun findArtist(accessToken: AccessToken, name: ArtistName): CompletableFuture<List<ArtistId>>
+    fun findArtist(accessToken: AccessToken, name: ArtistName): CompletableFuture<List<Artist>>
     fun getAlbums(accessToken: AccessToken, artistId: ArtistId): CompletableFuture<List<Album>>
     fun getTracks(
             accessToken: AccessToken,

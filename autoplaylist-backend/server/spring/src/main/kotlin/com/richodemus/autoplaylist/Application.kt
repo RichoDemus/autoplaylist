@@ -1,5 +1,6 @@
 package com.richodemus.autoplaylist
 
+import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.util.concurrent.CompletableFuture
 import javax.inject.Inject
@@ -104,6 +106,24 @@ class Application @Inject internal constructor(private val service: Service) {
                 .recover {
                     ResponseEntity(
                             CreatePlaylistResponse(false, null),
+                            INTERNAL_SERVER_ERROR
+                    )
+                }
+    }
+
+    @Suppress("unused")
+    @GetMapping("/v1/artists")
+    internal fun findArtists(
+            session: HttpSession,
+            @RequestParam("name") name: ArtistName
+    ): CompletableFuture<ResponseEntity<List<Artist>>> {
+        val userId = session.getUserId() ?: return Future { ResponseEntity<List<Artist>>(FORBIDDEN) }
+        return Future { userId }
+                .flatMap { service.findArtists(it, name) }
+                .map { ResponseEntity.ok(it) }
+                .recover {
+                    ResponseEntity(
+                            emptyList(),
                             INTERNAL_SERVER_ERROR
                     )
                 }

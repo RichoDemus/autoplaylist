@@ -44,7 +44,7 @@ class Playlist private constructor(
     fun albumsWithTracks(): CompletableFuture<List<Album>> {
         return spotifyPort.findArtist(accessToken, artist)
                 .flatMap { artistIds ->
-                    artistIds.map { spotifyPort.getAlbums(accessToken, it) }.flatten()
+                    artistIds.map { spotifyPort.getAlbums(accessToken, it.id) }.flatten()
                 }.map { it.flatMap { it } }
     }
 

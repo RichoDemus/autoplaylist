@@ -96,6 +96,6 @@ fun SpotifyPort.mockDefaultBehavior() {
     })
     whenever(this.getTracks(any(), any(), eq(PlayListId("playlistId")))).doReturn(Future { emptyList<TrackId>() })
     whenever(this.addTracksToPlaylist(any(), any(), eq(PlayListId("playlistId")), any())).doReturn(Future { })
-    whenever(this.findArtist(any(), eq(ARTIST.name))).doReturn(Future { listOf(ARTIST.id) })
+    whenever(this.findArtist(any(), eq(ARTIST.name))).doReturn(Future { listOf(com.richodemus.autoplaylist.dto.Artist(ARTIST.id, ARTIST.name)) })
     whenever(this.getAlbums(any(), eq(ARTIST.id))).doReturn(Future { ARTIST.albums })
 }

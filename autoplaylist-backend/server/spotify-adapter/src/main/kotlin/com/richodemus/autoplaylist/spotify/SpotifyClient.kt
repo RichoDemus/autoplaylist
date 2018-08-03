@@ -69,7 +69,7 @@ internal class SpotifyClient {
                 .deserialize()
     }
 
-    internal fun findArtist(accessToken: AccessToken, name: ArtistName): CompletableFuture<List<ArtistId>> {
+    internal fun findArtist(accessToken: AccessToken, name: ArtistName): CompletableFuture<List<Artist>> {
         return Fuel.get("https://api.spotify.com/v1/search",
                 listOf(
                         "q" to name,
@@ -79,7 +79,6 @@ internal class SpotifyClient {
                 .header("Authorization" to "Bearer $accessToken")
                 .deserialize<FindArtistResponse>()
                 .map { it.artists.items }
-                .map { it.map { it.id } }
     }
 
     internal fun getAlbums(accessToken: AccessToken, artistId: ArtistId): CompletableFuture<List<Album>> {

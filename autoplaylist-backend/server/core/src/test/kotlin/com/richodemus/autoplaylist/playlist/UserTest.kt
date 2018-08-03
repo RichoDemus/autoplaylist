@@ -4,7 +4,7 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.richodemus.autoplaylist.dto.Album
-import com.richodemus.autoplaylist.dto.ArtistId
+import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
@@ -33,7 +33,7 @@ class UserTest {
                         RefreshToken("r")
                 )
             }
-            on { findArtist(any(), any()) } doReturn Future { emptyList<ArtistId>() }
+            on { findArtist(any(), any()) } doReturn Future { emptyList<Artist>() }
             on { getAlbums(any(), any()) } doReturn Future { emptyList<Album>() }
             on { getTracks(any(), any(), any()) } doReturn Future { emptyList<TrackId>() }
             on { createPlaylist(any(), any(), any()) } doReturn Future {

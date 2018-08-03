@@ -1,5 +1,6 @@
 package com.richodemus.autoplaylist.test.pages
 
+import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.playlist.PlaylistWithAlbums
@@ -31,5 +32,12 @@ class MainPage(private val port: Int, private val sessionId: Cookie) {
                 .given().cookie(sessionId).body("""{"name":"$playlistName","artist":"$artistName"}""").contentType(JSON)
                 .`when`().post("http://localhost:$port/v1/playlists")
                 .then().assertThat().statusCode(200).extract().jsonPath().getObject("playList", PlaylistWithAlbums::class.java)
+    }
+
+    fun findArtists(artistName: ArtistName): List<Artist> {
+        return RestAssured
+                .given().cookie(sessionId).queryParam("name", artistName.value)
+                .`when`().get("http://localhost:$port/v1/artists")
+                .then().assertThat().statusCode(200).extract().jsonPath().getList("", Artist::class.java)
     }
 }
