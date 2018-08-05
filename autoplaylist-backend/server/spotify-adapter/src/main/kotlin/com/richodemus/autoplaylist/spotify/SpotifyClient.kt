@@ -106,7 +106,7 @@ internal class SpotifyClient {
                 .header("Content-Type" to "application/json")
                 .header("Authorization" to "Bearer $accessToken")
                 .deserialize<GetTracksResponse>()
-                .map { it.items.map { it.id } }
+                .map { response -> response.items.map { it.id } }
     }
 
     internal fun createPlaylist(accessToken: AccessToken,

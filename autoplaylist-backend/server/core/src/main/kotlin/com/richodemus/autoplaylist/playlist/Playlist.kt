@@ -45,7 +45,7 @@ class Playlist private constructor(
         return spotifyPort.findArtist(accessToken, artist)
                 .flatMap { artistIds ->
                     artistIds.map { spotifyPort.getAlbums(accessToken, it.id) }.flatten()
-                }.map { it.flatMap { it } }
+                }.map { albums -> albums.flatMap { it } }
     }
 
     override fun toString(): String {
@@ -62,13 +62,13 @@ class Playlist private constructor(
         val actualTracksFuture = spotifyPort.getTracks(accessToken, spotifyUserId, id)
         val albumsWithTracksFuture = albumsWithTracks()
 
-        val expectedTracksFuture = albumsWithTracksFuture.map { it.flatMap { it.tracks } }
+        val expectedTracksFuture = albumsWithTracksFuture.map { albums -> albums.flatMap { it.tracks } }
         val missingTracksFuture = actualTracksFuture.zip(expectedTracksFuture) { actual, expected ->
             expected.filterNot { it.id in actual }
         }
 
-        val addTracksToPlaylistFuture = missingTracksFuture.flatMap {
-            spotifyPort.addTracksToPlaylist(accessToken, spotifyUserId, id, it.map { it.uri })
+        val addTracksToPlaylistFuture = missingTracksFuture.flatMap { tracks ->
+            spotifyPort.addTracksToPlaylist(accessToken, spotifyUserId, id, tracks.map { it.uri })
         }
 
         addTracksToPlaylistFuture.onSuccess { logger.info("Done syncing {}", this) }

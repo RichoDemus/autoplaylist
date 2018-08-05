@@ -38,8 +38,8 @@ internal class SpotifyAdapter(private val spotifyClient: SpotifyClient) : Spotif
                         albums.map { it to spotifyClient.getTracks(accessToken, it.id) }
                                 .map { it.first to it.second.join() }
                     }
-                    .map { it.map { it.first to it.second.toDtoTrack() } }
-                    .map { it.map { Album(it.first.id, it.first.name, it.second) } }
+                    .map { pair -> pair.map { it.first to it.second.toDtoTrack() } }
+                    .map { pair -> pair.map { Album(it.first.id, it.first.name, it.second) } }
         }
     }
 
