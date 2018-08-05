@@ -4,18 +4,19 @@ import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.playlist.PlaylistWithAlbums
 import com.richodemus.autoplaylist.spotify.Playlist
-import com.richodemus.autoplaylist.spotify.PlaylistId
 import com.richodemus.autoplaylist.spotify.PlaylistName
-import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.test.pages.LoginPage
+import com.richodemus.autoplaylist.test.spotifymock.ARTIST
+import com.richodemus.autoplaylist.test.spotifymock.SpotifyMock
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.iterable.Extractor
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.test.context.junit4.SpringRunner
+import javax.inject.Inject
 
 
 @RunWith(SpringRunner::class)
@@ -25,45 +26,46 @@ internal class ServiceTest {
     @LocalServerPort
     private var port: Int = -1
 
-    @MockBean
-    private lateinit var spotifyPort: SpotifyPort
+    @Inject
+    private lateinit var spotifyPort: SpotifyMock
 
     private lateinit var loginPage: LoginPage
 
     @Before
     fun setUp() {
         loginPage = LoginPage(port)
-        spotifyPort.mockDefaultBehavior()
+        spotifyPort.reset()
     }
 
     @Test
     fun `Register new user`() {
         val mainPage = loginPage.login(spotifyPort.oAuth2Code)
+
         val result = mainPage.getSpotifyUserId()
 
-        assertThat(result).isEqualTo(SpotifyUserId(spotifyPort.spotifyUserId))
+        assertThat(result).isEqualTo(SpotifyUserId(spotifyPort.spotifyUserId.value))
     }
 
     @Test
-    fun `Get playlists`() {
+    fun `Get playlists when there is no playlists`() {
         val mainPage = loginPage.login(spotifyPort.oAuth2Code)
+
         val result = mainPage.getPlaylists()
 
-        val expected = listOf(
-                Playlist(PlaylistId("id1"), PlaylistName("name1")),
-                Playlist(PlaylistId("id2"), PlaylistName("name2"))
-        )
-
-        assertThat(result).isEqualTo(expected)
+        assertThat(result).isEmpty()
     }
 
     @Test
     fun `Create playlist`() {
+        val playlistName = PlaylistName("new-playlist")
+
         val mainPage = loginPage.login(spotifyPort.oAuth2Code)
-        val result = mainPage.createPlaylist(PlaylistName("new-playlist"), ARTIST.name)
+        val result = mainPage.createPlaylist(playlistName, ARTIST.name)
 
         assertThat(result).isEqualTo(PlaylistWithAlbums(ARTIST.albums))
-        // assertThat(mainPage.getPlaylists()).extracting("name").contains("new-playlist")
+
+        val playlists = mainPage.getPlaylists()
+        assertThat(playlists).extracting(name).contains(playlistName)
     }
 
     @Test
@@ -74,4 +76,6 @@ internal class ServiceTest {
 
         assertThat(result).containsOnly(Artist(ARTIST.id, ARTIST.name))
     }
+
+    private val name = Extractor<Playlist, PlaylistName> { it.name }
 }

@@ -25,6 +25,5 @@ dependencies {
 
     testCompile("org.springframework.boot:spring-boot-starter-test:$spring_boot_version")
     testCompile 'org.assertj:assertj-core:3.10.0'
-    testCompile 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.0.0-RC1'
     testCompile 'io.rest-assured:rest-assured:3.1.0'
 }
