@@ -5,7 +5,7 @@ import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.flatten
 import com.richodemus.autoplaylist.spotify.AccessToken
-import com.richodemus.autoplaylist.spotify.PlayListId
+import com.richodemus.autoplaylist.spotify.PlaylistId
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import io.github.vjames19.futures.jdk8.flatMap
@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture
  * supposed to describe what a playlist is supposed to contain
  */
 class Playlist private constructor(
-        val id: PlayListId,
+        val id: PlaylistId,
         private val spotifyUserId: SpotifyUserId,
         val name: PlaylistName,
         private val artist: ArtistName,

@@ -6,7 +6,7 @@ import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
 import com.richodemus.autoplaylist.playlist.PlaylistWithAlbums
 import com.richodemus.autoplaylist.spotify.AccessToken
-import com.richodemus.autoplaylist.spotify.PlayList
+import com.richodemus.autoplaylist.spotify.Playlist
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.user.UserService
@@ -59,7 +59,7 @@ class Service @Inject internal constructor(
         return Future { user.spotifyUserId }
     }
 
-    fun getPlaylists(userId: UserId): CompletableFuture<List<PlayList>> {
+    fun getPlaylists(userId: UserId): CompletableFuture<List<Playlist>> {
         val accessToken = userService.getUser(userId)?.accessToken
                 ?: return IllegalStateException("No such user").toCompletableFuture()
 

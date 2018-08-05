@@ -46,7 +46,7 @@ internal class SpotifyAdapter(private val spotifyClient: SpotifyClient) : Spotif
     override fun getTracks(
             accessToken: AccessToken,
             spotifyUserId: SpotifyUserId,
-            playlistId: PlayListId
+            playlistId: PlaylistId
     ) = withRetry { spotifyClient.getTracks(accessToken, spotifyUserId, playlistId) }
 
     override fun createPlaylist(
@@ -58,7 +58,7 @@ internal class SpotifyAdapter(private val spotifyClient: SpotifyClient) : Spotif
     override fun addTracksToPlaylist(
             accessToken: AccessToken,
             spotifyUserId: SpotifyUserId,
-            id: PlayListId,
+            id: PlaylistId,
             tracks: List<TrackUri>
     ) = Future<Unit> {
         tracks.chunked(100)

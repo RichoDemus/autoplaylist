@@ -16,8 +16,8 @@ import com.richodemus.autoplaylist.dto.TrackId
 import com.richodemus.autoplaylist.dto.TrackName
 import com.richodemus.autoplaylist.dto.TrackUri
 import com.richodemus.autoplaylist.spotify.AccessToken
-import com.richodemus.autoplaylist.spotify.PlayList
-import com.richodemus.autoplaylist.spotify.PlayListId
+import com.richodemus.autoplaylist.spotify.Playlist
+import com.richodemus.autoplaylist.spotify.PlaylistId
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.spotify.Tokens
@@ -87,15 +87,15 @@ fun SpotifyPort.mockDefaultBehavior() {
     })
     whenever(this.getPlaylists(any())).doReturn(Future {
         listOf(
-                PlayList(PlayListId("id1"), PlaylistName("name1")),
-                PlayList(PlayListId("id2"), PlaylistName("name2"))
+                Playlist(PlaylistId("id1"), PlaylistName("name1")),
+                Playlist(PlaylistId("id2"), PlaylistName("name2"))
         )
     })
     whenever(this.createPlaylist(any(), any(), any())).doReturn(Future {
-        PlayList(PlayListId("playlistId"), PlaylistName("playlistName"))
+        Playlist(PlaylistId("playlistId"), PlaylistName("playlistName"))
     })
-    whenever(this.getTracks(any(), any(), eq(PlayListId("playlistId")))).doReturn(Future { emptyList<TrackId>() })
-    whenever(this.addTracksToPlaylist(any(), any(), eq(PlayListId("playlistId")), any())).doReturn(Future { })
+    whenever(this.getTracks(any(), any(), eq(PlaylistId("playlistId")))).doReturn(Future { emptyList<TrackId>() })
+    whenever(this.addTracksToPlaylist(any(), any(), eq(PlaylistId("playlistId")), any())).doReturn(Future { })
     whenever(this.findArtist(any(), eq(ARTIST.name))).doReturn(Future { listOf(com.richodemus.autoplaylist.dto.Artist(ARTIST.id, ARTIST.name)) })
     whenever(this.getAlbums(any(), eq(ARTIST.id))).doReturn(Future { ARTIST.albums })
 }

@@ -25,7 +25,7 @@ data class AccessToken(@get:JsonIgnore val value: String) {
     override fun toString() = value
 }
 
-data class PlayList(val id: PlayListId, val name: PlaylistName)
+data class Playlist(val id: PlaylistId, val name: PlaylistName)
 data class PlaylistName(@get:JsonIgnore val value: String) {
     init {
         require(value.isNotBlank()) { "PlaylistName can't be empty" }
@@ -35,9 +35,9 @@ data class PlaylistName(@get:JsonIgnore val value: String) {
     override fun toString() = value
 }
 
-data class PlayListId(@get:JsonIgnore val value: String) {
+data class PlaylistId(@get:JsonIgnore val value: String) {
     init {
-        require(value.isNotBlank()) { "PlayListId can't be empty" }
+        require(value.isNotBlank()) { "PlaylistId can't be empty" }
     }
 
     @JsonValue

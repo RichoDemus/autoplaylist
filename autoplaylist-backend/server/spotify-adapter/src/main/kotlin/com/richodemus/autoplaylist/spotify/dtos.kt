@@ -12,7 +12,7 @@ import com.richodemus.autoplaylist.dto.TrackUri
 
 internal data class User(val id: SpotifyUserId)
 
-internal data class PlayListsResponse(val items: List<PlayList>, val total: Int)
+internal data class PlaylistsResponse(val items: List<Playlist>, val total: Int)
 
 
 internal data class FindArtistResponse(val artists: Artists)

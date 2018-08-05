@@ -11,8 +11,8 @@ import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.TrackId
 import com.richodemus.autoplaylist.dto.UserId
 import com.richodemus.autoplaylist.spotify.AccessToken
-import com.richodemus.autoplaylist.spotify.PlayList
-import com.richodemus.autoplaylist.spotify.PlayListId
+import com.richodemus.autoplaylist.spotify.Playlist
+import com.richodemus.autoplaylist.spotify.PlaylistId
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.spotify.Tokens
@@ -37,7 +37,7 @@ class UserTest {
             on { getAlbums(any(), any()) } doReturn Future { emptyList<Album>() }
             on { getTracks(any(), any(), any()) } doReturn Future { emptyList<TrackId>() }
             on { createPlaylist(any(), any(), any()) } doReturn Future {
-                PlayList(PlayListId("p"), PlaylistName("n"))
+                Playlist(PlaylistId("p"), PlaylistName("n"))
             }
             on { addTracksToPlaylist(any(), any(), any(), any()) } doReturn Future { Unit }
         }

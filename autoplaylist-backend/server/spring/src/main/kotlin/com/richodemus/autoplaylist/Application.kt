@@ -5,7 +5,7 @@ import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
 import com.richodemus.autoplaylist.playlist.PlaylistWithAlbums
-import com.richodemus.autoplaylist.spotify.PlayList
+import com.richodemus.autoplaylist.spotify.Playlist
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import io.github.vjames19.futures.jdk8.Future
 import io.github.vjames19.futures.jdk8.flatMap
@@ -83,8 +83,8 @@ class Application @Inject internal constructor(private val service: Service) {
 
     @Suppress("unused")
     @GetMapping("/v1/playlists")
-    internal fun getPlaylists(session: HttpSession): CompletableFuture<ResponseEntity<List<PlayList>>> {
-        val userId = session.getUserId() ?: return Future { ResponseEntity<List<PlayList>>(FORBIDDEN) }
+    internal fun getPlaylists(session: HttpSession): CompletableFuture<ResponseEntity<List<Playlist>>> {
+        val userId = session.getUserId() ?: return Future { ResponseEntity<List<Playlist>>(FORBIDDEN) }
         logger.info("Get playlists for user {}", userId)
         return Future { userId }
                 .flatMap { service.getPlaylists(it) }

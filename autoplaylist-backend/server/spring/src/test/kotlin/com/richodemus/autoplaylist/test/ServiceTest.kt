@@ -3,8 +3,8 @@ package com.richodemus.autoplaylist.test
 import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.playlist.PlaylistWithAlbums
-import com.richodemus.autoplaylist.spotify.PlayList
-import com.richodemus.autoplaylist.spotify.PlayListId
+import com.richodemus.autoplaylist.spotify.Playlist
+import com.richodemus.autoplaylist.spotify.PlaylistId
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.test.pages.LoginPage
@@ -50,8 +50,8 @@ internal class ServiceTest {
         val result = mainPage.getPlaylists()
 
         val expected = listOf(
-                PlayList(PlayListId("id1"), PlaylistName("name1")),
-                PlayList(PlayListId("id2"), PlaylistName("name2"))
+                Playlist(PlaylistId("id1"), PlaylistName("name1")),
+                Playlist(PlaylistId("id2"), PlaylistName("name2"))
         )
 
         assertThat(result).isEqualTo(expected)

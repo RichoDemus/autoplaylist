@@ -4,7 +4,7 @@ import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.playlist.PlaylistWithAlbums
-import com.richodemus.autoplaylist.spotify.PlayList
+import com.richodemus.autoplaylist.spotify.Playlist
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import io.restassured.RestAssured
 import io.restassured.http.ContentType.JSON
@@ -20,11 +20,11 @@ class MainPage(private val port: Int, private val sessionId: Cookie) {
         return SpotifyUserId(userId)
     }
 
-    fun getPlaylists(): List<PlayList> {
+    fun getPlaylists(): List<Playlist> {
         return RestAssured
                 .given().cookie(sessionId)
                 .`when`().get("http://localhost:$port/v1/playlists")
-                .then().assertThat().statusCode(200).extract().jsonPath().getList("", PlayList::class.java)
+                .then().assertThat().statusCode(200).extract().jsonPath().getList("", Playlist::class.java)
     }
 
     fun createPlaylist(playlistName: PlaylistName, artistName: ArtistName): PlaylistWithAlbums {
