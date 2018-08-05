@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 
 data class ArtistName(@get:JsonIgnore val value: String) {
     init {
-        require(value.isNotBlank()) { "ArtistName can't be empty" }
+        require(value.isNotBlank()) { "${javaClass.simpleName} can't be empty" }
     }
 
     @JsonValue

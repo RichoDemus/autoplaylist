@@ -18,7 +18,7 @@ data class Tokens(
 
 data class AccessToken(@get:JsonIgnore val value: String) {
     init {
-        require(value.isNotBlank()) { "AccessToken can't be empty" }
+        require(value.isNotBlank()) { "${javaClass.simpleName} can't be empty" }
     }
 
     @JsonValue
@@ -28,7 +28,7 @@ data class AccessToken(@get:JsonIgnore val value: String) {
 data class Playlist(val id: PlaylistId, val name: PlaylistName)
 data class PlaylistName(@get:JsonIgnore val value: String) {
     init {
-        require(value.isNotBlank()) { "PlaylistName can't be empty" }
+        require(value.isNotBlank()) { "${javaClass.simpleName} can't be empty" }
     }
 
     @JsonValue
@@ -37,7 +37,7 @@ data class PlaylistName(@get:JsonIgnore val value: String) {
 
 data class PlaylistId(@get:JsonIgnore val value: String) {
     init {
-        require(value.isNotBlank()) { "PlaylistId can't be empty" }
+        require(value.isNotBlank()) { "${javaClass.simpleName} can't be empty" }
     }
 
     @JsonValue

@@ -36,7 +36,7 @@ internal data class AddTracksToPlaylistRespose(val snapshot_id: SnapshotId)
 // todo remove or figure out if we use this
 internal data class SnapshotId(@get:JsonIgnore val value: String) {
     init {
-        require(value.isNotBlank()) { "SnapshotId can't be empty" }
+        require(value.isNotBlank()) { "${javaClass.simpleName} can't be empty" }
     }
 
     @JsonValue

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 
 data class RefreshToken(@get:JsonIgnore val value: String) {
     init {
-        require(value.isNotBlank()) { "RefreshToken can't be empty" }
+        require(value.isNotBlank()) { "${javaClass.simpleName} can't be empty" }
     }
 
     @JsonValue

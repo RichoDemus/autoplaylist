@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue
 
 data class SpotifyUserId(@get:JsonIgnore val value: String) {
     init {
-        require(value.isNotBlank()) { "SpotifyUserId can't be empty" }
+        require(value.isNotBlank()) { "${javaClass.simpleName} can't be empty" }
     }
 
     @JsonValue
