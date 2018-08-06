@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.ResponseEntity
+import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -35,6 +36,7 @@ import javax.servlet.http.HttpSession
 )
 @RestController
 @SpringBootApplication
+@EnableScheduling
 class Application @Inject internal constructor(private val service: Service) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
