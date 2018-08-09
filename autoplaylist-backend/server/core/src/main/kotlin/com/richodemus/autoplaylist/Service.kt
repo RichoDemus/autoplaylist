@@ -3,10 +3,12 @@ package com.richodemus.autoplaylist
 import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.SpotifyUserId
+import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.UserId
 import com.richodemus.autoplaylist.playlist.PlaylistWithAlbums
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.Playlist
+import com.richodemus.autoplaylist.spotify.PlaylistId
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.user.UserService
@@ -15,6 +17,7 @@ import io.github.vjames19.futures.jdk8.flatMap
 import io.github.vjames19.futures.jdk8.map
 import io.github.vjames19.futures.jdk8.onFailure
 import io.github.vjames19.futures.jdk8.toCompletableFuture
+import io.github.vjames19.futures.jdk8.zip
 import org.slf4j.LoggerFactory
 import java.util.concurrent.CompletableFuture
 import javax.inject.Inject
@@ -66,16 +69,29 @@ class Service @Inject internal constructor(
         return spotifyPort.getPlaylists(accessToken)
     }
 
+    fun getPlaylist(userId: UserId, playlistId: PlaylistId): CompletableFuture<List<Track>> {
+        val user = userService.getUser(userId)
+                ?: return IllegalStateException("No such user").toCompletableFuture()
+
+        val accessToken = user.accessToken
+                ?: return IllegalStateException("No access token").toCompletableFuture()
+
+        return spotifyPort.getTracks(accessToken, user.spotifyUserId, playlistId)
+    }
+
     fun createPlaylist(userId: UserId, name: PlaylistName, artist: ArtistName): CompletableFuture<PlaylistWithAlbums> {
         val user = userService.getUser(userId)
                 ?: return IllegalStateException("No user with id $userId").toCompletableFuture()
 
-        val playlist = user.createPlaylist(name, artist)
-        playlist.onFailure {
+        val playlistFuture = user.createPlaylist(name, artist)
+        playlistFuture.onFailure {
             logger.error("User {} failed to create playlist named {} from artist {}", arrayOf(user, name, artist))
         }
-        val playlistContents = playlist.flatMap { it.sync() }
-        return playlistContents.map { PlaylistWithAlbums(it) }
+        val playlistContents = playlistFuture.flatMap { it.sync() }
+
+        return playlistFuture.zip(playlistContents) { playlist, albums ->
+            PlaylistWithAlbums(playlist.id, albums)
+        }
     }
 
     fun findArtists(userId: UserId, artistName: ArtistName): CompletableFuture<List<Artist>> {

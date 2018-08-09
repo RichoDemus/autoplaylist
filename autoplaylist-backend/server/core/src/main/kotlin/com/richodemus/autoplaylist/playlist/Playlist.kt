@@ -3,6 +3,7 @@ package com.richodemus.autoplaylist.playlist
 import com.richodemus.autoplaylist.dto.Album
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.SpotifyUserId
+import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.flatten
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.PlaylistId
@@ -63,8 +64,10 @@ class Playlist private constructor(
         val albumsWithTracksFuture = albumsWithTracks()
 
         val expectedTracksFuture = albumsWithTracksFuture.map { albums -> albums.flatMap { it.tracks } }
-        val missingTracksFuture = actualTracksFuture.zip(expectedTracksFuture) { actual, expected ->
-            expected.filterNot { it.id in actual }
+        val expectedTracksDeduplicatedFuture = expectedTracksFuture.deduplicate()
+
+        val missingTracksFuture = actualTracksFuture.zip(expectedTracksDeduplicatedFuture) { actual, expected ->
+            expected.filterNot { it in actual }
         }
 
         val addTracksToPlaylistFuture = missingTracksFuture.flatMap { tracks ->
@@ -76,4 +79,7 @@ class Playlist private constructor(
 
         return albumsWithTracksFuture
     }
+
+    // todo make it possible to chose different "deduplicate strategies"
+    private fun CompletableFuture<List<Track>>.deduplicate() = this.map { it.distinctBy { track -> track.name } }
 }

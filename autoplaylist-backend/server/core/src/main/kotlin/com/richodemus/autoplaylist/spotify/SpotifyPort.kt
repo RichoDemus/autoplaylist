@@ -6,7 +6,7 @@ import com.richodemus.autoplaylist.dto.ArtistId
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
-import com.richodemus.autoplaylist.dto.TrackId
+import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.TrackUri
 import java.util.concurrent.CompletableFuture
 
@@ -21,7 +21,7 @@ interface SpotifyPort {
             accessToken: AccessToken,
             spotifyUserId: SpotifyUserId,
             playlistId: PlaylistId
-    ): CompletableFuture<List<TrackId>>
+    ): CompletableFuture<List<Track>>
 
     fun createPlaylist(
             accessToken: AccessToken,
@@ -32,7 +32,7 @@ interface SpotifyPort {
     fun addTracksToPlaylist(
             accessToken: AccessToken,
             spotifyUserId: SpotifyUserId,
-            id: PlaylistId,
+            playlistId: PlaylistId,
             tracks: List<TrackUri>
     ): CompletableFuture<Unit>
 }

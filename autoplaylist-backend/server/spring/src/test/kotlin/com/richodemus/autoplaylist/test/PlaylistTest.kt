@@ -1,7 +1,6 @@
 package com.richodemus.autoplaylist.test
 
-import com.richodemus.autoplaylist.dto.Artist
-import com.richodemus.autoplaylist.dto.SpotifyUserId
+import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.test.pages.LoginPage
 import com.richodemus.autoplaylist.test.spotifymock.ARTIST
 import com.richodemus.autoplaylist.test.spotifymock.SpotifyMock
@@ -14,10 +13,9 @@ import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.test.context.junit4.SpringRunner
 import javax.inject.Inject
 
-
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-internal class ServiceTest {
+internal class PlaylistTest {
 
     @LocalServerPort
     private var port: Int = -1
@@ -34,20 +32,30 @@ internal class ServiceTest {
     }
 
     @Test
-    fun `Register new user`() {
+    fun `Get playlists when there is no playlists`() {
         val mainPage = loginPage.login(spotifyPort.oAuth2Code)
 
-        val result = mainPage.getSpotifyUserId()
+        val result = mainPage.getPlaylists()
 
-        assertThat(result).isEqualTo(SpotifyUserId(spotifyPort.spotifyUserId.value))
+        assertThat(result).isEmpty()
     }
 
     @Test
-    fun `Find Artist`() {
+    fun `Create playlist`() {
+        val playlistName = PlaylistName("new-playlist")
+
         val mainPage = loginPage.login(spotifyPort.oAuth2Code)
+        val result = mainPage.createPlaylist(playlistName, ARTIST.name)
 
-        val result = mainPage.findArtists(ARTIST.name)
+        assertThat(result.albums).isEqualTo(ARTIST.albums)
 
-        assertThat(result).containsOnly(Artist(ARTIST.id, ARTIST.name))
+        val playlist = mainPage.getPlaylists()
+                .find { it.name == playlistName }
+                ?: throw AssertionError("Couldn't find playlist")
+
+        val tracks = mainPage.getTracks(playlist.id)
+
+        val expectedTracks = ARTIST.albums.flatMap { it.tracks }
+        assertThat(tracks).containsOnlyElementsOf(expectedTracks)
     }
 }

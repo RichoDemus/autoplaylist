@@ -11,7 +11,6 @@ import com.richodemus.autoplaylist.dto.ArtistId
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
-import com.richodemus.autoplaylist.dto.TrackId
 import com.richodemus.autoplaylist.dto.TrackUri
 import io.github.vjames19.futures.jdk8.map
 import org.slf4j.LoggerFactory
@@ -101,12 +100,12 @@ internal class SpotifyClient {
             accessToken: AccessToken,
             spotifyUserId: SpotifyUserId,
             playlistId: PlaylistId
-    ): CompletableFuture<List<TrackId>> {
+    ): CompletableFuture<List<Track>> {
         return Fuel.get("https://api.spotify.com/v1/users/$spotifyUserId/playlists/$playlistId/tracks")
                 .header("Content-Type" to "application/json")
                 .header("Authorization" to "Bearer $accessToken")
                 .deserialize<GetTracksResponse>()
-                .map { response -> response.items.map { it.id } }
+                .map { response -> response.items }
     }
 
     internal fun createPlaylist(accessToken: AccessToken,

@@ -7,8 +7,6 @@ import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.Track
-import com.richodemus.autoplaylist.dto.TrackId
-import com.richodemus.autoplaylist.dto.TrackName
 import com.richodemus.autoplaylist.dto.TrackUri
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.Playlist
@@ -18,7 +16,6 @@ import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.spotify.Tokens
 import com.richodemus.autoplaylist.test.dto.PlaylistWithTracks
 import io.github.vjames19.futures.jdk8.Future
-import io.github.vjames19.futures.jdk8.map
 import io.github.vjames19.futures.jdk8.toCompletableFuture
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Service
@@ -83,6 +80,10 @@ class SpotifyMock : SpotifyPort {
             return RuntimeException("Wrong accessToken").toCompletableFuture()
         }
 
+        if (name == ARTIST_WITH_DUPLICATE_ALBUMS.name) {
+            return Future { listOf(ARTIST_WITH_DUPLICATE_ALBUMS.toArtist()) }
+        }
+
         return Future { listOf(ARTIST.toArtist()) }
     }
 
@@ -91,10 +92,14 @@ class SpotifyMock : SpotifyPort {
             return RuntimeException("Wrong accessToken").toCompletableFuture()
         }
 
+        if (artistId == ARTIST_WITH_DUPLICATE_ALBUMS.id) {
+            return Future { ARTIST_WITH_DUPLICATE_ALBUMS.albums }
+        }
+
         return Future { ARTIST.albums }
     }
 
-    override fun getTracks(accessToken: AccessToken, spotifyUserId: SpotifyUserId, playlistId: PlaylistId): CompletableFuture<List<TrackId>> {
+    override fun getTracks(accessToken: AccessToken, spotifyUserId: SpotifyUserId, playlistId: PlaylistId): CompletableFuture<List<Track>> {
         if (accessToken != this.accessToken) {
             return RuntimeException("Wrong accessToken").toCompletableFuture()
         }
@@ -106,7 +111,6 @@ class SpotifyMock : SpotifyPort {
         }
 
         return Future { playlists.first { it.id == playlistId }.tracks }
-                .map { tracks -> tracks.map { it.id } }
     }
 
     override fun createPlaylist(accessToken: AccessToken, spotifyUserId: SpotifyUserId, name: PlaylistName): CompletableFuture<Playlist> {
@@ -134,7 +138,7 @@ class SpotifyMock : SpotifyPort {
             if (playlist.id != playlistId) {
                 return@map playlist
             }
-            return@map playlist.copy(tracks = playlist.tracks + tracks.map { Track(TrackId("a"), TrackName("s"), it) })
+            return@map playlist.copy(tracks = playlist.tracks + tracks.map { getTrack(it) })
         }
         return Future { }
     }

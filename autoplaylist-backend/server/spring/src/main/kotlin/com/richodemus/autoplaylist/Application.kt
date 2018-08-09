@@ -3,9 +3,11 @@ package com.richodemus.autoplaylist
 import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.SpotifyUserId
+import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.UserId
 import com.richodemus.autoplaylist.playlist.PlaylistWithAlbums
 import com.richodemus.autoplaylist.spotify.Playlist
+import com.richodemus.autoplaylist.spotify.PlaylistId
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import io.github.vjames19.futures.jdk8.Future
 import io.github.vjames19.futures.jdk8.flatMap
@@ -21,6 +23,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
@@ -90,6 +93,23 @@ class Application @Inject internal constructor(private val service: Service) {
         logger.info("Get playlists for user {}", userId)
         return Future { userId }
                 .flatMap { service.getPlaylists(it) }
+                .map { ResponseEntity(it, OK) }
+                .recover { exception ->
+                    logger.error("getPlaylists failed: {}", exception.message, exception)
+                    ResponseEntity(INTERNAL_SERVER_ERROR)
+                }
+    }
+
+    @Suppress("unused")
+    @GetMapping("/v1/playlists/{id}/tracks")
+    internal fun getTracks(
+            session: HttpSession,
+            @PathVariable("id") playlistId: String
+    ): CompletableFuture<ResponseEntity<List<Track>>> {
+        val userId = session.getUserId() ?: return Future { ResponseEntity<List<Track>>(FORBIDDEN) }
+        logger.info("Get tracks for playlist {}", playlistId)
+        return Future { PlaylistId(playlistId) }
+                .flatMap { service.getPlaylist(userId, it) }
                 .map { ResponseEntity(it, OK) }
                 .recover { exception ->
                     logger.error("getPlaylists failed: {}", exception.message, exception)

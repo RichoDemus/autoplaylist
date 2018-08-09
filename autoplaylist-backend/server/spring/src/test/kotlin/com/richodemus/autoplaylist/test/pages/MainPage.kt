@@ -3,8 +3,10 @@ package com.richodemus.autoplaylist.test.pages
 import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.SpotifyUserId
+import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.playlist.PlaylistWithAlbums
 import com.richodemus.autoplaylist.spotify.Playlist
+import com.richodemus.autoplaylist.spotify.PlaylistId
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import io.restassured.RestAssured
 import io.restassured.http.ContentType.JSON
@@ -39,5 +41,12 @@ class MainPage(private val port: Int, private val sessionId: Cookie) {
                 .given().cookie(sessionId).queryParam("name", artistName.value)
                 .`when`().get("http://localhost:$port/v1/artists")
                 .then().assertThat().statusCode(200).extract().jsonPath().getList("", Artist::class.java)
+    }
+
+    fun getTracks(id: PlaylistId): List<Track> {
+        return RestAssured
+                .given().cookie(sessionId)
+                .`when`().get("http://localhost:$port/v1/playlists/$id/tracks")
+                .then().assertThat().statusCode(200).extract().jsonPath().getList("", Track::class.java)
     }
 }

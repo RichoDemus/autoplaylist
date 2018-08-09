@@ -1,11 +1,13 @@
 package com.richodemus.autoplaylist.test
 
-import com.richodemus.autoplaylist.dto.Artist
-import com.richodemus.autoplaylist.dto.SpotifyUserId
+import com.richodemus.autoplaylist.dto.Track
+import com.richodemus.autoplaylist.dto.TrackName
+import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.test.pages.LoginPage
-import com.richodemus.autoplaylist.test.spotifymock.ARTIST
+import com.richodemus.autoplaylist.test.spotifymock.ARTIST_WITH_DUPLICATE_ALBUMS
 import com.richodemus.autoplaylist.test.spotifymock.SpotifyMock
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.iterable.Extractor
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -14,10 +16,9 @@ import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.test.context.junit4.SpringRunner
 import javax.inject.Inject
 
-
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-internal class ServiceTest {
+internal class DeduplicatorTest {
 
     @LocalServerPort
     private var port: Int = -1
@@ -34,20 +35,15 @@ internal class ServiceTest {
     }
 
     @Test
-    fun `Register new user`() {
+    fun `Deduplicate albums with the same name`() {
+        val playlistName = PlaylistName("new-playlist")
         val mainPage = loginPage.login(spotifyPort.oAuth2Code)
+        val playlist = mainPage.createPlaylist(playlistName, ARTIST_WITH_DUPLICATE_ALBUMS.name)
 
-        val result = mainPage.getSpotifyUserId()
+        val result = mainPage.getTracks(playlist.id)
 
-        assertThat(result).isEqualTo(SpotifyUserId(spotifyPort.spotifyUserId.value))
+        assertThat(result).extracting(name).doesNotHaveDuplicates()
     }
 
-    @Test
-    fun `Find Artist`() {
-        val mainPage = loginPage.login(spotifyPort.oAuth2Code)
-
-        val result = mainPage.findArtists(ARTIST.name)
-
-        assertThat(result).containsOnly(Artist(ARTIST.id, ARTIST.name))
-    }
+    private val name = Extractor<Track, TrackName> { it.name }
 }

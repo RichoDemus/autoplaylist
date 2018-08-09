@@ -8,7 +8,7 @@ import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
-import com.richodemus.autoplaylist.dto.TrackId
+import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.UserId
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.Playlist
@@ -35,7 +35,7 @@ class UserTest {
             }
             on { findArtist(any(), any()) } doReturn Future { emptyList<Artist>() }
             on { getAlbums(any(), any()) } doReturn Future { emptyList<Album>() }
-            on { getTracks(any(), any(), any()) } doReturn Future { emptyList<TrackId>() }
+            on { getTracks(any(), any(), any()) } doReturn Future { emptyList<Track>() }
             on { createPlaylist(any(), any(), any()) } doReturn Future {
                 Playlist(PlaylistId("p"), PlaylistName("n"))
             }
