@@ -46,7 +46,7 @@ class UserTest {
                 spotifyAdapter,
                 UserId(),
                 SpotifyUserId("richodemus"),
-                RefreshToken("AQCdDtlGLaop3IPKc0KkyuVDtwXB5K0Qofy4cocXy8cHg1lmW5k2rjYaqJ3KXT0d118kFTw88yUsV-kX_IXSDOD0d_VGnNcMJ07aWZ5XApFKoyyO62VDcXDENNJOyWp6uAI")
+                RefreshToken("r")
         )
 
         val playlistName = PlaylistName("Katten Skogmans Orkester (G)")
