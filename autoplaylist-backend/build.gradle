@@ -4,6 +4,7 @@ buildscript {
     ext.jackson_version = '2.9.+'
     ext.fuel_version = '1.15.+'
     ext.micrometer_version = '1.0.+'
+    ext.kotlin_futures_version = '1.2.+'
     repositories {
         jcenter()
     }
