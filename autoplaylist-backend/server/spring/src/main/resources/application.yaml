@@ -12,3 +12,10 @@ management:
           - "info"
           - "health"
           - "metrics"
+
+spotify:
+  url: "https://api.spotify.com"
+  accountsUrl: "https://accounts.spotify.com"
+  clientId: "your-id"
+  clientSecret: "your-secret"
+  redirectUrl: "your-redirect-url"

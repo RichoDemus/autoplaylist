@@ -1,0 +1,345 @@
+{
+  "artists": {
+    "href": "https://api.spotify.com/v1/search?query=Civil+War&type=artist&market=SE&offset=0&limit=20",
+    "items": [
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/6lGzC0JJCotCU9QZ2Lgi8T"
+        },
+        "followers": {
+          "href": null,
+          "total": 12383
+        },
+        "genres": [
+          "power metal"
+        ],
+        "href": "https://api.spotify.com/v1/artists/6lGzC0JJCotCU9QZ2Lgi8T",
+        "id": "6lGzC0JJCotCU9QZ2Lgi8T",
+        "images": [
+          {
+            "height": 640,
+            "url": "https://i.scdn.co/image/7b3aff91be12a2f842e33d5f65a6504c033a7d48",
+            "width": 640
+          },
+          {
+            "height": 320,
+            "url": "https://i.scdn.co/image/3d59793e6052b3fafd708010da4ee71b8aeaf1b2",
+            "width": 320
+          },
+          {
+            "height": 160,
+            "url": "https://i.scdn.co/image/accef2873a06c8477f68499411cdea46f6d2c4a5",
+            "width": 160
+          }
+        ],
+        "name": "Civil War",
+        "popularity": 35,
+        "type": "artist",
+        "uri": "spotify:artist:6lGzC0JJCotCU9QZ2Lgi8T"
+      },
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/2vCYRtpVXUjsoeD5fG0vat"
+        },
+        "followers": {
+          "href": null,
+          "total": 33
+        },
+        "genres": [],
+        "href": "https://api.spotify.com/v1/artists/2vCYRtpVXUjsoeD5fG0vat",
+        "id": "2vCYRtpVXUjsoeD5fG0vat",
+        "images": [
+          {
+            "height": 640,
+            "url": "https://i.scdn.co/image/5b8f859e9c4c05c002fbc2596a2d61aeee716a1f",
+            "width": 640
+          },
+          {
+            "height": 300,
+            "url": "https://i.scdn.co/image/5db8e1688a22c01a6273a35e52f2a1c75fb6632d",
+            "width": 300
+          },
+          {
+            "height": 64,
+            "url": "https://i.scdn.co/image/07a030e8b28f43f362d7eccb090f41ba1a9c210e",
+            "width": 64
+          }
+        ],
+        "name": "Civil War",
+        "popularity": 3,
+        "type": "artist",
+        "uri": "spotify:artist:2vCYRtpVXUjsoeD5fG0vat"
+      },
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/41rw6O2Slt6TRrVRKwia8Z"
+        },
+        "followers": {
+          "href": null,
+          "total": 9
+        },
+        "genres": [],
+        "href": "https://api.spotify.com/v1/artists/41rw6O2Slt6TRrVRKwia8Z",
+        "id": "41rw6O2Slt6TRrVRKwia8Z",
+        "images": [
+          {
+            "height": 640,
+            "url": "https://i.scdn.co/image/84aedbbe4f68fd38ecbf983cdd800d3c0994fa5f",
+            "width": 640
+          },
+          {
+            "height": 300,
+            "url": "https://i.scdn.co/image/29f28e15bbe10e0cae1ad685eef25836935c049d",
+            "width": 300
+          },
+          {
+            "height": 64,
+            "url": "https://i.scdn.co/image/f9d1015ddbd38a6684d7a5d32f73af9bc7e83e34",
+            "width": 64
+          }
+        ],
+        "name": "Civil War Comrades",
+        "popularity": 5,
+        "type": "artist",
+        "uri": "spotify:artist:41rw6O2Slt6TRrVRKwia8Z"
+      },
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/1bjJlDNRMIFC8YY0JG8tEe"
+        },
+        "followers": {
+          "href": null,
+          "total": 195
+        },
+        "genres": [],
+        "href": "https://api.spotify.com/v1/artists/1bjJlDNRMIFC8YY0JG8tEe",
+        "id": "1bjJlDNRMIFC8YY0JG8tEe",
+        "images": [
+          {
+            "height": 640,
+            "url": "https://i.scdn.co/image/147877ec0b04664062b794d1a0e531f2feb2f523",
+            "width": 640
+          },
+          {
+            "height": 300,
+            "url": "https://i.scdn.co/image/3e6313564225095b140a71711f7136c657a8652e",
+            "width": 300
+          },
+          {
+            "height": 64,
+            "url": "https://i.scdn.co/image/ed22960e50b6033d70a64039286d402aea89ff05",
+            "width": 64
+          }
+        ],
+        "name": "The Civil War O.S.T.",
+        "popularity": 0,
+        "type": "artist",
+        "uri": "spotify:artist:1bjJlDNRMIFC8YY0JG8tEe"
+      },
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/3RleSu7GotBHRQmaPFNQbD"
+        },
+        "followers": {
+          "href": null,
+          "total": 636
+        },
+        "genres": [],
+        "href": "https://api.spotify.com/v1/artists/3RleSu7GotBHRQmaPFNQbD",
+        "id": "3RleSu7GotBHRQmaPFNQbD",
+        "images": [
+          {
+            "height": 640,
+            "url": "https://i.scdn.co/image/b3c5fdde1cc48f67f0b9641474995f405d84df6c",
+            "width": 640
+          },
+          {
+            "height": 300,
+            "url": "https://i.scdn.co/image/1fcf4dbc317ec60ba4c81d3941fff1a5952287fc",
+            "width": 300
+          },
+          {
+            "height": 64,
+            "url": "https://i.scdn.co/image/5ceb8a9e078307b172beb2eb5bec14f43a61ef9d",
+            "width": 64
+          }
+        ],
+        "name": "Civil War Rust",
+        "popularity": 8,
+        "type": "artist",
+        "uri": "spotify:artist:3RleSu7GotBHRQmaPFNQbD"
+      },
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/5Kr5pcYZbWk0J0NQgPzTtB"
+        },
+        "followers": {
+          "href": null,
+          "total": 45
+        },
+        "genres": [],
+        "href": "https://api.spotify.com/v1/artists/5Kr5pcYZbWk0J0NQgPzTtB",
+        "id": "5Kr5pcYZbWk0J0NQgPzTtB",
+        "images": [],
+        "name": "The Civil War Fiddlers",
+        "popularity": 1,
+        "type": "artist",
+        "uri": "spotify:artist:5Kr5pcYZbWk0J0NQgPzTtB"
+      },
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/6EkNXNEwjdt6eSaMLHNRxF"
+        },
+        "followers": {
+          "href": null,
+          "total": 6
+        },
+        "genres": [],
+        "href": "https://api.spotify.com/v1/artists/6EkNXNEwjdt6eSaMLHNRxF",
+        "id": "6EkNXNEwjdt6eSaMLHNRxF",
+        "images": [
+          {
+            "height": 640,
+            "url": "https://i.scdn.co/image/f227cf87c39189f51c049492b7182cbb0e904369",
+            "width": 640
+          },
+          {
+            "height": 300,
+            "url": "https://i.scdn.co/image/79a3123c92602123661f483315655c00eb75e282",
+            "width": 300
+          },
+          {
+            "height": 64,
+            "url": "https://i.scdn.co/image/0b6157453b45a3431c0a6a376f557e625c3c9f78",
+            "width": 64
+          }
+        ],
+        "name": "Your Civil War",
+        "popularity": 0,
+        "type": "artist",
+        "uri": "spotify:artist:6EkNXNEwjdt6eSaMLHNRxF"
+      },
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/2gPdhe0ZENU4uWNWWKvCIm"
+        },
+        "followers": {
+          "href": null,
+          "total": 1
+        },
+        "genres": [],
+        "href": "https://api.spotify.com/v1/artists/2gPdhe0ZENU4uWNWWKvCIm",
+        "id": "2gPdhe0ZENU4uWNWWKvCIm",
+        "images": [
+          {
+            "height": 640,
+            "url": "https://i.scdn.co/image/accc75448523bc4da44744b8677ce6c2029d7616",
+            "width": 640
+          },
+          {
+            "height": 300,
+            "url": "https://i.scdn.co/image/8d43c94d7f7b838b19a18ebdd97916d16a218c80",
+            "width": 300
+          },
+          {
+            "height": 64,
+            "url": "https://i.scdn.co/image/fe42003abf2751c459ab16e35d1da7ed1b445a86",
+            "width": 64
+          }
+        ],
+        "name": "Small Civil War",
+        "popularity": 0,
+        "type": "artist",
+        "uri": "spotify:artist:2gPdhe0ZENU4uWNWWKvCIm"
+      },
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/6uWeWnwnBEKTYLTWCLuKFC"
+        },
+        "followers": {
+          "href": null,
+          "total": 65
+        },
+        "genres": [],
+        "href": "https://api.spotify.com/v1/artists/6uWeWnwnBEKTYLTWCLuKFC",
+        "id": "6uWeWnwnBEKTYLTWCLuKFC",
+        "images": [
+          {
+            "height": 640,
+            "url": "https://i.scdn.co/image/66d554426641d3dc22a20930a9348444bfb6ce8e",
+            "width": 640
+          },
+          {
+            "height": 300,
+            "url": "https://i.scdn.co/image/0a4b97cd072114406c9ef013106ecc7682581950",
+            "width": 300
+          },
+          {
+            "height": 64,
+            "url": "https://i.scdn.co/image/fa0d55f85cb57ad657deca47983db00a44da0824",
+            "width": 64
+          }
+        ],
+        "name": "Irish Volunteers Civil War Band",
+        "popularity": 3,
+        "type": "artist",
+        "uri": "spotify:artist:6uWeWnwnBEKTYLTWCLuKFC"
+      },
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/2yVb5IT7HROeULYlafTR6G"
+        },
+        "followers": {
+          "href": null,
+          "total": 89
+        },
+        "genres": [],
+        "href": "https://api.spotify.com/v1/artists/2yVb5IT7HROeULYlafTR6G",
+        "id": "2yVb5IT7HROeULYlafTR6G",
+        "images": [
+          {
+            "height": 640,
+            "url": "https://i.scdn.co/image/cd7a2d967d6c5c6049dc726c26ef801d40ab3b97",
+            "width": 640
+          },
+          {
+            "height": 300,
+            "url": "https://i.scdn.co/image/0e230541ddc62e6583e2ef94e8a538d05116d3ed",
+            "width": 300
+          },
+          {
+            "height": 64,
+            "url": "https://i.scdn.co/image/df80366057a598588eca4de2e15872184c5bc667",
+            "width": 64
+          }
+        ],
+        "name": "The Civil War Players",
+        "popularity": 0,
+        "type": "artist",
+        "uri": "spotify:artist:2yVb5IT7HROeULYlafTR6G"
+      },
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/1Bi7EjE7yhY7JoK579SBPx"
+        },
+        "followers": {
+          "href": null,
+          "total": 9
+        },
+        "genres": [],
+        "href": "https://api.spotify.com/v1/artists/1Bi7EjE7yhY7JoK579SBPx",
+        "id": "1Bi7EjE7yhY7JoK579SBPx",
+        "images": [],
+        "name": "Choir Republican Civil War",
+        "popularity": 1,
+        "type": "artist",
+        "uri": "spotify:artist:1Bi7EjE7yhY7JoK579SBPx"
+      }
+    ],
+    "limit": 20,
+    "next": null,
+    "offset": 0,
+    "previous": null,
+    "total": 11
+  }
+}

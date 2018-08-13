@@ -19,7 +19,7 @@ import javax.inject.Singleton
 internal class SpotifyAdapter(private val spotifyClient: SpotifyClient) : SpotifyPort {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun getToken(code: String) = withRetry { spotifyClient.getToken(code) }
+    override fun getToken(code: String) = withRetry { spotifyClient.getTokens(code) }
 
     override fun getUserId(accessToken: AccessToken) = withRetry { spotifyClient.getUserId(accessToken) }
 

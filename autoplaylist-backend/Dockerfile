@@ -17,6 +17,12 @@ WORKDIR app
 COPY --from=builder /src/jars .
 
 # the urandom thing reduces tomcat startup time, no idea if it's smart or not
-CMD ["java","-Djava.security.egd=file:/dev/./urandom","-Dspring.profiles.active=prod","-jar","spring.jar"]
+CMD java \
+-Djava.security.egd=file:/dev/./urandom \
+-Dspring.profiles.active=prod \
+-Dspotify.clientId=$CLIENT_ID \
+-Dspotify.clientSecret=$CLIENT_SECRET \
+-Dspotify.redirectUrl=$REDIRECT_URL \
+-jar spring.jar \
 
 EXPOSE 8080

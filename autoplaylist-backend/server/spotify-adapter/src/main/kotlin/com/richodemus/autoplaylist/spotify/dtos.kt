@@ -27,7 +27,9 @@ internal data class Album(
         val album_group: String
 )
 
-internal data class GetTracksResponse(val items: List<Track>, val total: Int)
+internal data class GetTracksFromAlbumResponse(val items: List<Track>, val total: Int)
+internal data class GetTracksFromPlaylistResponse(val items: List<Item>, val total: Int)
+internal data class Item(val track: Track)
 
 
 internal data class AddTracksToPlaylistRequest(val uris: List<TrackUri>)

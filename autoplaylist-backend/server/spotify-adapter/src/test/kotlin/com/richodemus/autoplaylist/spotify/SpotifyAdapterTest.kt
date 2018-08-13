@@ -12,7 +12,7 @@ class SpotifyAdapterTest {
     @Ignore
     @Test
     fun `Exceed rate limit`() {
-        val target = SpotifyAdapter(SpotifyClient())
+        val target = SpotifyAdapter(SpotifyClient("", "", "", "", ""))
 
         val token = target.refreshToken(RefreshToken(System.getenv("REFRESH_TOKEN")))
         for (i in 0..1000) {
@@ -29,7 +29,7 @@ class SpotifyAdapterTest {
     @Ignore
     @Test
     fun `Find Artists`() {
-        val target = SpotifyAdapter(SpotifyClient())
+        val target = SpotifyAdapter(SpotifyClient("", "", "", "", ""))
 
         val token = target.refreshToken(RefreshToken(System.getenv("REFRESH_TOKEN")))
 
@@ -42,7 +42,7 @@ class SpotifyAdapterTest {
 
     @Test
     fun `Investigate duplicates`() {
-        val target = SpotifyAdapter(SpotifyClient())
+        val target = SpotifyAdapter(SpotifyClient("", "", "", "", ""))
 
         val token = target.refreshToken(RefreshToken(System.getenv("REFRESH_TOKEN")))
 

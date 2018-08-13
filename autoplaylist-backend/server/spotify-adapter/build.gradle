@@ -9,5 +9,7 @@ dependencies {
     compile 'com.github.jsr-330:core:1.4.0'
 
     testCompile 'junit:junit:4.12'
+    testCompile 'org.assertj:assertj-core:3.10.0'
+    testCompile 'com.xebialabs.restito:restito:0.9.3'
     testCompile 'org.slf4j:slf4j-simple:1.7.25'
 }
