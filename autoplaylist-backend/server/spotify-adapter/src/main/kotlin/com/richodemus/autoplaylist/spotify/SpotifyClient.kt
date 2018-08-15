@@ -59,17 +59,13 @@ internal class SpotifyClient(
     }
 
     internal fun getUserId(accessToken: AccessToken): CompletableFuture<SpotifyUserId> {
-        return Fuel.get("$apiUrl/v1/me")
-                .header("Content-Type" to "application/json")
-                .header("Authorization" to "Bearer $accessToken")
+        return get("$apiUrl/v1/me", accessToken)
                 .deserialize<User>()
                 .map { it.id }
     }
 
     internal fun getPlaylists(accessToken: AccessToken): CompletableFuture<List<Playlist>> {
-        return Fuel.get("$apiUrl/v1/me/playlists")
-                .header("Content-Type" to "application/json")
-                .header("Authorization" to "Bearer $accessToken")
+        return get("$apiUrl/v1/me/playlists", accessToken)
                 .deserialize<PlaylistsResponse>()
                 .map { it.items }
     }
@@ -80,25 +76,20 @@ internal class SpotifyClient(
                         "q" to name,
                         "type" to "artist"
                 ))
-                .header("Content-Type" to "application/json")
                 .header("Accept" to "application/json")
-                .header("Authorization" to "Bearer $accessToken")
+                .addHeaders(accessToken)
                 .deserialize<FindArtistResponse>()
                 .map { it.artists.items }
     }
 
     internal fun getAlbums(accessToken: AccessToken, artistId: ArtistId): CompletableFuture<List<Album>> {
-        return Fuel.get("$apiUrl/v1/artists/$artistId/albums")
-                .header("Content-Type" to "application/json")
-                .header("Authorization" to "Bearer $accessToken")
+        return get("$apiUrl/v1/artists/$artistId/albums", accessToken)
                 .deserialize<GetAlbumsResponse>()
                 .map { it.items }
     }
 
     internal fun getTracks(accessToken: AccessToken, album: AlbumId): CompletableFuture<List<Track>> {
-        return Fuel.get("$apiUrl/v1/albums/$album/tracks")
-                .header("Content-Type" to "application/json")
-                .header("Authorization" to "Bearer $accessToken")
+        return get("$apiUrl/v1/albums/$album/tracks", accessToken)
                 .deserialize<GetTracksFromAlbumResponse>()
                 .map { it.items }
     }
@@ -110,11 +101,7 @@ internal class SpotifyClient(
             description: String,
             public: Boolean
     ): CompletableFuture<Playlist> {
-        return Fuel.post("$apiUrl/v1/users/$spotifyUserId/playlists")
-                .header(mapOf(
-                        "Content-Type" to "application/json",
-                        "Authorization" to "Bearer $accessToken"
-                ))
+        return post("$apiUrl/v1/users/$spotifyUserId/playlists", accessToken)
                 .body("""
                 {
                     "name":"$name",
@@ -130,9 +117,7 @@ internal class SpotifyClient(
             spotifyUserId: SpotifyUserId,
             playlistId: PlaylistId
     ): CompletableFuture<List<Track>> {
-        return Fuel.get("$apiUrl/v1/users/$spotifyUserId/playlists/$playlistId/tracks")
-                .header("Content-Type" to "application/json")
-                .header("Authorization" to "Bearer $accessToken")
+        return get("$apiUrl/v1/users/$spotifyUserId/playlists/$playlistId/tracks", accessToken)
                 .deserialize<GetTracksFromPlaylistResponse>()
                 .map { resp -> resp.items.map { it.track } }
     }
@@ -146,15 +131,20 @@ internal class SpotifyClient(
         val request = AddTracksToPlaylistRequest(tracks)
         val json = mapper.writeValueAsString(request)
 
-        return Fuel.post("$apiUrl/v1/users/$user/playlists/$playlist/tracks")
-                .header(mapOf(
-                        "Content-Type" to "application/json",
-                        "Authorization" to "Bearer $accessToken"
-                ))
+        return post("$apiUrl/v1/users/$user/playlists/$playlist/tracks", accessToken)
                 .body(json)
                 .deserialize<AddTracksToPlaylistRespose>()
                 .map { it.snapshot_id }
     }
+
+    private fun get(path: String, accessToken: AccessToken) = Fuel.get(path).addHeaders(accessToken)
+
+    private fun post(path: String, accessToken: AccessToken) = Fuel.post(path).addHeaders(accessToken)
+
+    private fun Request.addHeaders(accessToken: AccessToken) = this.header(mapOf(
+            "Content-Type" to "application/json",
+            "Authorization" to "Bearer $accessToken"
+    ))
 
     private inline fun <reified T : Any> Request.deserialize(): CompletableFuture<T> {
         val future = CompletableFuture<T>()
@@ -191,4 +181,5 @@ internal class SpotifyClient(
         }
         return future
     }
+
 }
