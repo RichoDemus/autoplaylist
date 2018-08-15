@@ -70,13 +70,10 @@ class Service @Inject internal constructor(
     }
 
     fun getPlaylist(userId: UserId, playlistId: PlaylistId): CompletableFuture<List<Track>> {
-        val user = userService.getUser(userId)
+        val accessToken = userService.getUser(userId)?.accessToken
                 ?: return IllegalStateException("No such user").toCompletableFuture()
 
-        val accessToken = user.accessToken
-                ?: return IllegalStateException("No access token").toCompletableFuture()
-
-        return spotifyPort.getTracks(accessToken, user.spotifyUserId, playlistId)
+        return spotifyPort.getTracks(accessToken, playlistId)
     }
 
     fun createPlaylist(userId: UserId, name: PlaylistName, artist: ArtistName): CompletableFuture<PlaylistWithAlbums> {

@@ -35,11 +35,11 @@ class UserTest {
             }
             on { findArtist(any(), any()) } doReturn Future { emptyList<Artist>() }
             on { getAlbums(any(), any()) } doReturn Future { emptyList<Album>() }
-            on { getTracks(any(), any(), any()) } doReturn Future { emptyList<Track>() }
-            on { createPlaylist(any(), any(), any()) } doReturn Future {
+            on { getTracks(any(), any()) } doReturn Future { emptyList<Track>() }
+            on { createPlaylist(any(), any()) } doReturn Future {
                 Playlist(PlaylistId("p"), PlaylistName("n"))
             }
-            on { addTracksToPlaylist(any(), any(), any(), any()) } doReturn Future { Unit }
+            on { addTracksToPlaylist(any(), any(), any()) } doReturn Future { Unit }
         }
         val user = User(
                 mock {},

@@ -2,7 +2,6 @@ package com.richodemus.autoplaylist.playlist
 
 import com.richodemus.autoplaylist.dto.Album
 import com.richodemus.autoplaylist.dto.ArtistName
-import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.flatten
 import com.richodemus.autoplaylist.spotify.AccessToken
@@ -23,7 +22,6 @@ import java.util.concurrent.CompletableFuture
  */
 class Playlist private constructor(
         val id: PlaylistId,
-        private val spotifyUserId: SpotifyUserId,
         val name: PlaylistName,
         private val artist: ArtistName,
         private val accessToken: AccessToken,
@@ -32,12 +30,11 @@ class Playlist private constructor(
     companion object {
         fun create(
                 name: PlaylistName,
-                spotifyUserId: SpotifyUserId,
                 artist: ArtistName,
                 accessToken: AccessToken,
                 spotifyPort: SpotifyPort
-        ) = spotifyPort.createPlaylist(accessToken, spotifyUserId, name)
-                .map { Playlist(it.id, spotifyUserId, it.name, artist, accessToken, spotifyPort) }
+        ) = spotifyPort.createPlaylist(accessToken, name)
+                .map { Playlist(it.id, it.name, artist, accessToken, spotifyPort) }
     }
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -60,7 +57,7 @@ class Playlist private constructor(
         // todo maybe add new tracks to the top of the paylist?
         logger.info("Sync playlist $name to Spotify")
 
-        val actualTracksFuture = spotifyPort.getTracks(accessToken, spotifyUserId, id)
+        val actualTracksFuture = spotifyPort.getTracks(accessToken, id)
         val albumsWithTracksFuture = albumsWithTracks()
 
         val expectedTracksFuture = albumsWithTracksFuture.map { albums -> albums.flatMap { it.tracks } }
@@ -71,7 +68,7 @@ class Playlist private constructor(
         }
 
         val addTracksToPlaylistFuture = missingTracksFuture.flatMap { tracks ->
-            spotifyPort.addTracksToPlaylist(accessToken, spotifyUserId, id, tracks.map { it.uri })
+            spotifyPort.addTracksToPlaylist(accessToken, id, tracks.map { it.uri })
         }
 
         addTracksToPlaylistFuture.onSuccess { logger.info("Done syncing {}", this) }

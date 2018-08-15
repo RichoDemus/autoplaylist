@@ -96,12 +96,11 @@ internal class SpotifyClient(
 
     internal fun createPlaylist(
             accessToken: AccessToken,
-            spotifyUserId: SpotifyUserId,
             name: PlaylistName,
             description: String,
             public: Boolean
     ): CompletableFuture<Playlist> {
-        return post("$apiUrl/v1/users/$spotifyUserId/playlists", accessToken)
+        return post("$apiUrl/v1/me/playlists", accessToken)
                 .body("""
                 {
                     "name":"$name",
@@ -114,24 +113,22 @@ internal class SpotifyClient(
 
     internal fun getTracks(
             accessToken: AccessToken,
-            spotifyUserId: SpotifyUserId,
             playlistId: PlaylistId
     ): CompletableFuture<List<Track>> {
-        return get("$apiUrl/v1/users/$spotifyUserId/playlists/$playlistId/tracks", accessToken)
+        return get("$apiUrl/v1/playlists/$playlistId/tracks", accessToken)
                 .deserialize<GetTracksFromPlaylistResponse>()
                 .map { resp -> resp.items.map { it.track } }
     }
 
     internal fun addTracks(
             accessToken: AccessToken,
-            user: SpotifyUserId,
             playlist: PlaylistId,
             tracks: List<TrackUri>
     ): CompletableFuture<SnapshotId> {
         val request = AddTracksToPlaylistRequest(tracks)
         val json = mapper.writeValueAsString(request)
 
-        return post("$apiUrl/v1/users/$user/playlists/$playlist/tracks", accessToken)
+        return post("$apiUrl/v1/playlists/$playlist/tracks", accessToken)
                 .body(json)
                 .deserialize<AddTracksToPlaylistRespose>()
                 .map { it.snapshot_id }

@@ -231,7 +231,7 @@ internal class SpotifyClientTest {
     fun `Create playlist`() {
         whenHttp(server)
                 .match(
-                        post("/v1/users/$userId/playlists"),
+                        post("/v1/me/playlists"),
                         withHeader("content-Type", "application/json"),
                         withHeader("authorization", "Bearer $accessToken"),
                         withPostBodyContainingJsonPath("name", playlistName.value),
@@ -240,7 +240,7 @@ internal class SpotifyClientTest {
                 )
                 .then(status(OK_200), resourceContent("spotify/createPlaylist.json"))
 
-        val result = target.createPlaylist(accessToken, userId, playlistName, description, public).join()
+        val result = target.createPlaylist(accessToken, playlistName, description, public).join()
 
         assertThat(result).isEqualTo(Playlist(playlistId, playlistName))
     }
@@ -249,13 +249,13 @@ internal class SpotifyClientTest {
     fun `Get tracks in playlist`() {
         whenHttp(server)
                 .match(
-                        get("/v1/users/$userId/playlists/$playlistId/tracks"),
+                        get("/v1/playlists/$playlistId/tracks"),
                         withHeader("content-Type", "application/json"),
                         withHeader("authorization", "Bearer $accessToken")
                 )
                 .then(status(OK_200), resourceContent("spotify/getTracksInPlaylist.json"))
 
-        val result = target.getTracks(accessToken, userId, playlistId).join()
+        val result = target.getTracks(accessToken, playlistId).join()
 
         assertThat(result).containsOnly(
                 Track(
@@ -270,14 +270,14 @@ internal class SpotifyClientTest {
     fun `Add tracks to playlist`() {
         whenHttp(server)
                 .match(
-                        post("/v1/users/$userId/playlists/$playlistId/tracks"),
+                        post("/v1/playlists/$playlistId/tracks"),
                         withHeader("content-Type", "application/json"),
                         withHeader("authorization", "Bearer $accessToken"),
                         withPostBodyContaining("""{"uris":["an-uri"]}""")
                 )
                 .then(status(OK_200), resourceContent("spotify/addTracksToPlaylist.json"))
 
-        val result = target.addTracks(accessToken, userId, playlistId, listOf(TrackUri("an-uri"))).join()
+        val result = target.addTracks(accessToken, playlistId, listOf(TrackUri("an-uri"))).join()
 
         assertThat(result).isEqualTo(snapshotId)
     }

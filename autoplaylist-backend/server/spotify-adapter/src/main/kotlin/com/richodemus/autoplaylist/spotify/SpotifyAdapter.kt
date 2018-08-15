@@ -4,7 +4,6 @@ import com.richodemus.autoplaylist.dto.Album
 import com.richodemus.autoplaylist.dto.ArtistId
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.RefreshToken
-import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.TrackUri
 import io.github.vjames19.futures.jdk8.Future
@@ -45,27 +44,24 @@ internal class SpotifyAdapter(private val spotifyClient: SpotifyClient) : Spotif
 
     override fun getTracks(
             accessToken: AccessToken,
-            spotifyUserId: SpotifyUserId,
             playlistId: PlaylistId
     ) = withRetry {
-        spotifyClient.getTracks(accessToken, spotifyUserId, playlistId)
+        spotifyClient.getTracks(accessToken, playlistId)
                 .map { tracks -> tracks.map { Track(it.id, it.name, it.uri) } }
     }
 
     override fun createPlaylist(
             accessToken: AccessToken,
-            spotifyUserId: SpotifyUserId,
             name: PlaylistName
-    ) = withRetry { spotifyClient.createPlaylist(accessToken, spotifyUserId, name, "Autocreated", false) }
+    ) = withRetry { spotifyClient.createPlaylist(accessToken, name, "Autocreated", false) }
 
     override fun addTracksToPlaylist(
             accessToken: AccessToken,
-            spotifyUserId: SpotifyUserId,
             playlistId: PlaylistId,
             tracks: List<TrackUri>
     ) = Future<Unit> {
         tracks.chunked(100)
-                .map { withRetry { spotifyClient.addTracks(accessToken, spotifyUserId, playlistId, it) } }.map { it.join() }
+                .map { withRetry { spotifyClient.addTracks(accessToken, playlistId, it) } }.map { it.join() }
                 .map { Unit }
     }
 

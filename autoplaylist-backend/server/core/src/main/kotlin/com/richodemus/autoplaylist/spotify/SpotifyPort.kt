@@ -19,19 +19,16 @@ interface SpotifyPort {
     fun getAlbums(accessToken: AccessToken, artistId: ArtistId): CompletableFuture<List<Album>>
     fun getTracks(
             accessToken: AccessToken,
-            spotifyUserId: SpotifyUserId,
             playlistId: PlaylistId
     ): CompletableFuture<List<Track>>
 
     fun createPlaylist(
             accessToken: AccessToken,
-            spotifyUserId: SpotifyUserId,
             name: PlaylistName
     ): CompletableFuture<Playlist>
 
     fun addTracksToPlaylist(
             accessToken: AccessToken,
-            spotifyUserId: SpotifyUserId,
             playlistId: PlaylistId,
             tracks: List<TrackUri>
     ): CompletableFuture<Unit>

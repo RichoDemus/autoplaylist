@@ -99,7 +99,7 @@ class SpotifyMock : SpotifyPort {
         return Future { ARTIST.albums }
     }
 
-    override fun getTracks(accessToken: AccessToken, spotifyUserId: SpotifyUserId, playlistId: PlaylistId): CompletableFuture<List<Track>> {
+    override fun getTracks(accessToken: AccessToken, playlistId: PlaylistId): CompletableFuture<List<Track>> {
         if (accessToken != this.accessToken) {
             return RuntimeException("Wrong accessToken").toCompletableFuture()
         }
@@ -113,7 +113,7 @@ class SpotifyMock : SpotifyPort {
         return Future { playlists.first { it.id == playlistId }.tracks }
     }
 
-    override fun createPlaylist(accessToken: AccessToken, spotifyUserId: SpotifyUserId, name: PlaylistName): CompletableFuture<Playlist> {
+    override fun createPlaylist(accessToken: AccessToken, name: PlaylistName): CompletableFuture<Playlist> {
         if (accessToken != this.accessToken) {
             return RuntimeException("Wrong accessToken").toCompletableFuture()
         }
@@ -123,7 +123,7 @@ class SpotifyMock : SpotifyPort {
         return Future { playlist.toPlaylist() }
     }
 
-    override fun addTracksToPlaylist(accessToken: AccessToken, spotifyUserId: SpotifyUserId, playlistId: PlaylistId, tracks: List<TrackUri>): CompletableFuture<Unit> {
+    override fun addTracksToPlaylist(accessToken: AccessToken, playlistId: PlaylistId, tracks: List<TrackUri>): CompletableFuture<Unit> {
         if (accessToken != this.accessToken) {
             return RuntimeException("Wrong accessToken").toCompletableFuture()
         }
