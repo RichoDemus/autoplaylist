@@ -26,7 +26,7 @@ class AdminController @Inject internal constructor(val userService: UserService)
     internal fun getUsers(session: HttpSession): ResponseEntity<List<WebUser>> {
         logger.info("Get users")
         val userId = session.getUserId() ?: return ResponseEntity(HttpStatus.FORBIDDEN)
-        val richodemus = userService.getUser(userId)?.let {
+        userService.getUser(userId)?.let {
             if (it.spotifyUserId == SpotifyUserId("richodemus")) {
                 return@let it
             }

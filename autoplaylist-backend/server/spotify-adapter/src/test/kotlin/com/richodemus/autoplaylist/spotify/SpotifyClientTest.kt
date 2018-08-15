@@ -35,7 +35,6 @@ internal class SpotifyClientTest {
     private val refreshToken = RefreshToken("refresh-token")
     private val artistId = ArtistId("artist-id")
     private val albumId = AlbumId("album-id")
-    private val userId = SpotifyUserId("user-id")
     private val playlistId = PlaylistId("playlist-id")
     private val playlistName = PlaylistName("playlist-name")
     private val description = "description"
