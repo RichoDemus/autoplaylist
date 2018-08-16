@@ -4,7 +4,8 @@ import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.TrackName
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.test.pages.LoginPage
-import com.richodemus.autoplaylist.test.spotifymock.ARTIST_WITH_DUPLICATE_ALBUMS
+import com.richodemus.autoplaylist.test.spotifymock.ARTIST
+import com.richodemus.autoplaylist.test.spotifymock.ARTIST_WITH_DUPLICATE_TRACKS
 import com.richodemus.autoplaylist.test.spotifymock.SpotifyMock
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.iterable.Extractor
@@ -18,7 +19,7 @@ import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-internal class DeduplicatorTest {
+internal class FilteringTest {
 
     @LocalServerPort
     private var port: Int = -1
@@ -35,14 +36,35 @@ internal class DeduplicatorTest {
     }
 
     @Test
-    fun `Deduplicate albums with the same name`() {
+    fun `Deduplicate tracks with the same name`() {
         val playlistName = PlaylistName("new-playlist")
         val mainPage = loginPage.login(spotifyPort.oAuth2Code)
-        val playlist = mainPage.createPlaylist(playlistName, ARTIST_WITH_DUPLICATE_ALBUMS.name)
+        val playlist = mainPage.createPlaylist(playlistName, ARTIST_WITH_DUPLICATE_TRACKS.name)
 
         val result = mainPage.getTracks(playlist.id)
 
         assertThat(result).extracting(name).doesNotHaveDuplicates()
+    }
+
+    @Test
+    fun `Exclude tracks by pattern`() {
+        val playlistName = PlaylistName("new-playlist")
+
+        val mainPage = loginPage.login(spotifyPort.oAuth2Code)
+        // The songs are [Armata Strigoi, Army of the Night, Amen and Attack, Kreuzfeuer]
+        val playlist = mainPage.createPlaylist(
+                playlistName,
+                ARTIST.name,
+                listOf("army of", "EuZfEu")
+        )
+
+
+        val tracks = mainPage.getTracks(playlist.id)
+
+        assertThat(tracks).extracting(name).containsOnly(
+                TrackName("Armata Strigoi"),
+                TrackName("Amen and Attack")
+        )
     }
 
     private val name = Extractor<Track, TrackName> { it.name }

@@ -51,7 +51,7 @@ class UserTest {
 
         val playlistName = PlaylistName("Katten Skogmans Orkester (G)")
         val artist = ArtistName("Katten Skogmans Orkester")
-        val result = user.createPlaylist(playlistName, artist)
+        val result = user.createPlaylist(playlistName, artist, emptyList())
         val playlist = result.join()
         playlist.sync()
         println("Playlist: ${playlist.id}, with tracks: ${playlist.albumsWithTracks().join()}")

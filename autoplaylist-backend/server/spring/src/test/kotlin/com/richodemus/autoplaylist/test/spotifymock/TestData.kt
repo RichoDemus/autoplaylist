@@ -11,7 +11,7 @@ import com.richodemus.autoplaylist.dto.TrackName
 import com.richodemus.autoplaylist.dto.TrackUri
 import com.richodemus.autoplaylist.test.dto.Artist
 
-internal fun getTrack(uri: TrackUri) = listOf(ARTIST, ARTIST_WITH_DUPLICATE_ALBUMS)
+internal fun getTrack(uri: TrackUri) = listOf(ARTIST, ARTIST_WITH_DUPLICATE_TRACKS)
         .flatMap { it.albums }
         .flatMap { it.tracks }
         .find { it.uri == uri }
@@ -33,7 +33,7 @@ val ARTIST = Artist(
         )
 )
 
-val ARTIST_WITH_DUPLICATE_ALBUMS = Artist(
+val ARTIST_WITH_DUPLICATE_TRACKS = Artist(
         ArtistId("civil_war"),
         ArtistName("Civil War"),
         listOf(

@@ -80,8 +80,8 @@ class SpotifyMock : SpotifyPort {
             return RuntimeException("Wrong accessToken").toCompletableFuture()
         }
 
-        if (name == ARTIST_WITH_DUPLICATE_ALBUMS.name) {
-            return Future { listOf(ARTIST_WITH_DUPLICATE_ALBUMS.toArtist()) }
+        if (name == ARTIST_WITH_DUPLICATE_TRACKS.name) {
+            return Future { listOf(ARTIST_WITH_DUPLICATE_TRACKS.toArtist()) }
         }
 
         return Future { listOf(ARTIST.toArtist()) }
@@ -92,8 +92,8 @@ class SpotifyMock : SpotifyPort {
             return RuntimeException("Wrong accessToken").toCompletableFuture()
         }
 
-        if (artistId == ARTIST_WITH_DUPLICATE_ALBUMS.id) {
-            return Future { ARTIST_WITH_DUPLICATE_ALBUMS.albums }
+        if (artistId == ARTIST_WITH_DUPLICATE_TRACKS.id) {
+            return Future { ARTIST_WITH_DUPLICATE_TRACKS.albums }
         }
 
         return Future { ARTIST.albums }

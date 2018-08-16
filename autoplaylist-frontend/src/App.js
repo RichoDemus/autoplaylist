@@ -111,6 +111,13 @@ class App extends Component {
                             value={this.state.inputPlaylist}
                             onChange={evt => this.updateInputPlaylist(evt)}
                         />
+                        <input
+                            type="text"
+                            name="exclusions"
+                            placeholder="Exclusions"
+                            value={this.state.inputExclusions}
+                            onChange={evt => this.updateExclusions(evt)}
+                        />
                         <button onClick={this.createPlaylist}>Create playlist
                         </button>
                     </div>
@@ -127,7 +134,11 @@ class App extends Component {
     createPlaylist() {
         const artistName = this.state.inputArtist;
         const playlistName = this.state.inputPlaylist;
-        if (window.confirm('Create playlist "' + playlistName + '" from artist "' + artistName + '"')) {
+        const exclusions = (this.state.inputExclusions || "").split(",");
+        let message = 'Create playlist "' + playlistName + '"' +
+            ' from artist "' + artistName + '"' +
+            ' except tracks with "' + exclusions + '" in the name';
+        if (window.confirm(message)) {
             fetch(getBackendBaseUrl() + '/playlists', {
                 credentials: 'include',
                 method: 'POST',
@@ -137,7 +148,8 @@ class App extends Component {
                 },
                 body: JSON.stringify({
                     artist: artistName,
-                    name: playlistName
+                    name: playlistName,
+                    exclusions: exclusions
                 })
             })
                 .then(response => response.json())
@@ -179,6 +191,12 @@ class App extends Component {
         });
     }
 
+    updateExclusions(evt) {
+        this.setState({
+            inputExclusions: evt.target.value
+        });
+    }
+
     logout() {
         this.setState({
             loggedIn: false,
@@ -186,7 +204,8 @@ class App extends Component {
             playLists: [],
             error: null,
             inputArtist: "",
-            inputPlaylist: ""
+            inputPlaylist: "",
+            inputExclusions: ""
         });
     }
 }

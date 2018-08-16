@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture
 class Playlist private constructor(
         val id: PlaylistId,
         val name: PlaylistName,
+        val exclusions: List<String>,
         private val artist: ArtistName,
         private val accessToken: AccessToken,
         private val spotifyPort: SpotifyPort
@@ -31,10 +32,11 @@ class Playlist private constructor(
         fun create(
                 name: PlaylistName,
                 artist: ArtistName,
+                exclusions: List<String>,
                 accessToken: AccessToken,
                 spotifyPort: SpotifyPort
         ) = spotifyPort.createPlaylist(accessToken, name)
-                .map { Playlist(it.id, it.name, artist, accessToken, spotifyPort) }
+                .map { Playlist(it.id, it.name, exclusions, artist, accessToken, spotifyPort) }
     }
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -61,7 +63,9 @@ class Playlist private constructor(
         val albumsWithTracksFuture = albumsWithTracks()
 
         val expectedTracksFuture = albumsWithTracksFuture.map { albums -> albums.flatMap { it.tracks } }
-        val expectedTracksDeduplicatedFuture = expectedTracksFuture.deduplicate()
+        val expectedTracksDeduplicatedFuture = expectedTracksFuture
+                .deduplicate()
+                .excludeTracks(exclusions)
 
         val missingTracksFuture = actualTracksFuture.zip(expectedTracksDeduplicatedFuture) { actual, expected ->
             expected.filterNot { it in actual }
@@ -71,7 +75,9 @@ class Playlist private constructor(
             spotifyPort.addTracksToPlaylist(accessToken, id, tracks.map { it.uri })
         }
 
-        addTracksToPlaylistFuture.onSuccess { logger.info("Done syncing {}", this) }
+        addTracksToPlaylistFuture.onSuccess {
+            logger.info("Done syncing {} tracks to {}", expectedTracksDeduplicatedFuture.join().size, this)
+        }
         addTracksToPlaylistFuture.onFailure { logger.error("Failed to create and fill {}", this, it) }
 
         return albumsWithTracksFuture
@@ -79,4 +85,15 @@ class Playlist private constructor(
 
     // todo make it possible to chose different "deduplicate strategies"
     private fun CompletableFuture<List<Track>>.deduplicate() = this.map { it.distinctBy { track -> track.name } }
+
+    private fun CompletableFuture<List<Track>>.excludeTracks(exclusions: List<String>) = this.map { tracks ->
+        tracks.filterNot { track -> track.matches(exclusions) }
+    }
+
+    /**
+     * Returns true if any of the exclusion strings can be found in the track name
+     */
+    private fun Track.matches(exclusions: List<String>) = exclusions.any { exclusion ->
+        exclusion.toLowerCase() in this.name.value.toLowerCase()
+    }
 }

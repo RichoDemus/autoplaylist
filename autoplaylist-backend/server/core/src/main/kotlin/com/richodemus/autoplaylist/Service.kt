@@ -76,11 +76,16 @@ class Service @Inject internal constructor(
         return spotifyPort.getTracks(accessToken, playlistId)
     }
 
-    fun createPlaylist(userId: UserId, name: PlaylistName, artist: ArtistName): CompletableFuture<PlaylistWithAlbums> {
+    fun createPlaylist(
+            userId: UserId,
+            name: PlaylistName,
+            artist: ArtistName,
+            exclusions: List<String>
+    ): CompletableFuture<PlaylistWithAlbums> {
         val user = userService.getUser(userId)
                 ?: return IllegalStateException("No user with id $userId").toCompletableFuture()
 
-        val playlistFuture = user.createPlaylist(name, artist)
+        val playlistFuture = user.createPlaylist(name, artist, exclusions)
         playlistFuture.onFailure {
             logger.error("User {} failed to create playlist named {} from artist {}", arrayOf(user, name, artist))
         }

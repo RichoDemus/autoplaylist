@@ -49,9 +49,13 @@ class User internal constructor(
     }
 
 
-    fun createPlaylist(name: PlaylistName, artist: ArtistName): CompletableFuture<Playlist> {
+    fun createPlaylist(
+            name: PlaylistName,
+            artist: ArtistName,
+            exclusions: List<String>
+    ): CompletableFuture<Playlist> {
         // todo don't use accessToken!!!
-        val playlist = Playlist.create(name, artist, accessToken!!, spotifyPort)
+        val playlist = Playlist.create(name, artist, exclusions, accessToken!!, spotifyPort)
         return playlist
                 .map {
                     playlists = playlists.plus(it)

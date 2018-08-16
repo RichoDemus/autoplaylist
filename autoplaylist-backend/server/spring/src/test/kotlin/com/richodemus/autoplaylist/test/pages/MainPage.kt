@@ -1,5 +1,6 @@
 package com.richodemus.autoplaylist.test.pages
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.SpotifyUserId
@@ -29,9 +30,16 @@ class MainPage(private val port: Int, private val sessionId: Cookie) {
                 .then().assertThat().statusCode(200).extract().jsonPath().getList("", Playlist::class.java)
     }
 
-    fun createPlaylist(playlistName: PlaylistName, artistName: ArtistName): PlaylistWithAlbums {
+    fun createPlaylist(
+            playlistName: PlaylistName,
+            artistName: ArtistName,
+            exclusions: List<String> = emptyList()
+    ): PlaylistWithAlbums {
+        data class CreatePlaylistRequest(val name: PlaylistName, val artist: ArtistName, val exclusions: List<String>)
+
+        val json = jacksonObjectMapper().writeValueAsString(CreatePlaylistRequest(playlistName, artistName, exclusions))
         return RestAssured
-                .given().cookie(sessionId).body("""{"name":"$playlistName","artist":"$artistName"}""").contentType(JSON)
+                .given().cookie(sessionId).body(json).contentType(JSON)
                 .`when`().post("http://localhost:$port/v1/playlists")
                 .then().assertThat().statusCode(200).extract().jsonPath().getObject("playList", PlaylistWithAlbums::class.java)
     }

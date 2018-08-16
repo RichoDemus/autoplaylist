@@ -70,7 +70,7 @@ internal class PlaylistController @Inject internal constructor(val service: Serv
         val userId = session.getUserId()
                 ?: return Future { ResponseEntity<CreatePlaylistResponse>(HttpStatus.FORBIDDEN) }
         logger.info("Create playlist {}", request)
-        return service.createPlaylist(userId, request.name, request.artist)
+        return service.createPlaylist(userId, request.name, request.artist, request.exclusions.filterNot { it.isBlank() })
                 .map { ResponseEntity.ok(CreatePlaylistResponse(playList = it)) }
                 .recover {
                     ResponseEntity(
@@ -80,7 +80,11 @@ internal class PlaylistController @Inject internal constructor(val service: Serv
                 }
     }
 
-    internal data class CreatePlaylistRequest(val name: PlaylistName, val artist: ArtistName)
+    internal data class CreatePlaylistRequest(
+            val name: PlaylistName,
+            val artist: ArtistName,
+            val exclusions: List<String>
+    )
 
     internal data class CreatePlaylistResponse(val successful: Boolean = true, val playList: PlaylistWithAlbums?)
 }
