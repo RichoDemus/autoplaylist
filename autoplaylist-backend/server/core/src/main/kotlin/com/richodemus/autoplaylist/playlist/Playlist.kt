@@ -61,11 +61,17 @@ class Playlist private constructor(
 
         val actualTracksFuture = spotifyPort.getTracks(accessToken, id)
         val albumsWithTracksFuture = albumsWithTracks()
+        albumsWithTracksFuture.onSuccess { albums ->
+            logger.info("Got {} albums with {} tracks", albums.size, albums.flatMap { it.tracks }.size)
+        }
 
         val expectedTracksFuture = albumsWithTracksFuture.map { albums -> albums.flatMap { it.tracks } }
         val expectedTracksDeduplicatedFuture = expectedTracksFuture
                 .deduplicate()
                 .excludeTracks(exclusions)
+        expectedTracksDeduplicatedFuture.onSuccess {
+            logger.info("{} tracks remaining after deduplication and filtering", it.size)
+        }
 
         val missingTracksFuture = actualTracksFuture.zip(expectedTracksDeduplicatedFuture) { actual, expected ->
             expected.filterNot { it in actual }
