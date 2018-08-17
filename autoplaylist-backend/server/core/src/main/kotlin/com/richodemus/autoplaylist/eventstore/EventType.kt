@@ -1,4 +1,4 @@
-package com.richodemus.autoplaylist.event
+package com.richodemus.autoplaylist.eventstore
 
 enum class EventType {
     USER_CREATED,

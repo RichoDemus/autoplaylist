@@ -1,4 +1,4 @@
-package com.richodemus.autoplaylist.event
+package com.richodemus.autoplaylist.eventstore
 
 interface Event {
     fun id(): EventId

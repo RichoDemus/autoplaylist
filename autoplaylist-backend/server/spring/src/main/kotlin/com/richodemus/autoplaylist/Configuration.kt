@@ -22,6 +22,12 @@ internal class Configuration {
     @Value("\${spotify.redirectUrl}")
     private lateinit var redirectUrl: String
 
+    @Value("\${gcs.project}")
+    private lateinit var gcsProject: String
+
+    @Value("\${gcs.bucket}")
+    private lateinit var gcsBucket: String
+
     @Bean(name = ["spotifyUrl"])
     fun url(): String {
         return apiUrl
@@ -45,5 +51,15 @@ internal class Configuration {
     @Bean(name = ["spotifyRedirectUrl"])
     fun redirectUrl(): String {
         return redirectUrl
+    }
+
+    @Bean(name = ["gcsProject"])
+    fun gcsProject(): String {
+        return gcsProject
+    }
+
+    @Bean(name = ["gcsBucket"])
+    fun gcsBucket(): String {
+        return gcsBucket
     }
 }

@@ -19,3 +19,7 @@ spotify:
   clientId: "your-id"
   clientSecret: "your-secret"
   redirectUrl: "your-redirect-url"
+
+gcs:
+  project: "gcs-project"
+  bucket: "gcs-bucket"

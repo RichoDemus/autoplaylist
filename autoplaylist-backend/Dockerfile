@@ -23,6 +23,8 @@ CMD java \
 -Dspotify.clientId=$CLIENT_ID \
 -Dspotify.clientSecret=$CLIENT_SECRET \
 -Dspotify.redirectUrl=$REDIRECT_URL \
+-Dgcs.project=$GCS_PROJECT \
+-Dgcs.bucket=$GCS_BUCKET \
 -jar spring.jar \
 
 EXPOSE 8080

@@ -1,4 +1,4 @@
-package com.richodemus.autoplaylist.event
+package com.richodemus.autoplaylist.eventstore
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonValue

@@ -3,8 +3,8 @@ package com.richodemus.autoplaylist.user
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
-import com.richodemus.autoplaylist.event.EventStore
-import com.richodemus.autoplaylist.event.UserCreated
+import com.richodemus.autoplaylist.eventstore.EventStore
+import com.richodemus.autoplaylist.eventstore.UserCreated
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import io.github.vjames19.futures.jdk8.Future
 import org.slf4j.LoggerFactory

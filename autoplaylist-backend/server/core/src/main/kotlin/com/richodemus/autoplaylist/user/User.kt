@@ -4,8 +4,8 @@ import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
-import com.richodemus.autoplaylist.event.EventStore
-import com.richodemus.autoplaylist.event.RefreshTokenUpdated
+import com.richodemus.autoplaylist.eventstore.EventStore
+import com.richodemus.autoplaylist.eventstore.RefreshTokenUpdated
 import com.richodemus.autoplaylist.playlist.Playlist
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.PlaylistName
