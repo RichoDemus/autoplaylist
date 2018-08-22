@@ -1,10 +1,13 @@
 buildscript {
-    ext.kotlin_version = '1.2.60'
+    ext.kotlin_version = '1.2.61'
     ext.spring_boot_version = '2.0.4.RELEASE'
     ext.jackson_version = '2.9.+'
     ext.fuel_version = '1.15.+'
     ext.micrometer_version = '1.0.+'
     ext.kotlin_futures_version = '1.2.+'
+    ext.assertj_version = '3.11.+'
+    ext.rest_assured_version = '3.1.+'
+    ext.mockito_kotlin_version = '2.0.0-alpha03'
     repositories {
         jcenter()
     }
