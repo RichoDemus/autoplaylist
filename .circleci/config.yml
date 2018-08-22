@@ -1,19 +1,57 @@
-version: 2
+version: 2.0
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
+      - push:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
 jobs:
   build:
     docker:
       - image: docker:17.05.0-ce-git
-    branches:
-      only:
-        - master
     steps:
+      - run: mkdir -p /workspace
       - checkout
       - setup_remote_docker
       - run:
           name: Build docker images
           command: ./build.sh
           no_output_timeout: 30m
+      - run:
+          name: Write frontend image to disk
+          command: docker save --output /workspace/frontend.img richodemus/autoplaylists-frontend:latest
+          no_output_timeout: 30m
+      - run:
+          name: Write backend image to disk
+          command: docker save --output /workspace/backend.img richodemus/autoplaylists-backend:latest
+          no_output_timeout: 30m
+      - persist_to_workspace:
+          root: /workspace
+          paths:
+            - frontend.img
+            - backend.img
+    
+  push:
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - setup_remote_docker
+      - attach_workspace:
+          at: /workspace
+      - run:
+          name: Read frontend image from disk
+          command: docker load --input /workspace/frontend.img
+          no_output_timeout: 30m
+      - run:
+          name: Read backend image from disk
+          command: docker load --input /workspace/backend.img
+          no_output_timeout: 30m
       - run: |
-                docker login -u $DOCKER_USER -p $DOCKER_PASS
-                docker push richodemus/autoplaylists-frontend:latest
-                docker push richodemus/autoplaylists-backend:latest
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          docker push richodemus/autoplaylists-frontend:latest
+          docker push richodemus/autoplaylists-backend:latest
