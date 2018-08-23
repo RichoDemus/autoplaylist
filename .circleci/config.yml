@@ -10,6 +10,13 @@ workflows:
           filters:
             branches:
               only: master
+      - deploy:
+          requires:
+            - push
+          filters:
+            branches:
+              only: master
+
 jobs:
   build:
     docker:
@@ -55,3 +62,30 @@ jobs:
           docker login -u $DOCKER_USER -p $DOCKER_PASS
           docker push richodemus/autoplaylists-frontend:latest
           docker push richodemus/autoplaylists-backend:latest
+
+  deploy:
+    machine:
+      enabled: true
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "00:aa:c3:0b:30:bd:7c:6e:18:03:6d:7b:a4:84:b7:45"
+      - run: |
+          echo "test ssh"
+          ssh -o StrictHostKeyChecking=no richodemus@richodemus.com << EOF
+            docker pull richodemus/autoplaylists-frontend:latest
+            docker pull richodemus/autoplaylists-backend:latest
+
+            docker rm -f autoplaylists-frontend
+            docker rm -f autoplaylists-backend
+
+            docker run --name autoplaylists-frontend -d --log-driver=gcplogs --log-driver=json-file richodemus/autoplaylists-frontend:latest
+            docker run --name autoplaylists-backend -d --log-driver=gcplogs --log-driver=json-file \
+              -p 9090:8080 \
+              -e CLIENT_ID=df0732a2defe44ecabd30868fa57a2d5 \
+              -e CLIENT_SECRET=$SPOTIFY_SECRET \
+              -e REDIRECT_URL=https://autoplaylists.richodemus.com/callback \
+              -e GCS_PROJECT=richo-reader \
+              -e GCS_BUCKET=autoplaylist \
+              richodemus/autoplaylists-backend:latest
+          EOF
