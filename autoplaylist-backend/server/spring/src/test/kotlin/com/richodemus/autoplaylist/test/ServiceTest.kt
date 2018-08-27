@@ -42,6 +42,8 @@ internal class ServiceTest {
         assertThat(result).isEqualTo(SpotifyUserId(spotifyPort.spotifyUserId.value))
     }
 
+    // todo write logout test
+
     @Test
     fun `Find Artist`() {
         val mainPage = loginPage.login(spotifyPort.oAuth2Code)

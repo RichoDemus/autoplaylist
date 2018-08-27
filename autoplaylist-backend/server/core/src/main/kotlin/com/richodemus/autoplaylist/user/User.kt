@@ -42,6 +42,7 @@ class User internal constructor(
     @Synchronized
     private fun renewAccessToken() {
         if (Instant.now().isAfter(tokenExpiration)) {
+            // todo proper error handling if refreshing fails
             val (accessToken1, _, _, expiresIn, _) = spotifyPort.refreshToken(refreshToken).join()
             accessToken = accessToken1
             tokenExpiration = Instant.now().plus(Duration.ofSeconds(expiresIn.toLong()))

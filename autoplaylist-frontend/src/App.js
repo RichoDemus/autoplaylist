@@ -71,6 +71,34 @@ class App extends Component {
                 .then(() => {
                     this.refreshPlaylist();
                 });
+        } else {
+            fetch(getBackendBaseUrl() + '/sessions', {credentials: 'include'})
+                .then(response => {
+                    console.log("Check if logged in", response);
+                    if(response.status !== 200) {
+                        return;
+                    }
+                    this.setState({
+                        loggedIn: true
+                    });
+                    fetch(getBackendBaseUrl() + '/users/me', {
+                        credentials: 'include'
+                    })
+                        .then(response => response.json())
+                        .then(response => {
+                            if (response.error) {
+                                console.log("error:", response.error);
+                                this.setState({
+                                    error: response.error
+                                });
+                            } else {
+                                this.setState({
+                                    userId: response.userId
+                                });
+                            }
+                        });
+                    this.refreshPlaylist();
+                })
         }
     }
 
@@ -207,6 +235,12 @@ class App extends Component {
             inputPlaylist: "",
             inputExclusions: ""
         });
+        fetch(getBackendBaseUrl() + '/sessions', {
+            credentials: 'include',
+            method: 'DELETE',
+        }).then(response => {
+            console.log("logged out", response)
+        })
     }
 }
 
