@@ -5,6 +5,8 @@ buildscript {
     ext.fuel_version = '1.15.+'
     ext.micrometer_version = '1.0.+'
     ext.kotlin_futures_version = '1.2.+'
+    ext.gcs_client_version = '1.41.+'
+
     ext.assertj_version = '3.11.+'
     ext.rest_assured_version = '3.1.+'
     ext.mockito_kotlin_version = '2.0.0-alpha03'

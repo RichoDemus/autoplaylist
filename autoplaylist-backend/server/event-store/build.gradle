@@ -6,8 +6,8 @@ dependencies {
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
     compile 'org.springframework:spring-context:+' //spring boot will (hopefully) lock this down
     compile "io.micrometer:micrometer-core:$micrometer_version"
-    compile 'com.google.cloud:google-cloud-storage:1.40.0'
+    compile "com.google.cloud:google-cloud-storage:$gcs_client_version"
 
     testCompile 'junit:junit:4.12'
-    testCompile 'org.assertj:assertj-core:3.10.0'
+    testCompile "org.assertj:assertj-core:$assertj_version"
 }
