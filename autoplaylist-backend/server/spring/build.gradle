@@ -22,7 +22,7 @@ dependencies {
     compile "com.github.vjames19.kotlin-futures:kotlin-futures-jdk8:$kotlin_futures_version"
     compile "org.springframework.boot:spring-boot-starter-web:$spring_boot_version"
     compile "org.springframework.boot:spring-boot-starter-actuator:$spring_boot_version"
-    compile 'com.github.jsr-330:core:1.4.0'
+
 
     testCompile("org.springframework.boot:spring-boot-starter-test:$spring_boot_version")
     testCompile "org.assertj:assertj-core:$assertj_version"

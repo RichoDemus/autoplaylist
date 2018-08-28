@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import java.util.concurrent.CompletableFuture
-import javax.inject.Inject
 import javax.servlet.http.HttpSession
 
 @CrossOrigin(
@@ -29,7 +28,7 @@ import javax.servlet.http.HttpSession
         allowCredentials = "true"
 )
 @RestController
-internal class PlaylistController @Inject internal constructor(val service: Service) {
+internal class PlaylistController(val service: Service) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Suppress("unused")

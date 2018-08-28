@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
-import javax.inject.Inject
 import javax.servlet.http.HttpSession
 
 @CrossOrigin(
@@ -18,7 +17,7 @@ import javax.servlet.http.HttpSession
         allowCredentials = "true"
 )
 @RestController
-class AdminController @Inject internal constructor(val userService: UserService) {
+class AdminController(val userService: UserService) {
     private val logger = LoggerFactory.getLogger(AdminController::class.java)
 
     @Suppress("unused")
