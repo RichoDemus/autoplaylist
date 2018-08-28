@@ -2,8 +2,7 @@ package com.richodemus.autoplaylist.spotify
 
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.RefreshToken
-import io.github.vjames19.futures.jdk8.map
-import io.github.vjames19.futures.jdk8.onFailure
+import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Ignore
 import org.junit.Test
 
@@ -11,29 +10,25 @@ import org.junit.Test
 class SpotifyAdapterTest {
     @Ignore
     @Test
-    fun `Exceed rate limit`() {
+    fun `Exceed rate limit`() = runBlocking {
         val target = SpotifyAdapter(SpotifyClient("", "", "", "", ""))
 
         val token = target.refreshToken(RefreshToken(System.getenv("REFRESH_TOKEN")))
         for (i in 0..1000) {
             Thread.sleep(10L)
-            val result = target.findArtist(token.join().accessToken, ArtistName("Iced Earth"))
-            result.onFailure {
-                println(it)
-            }
-            println("$i: ${result.join()}")
-
+            val result = target.findArtist(token.accessToken, ArtistName("Iced Earth"))
+            println("$i: $result")
         }
     }
 
     @Ignore
     @Test
-    fun `Find Artists`() {
+    fun `Find Artists`() = runBlocking {
         val target = SpotifyAdapter(SpotifyClient("", "", "", "", ""))
 
         val token = target.refreshToken(RefreshToken(System.getenv("REFRESH_TOKEN")))
 
-        val artists = target.findArtist(token.join().accessToken, ArtistName("Queen")).join()
+        val artists = target.findArtist(token.accessToken, ArtistName("Queen"))
 
         println(artists)
     }
@@ -41,18 +36,17 @@ class SpotifyAdapterTest {
     @Ignore
 
     @Test
-    fun `Investigate duplicates`() {
+    fun `Investigate duplicates`() = runBlocking {
         val target = SpotifyAdapter(SpotifyClient("", "", "", "", ""))
 
         val token = target.refreshToken(RefreshToken(System.getenv("REFRESH_TOKEN")))
 
-        val accessToken = token.join().accessToken
+        val accessToken = token.accessToken
         val artists = target.findArtist(accessToken, ArtistName("Civil War"))
-                .map { it.filter { artist -> artist.id.value == "6lGzC0JJCotCU9QZ2Lgi8T" } }
-                .join()
+                .filter { artist -> artist.id.value == "6lGzC0JJCotCU9QZ2Lgi8T" }
 
         val artistsWithAlbums = artists
-                .map { it to target.getAlbums(accessToken, it.id).join() }
+                .map { it to target.getAlbums(accessToken, it.id) }
 
         artistsWithAlbums.forEach {
             println(it.first)

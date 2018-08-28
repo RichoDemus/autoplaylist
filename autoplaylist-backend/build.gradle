@@ -4,7 +4,6 @@ buildscript {
     ext.jackson_version = '2.9.+'
     ext.fuel_version = '1.15.+'
     ext.micrometer_version = '1.0.+'
-    ext.kotlin_futures_version = '1.2.+'
     ext.gcs_client_version = '1.41.+'
 
     ext.assertj_version = '3.11.+'
@@ -42,10 +41,14 @@ subprojects {
 //        apiVersion = "1.2"
 //        languageVersion = "1.2"
         }
-
     }
 
     configurations {
+        kotlin {
+            experimental {
+                coroutines 'enable'
+            }
+        }
         all*.exclude group: 'org.glassfish.hk2.external', module: 'javax.inject'
         all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
         all*.exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre7'

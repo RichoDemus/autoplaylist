@@ -8,28 +8,27 @@ import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.TrackUri
-import java.util.concurrent.CompletableFuture
 
 interface SpotifyPort {
-    fun getToken(code: String): CompletableFuture<Tokens>
-    fun getUserId(accessToken: AccessToken): CompletableFuture<SpotifyUserId>
-    fun getPlaylists(accessToken: AccessToken): CompletableFuture<List<Playlist>>
-    fun refreshToken(refreshToken: RefreshToken): CompletableFuture<Tokens>
-    fun findArtist(accessToken: AccessToken, name: ArtistName): CompletableFuture<List<Artist>>
-    fun getAlbums(accessToken: AccessToken, artistId: ArtistId): CompletableFuture<List<Album>>
-    fun getTracks(
+    suspend fun getToken(code: String): Tokens
+    suspend fun getUserId(accessToken: AccessToken): SpotifyUserId
+    suspend fun getPlaylists(accessToken: AccessToken): List<Playlist>
+    suspend fun refreshToken(refreshToken: RefreshToken): Tokens
+    suspend fun findArtist(accessToken: AccessToken, name: ArtistName): List<Artist>
+    suspend fun getAlbums(accessToken: AccessToken, artistId: ArtistId): List<Album>
+    suspend fun getTracks(
             accessToken: AccessToken,
             playlistId: PlaylistId
-    ): CompletableFuture<List<Track>>
+    ): List<Track>
 
-    fun createPlaylist(
+    suspend fun createPlaylist(
             accessToken: AccessToken,
             name: PlaylistName
-    ): CompletableFuture<Playlist>
+    ): Playlist
 
-    fun addTracksToPlaylist(
+    suspend fun addTracksToPlaylist(
             accessToken: AccessToken,
             playlistId: PlaylistId,
             tracks: List<TrackUri>
-    ): CompletableFuture<Unit>
+    )
 }

@@ -2,10 +2,7 @@ package com.richodemus.autoplaylist
 
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.user.UserService
-import io.github.vjames19.futures.jdk8.Future
-import io.github.vjames19.futures.jdk8.flatMap
-import io.github.vjames19.futures.jdk8.map
-import io.github.vjames19.futures.jdk8.recover
+import kotlinx.coroutines.experimental.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -15,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import java.util.concurrent.CompletableFuture
 import javax.servlet.http.HttpSession
 
 @CrossOrigin(
@@ -46,22 +42,22 @@ internal class UserController(
     @Suppress("unused")
     @PostMapping("/v1/sessions")
     internal fun createSession(session: HttpSession, @RequestBody request: CreateSessionRequest
-    ): CompletableFuture<ResponseEntity<CreateSessionResponse>> {
+    ): ResponseEntity<CreateSessionResponse> {
         logger.info("req: $request")
 
-        return service.login(request.code)
-                .map {
-                    session.setAttribute("userId", it)
-                    it
-                }
-                .map { ResponseEntity(CreateSessionResponse("OK"), HttpStatus.OK) }
-                .recover { exception ->
-                    logger.error("login failed: {}", exception.message, exception)
-                    ResponseEntity(
-                            CreateSessionResponse("No refreshtoken"),
-                            HttpStatus.INTERNAL_SERVER_ERROR
-                    )
-                }
+        return runBlocking {
+            try {
+                val userId = service.login(request.code)
+                session.setAttribute("userId", userId)
+                ResponseEntity(CreateSessionResponse("OK"), HttpStatus.OK)
+            } catch (e: Exception) {
+                logger.error("login failed: {}", e.message, e)
+                ResponseEntity(
+                        CreateSessionResponse("No refreshtoken"),
+                        HttpStatus.INTERNAL_SERVER_ERROR
+                )
+            }
+        }
     }
 
     @Suppress("unused")
@@ -79,19 +75,20 @@ internal class UserController(
 
     @Suppress("unused")
     @GetMapping("/v1/users/me")
-    internal fun getUser(session: HttpSession): CompletableFuture<ResponseEntity<GetUserIdResponse>> {
+    internal fun getUser(session: HttpSession): ResponseEntity<GetUserIdResponse> {
         val userId = session.getUserId()
         if (userId == null) {
             logger.warn("No user for session {}", session.id)
-            return Future { ResponseEntity<GetUserIdResponse>(HttpStatus.FORBIDDEN) }
+            return ResponseEntity<GetUserIdResponse>(HttpStatus.FORBIDDEN)
         }
 
-        return Future { userId }
-                .flatMap { service.getSpotifyUserId(it!!) }
-                .map { ResponseEntity(GetUserIdResponse(it), HttpStatus.OK) }
-                .recover { exception ->
-                    logger.error("getSpotifyUserId failed: {}", exception.message, exception)
-                    ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+        return runBlocking {
+            try {
+                ResponseEntity.ok(GetUserIdResponse(service.getSpotifyUserId(userId)))
+            } catch (e: Exception) {
+                logger.error("getSpotifyUserId failed: {}", e.message, e)
+                ResponseEntity<GetUserIdResponse>(HttpStatus.INTERNAL_SERVER_ERROR)
+            }
+        }
     }
 }

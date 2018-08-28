@@ -1,5 +1,6 @@
 package com.richodemus.autoplaylist.spotify
 
+import awaitStringResponse
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -12,10 +13,8 @@ import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.TrackUri
-import io.github.vjames19.futures.jdk8.map
 import org.slf4j.LoggerFactory
 import java.util.Base64
-import java.util.concurrent.CompletableFuture
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -36,7 +35,7 @@ internal class SpotifyClient(
     private val authString = "$clientId:$clientSecret"
             .let { "Basic " + Base64.getEncoder().encodeToString(it.toByteArray()) }
 
-    internal fun getTokens(code: String): CompletableFuture<Tokens> {
+    internal suspend fun getTokens(code: String): Tokens {
         return Fuel.post("$accountsUrl/api/token",
                 listOf(
                         "grant_type" to "authorization_code",
@@ -48,7 +47,7 @@ internal class SpotifyClient(
                 .deserialize()
     }
 
-    internal fun refreshToken(refreshToken: RefreshToken): CompletableFuture<Tokens> {
+    internal suspend fun refreshToken(refreshToken: RefreshToken): Tokens {
         return Fuel.post("$accountsUrl/api/token",
                 listOf(
                         "grant_type" to "refresh_token",
@@ -58,19 +57,19 @@ internal class SpotifyClient(
                 .deserialize()
     }
 
-    internal fun getUserId(accessToken: AccessToken): CompletableFuture<SpotifyUserId> {
+    internal suspend fun getUserId(accessToken: AccessToken): SpotifyUserId {
         return get("$apiUrl/v1/me", accessToken)
                 .deserialize<User>()
-                .map { it.id }
+                .id
     }
 
-    internal fun getPlaylists(accessToken: AccessToken): CompletableFuture<List<Playlist>> {
+    internal suspend fun getPlaylists(accessToken: AccessToken): List<Playlist> {
         return get("$apiUrl/v1/me/playlists", accessToken)
                 .deserialize<PlaylistsResponse>()
-                .map { it.items }
+                .items
     }
 
-    internal fun findArtist(accessToken: AccessToken, name: ArtistName): CompletableFuture<List<Artist>> {
+    internal suspend fun findArtist(accessToken: AccessToken, name: ArtistName): List<Artist> {
         return Fuel.get("$apiUrl/v1/search",
                 listOf(
                         "q" to name,
@@ -79,27 +78,27 @@ internal class SpotifyClient(
                 .header("Accept" to "application/json")
                 .addHeaders(accessToken)
                 .deserialize<FindArtistResponse>()
-                .map { it.artists.items }
+                .artists.items
     }
 
-    internal fun getAlbums(accessToken: AccessToken, artistId: ArtistId): CompletableFuture<List<Album>> {
+    internal suspend fun getAlbums(accessToken: AccessToken, artistId: ArtistId): List<Album> {
         return get("$apiUrl/v1/artists/$artistId/albums", accessToken)
                 .deserialize<GetAlbumsResponse>()
-                .map { it.items }
+                .items
     }
 
-    internal fun getTracks(accessToken: AccessToken, album: AlbumId): CompletableFuture<List<Track>> {
+    internal suspend fun getTracks(accessToken: AccessToken, album: AlbumId): List<Track> {
         return get("$apiUrl/v1/albums/$album/tracks", accessToken)
                 .deserialize<GetTracksFromAlbumResponse>()
-                .map { it.items }
+                .items
     }
 
-    internal fun createPlaylist(
+    internal suspend fun createPlaylist(
             accessToken: AccessToken,
             name: PlaylistName,
             description: String,
             public: Boolean
-    ): CompletableFuture<Playlist> {
+    ): Playlist {
         return post("$apiUrl/v1/me/playlists", accessToken)
                 .body("""
                 {
@@ -111,27 +110,27 @@ internal class SpotifyClient(
                 .deserialize()
     }
 
-    internal fun getTracks(
+    internal suspend fun getTracks(
             accessToken: AccessToken,
             playlistId: PlaylistId
-    ): CompletableFuture<List<Track>> {
+    ): List<Track> {
         return get("$apiUrl/v1/playlists/$playlistId/tracks", accessToken)
                 .deserialize<GetTracksFromPlaylistResponse>()
-                .map { resp -> resp.items.map { it.track } }
+                .items.map { it.track }
     }
 
-    internal fun addTracks(
+    internal suspend fun addTracks(
             accessToken: AccessToken,
             playlist: PlaylistId,
             tracks: List<TrackUri>
-    ): CompletableFuture<SnapshotId> {
+    ): SnapshotId {
         val request = AddTracksToPlaylistRequest(tracks)
         val json = mapper.writeValueAsString(request)
 
         return post("$apiUrl/v1/playlists/$playlist/tracks", accessToken)
                 .body(json)
                 .deserialize<AddTracksToPlaylistRespose>()
-                .map { it.snapshot_id }
+                .snapshot_id
     }
 
     private fun get(path: String, accessToken: AccessToken) = Fuel.get(path).addHeaders(accessToken)
@@ -143,40 +142,34 @@ internal class SpotifyClient(
             "Authorization" to "Bearer $accessToken"
     ))
 
-    private inline fun <reified T : Any> Request.deserialize(): CompletableFuture<T> {
-        val future = CompletableFuture<T>()
-        this.responseString { _, _, result ->
-            when (result) {
-                is Result.Failure -> {
-                    val ex = result.getException()
-                    if (result.error.response.statusCode == 429) {
-                        logger.warn("Rate limit exceeded")
-                        val retryAfter = result.error.response.headers["Retry-After"]?.get(0)
-                        if (retryAfter == null) {
-                            logger.error("Missing retry-after header", ex)
-                            future.completeExceptionally(ex)
-                            return@responseString
-                        }
-                        future.completeExceptionally(RateLimitExceededException(retryAfter.toLong()))
-                        return@responseString
+    private suspend inline fun <reified T : Any> Request.deserialize(): T {
+        val (_, _, result) = this.awaitStringResponse()
+        when (result) {
+            is Result.Failure -> {
+                val ex = result.getException()
+                if (result.error.response.statusCode == 429) {
+                    logger.warn("Rate limit exceeded")
+                    val retryAfter = result.error.response.headers["Retry-After"]?.get(0)
+                    if (retryAfter == null) {
+                        logger.error("Missing retry-after header", ex)
+                        throw ex
                     }
-                    logger.error("Call failed: ${result.error.response}", ex)
-                    future.completeExceptionally(ex)
+                    throw RateLimitExceededException(retryAfter.toLong())
                 }
-                is Result.Success -> {
-                    val data = result.get()
-                    val playListsResponse: T
-                    try {
-                        playListsResponse = mapper.readValue(data)
-                        future.complete(playListsResponse)
-                    } catch (e: Exception) {
-                        logger.info("Unable to deserialize {}", data, e)
-                        throw kotlin.RuntimeException("Unable to deserialize $data: ${e.message}")
-                    }
+                logger.error("Call failed: ${result.error.response}", ex)
+                throw ex
+            }
+            is Result.Success -> {
+                val data = result.get()
+                val playListsResponse: T
+                try {
+                    playListsResponse = mapper.readValue(data)
+                    return playListsResponse
+                } catch (e: Exception) {
+                    logger.info("Unable to deserialize {}", data, e)
+                    throw kotlin.RuntimeException("Unable to deserialize $data: ${e.message}")
                 }
             }
         }
-        return future
     }
-
 }

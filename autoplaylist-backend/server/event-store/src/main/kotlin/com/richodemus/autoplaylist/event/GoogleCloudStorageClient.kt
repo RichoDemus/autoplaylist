@@ -3,9 +3,9 @@ package com.richodemus.autoplaylist.event
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
-import io.github.vjames19.futures.jdk8.Future
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.async
 import org.slf4j.LoggerFactory
-import java.util.concurrent.CompletableFuture
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -27,16 +27,14 @@ internal class GoogleCloudStorageClient(
         logger.info("GCS Config: $gcsProject, $gcsBucket")
     }
 
-    override fun read(): CompletableFuture<List<Pair<Long, CompletableFuture<ByteArray>>>> {
-        return Future {
-            service.list(gcsBucket)
-                    .iterateAll()
-                    .filter { it.blobId.name.startsWith(directory) }
-                    .map {
-                        val sequenceNumber = it.blobId.name.split("/")[2].toLong()
-                        sequenceNumber to Future { it.getContent() }
-                    }
-        }
+    override fun read(): List<Pair<Long, Deferred<ByteArray>>> {
+        return service.list(gcsBucket)
+                .iterateAll()
+                .filter { it.blobId.name.startsWith(directory) }
+                .map {
+                    val sequenceNumber = it.blobId.name.split("/")[2].toLong()
+                    sequenceNumber to async { it.getContent() }
+                }
     }
 
     override fun write(filename: String, data: ByteArray) {

@@ -15,12 +15,9 @@ import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.spotify.Tokens
 import com.richodemus.autoplaylist.test.dto.PlaylistWithTracks
-import io.github.vjames19.futures.jdk8.Future
-import io.github.vjames19.futures.jdk8.toCompletableFuture
 import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Service
 import java.util.UUID
-import java.util.concurrent.CompletableFuture
 
 @Service
 @Primary // todo is this the right way?
@@ -31,107 +28,104 @@ class SpotifyMock : SpotifyPort {
     private lateinit var refreshToken: RefreshToken
     private var playlists = emptyList<PlaylistWithTracks>()
 
-    override fun getToken(code: String): CompletableFuture<Tokens> {
+    override suspend fun getToken(code: String): Tokens {
         if (code != oAuth2Code) {
-            return RuntimeException("Wrong code").toCompletableFuture()
+            throw RuntimeException("Wrong code")
         }
 
-        return Future {
-            Tokens(
-                    accessToken,
-                    "scope",
-                    "type",
-                    100000,
-                    refreshToken
-            )
-        }
+        return Tokens(
+                accessToken,
+                "scope",
+                "type",
+                100000,
+                refreshToken
+        )
     }
 
-    override fun getUserId(accessToken: AccessToken): CompletableFuture<SpotifyUserId> {
+    override suspend fun getUserId(accessToken: AccessToken): SpotifyUserId {
         if (accessToken != this.accessToken) {
-            return RuntimeException("Wrong accessToken").toCompletableFuture()
+            throw RuntimeException("Wrong accessToken")
         }
 
-        return Future { spotifyUserId }
+        return spotifyUserId
     }
 
-    override fun getPlaylists(accessToken: AccessToken): CompletableFuture<List<Playlist>> {
-        return Future { playlists.map { it.toPlaylist() } }
+    override suspend fun getPlaylists(accessToken: AccessToken): List<Playlist> {
+        return playlists.map { it.toPlaylist() }
     }
 
-    override fun refreshToken(refreshToken: RefreshToken): CompletableFuture<Tokens> {
+    override suspend fun refreshToken(refreshToken: RefreshToken): Tokens {
         if (refreshToken != this.refreshToken) {
-            return RuntimeException("Wrong refreshToken").toCompletableFuture()
+            throw RuntimeException("Wrong refreshToken")
         }
 
-        return Future {
-            Tokens(
-                    accessToken,
-                    "scope",
-                    "type",
-                    100000,
-                    refreshToken
-            )
-        }
+        return Tokens(
+                accessToken,
+                "scope",
+                "type",
+                100000,
+                refreshToken
+        )
+
     }
 
-    override fun findArtist(accessToken: AccessToken, name: ArtistName): CompletableFuture<List<Artist>> {
+    override suspend fun findArtist(accessToken: AccessToken, name: ArtistName): List<Artist> {
         if (accessToken != this.accessToken) {
-            return RuntimeException("Wrong accessToken").toCompletableFuture()
+            throw RuntimeException("Wrong accessToken")
         }
 
         if (name == ARTIST_WITH_DUPLICATE_TRACKS.name) {
-            return Future { listOf(ARTIST_WITH_DUPLICATE_TRACKS.toArtist()) }
+            return listOf(ARTIST_WITH_DUPLICATE_TRACKS.toArtist())
         }
 
-        return Future { listOf(ARTIST.toArtist()) }
+        return listOf(ARTIST.toArtist())
     }
 
-    override fun getAlbums(accessToken: AccessToken, artistId: ArtistId): CompletableFuture<List<Album>> {
+    override suspend fun getAlbums(accessToken: AccessToken, artistId: ArtistId): List<Album> {
         if (accessToken != this.accessToken) {
-            return RuntimeException("Wrong accessToken").toCompletableFuture()
+            throw RuntimeException("Wrong accessToken")
         }
 
         if (artistId == ARTIST_WITH_DUPLICATE_TRACKS.id) {
-            return Future { ARTIST_WITH_DUPLICATE_TRACKS.albums }
+            return ARTIST_WITH_DUPLICATE_TRACKS.albums
         }
 
-        return Future { ARTIST.albums }
+        return ARTIST.albums
     }
 
-    override fun getTracks(accessToken: AccessToken, playlistId: PlaylistId): CompletableFuture<List<Track>> {
+    override suspend fun getTracks(accessToken: AccessToken, playlistId: PlaylistId): List<Track> {
         if (accessToken != this.accessToken) {
-            return RuntimeException("Wrong accessToken").toCompletableFuture()
+            throw RuntimeException("Wrong accessToken")
         }
         if (spotifyUserId != this.spotifyUserId) {
-            return RuntimeException("Wrong spotifyUserId").toCompletableFuture()
+            throw RuntimeException("Wrong spotifyUserId")
         }
         if (playlists.none { it.id == playlistId }) {
-            return RuntimeException("No playlist with id $playlistId").toCompletableFuture()
+            throw RuntimeException("No playlist with id $playlistId")
         }
 
-        return Future { playlists.first { it.id == playlistId }.tracks }
+        return playlists.first { it.id == playlistId }.tracks
     }
 
-    override fun createPlaylist(accessToken: AccessToken, name: PlaylistName): CompletableFuture<Playlist> {
+    override suspend fun createPlaylist(accessToken: AccessToken, name: PlaylistName): Playlist {
         if (accessToken != this.accessToken) {
-            return RuntimeException("Wrong accessToken").toCompletableFuture()
+            throw RuntimeException("Wrong accessToken")
         }
 
         val playlist = PlaylistWithTracks(name)
         playlists += playlist
-        return Future { playlist.toPlaylist() }
+        return playlist.toPlaylist()
     }
 
-    override fun addTracksToPlaylist(accessToken: AccessToken, playlistId: PlaylistId, tracks: List<TrackUri>): CompletableFuture<Unit> {
+    override suspend fun addTracksToPlaylist(accessToken: AccessToken, playlistId: PlaylistId, tracks: List<TrackUri>) {
         if (accessToken != this.accessToken) {
-            return RuntimeException("Wrong accessToken").toCompletableFuture()
+            throw RuntimeException("Wrong accessToken")
         }
         if (spotifyUserId != this.spotifyUserId) {
-            return RuntimeException("Wrong spotifyUserId").toCompletableFuture()
+            throw RuntimeException("Wrong spotifyUserId")
         }
         if (playlists.none { it.id == playlistId }) {
-            return RuntimeException("No playlist with id $playlistId").toCompletableFuture()
+            throw RuntimeException("No playlist with id $playlistId")
         }
 
         playlists = playlists.map { playlist ->
@@ -140,7 +134,7 @@ class SpotifyMock : SpotifyPort {
             }
             return@map playlist.copy(tracks = playlist.tracks + tracks.map { getTrack(it) })
         }
-        return Future { }
+        return
     }
 
     fun reset() {

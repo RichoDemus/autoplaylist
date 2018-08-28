@@ -3,10 +3,10 @@ package com.richodemus.autoplaylist.event
 import com.richodemus.autoplaylist.eventstore.Event
 import com.richodemus.autoplaylist.eventstore.EventStore
 import io.micrometer.core.instrument.MeterRegistry
+import kotlinx.coroutines.experimental.launch
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
-import kotlin.concurrent.thread
 
 @Component
 @Profile("prod")
@@ -33,7 +33,7 @@ internal class GoogleCloudEventStore(
         }
 
         logger.info("Got all listeners, time to start!")
-        thread(name = "send-gcs-events-to-listeners") {
+        launch {
             try {
                 logger.info("Reading events...")
                 val read = gcsAdapter.read().asSequence().toList()

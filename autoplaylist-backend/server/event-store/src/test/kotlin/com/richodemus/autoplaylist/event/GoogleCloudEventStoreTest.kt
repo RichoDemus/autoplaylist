@@ -10,14 +10,14 @@ import com.richodemus.autoplaylist.eventstore.Event
 import com.richodemus.autoplaylist.eventstore.EventId
 import com.richodemus.autoplaylist.eventstore.EventType.USER_CREATED
 import com.richodemus.autoplaylist.eventstore.UserCreated
-import io.github.vjames19.futures.jdk8.Future
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.async
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import java.util.UUID
-import java.util.concurrent.CompletableFuture
 
 
 class GoogleCloudEventStoreTest {
@@ -44,7 +44,7 @@ class GoogleCloudEventStoreTest {
     @Test
     fun `Init eventstore with empty storage`() {
         val clientMock = mock<GoogleCloudStorage> {
-            on { read() } doReturn Future { emptyList<Pair<Long, CompletableFuture<ByteArray>>>() }
+            on { read() } doReturn emptyList<Pair<Long, Deferred<ByteArray>>>()
         }
 
         val target = GoogleCloudEventStore(GoogleCloudStorageAdapter(EventSerde(), clientMock), registryMock)
@@ -60,11 +60,9 @@ class GoogleCloudEventStoreTest {
     @Test(timeout = 60_000L)
     fun `Init eventstore with events in storage`() {
         val clientMock = mock<GoogleCloudStorage> {
-            on { read() } doReturn Future {
-                listOf(0L to Future {
-                    eventJson
-                })
-            }
+            on { read() } doReturn listOf(0L to async {
+                eventJson
+            })
         }
 
         val target = GoogleCloudEventStore(GoogleCloudStorageAdapter(EventSerde(), clientMock), registryMock)
@@ -83,7 +81,7 @@ class GoogleCloudEventStoreTest {
     @Test
     fun `Produce message`() {
         val clientMock = mock<GoogleCloudStorage> {
-            on { read() } doReturn Future { emptyList<Pair<Long, CompletableFuture<ByteArray>>>() }
+            on { read() } doReturn emptyList<Pair<Long, Deferred<ByteArray>>>()
         }
 
         val target = GoogleCloudEventStore(GoogleCloudStorageAdapter(EventSerde(), clientMock), registryMock)

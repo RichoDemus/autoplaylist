@@ -19,6 +19,7 @@ import com.xebialabs.restito.semantics.Condition.withHeader
 import com.xebialabs.restito.semantics.Condition.withPostBodyContaining
 import com.xebialabs.restito.semantics.Condition.withPostBodyContainingJsonPath
 import com.xebialabs.restito.server.StubServer
+import kotlinx.coroutines.experimental.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.glassfish.grizzly.http.util.HttpStatus.OK_200
 import org.junit.After
@@ -76,7 +77,7 @@ internal class SpotifyClientTest {
                 )
                 .then(status(OK_200), resourceContent("spotify/getTokens.json"))
 
-        val result = target.getTokens(code).join()
+        val result = runBlocking { target.getTokens(code) }
 
         assertThat(result).isEqualTo(Tokens(
                 accessToken,
@@ -99,7 +100,8 @@ internal class SpotifyClientTest {
                 )
                 .then(status(OK_200), resourceContent("spotify/refreshTokens.json"))
 
-        val result = target.refreshToken(refreshToken).join()
+        // todo if we can test functions instead of runBlocking
+        val result = runBlocking { target.refreshToken(refreshToken) }
 
         assertThat(result).isEqualTo(Tokens(
                 AccessToken("new-access-token"),
@@ -120,7 +122,7 @@ internal class SpotifyClientTest {
                 )
                 .then(status(OK_200), resourceContent("spotify/getUserId.json"))
 
-        val result = target.getUserId(accessToken).join()
+        val result = runBlocking { target.getUserId(accessToken) }
 
         assertThat(result).isEqualTo(SpotifyUserId("wizzler"))
     }
@@ -135,7 +137,7 @@ internal class SpotifyClientTest {
                 )
                 .then(status(OK_200), resourceContent("spotify/getPlaylists.json"))
 
-        val result = target.getPlaylists(accessToken).join()
+        val result = runBlocking { target.getPlaylists(accessToken) }
 
         assertThat(result).containsOnly(
                 Playlist(PlaylistId("53Y8wT46QIMz5H4WQ8O22c"), PlaylistName("Wizzlers Big Playlist")),
@@ -157,7 +159,7 @@ internal class SpotifyClientTest {
                 )
                 .then(status(OK_200), resourceContent("spotify/findArtist.json"))
 
-        val result = target.findArtist(accessToken, ArtistName("Civil War")).join()
+        val result = runBlocking { target.findArtist(accessToken, ArtistName("Civil War")) }
 
         assertThat(result).containsOnly(
                 Artist(ArtistId("6lGzC0JJCotCU9QZ2Lgi8T"), ArtistName("Civil War")),
@@ -184,7 +186,7 @@ internal class SpotifyClientTest {
                 )
                 .then(status(OK_200), resourceContent("spotify/getAlbums.json"))
 
-        val result = target.getAlbums(accessToken, artistId).join()
+        val result = runBlocking { target.getAlbums(accessToken, artistId) }
 
         assertThat(result).containsOnly(
                 Album(
@@ -210,7 +212,7 @@ internal class SpotifyClientTest {
                 )
                 .then(status(OK_200), resourceContent("spotify/getTracksInAlbum.json"))
 
-        val result = target.getTracks(accessToken, albumId).join()
+        val result = runBlocking { target.getTracks(accessToken, albumId) }
 
         assertThat(result).containsOnly(
                 Track(
@@ -239,7 +241,7 @@ internal class SpotifyClientTest {
                 )
                 .then(status(OK_200), resourceContent("spotify/createPlaylist.json"))
 
-        val result = target.createPlaylist(accessToken, playlistName, description, public).join()
+        val result = runBlocking { target.createPlaylist(accessToken, playlistName, description, public) }
 
         assertThat(result).isEqualTo(Playlist(playlistId, playlistName))
     }
@@ -254,7 +256,7 @@ internal class SpotifyClientTest {
                 )
                 .then(status(OK_200), resourceContent("spotify/getTracksInPlaylist.json"))
 
-        val result = target.getTracks(accessToken, playlistId).join()
+        val result = runBlocking { target.getTracks(accessToken, playlistId) }
 
         assertThat(result).containsOnly(
                 Track(
@@ -276,7 +278,7 @@ internal class SpotifyClientTest {
                 )
                 .then(status(OK_200), resourceContent("spotify/addTracksToPlaylist.json"))
 
-        val result = target.addTracks(accessToken, playlistId, listOf(TrackUri("an-uri"))).join()
+        val result = runBlocking { target.addTracks(accessToken, playlistId, listOf(TrackUri("an-uri"))) }
 
         assertThat(result).isEqualTo(snapshotId)
     }

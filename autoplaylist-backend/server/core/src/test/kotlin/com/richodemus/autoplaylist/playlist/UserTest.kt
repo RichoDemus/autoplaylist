@@ -17,29 +17,27 @@ import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.spotify.Tokens
 import com.richodemus.autoplaylist.user.User
-import io.github.vjames19.futures.jdk8.Future
+import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Test
 
 class UserTest {
     @Test
-    fun `Should create playlist`() {
+    fun `Should create playlist`() = runBlocking {
         val spotifyAdapter = mock<SpotifyPort> {
-            on { refreshToken(any()) } doReturn Future {
-                Tokens(
-                        AccessToken("a"),
-                        "scope",
-                        "type",
-                        1000000,
-                        RefreshToken("r")
-                )
-            }
-            on { findArtist(any(), any()) } doReturn Future { emptyList<Artist>() }
-            on { getAlbums(any(), any()) } doReturn Future { emptyList<Album>() }
-            on { getTracks(any(), any()) } doReturn Future { emptyList<Track>() }
-            on { createPlaylist(any(), any()) } doReturn Future {
-                Playlist(PlaylistId("p"), PlaylistName("n"))
-            }
-            on { addTracksToPlaylist(any(), any(), any()) } doReturn Future { Unit }
+            onBlocking { refreshToken(any()) } doReturn Tokens(
+                    AccessToken("a"),
+                    "scope",
+                    "type",
+                    1000000,
+                    RefreshToken("r")
+            )
+
+            onBlocking { findArtist(any(), any()) } doReturn emptyList<Artist>()
+            onBlocking { getAlbums(any(), any()) } doReturn emptyList<Album>()
+            onBlocking { getTracks(any(), any()) } doReturn emptyList<Track>()
+            onBlocking { createPlaylist(any(), any()) } doReturn Playlist(PlaylistId("p"), PlaylistName("n"))
+
+            onBlocking { addTracksToPlaylist(any(), any(), any()) } doReturn Unit
         }
         val user = User(
                 mock {},
@@ -51,9 +49,8 @@ class UserTest {
 
         val playlistName = PlaylistName("Katten Skogmans Orkester (G)")
         val artist = ArtistName("Katten Skogmans Orkester")
-        val result = user.createPlaylist(playlistName, artist, emptyList())
-        val playlist = result.join()
+        val playlist = user.createPlaylist(playlistName, artist, emptyList())
         playlist.sync()
-        println("Playlist: ${playlist.id}, with tracks: ${playlist.albumsWithTracks().join()}")
+        println("Playlist: ${playlist.id}, with tracks: ${playlist.albumsWithTracks()}")
     }
 }

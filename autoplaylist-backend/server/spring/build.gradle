@@ -18,11 +18,10 @@ dependencies {
     compile project(':server:event-store')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.25.0'
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
-    compile "com.github.vjames19.kotlin-futures:kotlin-futures-jdk8:$kotlin_futures_version"
     compile "org.springframework.boot:spring-boot-starter-web:$spring_boot_version"
     compile "org.springframework.boot:spring-boot-starter-actuator:$spring_boot_version"
-
 
     testCompile("org.springframework.boot:spring-boot-starter-test:$spring_boot_version")
     testCompile "org.assertj:assertj-core:$assertj_version"

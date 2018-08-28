@@ -12,14 +12,8 @@ import com.richodemus.autoplaylist.spotify.PlaylistId
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.user.UserService
-import io.github.vjames19.futures.jdk8.Future
-import io.github.vjames19.futures.jdk8.flatMap
-import io.github.vjames19.futures.jdk8.map
-import io.github.vjames19.futures.jdk8.onFailure
-import io.github.vjames19.futures.jdk8.toCompletableFuture
-import io.github.vjames19.futures.jdk8.zip
+import kotlinx.coroutines.experimental.launch
 import org.slf4j.LoggerFactory
-import java.util.concurrent.CompletableFuture
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -32,76 +26,67 @@ class Service @Inject internal constructor(
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    fun login(oAuthCode: String): CompletableFuture<UserId> {
+    suspend fun login(oAuthCode: String): UserId {
         // todo refactor this method....
         logger.info("login: $oAuthCode")
-        val tokenFuture = spotifyPort.getToken(oAuthCode)
-                .map {
-                    logger.info("Tokens: {}", it)
-                    it
-                }
+        val tokens = spotifyPort.getToken(oAuthCode)
 
-        val userIdFuture = tokenFuture.flatMap { getUserIdMemoized(it.accessToken) }
+        val userId = getGetUserIdMemoized(tokens.accessToken)
 
-        val tokens = tokenFuture.join()
         val refreshToken = tokens.refreshToken
-                ?: return IllegalStateException("No refresh token for user ${userIdFuture.join()}").toCompletableFuture()
-        val userFuture = userIdFuture
-                .flatMap { userService.findOrCreateUser(it, refreshToken) }
+                ?: throw IllegalStateException("No refresh token for user $userId")
 
-        val user = userFuture.join()
+        val user = userService.findOrCreateUser(userId, refreshToken)
 
         logger.info("Logged in user: {}", user)
 
-        return userFuture.map { it.userId }
+        return user.userId
     }
 
-    fun getSpotifyUserId(userId: UserId): CompletableFuture<SpotifyUserId> {
-        val user = userService.getUser(userId) ?: return IllegalStateException("No such user").toCompletableFuture()
+    fun getSpotifyUserId(userId: UserId): SpotifyUserId {
+        val user = userService.getUser(userId) ?: throw IllegalStateException("No such user")
 
-        return Future { user.spotifyUserId }
+        return user.spotifyUserId
     }
 
-    fun getPlaylists(userId: UserId): CompletableFuture<List<Playlist>> {
+    suspend fun getPlaylists(userId: UserId): List<Playlist> {
         val accessToken = userService.getUser(userId)?.accessToken
-                ?: return IllegalStateException("No such user").toCompletableFuture()
+                ?: throw IllegalStateException("No such user")
 
         return spotifyPort.getPlaylists(accessToken)
     }
 
-    fun getPlaylist(userId: UserId, playlistId: PlaylistId): CompletableFuture<List<Track>> {
+    suspend fun getPlaylist(userId: UserId, playlistId: PlaylistId): List<Track> {
         val accessToken = userService.getUser(userId)?.accessToken
-                ?: return IllegalStateException("No such user").toCompletableFuture()
+                ?: throw IllegalStateException("No such user")
 
         return spotifyPort.getTracks(accessToken, playlistId)
     }
 
-    fun createPlaylist(
+    suspend fun createPlaylist(
             userId: UserId,
             name: PlaylistName,
             artist: ArtistName,
             exclusions: List<String>
-    ): CompletableFuture<PlaylistWithAlbums> {
+    ): PlaylistWithAlbums {
         val user = userService.getUser(userId)
-                ?: return IllegalStateException("No user with id $userId").toCompletableFuture()
+                ?: throw IllegalStateException("No user with id $userId")
 
-        val playlistFuture = user.createPlaylist(name, artist, exclusions)
-        playlistFuture.onFailure {
+        val playlist = user.createPlaylist(name, artist, exclusions)
+        launch {
             logger.error("User {} failed to create playlist named {} from artist {}", arrayOf(user, name, artist))
         }
-        val playlistContents = playlistFuture.flatMap { it.sync() }
+        val playlistContents = playlist.sync()
 
-        return playlistFuture.zip(playlistContents) { playlist, albums ->
-            PlaylistWithAlbums(playlist.id, albums)
-        }
+        return PlaylistWithAlbums(playlist.id, playlistContents)
     }
 
-    fun findArtists(userId: UserId, artistName: ArtistName): CompletableFuture<List<Artist>> {
+    suspend fun findArtists(userId: UserId, artistName: ArtistName): List<Artist> {
         val accessToken = userService.getUser(userId)?.accessToken
-                ?: return IllegalStateException("No such user").toCompletableFuture()
+                ?: throw IllegalStateException("No such user")
 
         return spotifyPort.findArtist(accessToken, artistName)
     }
 
-    private val getUserIdMemoized = { accessToken: AccessToken -> spotifyPort.getUserId(accessToken) }.memoize()
+    private suspend fun getGetUserIdMemoized(accessToken: AccessToken) = spotifyPort.getUserId(accessToken)
 }

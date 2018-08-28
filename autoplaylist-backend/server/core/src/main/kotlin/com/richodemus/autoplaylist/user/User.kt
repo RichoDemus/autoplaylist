@@ -10,10 +10,9 @@ import com.richodemus.autoplaylist.playlist.Playlist
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
-import io.github.vjames19.futures.jdk8.map
+import kotlinx.coroutines.experimental.runBlocking
 import java.time.Duration
 import java.time.Instant
-import java.util.concurrent.CompletableFuture
 
 class User internal constructor(
         private val eventStore: EventStore,
@@ -26,7 +25,8 @@ class User internal constructor(
 ) {
     var accessToken = accessToken
         get() {
-            renewAccessToken()
+            // possible to suspend get method?
+            runBlocking { renewAccessToken() }
             return field
         }
         private set
@@ -40,28 +40,25 @@ class User internal constructor(
     private var playlists = emptyList<Playlist>()
 
     @Synchronized
-    private fun renewAccessToken() {
+    private suspend fun renewAccessToken() {
         if (Instant.now().isAfter(tokenExpiration)) {
             // todo proper error handling if refreshing fails
-            val (accessToken1, _, _, expiresIn, _) = spotifyPort.refreshToken(refreshToken).join()
+            val (accessToken1, _, _, expiresIn, _) = spotifyPort.refreshToken(refreshToken)
             accessToken = accessToken1
             tokenExpiration = Instant.now().plus(Duration.ofSeconds(expiresIn.toLong()))
         }
     }
 
 
-    fun createPlaylist(
+    suspend fun createPlaylist(
             name: PlaylistName,
             artist: ArtistName,
             exclusions: List<String>
-    ): CompletableFuture<Playlist> {
+    ): Playlist {
         // todo don't use accessToken!!!
         val playlist = Playlist.create(name, artist, exclusions, accessToken!!, spotifyPort)
+        playlists = playlists.plus(playlist)
         return playlist
-                .map {
-                    playlists = playlists.plus(it)
-                    it
-                }
     }
 
     override fun toString(): String {

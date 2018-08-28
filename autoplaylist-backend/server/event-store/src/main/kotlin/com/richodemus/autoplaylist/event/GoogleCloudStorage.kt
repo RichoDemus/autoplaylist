@@ -1,8 +1,8 @@
 package com.richodemus.autoplaylist.event
 
-import java.util.concurrent.CompletableFuture
+import kotlinx.coroutines.experimental.Deferred
 
 interface GoogleCloudStorage {
-    fun read(): CompletableFuture<List<Pair<Long, CompletableFuture<ByteArray>>>>
+    fun read(): List<Pair<Long, Deferred<ByteArray>>>
     fun write(filename: String, data: ByteArray)
 }

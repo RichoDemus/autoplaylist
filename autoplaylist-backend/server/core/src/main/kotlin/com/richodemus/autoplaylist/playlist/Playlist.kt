@@ -3,18 +3,12 @@ package com.richodemus.autoplaylist.playlist
 import com.richodemus.autoplaylist.dto.Album
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.Track
-import com.richodemus.autoplaylist.flatten
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.PlaylistId
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
-import io.github.vjames19.futures.jdk8.flatMap
-import io.github.vjames19.futures.jdk8.map
-import io.github.vjames19.futures.jdk8.onFailure
-import io.github.vjames19.futures.jdk8.onSuccess
-import io.github.vjames19.futures.jdk8.zip
+import kotlinx.coroutines.experimental.launch
 import org.slf4j.LoggerFactory
-import java.util.concurrent.CompletableFuture
 
 /**
  * Not supposed to contain tracks (or?)
@@ -29,23 +23,21 @@ class Playlist private constructor(
         private val spotifyPort: SpotifyPort
 ) {
     companion object {
-        fun create(
+        suspend fun create(
                 name: PlaylistName,
                 artist: ArtistName,
                 exclusions: List<String>,
                 accessToken: AccessToken,
                 spotifyPort: SpotifyPort
         ) = spotifyPort.createPlaylist(accessToken, name)
-                .map { Playlist(it.id, it.name, exclusions, artist, accessToken, spotifyPort) }
+                .let { Playlist(it.id, it.name, exclusions, artist, accessToken, spotifyPort) }
     }
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    fun albumsWithTracks(): CompletableFuture<List<Album>> {
+    suspend fun albumsWithTracks(): List<Album> {
         return spotifyPort.findArtist(accessToken, artist)
-                .flatMap { artistIds ->
-                    artistIds.map { spotifyPort.getAlbums(accessToken, it.id) }.flatten()
-                }.map { albums -> albums.flatMap { it } }
+                .flatMap { spotifyPort.getAlbums(accessToken, it.id) }
     }
 
     override fun toString(): String {
@@ -55,46 +47,43 @@ class Playlist private constructor(
     /**
      * Make sure all tracks are in the spotify playlist
      */
-    fun sync(): CompletableFuture<List<Album>> {
+    suspend fun sync(): List<Album> {
         // todo maybe add new tracks to the top of the paylist?
         logger.info("Sync playlist $name to Spotify")
 
-        val actualTracksFuture = spotifyPort.getTracks(accessToken, id)
-        val albumsWithTracksFuture = albumsWithTracks()
-        albumsWithTracksFuture.onSuccess { albums ->
-            logger.info("Got {} albums with {} tracks", albums.size, albums.flatMap { it.tracks }.size)
+        val actualTracks = spotifyPort.getTracks(accessToken, id)
+        val albumsWithTracks = albumsWithTracks()
+
+        launch {
+            logger.info("Got {} albums with {} tracks", albumsWithTracks.size, albumsWithTracks.flatMap { it.tracks }.size)
         }
 
-        val expectedTracksFuture = albumsWithTracksFuture.map { albums -> albums.flatMap { it.tracks } }
-        val expectedTracksDeduplicatedFuture = expectedTracksFuture
+        val expectedTracks = albumsWithTracks.flatMap { it.tracks }
+        val expectedTracksDeduplicated = expectedTracks
                 .deduplicate()
                 .excludeTracks(exclusions)
-        expectedTracksDeduplicatedFuture.onSuccess {
-            logger.info("{} tracks remaining after deduplication and filtering", it.size)
+
+        launch {
+            logger.info("{} tracks remaining after deduplication and filtering", expectedTracksDeduplicated.size)
         }
 
-        val missingTracksFuture = actualTracksFuture.zip(expectedTracksDeduplicatedFuture) { actual, expected ->
-            expected.filterNot { it in actual }
+        val missingTracks = expectedTracksDeduplicated.filterNot { it in actualTracks }
+
+        try {
+            spotifyPort.addTracksToPlaylist(accessToken, id, missingTracks.map { it.uri })
+            logger.info("Done syncing {} tracks to {}", expectedTracksDeduplicated.size, this)
+        } catch (e: Exception) {
+            logger.error("Failed to create and fill {}", this, e)
+            throw e
         }
 
-        val addTracksToPlaylistFuture = missingTracksFuture.flatMap { tracks ->
-            spotifyPort.addTracksToPlaylist(accessToken, id, tracks.map { it.uri })
-        }
-
-        addTracksToPlaylistFuture.onSuccess {
-            logger.info("Done syncing {} tracks to {}", expectedTracksDeduplicatedFuture.join().size, this)
-        }
-        addTracksToPlaylistFuture.onFailure { logger.error("Failed to create and fill {}", this, it) }
-
-        return albumsWithTracksFuture
+        return albumsWithTracks
     }
 
     // todo make it possible to chose different "deduplicate strategies"
-    private fun CompletableFuture<List<Track>>.deduplicate() = this.map { it.distinctBy { track -> track.name } }
+    private fun List<Track>.deduplicate() = this.distinctBy { track -> track.name }
 
-    private fun CompletableFuture<List<Track>>.excludeTracks(exclusions: List<String>) = this.map { tracks ->
-        tracks.filterNot { track -> track.matches(exclusions) }
-    }
+    private fun List<Track>.excludeTracks(exclusions: List<String>) = this.filterNot { track -> track.matches(exclusions) }
 
     /**
      * Returns true if any of the exclusion strings can be found in the track name

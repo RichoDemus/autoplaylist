@@ -6,10 +6,7 @@ import com.richodemus.autoplaylist.playlist.PlaylistWithAlbums
 import com.richodemus.autoplaylist.spotify.Playlist
 import com.richodemus.autoplaylist.spotify.PlaylistId
 import com.richodemus.autoplaylist.spotify.PlaylistName
-import io.github.vjames19.futures.jdk8.Future
-import io.github.vjames19.futures.jdk8.flatMap
-import io.github.vjames19.futures.jdk8.map
-import io.github.vjames19.futures.jdk8.recover
+import kotlinx.coroutines.experimental.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import java.util.concurrent.CompletableFuture
 import javax.servlet.http.HttpSession
 
 @CrossOrigin(
@@ -33,50 +29,55 @@ internal class PlaylistController(val service: Service) {
 
     @Suppress("unused")
     @GetMapping("/v1/playlists")
-    internal fun getPlaylists(session: HttpSession): CompletableFuture<ResponseEntity<List<Playlist>>> {
-        val userId = session.getUserId() ?: return Future { ResponseEntity<List<Playlist>>(HttpStatus.FORBIDDEN) }
+    internal fun getPlaylists(session: HttpSession): ResponseEntity<List<Playlist>> {
+        val userId = session.getUserId()
+                ?: return ResponseEntity<List<Playlist>>(HttpStatus.FORBIDDEN)
         logger.info("Get playlists for user {}", userId)
-        return Future { userId }
-                .flatMap { service.getPlaylists(it) }
-                .map { ResponseEntity(it, HttpStatus.OK) }
-                .recover { exception ->
-                    logger.error("getPlaylists failed: {}", exception.message, exception)
-                    ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+        return runBlocking {
+            ResponseEntity.ok(service.getPlaylists(userId))
+        }
     }
 
     @Suppress("unused")
     @GetMapping("/v1/playlists/{id}/tracks")
     internal fun getTracks(
             session: HttpSession,
-            @PathVariable("id") playlistId: String
-    ): CompletableFuture<ResponseEntity<List<Track>>> {
-        val userId = session.getUserId() ?: return Future { ResponseEntity<List<Track>>(HttpStatus.FORBIDDEN) }
+            @PathVariable("id") playlistId: String // todo use dto instead of string
+    ): ResponseEntity<List<Track>> {
+        val userId = session.getUserId()
+                ?: return ResponseEntity<List<Track>>(HttpStatus.FORBIDDEN)
         logger.info("Get tracks for playlist {}", playlistId)
-        return Future { PlaylistId(playlistId) }
-                .flatMap { service.getPlaylist(userId, it) }
-                .map { ResponseEntity(it, HttpStatus.OK) }
-                .recover { exception ->
-                    logger.error("getPlaylists failed: {}", exception.message, exception)
-                    ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
-                }
+
+        return runBlocking {
+            try {
+                ResponseEntity.ok(service.getPlaylist(userId, PlaylistId(playlistId)))
+            } catch (e: Exception) {
+                logger.error("getPlaylists failed: {}", e.message, e)
+                ResponseEntity<List<Track>>(HttpStatus.INTERNAL_SERVER_ERROR)
+            }
+        }
     }
 
     @Suppress("unused")
     @PostMapping("/v1/playlists")
     internal fun createPlaylist(session: HttpSession, @RequestBody request: CreatePlaylistRequest
-    ): CompletableFuture<ResponseEntity<CreatePlaylistResponse>> {
+    ): ResponseEntity<CreatePlaylistResponse> {
         val userId = session.getUserId()
-                ?: return Future { ResponseEntity<CreatePlaylistResponse>(HttpStatus.FORBIDDEN) }
+                ?: return ResponseEntity<CreatePlaylistResponse>(HttpStatus.FORBIDDEN)
         logger.info("Create playlist {}", request)
-        return service.createPlaylist(userId, request.name, request.artist, request.exclusions.filterNot { it.isBlank() })
-                .map { ResponseEntity.ok(CreatePlaylistResponse(playList = it)) }
-                .recover {
-                    ResponseEntity(
-                            CreatePlaylistResponse(false, null),
-                            HttpStatus.INTERNAL_SERVER_ERROR
-                    )
-                }
+
+        return runBlocking {
+            try {
+                service.createPlaylist(userId, request.name, request.artist, request.exclusions.filterNot { it.isBlank() })
+                        .let { ResponseEntity.ok(CreatePlaylistResponse(playList = it)) }
+            } catch (e: Exception) {
+                logger.error("Failed to create playlist", e)
+                ResponseEntity(
+                        CreatePlaylistResponse(false, null),
+                        HttpStatus.INTERNAL_SERVER_ERROR
+                )
+            }
+        }
     }
 
     internal data class CreatePlaylistRequest(
