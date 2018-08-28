@@ -4,7 +4,9 @@ import com.richodemus.autoplaylist.dto.AlbumId
 import com.richodemus.autoplaylist.dto.AlbumName
 import com.richodemus.autoplaylist.dto.ArtistId
 import com.richodemus.autoplaylist.dto.ArtistName
+import com.richodemus.autoplaylist.dto.PlaylistName
 import com.richodemus.autoplaylist.dto.RefreshToken
+import com.richodemus.autoplaylist.dto.SpotifyPlaylistId
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.TrackId
 import com.richodemus.autoplaylist.dto.TrackName
@@ -15,6 +17,7 @@ import com.xebialabs.restito.semantics.Action.status
 import com.xebialabs.restito.semantics.Condition.get
 import com.xebialabs.restito.semantics.Condition.parameter
 import com.xebialabs.restito.semantics.Condition.post
+import com.xebialabs.restito.semantics.Condition.put
 import com.xebialabs.restito.semantics.Condition.withHeader
 import com.xebialabs.restito.semantics.Condition.withPostBodyContaining
 import com.xebialabs.restito.semantics.Condition.withPostBodyContainingJsonPath
@@ -36,7 +39,7 @@ internal class SpotifyClientTest {
     private val refreshToken = RefreshToken("refresh-token")
     private val artistId = ArtistId("artist-id")
     private val albumId = AlbumId("album-id")
-    private val playlistId = PlaylistId("playlist-id")
+    private val playlistId = SpotifyPlaylistId("playlist-id")
     private val playlistName = PlaylistName("playlist-name")
     private val description = "description"
     private val public = true
@@ -140,8 +143,8 @@ internal class SpotifyClientTest {
         val result = runBlocking { target.getPlaylists(accessToken) }
 
         assertThat(result).containsOnly(
-                Playlist(PlaylistId("53Y8wT46QIMz5H4WQ8O22c"), PlaylistName("Wizzlers Big Playlist")),
-                Playlist(PlaylistId("1AVZz0mBuGbCEoNRQdYQju"), PlaylistName("Another Playlist"))
+                Playlist(SpotifyPlaylistId("53Y8wT46QIMz5H4WQ8O22c"), PlaylistName("Wizzlers Big Playlist")),
+                Playlist(SpotifyPlaylistId("1AVZz0mBuGbCEoNRQdYQju"), PlaylistName("Another Playlist"))
         )
     }
 
@@ -174,6 +177,23 @@ internal class SpotifyClientTest {
                 Artist(ArtistId("2yVb5IT7HROeULYlafTR6G"), ArtistName("The Civil War Players")),
                 Artist(ArtistId("1Bi7EjE7yhY7JoK579SBPx"), ArtistName("Choir Republican Civil War"))
         )
+    }
+
+    @Test
+    fun `Get an artist by id`() {
+        whenHttp(server)
+                .match(
+                        get("/v1/artists/4CzUzn54Cp9TQr6a7JIlMZ"),
+                        withHeader("accept", "application/json"),
+                        withHeader("content-Type", "application/json"),
+                        withHeader("authorization", "Bearer $accessToken")
+
+                )
+                .then(status(OK_200), resourceContent("spotify/getArtist.json"))
+
+        val result = runBlocking { target.getArtist(accessToken, ArtistId("4CzUzn54Cp9TQr6a7JIlMZ")) }
+
+        assertThat(result).isEqualTo(Artist(ArtistId("3AGFqPP3gt5rMSvhR87Xxu"), ArtistName("Edguy")))
     }
 
     @Test
@@ -271,7 +291,7 @@ internal class SpotifyClientTest {
     fun `Add tracks to playlist`() {
         whenHttp(server)
                 .match(
-                        post("/v1/playlists/$playlistId/tracks"),
+                        put("/v1/playlists/$playlistId/tracks"),
                         withHeader("content-Type", "application/json"),
                         withHeader("authorization", "Bearer $accessToken"),
                         withPostBodyContaining("""{"uris":["an-uri"]}""")

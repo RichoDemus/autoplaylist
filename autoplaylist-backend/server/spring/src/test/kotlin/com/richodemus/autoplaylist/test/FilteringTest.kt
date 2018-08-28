@@ -1,8 +1,13 @@
 package com.richodemus.autoplaylist.test
 
+import com.richodemus.autoplaylist.dto.Album
+import com.richodemus.autoplaylist.dto.Exclusion
+import com.richodemus.autoplaylist.dto.ExclusionId
+import com.richodemus.autoplaylist.dto.Keyword
+import com.richodemus.autoplaylist.dto.PlaylistName
+import com.richodemus.autoplaylist.dto.Rules
 import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.TrackName
-import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.test.pages.LoginPage
 import com.richodemus.autoplaylist.test.spotifymock.ARTIST
 import com.richodemus.autoplaylist.test.spotifymock.ARTIST_WITH_DUPLICATE_TRACKS
@@ -15,6 +20,7 @@ import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.test.context.junit4.SpringRunner
+import java.util.UUID
 import javax.inject.Inject
 
 @RunWith(SpringRunner::class)
@@ -39,33 +45,36 @@ internal class FilteringTest {
     fun `Deduplicate tracks with the same name`() {
         val playlistName = PlaylistName("new-playlist")
         val mainPage = loginPage.login(spotifyPort.oAuth2Code)
-        val playlist = mainPage.createPlaylist(playlistName, ARTIST_WITH_DUPLICATE_TRACKS.name)
+        val playlist = mainPage.createPlaylist(playlistName)
+        mainPage.setPlaylistRules(playlist.id, Rules(listOf(ARTIST_WITH_DUPLICATE_TRACKS.id)))
+        val result = mainPage.getPlaylist(playlist.id)
 
-        val result = mainPage.getTracks(playlist.id)
-
-        assertThat(result).extracting(name).doesNotHaveDuplicates()
+        assertThat(result.albums).flatExtracting(tracks).extracting(name).doesNotHaveDuplicates()
     }
 
+    // todo move to some kind of rule-test
     @Test
     fun `Exclude tracks by pattern`() {
         val playlistName = PlaylistName("new-playlist")
 
         val mainPage = loginPage.login(spotifyPort.oAuth2Code)
         // The songs are [Armata Strigoi, Army of the Night, Amen and Attack, Kreuzfeuer]
-        val playlist = mainPage.createPlaylist(
-                playlistName,
-                ARTIST.name,
-                listOf("army of", "EuZfEu")
+        val playlist = mainPage.createPlaylist(playlistName
         )
 
+        mainPage.setPlaylistRules(playlist.id, Rules(listOf(ARTIST.id), listOf(
+                Exclusion(ExclusionId(UUID.randomUUID()), Keyword("army of")),
+                Exclusion(ExclusionId(UUID.randomUUID()), Keyword("EuZfEu"))
+        )))
 
-        val tracks = mainPage.getTracks(playlist.id)
+        val result = mainPage.getPlaylist(playlist.id)
 
-        assertThat(tracks).extracting(name).containsOnly(
+        assertThat(result.albums).flatExtracting<Track> { it.tracks }.extracting(name).containsOnly(
                 TrackName("Armata Strigoi"),
                 TrackName("Amen and Attack")
         )
     }
 
     private val name = Extractor<Track, TrackName> { it.name }
+    private val tracks = Extractor<Album, List<Track>> { it.tracks }
 }

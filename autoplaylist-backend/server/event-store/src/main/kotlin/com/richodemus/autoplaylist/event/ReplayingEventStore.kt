@@ -9,6 +9,7 @@ import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.actor
 import kotlinx.coroutines.experimental.runBlocking
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 /**
@@ -19,6 +20,7 @@ internal class ReplayingEventStore(
         private val googleCloudStorageAdapter: GoogleCloudStorageAdapter,
         registry: MeterRegistry
 ) : EventStore, CoroutineScope {
+    private val logger = LoggerFactory.getLogger(javaClass)
     override val coroutineContext = Dispatchers.Default
     private var events: List<Event> = emptyList()
     private var actors: List<SendChannel<Any>> = emptyList()
@@ -29,7 +31,7 @@ internal class ReplayingEventStore(
     }
 
     @Synchronized
-    override fun consume(onEvent: (Event) -> Unit) {
+    override fun consume(onEvent: suspend (Event) -> Unit) {
         actors += actor {
             var nextMessage = 0
             while (!channel.isClosedForSend) {
@@ -47,6 +49,7 @@ internal class ReplayingEventStore(
 
     @Synchronized
     override fun produce(event: Event) {
+        logger.info("New event: $event")
         googleCloudStorageAdapter.save(event)
         events += event
         runBlocking { actors.forEach { it.send(Any()) } }

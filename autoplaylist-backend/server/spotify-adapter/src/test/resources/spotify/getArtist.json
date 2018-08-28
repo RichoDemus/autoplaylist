@@ -1,0 +1,33 @@
+{
+  "external_urls" : {
+    "spotify" : "https://open.spotify.com/artist/3AGFqPP3gt5rMSvhR87Xxu"
+  },
+  "followers" : {
+    "href" : null,
+    "total" : 124573
+  },
+  "genres" : [ "german metal", "hard rock", "metal", "neo classical metal", "power metal", "progressive metal", "speed metal" ],
+  "href" : "https://api.spotify.com/v1/artists/3AGFqPP3gt5rMSvhR87Xxu",
+  "id" : "3AGFqPP3gt5rMSvhR87Xxu",
+  "images" : [ {
+    "height" : 553,
+    "url" : "https://i.scdn.co/image/7219fb811dadffa6b7c0627b53a6b5ac8859f794",
+    "width" : 829
+  }, {
+    "height" : 427,
+    "url" : "https://i.scdn.co/image/d002a58916b21d938b98dc3fcf0c7b58847b5aeb",
+    "width" : 640
+  }, {
+    "height" : 133,
+    "url" : "https://i.scdn.co/image/20a4b09bdf0ee4f8659717611cb8d9b041f05d7e",
+    "width" : 199
+  }, {
+    "height" : 43,
+    "url" : "https://i.scdn.co/image/3438a5580ff61d4985640117bb90a851b8a7fe76",
+    "width" : 64
+  } ],
+  "name" : "Edguy",
+  "popularity" : 52,
+  "type" : "artist",
+  "uri" : "spotify:artist:3AGFqPP3gt5rMSvhR87Xxu"
+}

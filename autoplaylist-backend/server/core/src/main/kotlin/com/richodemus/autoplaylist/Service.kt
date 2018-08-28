@@ -1,28 +1,26 @@
 package com.richodemus.autoplaylist
 
 import com.richodemus.autoplaylist.dto.Artist
+import com.richodemus.autoplaylist.dto.ArtistId
 import com.richodemus.autoplaylist.dto.ArtistName
+import com.richodemus.autoplaylist.dto.PlaylistName
+import com.richodemus.autoplaylist.dto.SpotifyPlaylistId
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.UserId
-import com.richodemus.autoplaylist.playlist.PlaylistWithAlbums
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.Playlist
-import com.richodemus.autoplaylist.spotify.PlaylistId
-import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.user.UserService
 import kotlinx.coroutines.experimental.CoroutineScope
 import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.launch
 import org.slf4j.LoggerFactory
-import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 @Named
-class Service @Inject internal constructor(
+class Service(
         private val userService: UserService,
         private val spotifyPort: SpotifyPort
 ) : CoroutineScope {
@@ -52,36 +50,29 @@ class Service @Inject internal constructor(
         return user.spotifyUserId
     }
 
-    suspend fun getPlaylists(userId: UserId): List<Playlist> {
-        val accessToken = userService.getUser(userId)?.accessToken
+    suspend fun getPlaylists(userId: UserId): List<com.richodemus.autoplaylist.playlist.Playlist> {
+        val user = userService.getUser(userId)
+        val accessToken = user?.accessToken
                 ?: throw IllegalStateException("No such user")
 
-        return spotifyPort.getPlaylists(accessToken)
+        return user.getPlaylists()
     }
 
-    suspend fun getPlaylist(userId: UserId, playlistId: PlaylistId): List<Track> {
+    suspend fun getPlaylist(userId: UserId, playlistId: SpotifyPlaylistId): List<Track> {
         val accessToken = userService.getUser(userId)?.accessToken
                 ?: throw IllegalStateException("No such user")
 
         return spotifyPort.getTracks(accessToken, playlistId)
     }
 
-    suspend fun createPlaylist(
+    fun createPlaylist(
             userId: UserId,
-            name: PlaylistName,
-            artist: ArtistName,
-            exclusions: List<String>
-    ): PlaylistWithAlbums {
+            name: PlaylistName
+    ): com.richodemus.autoplaylist.playlist.Playlist {
         val user = userService.getUser(userId)
                 ?: throw IllegalStateException("No user with id $userId")
 
-        val playlist = user.createPlaylist(name, artist, exclusions)
-        launch {
-            logger.error("User {} failed to create playlist named {} from artist {}", arrayOf(user, name, artist))
-        }
-        val playlistContents = playlist.sync()
-
-        return PlaylistWithAlbums(playlist.id, playlistContents)
+        return user.createPlaylist(name)
     }
 
     suspend fun findArtists(userId: UserId, artistName: ArtistName): List<Artist> {
@@ -89,6 +80,13 @@ class Service @Inject internal constructor(
                 ?: throw IllegalStateException("No such user")
 
         return spotifyPort.findArtist(accessToken, artistName)
+    }
+
+    suspend fun getArtist(userId: UserId, artistId: ArtistId): Artist? {
+        val accessToken = userService.getUser(userId)?.accessToken
+                ?: throw IllegalStateException("No such user")
+
+        return spotifyPort.getArtist(accessToken, artistId);
     }
 
     private suspend fun getGetUserIdMemoized(accessToken: AccessToken) = spotifyPort.getUserId(accessToken)

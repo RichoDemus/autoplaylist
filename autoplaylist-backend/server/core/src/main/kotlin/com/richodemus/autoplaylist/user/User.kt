@@ -1,16 +1,19 @@
 package com.richodemus.autoplaylist.user
 
-import com.richodemus.autoplaylist.dto.ArtistName
+import com.richodemus.autoplaylist.dto.PlaylistId
+import com.richodemus.autoplaylist.dto.PlaylistName
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
+import com.richodemus.autoplaylist.eventstore.Event
 import com.richodemus.autoplaylist.eventstore.EventStore
+import com.richodemus.autoplaylist.eventstore.PlaylistCreated
 import com.richodemus.autoplaylist.eventstore.RefreshTokenUpdated
 import com.richodemus.autoplaylist.playlist.Playlist
 import com.richodemus.autoplaylist.spotify.AccessToken
-import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import kotlinx.coroutines.experimental.runBlocking
+import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.time.Instant
 
@@ -23,6 +26,7 @@ class User internal constructor(
         accessToken: AccessToken? = null,
         private var tokenExpiration: Instant = Instant.MIN
 ) {
+    private val logger = LoggerFactory.getLogger(javaClass)
     var accessToken = accessToken
         get() {
             // possible to suspend get method?
@@ -50,13 +54,27 @@ class User internal constructor(
     }
 
 
-    suspend fun createPlaylist(
-            name: PlaylistName,
-            artist: ArtistName,
-            exclusions: List<String>
-    ): Playlist {
+    fun process(event: Event) {
+        when (event) {
+            is PlaylistCreated -> createPlaylist(event)
+        }
+    }
+
+    fun createPlaylist(name: PlaylistName): Playlist {
+        val event = PlaylistCreated(userId = userId, playlistName = name)
+
+        eventStore.produce(event)
+        return createPlaylist(event)
+    }
+
+    // todo remove once this is CQRS:ed
+    @Synchronized
+    private fun createPlaylist(event: PlaylistCreated): Playlist {
+        if (playlists.any { it.id == event.playlistId }) {
+            return playlists.first { it.id == event.playlistId }
+        }
         // todo don't use accessToken!!!
-        val playlist = Playlist.create(name, artist, exclusions, accessToken!!, spotifyPort)
+        val playlist = Playlist(event.playlistId, event.playlistName, accessToken!!, spotifyPort, eventStore)
         playlists = playlists.plus(playlist)
         return playlist
     }
@@ -64,4 +82,10 @@ class User internal constructor(
     override fun toString(): String {
         return "User(userId=$userId, spotifyUserId=$spotifyUserId)"
     }
+
+    fun getPlaylist(playlistId: PlaylistId): Playlist {
+        return playlists.first { it.id == playlistId }
+    }
+
+    fun getPlaylists() = playlists
 }

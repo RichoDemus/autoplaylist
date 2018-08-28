@@ -3,7 +3,9 @@ package com.richodemus.autoplaylist.spotify
 import com.richodemus.autoplaylist.dto.Album
 import com.richodemus.autoplaylist.dto.ArtistId
 import com.richodemus.autoplaylist.dto.ArtistName
+import com.richodemus.autoplaylist.dto.PlaylistName
 import com.richodemus.autoplaylist.dto.RefreshToken
+import com.richodemus.autoplaylist.dto.SpotifyPlaylistId
 import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.TrackUri
 import org.slf4j.LoggerFactory
@@ -27,6 +29,9 @@ internal class SpotifyAdapter(private val spotifyClient: SpotifyClient) : Spotif
         spotifyClient.findArtist(accessToken, name).map { artist -> artist.toDtoArtist() }
     }
 
+    override suspend fun getArtist(accessToken: AccessToken, artistId: ArtistId) = withRetry {
+        spotifyClient.getArtist(accessToken, artistId)?.toDtoArtist()
+    }
 
     override suspend fun getAlbums(accessToken: AccessToken, artistId: ArtistId): List<Album> {
         return withRetry {
@@ -39,7 +44,7 @@ internal class SpotifyAdapter(private val spotifyClient: SpotifyClient) : Spotif
 
     override suspend fun getTracks(
             accessToken: AccessToken,
-            playlistId: PlaylistId
+            playlistId: SpotifyPlaylistId
     ) = withRetry {
         spotifyClient.getTracks(accessToken, playlistId)
                 .map { Track(it.id, it.name, it.uri) }
@@ -52,7 +57,7 @@ internal class SpotifyAdapter(private val spotifyClient: SpotifyClient) : Spotif
 
     override suspend fun addTracksToPlaylist(
             accessToken: AccessToken,
-            playlistId: PlaylistId,
+            playlistId: SpotifyPlaylistId,
             tracks: List<TrackUri>
     ) = tracks.chunked(100)
             .map { withRetry { spotifyClient.addTracks(accessToken, playlistId, it) } }

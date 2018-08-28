@@ -10,7 +10,9 @@ import com.github.kittinunf.result.Result
 import com.richodemus.autoplaylist.dto.AlbumId
 import com.richodemus.autoplaylist.dto.ArtistId
 import com.richodemus.autoplaylist.dto.ArtistName
+import com.richodemus.autoplaylist.dto.PlaylistName
 import com.richodemus.autoplaylist.dto.RefreshToken
+import com.richodemus.autoplaylist.dto.SpotifyPlaylistId
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.TrackUri
 import org.slf4j.LoggerFactory
@@ -81,8 +83,16 @@ internal class SpotifyClient(
                 .artists.items
     }
 
+    internal suspend fun getArtist(accessToken: AccessToken, artistId: ArtistId): Artist? {
+        return Fuel.get("$apiUrl/v1/artists/$artistId")
+                .header("Accept" to "application/json")
+                .addHeaders(accessToken)
+                .deserialize<Artist>() //todo proper exception handling and nullability
+    }
+
     internal suspend fun getAlbums(accessToken: AccessToken, artistId: ArtistId): List<Album> {
-        return get("$apiUrl/v1/artists/$artistId/albums", accessToken)
+        // todo don't hardcode market, figure out users market
+        return get("$apiUrl/v1/artists/$artistId/albums?include_groups=album,single&market=SE", accessToken)
                 .deserialize<GetAlbumsResponse>()
                 .items
     }
@@ -112,7 +122,7 @@ internal class SpotifyClient(
 
     internal suspend fun getTracks(
             accessToken: AccessToken,
-            playlistId: PlaylistId
+            playlistId: SpotifyPlaylistId
     ): List<Track> {
         return get("$apiUrl/v1/playlists/$playlistId/tracks", accessToken)
                 .deserialize<GetTracksFromPlaylistResponse>()
@@ -121,13 +131,13 @@ internal class SpotifyClient(
 
     internal suspend fun addTracks(
             accessToken: AccessToken,
-            playlist: PlaylistId,
+            playlist: SpotifyPlaylistId,
             tracks: List<TrackUri>
     ): SnapshotId {
         val request = AddTracksToPlaylistRequest(tracks)
         val json = mapper.writeValueAsString(request)
 
-        return post("$apiUrl/v1/playlists/$playlist/tracks", accessToken)
+        return put("$apiUrl/v1/playlists/$playlist/tracks", accessToken)
                 .body(json)
                 .deserialize<AddTracksToPlaylistRespose>()
                 .snapshot_id
@@ -136,6 +146,8 @@ internal class SpotifyClient(
     private fun get(path: String, accessToken: AccessToken) = Fuel.get(path).addHeaders(accessToken)
 
     private fun post(path: String, accessToken: AccessToken) = Fuel.post(path).addHeaders(accessToken)
+
+    private fun put(path: String, accessToken: AccessToken) = Fuel.put(path).addHeaders(accessToken)
 
     private fun Request.addHeaders(accessToken: AccessToken) = this.header(mapOf(
             "Content-Type" to "application/json",

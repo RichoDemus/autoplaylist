@@ -1,17 +1,10 @@
 import uuidv4 from 'uuid/v4'
 
-export const getFrontendBaseUrl = () => {
+const getFrontendBaseUrl = () => {
     if (window.location.hostname === "localhost") {
         return "http://localhost:3000"
     }
     return "https://autoplaylists.richodemus.com"
-};
-
-export const getBackendBaseUrl = () => {
-    if (window.location.hostname === "localhost") {
-        return "http://localhost:8080/v1"
-    }
-    return "https://api.autoplaylists.richodemus.com"
 };
 
 export const authenticate = () => {

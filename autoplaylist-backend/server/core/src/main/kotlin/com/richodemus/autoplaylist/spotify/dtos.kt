@@ -3,7 +3,9 @@ package com.richodemus.autoplaylist.spotify
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
+import com.richodemus.autoplaylist.dto.PlaylistName
 import com.richodemus.autoplaylist.dto.RefreshToken
+import com.richodemus.autoplaylist.dto.SpotifyPlaylistId
 import com.richodemus.autoplaylist.dto.TrackId
 import com.richodemus.autoplaylist.dto.TrackName
 import com.richodemus.autoplaylist.dto.TrackUri
@@ -25,23 +27,6 @@ data class AccessToken(@get:JsonIgnore val value: String) {
     override fun toString() = value
 }
 
-data class Playlist(val id: PlaylistId, val name: PlaylistName)
-data class PlaylistName(@get:JsonIgnore val value: String) {
-    init {
-        require(value.isNotBlank()) { "${javaClass.simpleName} can't be empty" }
-    }
-
-    @JsonValue
-    override fun toString() = value
-}
-
-data class PlaylistId(@get:JsonIgnore val value: String) {
-    init {
-        require(value.isNotBlank()) { "${javaClass.simpleName} can't be empty" }
-    }
-
-    @JsonValue
-    override fun toString() = value
-}
+data class Playlist(val id: SpotifyPlaylistId, val name: PlaylistName)
 
 data class Track(val id: TrackId, val name: TrackName, val uri: TrackUri)

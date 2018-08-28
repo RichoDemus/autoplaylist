@@ -4,14 +4,14 @@ import com.richodemus.autoplaylist.dto.Album
 import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.ArtistId
 import com.richodemus.autoplaylist.dto.ArtistName
+import com.richodemus.autoplaylist.dto.PlaylistName
 import com.richodemus.autoplaylist.dto.RefreshToken
+import com.richodemus.autoplaylist.dto.SpotifyPlaylistId
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.TrackUri
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.Playlist
-import com.richodemus.autoplaylist.spotify.PlaylistId
-import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.spotify.Tokens
 import com.richodemus.autoplaylist.test.dto.PlaylistWithTracks
@@ -81,6 +81,18 @@ class SpotifyMock : SpotifyPort {
         return listOf(ARTIST.toArtist())
     }
 
+    override suspend fun getArtist(accessToken: AccessToken, artistId: ArtistId): Artist? {
+        if (accessToken != this.accessToken) {
+            throw RuntimeException("Wrong accessToken")
+        }
+
+        if (artistId == ARTIST_WITH_DUPLICATE_TRACKS.id) {
+            return ARTIST_WITH_DUPLICATE_TRACKS.toArtist()
+        }
+
+        return ARTIST.toArtist()
+    }
+
     override suspend fun getAlbums(accessToken: AccessToken, artistId: ArtistId): List<Album> {
         if (accessToken != this.accessToken) {
             throw RuntimeException("Wrong accessToken")
@@ -93,7 +105,7 @@ class SpotifyMock : SpotifyPort {
         return ARTIST.albums
     }
 
-    override suspend fun getTracks(accessToken: AccessToken, playlistId: PlaylistId): List<Track> {
+    override suspend fun getTracks(accessToken: AccessToken, playlistId: SpotifyPlaylistId): List<Track> {
         if (accessToken != this.accessToken) {
             throw RuntimeException("Wrong accessToken")
         }
@@ -112,12 +124,12 @@ class SpotifyMock : SpotifyPort {
             throw RuntimeException("Wrong accessToken")
         }
 
-        val playlist = PlaylistWithTracks(name)
+        val playlist = PlaylistWithTracks(SpotifyPlaylistId(UUID.randomUUID().toString()), name)
         playlists += playlist
         return playlist.toPlaylist()
     }
 
-    override suspend fun addTracksToPlaylist(accessToken: AccessToken, playlistId: PlaylistId, tracks: List<TrackUri>) {
+    override suspend fun addTracksToPlaylist(accessToken: AccessToken, playlistId: SpotifyPlaylistId, tracks: List<TrackUri>) {
         if (accessToken != this.accessToken) {
             throw RuntimeException("Wrong accessToken")
         }
@@ -143,5 +155,14 @@ class SpotifyMock : SpotifyPort {
         accessToken = AccessToken(UUID.randomUUID().toString())
         refreshToken = RefreshToken(UUID.randomUUID().toString())
         playlists = emptyList()
+    }
+
+    private fun PlaylistWithTracks.toPlaylist(): Playlist {
+        return Playlist(this.id, this.name)
+    }
+
+    fun getPlaylist(spotifyPlaylistId: SpotifyPlaylistId): PlaylistWithTracks {
+        return playlists.find { it.id == spotifyPlaylistId }
+                ?: throw IllegalStateException("No playlist with id $spotifyPlaylistId")
     }
 }

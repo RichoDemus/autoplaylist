@@ -1,10 +1,54 @@
-import React, {Component} from 'react';
-import logo from './logo.svg';
+import React from 'react';
 import './App.css';
-import {authenticate, getBackendBaseUrl} from './Networking/Oauth2'
-import getParameterByName from './Util/QueryString'
+import {applyMiddleware, compose, createStore} from "redux";
+import {Provider} from "react-redux";
+import HttpNetworkingMiddleware from "./Networking/HttpNetworkingMiddleware";
+import BaseReducer from "./BaseReducer";
+import {init} from "./Networking/Actions";
+import SelectViewContainer from "./ViewSelection/SelectViewContainer";
 
+// Node doesn't support these so tests fail...
+if (!console["group"]) console["group"] = () => {
+};
+if (!console["groupCollapsed"]) console["groupCollapsed"] = () => {
+};
+if (!console["groupEnd"]) console["groupEnd"] = () => {
+};
 
+const logger = store => next => action => {
+    console.group("Action:", action.type);
+    console.info('dispatching', action);
+    let result = next(action);
+    console.log('next state', store.getState());
+    console.groupEnd(action.type);
+    return result
+};
+
+const enhancer = compose(
+    applyMiddleware(logger, HttpNetworkingMiddleware)
+);
+
+const store = createStore(
+    BaseReducer,
+    enhancer
+);
+
+const App = () => (
+    <Provider store={store}>
+        <div className="App">
+            <SelectViewContainer/>
+        </div>
+    </Provider>
+);
+
+// This is here to actually trigger the init stuff
+// I have no idea where to put this :(
+const initApp = () => {
+    store.dispatch(init());
+};
+initApp();
+
+/*
 class App extends Component {
     constructor(props) {
         super(props);
@@ -187,6 +231,7 @@ class App extends Component {
         }
     }
 
+
     refreshPlaylist() {
         fetch(getBackendBaseUrl() + '/playlists', {
             credentials: 'include'
@@ -242,5 +287,5 @@ class App extends Component {
         })
     }
 }
-
+*/
 export default App;

@@ -1,5 +1,5 @@
 // Credits to https://stackoverflow.com/a/901144
-const getParameterByName = (name, url) =>{
+const getParameterByName = (name, url) => {
     if (!url) url = window.location.href;
     name = name.replace(/[[]]/g, "\\$&");
     const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),

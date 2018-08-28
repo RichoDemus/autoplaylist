@@ -3,17 +3,18 @@ package com.richodemus.autoplaylist.user
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
+import com.richodemus.autoplaylist.eventstore.Event
 import com.richodemus.autoplaylist.eventstore.EventStore
+import com.richodemus.autoplaylist.eventstore.PlaylistCreated
 import com.richodemus.autoplaylist.eventstore.UserCreated
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import org.slf4j.LoggerFactory
-import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 @Named
-class UserService @Inject internal constructor(
+class UserService(
         private val eventStore: EventStore,
         private val spotifyPort: SpotifyPort
 ) {
@@ -25,6 +26,7 @@ class UserService @Inject internal constructor(
         eventStore.consume {
             when (it) {
                 is UserCreated -> add(it)
+                is PlaylistCreated -> process(it.userId, it)
                 else -> logger.debug("Event of type: ${it.type()} not handled")
             }
         }
@@ -66,5 +68,16 @@ class UserService @Inject internal constructor(
             users = users.plus(user.userId to user)
         }
         return user
+    }
+
+    private fun process(userId: UserId, event: Event) {
+        val user = users[userId]
+        // todo create user if it doesnt exist and then fill it if UserCreated comes
+        if (user == null) {
+            logger.warn("No such user, can't process event $event")
+            return
+        }
+
+        user.process(event)
     }
 }

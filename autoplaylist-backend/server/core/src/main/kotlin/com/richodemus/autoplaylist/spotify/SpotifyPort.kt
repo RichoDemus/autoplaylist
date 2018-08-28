@@ -4,7 +4,9 @@ import com.richodemus.autoplaylist.dto.Album
 import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.ArtistId
 import com.richodemus.autoplaylist.dto.ArtistName
+import com.richodemus.autoplaylist.dto.PlaylistName
 import com.richodemus.autoplaylist.dto.RefreshToken
+import com.richodemus.autoplaylist.dto.SpotifyPlaylistId
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.TrackUri
@@ -15,10 +17,11 @@ interface SpotifyPort {
     suspend fun getPlaylists(accessToken: AccessToken): List<Playlist>
     suspend fun refreshToken(refreshToken: RefreshToken): Tokens
     suspend fun findArtist(accessToken: AccessToken, name: ArtistName): List<Artist>
+    suspend fun getArtist(accessToken: AccessToken, artistId: ArtistId): Artist?
     suspend fun getAlbums(accessToken: AccessToken, artistId: ArtistId): List<Album>
     suspend fun getTracks(
             accessToken: AccessToken,
-            playlistId: PlaylistId
+            playlistId: SpotifyPlaylistId
     ): List<Track>
 
     suspend fun createPlaylist(
@@ -28,7 +31,7 @@ interface SpotifyPort {
 
     suspend fun addTracksToPlaylist(
             accessToken: AccessToken,
-            playlistId: PlaylistId,
+            playlistId: SpotifyPlaylistId,
             tracks: List<TrackUri>
     )
 }
