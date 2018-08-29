@@ -34,9 +34,17 @@ internal class GoogleCloudEventStore(
 
         logger.info("Got all listeners, time to start!")
         thread(name = "send-gcs-events-to-listeners") {
-            gcsAdapter.read().forEachRemaining { event ->
-                events.increment()
-                listeners.forEach { it(event) }
+            try {
+                logger.info("Reading events...")
+                val read = gcsAdapter.read().asSequence().toList()
+                logger.info("Got {} events", read.size)
+                read.forEach { event ->
+                    events.increment()
+                    listeners.forEach { it(event) }
+                }
+            } catch (e: Exception) {
+                logger.error("Failed to read events from GCS:", e)
+                throw e
             }
         }
     }

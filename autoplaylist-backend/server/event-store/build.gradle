@@ -10,4 +10,6 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
     testCompile "org.assertj:assertj-core:$assertj_version"
+    testCompile "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockito_kotlin_version"
+    testCompile 'org.slf4j:slf4j-simple:1.7.25'
 }

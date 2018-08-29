@@ -14,7 +14,7 @@ import kotlin.concurrent.thread
 @Named
 internal class GoogleCloudStorageAdapter(
         private val eventSerde: EventSerde,
-        private val gcsClient: GoogleCloudStorageClient
+        private val gcsClient: GoogleCloudStorage
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val nextOffset = AtomicLong(0L)

@@ -14,7 +14,7 @@ import javax.inject.Singleton
 internal class GoogleCloudStorageClient(
         @Named("gcsProject") private val gcsProject: String,
         @Named("gcsBucket") private val gcsBucket: String
-) {
+) : GoogleCloudStorage {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val directory = "events/v1/"
 
@@ -27,7 +27,7 @@ internal class GoogleCloudStorageClient(
         logger.info("GCS Config: $gcsProject, $gcsBucket")
     }
 
-    fun read(): CompletableFuture<List<Pair<Long, CompletableFuture<ByteArray>>>> {
+    override fun read(): CompletableFuture<List<Pair<Long, CompletableFuture<ByteArray>>>> {
         return Future {
             service.list(gcsBucket)
                     .iterateAll()
@@ -39,7 +39,7 @@ internal class GoogleCloudStorageClient(
         }
     }
 
-    fun write(filename: String, data: ByteArray) {
+    override fun write(filename: String, data: ByteArray) {
         val blob = BlobId.of(gcsBucket, "$directory$filename")
         if (exists(blob)) {
             logger.info("File $filename already exists in GCS, skipping...")
