@@ -10,8 +10,8 @@ import kotlin.concurrent.thread
 
 @Component
 @Profile("prod")
-internal class GoogleCloudEventStoreAdapter(
-        private val gcsClient: GoogleCloudStorageClient,
+internal class GoogleCloudEventStore(
+        private val gcsAdapter: GoogleCloudStorageAdapter,
         registry: MeterRegistry
 ) : EventStore {
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -34,7 +34,7 @@ internal class GoogleCloudEventStoreAdapter(
 
         logger.info("Got all listeners, time to start!")
         thread(name = "send-gcs-events-to-listeners") {
-            gcsClient.read().forEachRemaining { event ->
+            gcsAdapter.read().forEachRemaining { event ->
                 events.increment()
                 listeners.forEach { it(event) }
             }
@@ -43,7 +43,7 @@ internal class GoogleCloudEventStoreAdapter(
 
     override fun produce(event: Event) {
         logger.info("Saving event $event")
-        gcsClient.save(event)
+        gcsAdapter.save(event)
         events.increment()
         listeners.forEach { it(event) }
     }

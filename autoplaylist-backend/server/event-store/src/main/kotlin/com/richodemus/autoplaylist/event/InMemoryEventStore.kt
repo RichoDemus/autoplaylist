@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import javax.inject.Inject
 
+// todo use GoogleCloudEventStore with a dummy GoogleCloudStorageClient instead
 @Component
 @Profile("default", "local")
 internal class InMemoryEventStore @Inject constructor(registry: MeterRegistry) : EventStore {
