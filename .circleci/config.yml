@@ -88,4 +88,6 @@ jobs:
               -e GCS_PROJECT=richo-reader \
               -e GCS_BUCKET=autoplaylist \
               richodemus/autoplaylists-backend:latest
+
+            docker system prune -f
           EOF
