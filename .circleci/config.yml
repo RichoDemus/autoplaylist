@@ -71,8 +71,8 @@ jobs:
           fingerprints:
             - "00:aa:c3:0b:30:bd:7c:6e:18:03:6d:7b:a4:84:b7:45"
       - run: |
-          echo "test ssh"
-          ssh -o StrictHostKeyChecking=no richodemus@richodemus.com << EOF
+          echo $KNOWN_HOST >> ~/.ssh/known_hosts
+          ssh richodemus@richodemus.com << EOF
             docker pull richodemus/autoplaylists-frontend:latest
             docker pull richodemus/autoplaylists-backend:latest
 
