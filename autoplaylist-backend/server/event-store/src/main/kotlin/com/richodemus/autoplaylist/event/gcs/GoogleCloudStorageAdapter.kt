@@ -1,5 +1,6 @@
-package com.richodemus.autoplaylist.event
+package com.richodemus.autoplaylist.event.gcs
 
+import com.richodemus.autoplaylist.event.EventSerde
 import com.richodemus.autoplaylist.eventstore.Event
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch

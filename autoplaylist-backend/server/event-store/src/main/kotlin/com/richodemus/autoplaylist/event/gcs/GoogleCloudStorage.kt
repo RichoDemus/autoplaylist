@@ -1,4 +1,4 @@
-package com.richodemus.autoplaylist.event
+package com.richodemus.autoplaylist.event.gcs
 
 import kotlinx.coroutines.experimental.Deferred
 
