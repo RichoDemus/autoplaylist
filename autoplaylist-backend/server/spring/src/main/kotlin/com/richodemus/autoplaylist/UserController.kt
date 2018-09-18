@@ -79,7 +79,7 @@ internal class UserController(
         val userId = session.getUserId()
         if (userId == null) {
             logger.warn("No user for session {}", session.id)
-            return ResponseEntity<GetUserIdResponse>(HttpStatus.FORBIDDEN)
+            return ResponseEntity(HttpStatus.FORBIDDEN)
         }
 
         return runBlocking {

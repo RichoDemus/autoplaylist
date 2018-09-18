@@ -31,7 +31,7 @@ internal class PlaylistController(val service: Service) {
     @GetMapping("/v1/playlists")
     internal fun getPlaylists(session: HttpSession): ResponseEntity<List<Playlist>> {
         val userId = session.getUserId()
-                ?: return ResponseEntity<List<Playlist>>(HttpStatus.FORBIDDEN)
+                ?: return ResponseEntity(HttpStatus.FORBIDDEN)
         logger.info("Get playlists for user {}", userId)
         return runBlocking {
             ResponseEntity.ok(service.getPlaylists(userId))
@@ -45,7 +45,7 @@ internal class PlaylistController(val service: Service) {
             @PathVariable("id") playlistId: String // todo use dto instead of string
     ): ResponseEntity<List<Track>> {
         val userId = session.getUserId()
-                ?: return ResponseEntity<List<Track>>(HttpStatus.FORBIDDEN)
+                ?: return ResponseEntity(HttpStatus.FORBIDDEN)
         logger.info("Get tracks for playlist {}", playlistId)
 
         return runBlocking {
@@ -63,7 +63,7 @@ internal class PlaylistController(val service: Service) {
     internal fun createPlaylist(session: HttpSession, @RequestBody request: CreatePlaylistRequest
     ): ResponseEntity<CreatePlaylistResponse> {
         val userId = session.getUserId()
-                ?: return ResponseEntity<CreatePlaylistResponse>(HttpStatus.FORBIDDEN)
+                ?: return ResponseEntity(HttpStatus.FORBIDDEN)
         logger.info("Create playlist {}", request)
 
         return runBlocking {

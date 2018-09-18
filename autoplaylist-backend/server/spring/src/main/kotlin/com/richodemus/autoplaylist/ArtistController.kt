@@ -19,7 +19,7 @@ internal class ArtistController(private val service: Service) {
             @RequestParam("name") name: ArtistName
     ): ResponseEntity<List<Artist>> {
         val userId = session.getUserId()
-                ?: return ResponseEntity<List<Artist>>(HttpStatus.FORBIDDEN)
+                ?: return ResponseEntity(HttpStatus.FORBIDDEN)
 
         return runBlocking {
             try {
