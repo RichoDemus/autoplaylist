@@ -2,6 +2,8 @@ package com.richodemus.autoplaylist.event.gcs
 
 import com.richodemus.autoplaylist.event.EventSerde
 import com.richodemus.autoplaylist.eventstore.Event
+import kotlinx.coroutines.experimental.CoroutineScope
+import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.slf4j.LoggerFactory
@@ -15,8 +17,9 @@ import javax.inject.Singleton
 internal class GoogleCloudStorageAdapter(
         private val eventSerde: EventSerde,
         private val gcsClient: GoogleCloudStorage
-) {
+) : CoroutineScope {
     private val logger = LoggerFactory.getLogger(javaClass)
+    override val coroutineContext = Dispatchers.Default
     private val nextOffset = AtomicLong(0L)
 
     internal suspend fun read(): Iterator<Event> {

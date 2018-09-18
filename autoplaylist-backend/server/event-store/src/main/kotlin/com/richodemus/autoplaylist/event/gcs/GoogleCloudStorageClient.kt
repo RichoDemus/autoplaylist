@@ -3,7 +3,9 @@ package com.richodemus.autoplaylist.event.gcs
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
+import kotlinx.coroutines.experimental.CoroutineScope
 import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.async
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Profile
@@ -15,8 +17,9 @@ import javax.inject.Named
 internal class GoogleCloudStorageClient(
         @Named("gcsProject") private val gcsProject: String,
         @Named("gcsBucket") private val gcsBucket: String
-) : GoogleCloudStorage {
+) : GoogleCloudStorage, CoroutineScope {
     private val logger = LoggerFactory.getLogger(javaClass)
+    override val coroutineContext = Dispatchers.Default
     private val directory = "events/v1/"
 
     private val service = StorageOptions.newBuilder()

@@ -4,6 +4,8 @@ import com.richodemus.autoplaylist.event.gcs.GoogleCloudStorageAdapter
 import com.richodemus.autoplaylist.eventstore.Event
 import com.richodemus.autoplaylist.eventstore.EventStore
 import io.micrometer.core.instrument.MeterRegistry
+import kotlinx.coroutines.experimental.CoroutineScope
+import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.actor
 import kotlinx.coroutines.experimental.runBlocking
@@ -16,7 +18,8 @@ import org.springframework.stereotype.Component
 internal class ReplayingEventStore(
         private val googleCloudStorageAdapter: GoogleCloudStorageAdapter,
         registry: MeterRegistry
-) : EventStore {
+) : EventStore, CoroutineScope {
+    override val coroutineContext = Dispatchers.Default
     private var events: List<Event> = emptyList()
     private var actors: List<SendChannel<Any>> = emptyList()
 

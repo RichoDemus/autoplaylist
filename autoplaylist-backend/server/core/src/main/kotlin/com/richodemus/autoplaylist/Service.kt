@@ -12,6 +12,8 @@ import com.richodemus.autoplaylist.spotify.PlaylistId
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.user.UserService
+import kotlinx.coroutines.experimental.CoroutineScope
+import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.launch
 import org.slf4j.LoggerFactory
 import javax.inject.Inject
@@ -23,7 +25,8 @@ import javax.inject.Singleton
 class Service @Inject internal constructor(
         private val userService: UserService,
         private val spotifyPort: SpotifyPort
-) {
+) : CoroutineScope {
+    override val coroutineContext = Dispatchers.Default
     private val logger = LoggerFactory.getLogger(javaClass)
 
     suspend fun login(oAuthCode: String): UserId {

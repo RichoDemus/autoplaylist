@@ -7,6 +7,8 @@ import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.PlaylistId
 import com.richodemus.autoplaylist.spotify.PlaylistName
 import com.richodemus.autoplaylist.spotify.SpotifyPort
+import kotlinx.coroutines.experimental.CoroutineScope
+import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.launch
 import org.slf4j.LoggerFactory
 
@@ -21,7 +23,7 @@ class Playlist private constructor(
         private val artist: ArtistName,
         private val accessToken: AccessToken,
         private val spotifyPort: SpotifyPort
-) {
+) : CoroutineScope {
     companion object {
         suspend fun create(
                 name: PlaylistName,
@@ -34,6 +36,7 @@ class Playlist private constructor(
     }
 
     private val logger = LoggerFactory.getLogger(javaClass)
+    override val coroutineContext = Dispatchers.Default
 
     suspend fun albumsWithTracks(): List<Album> {
         return spotifyPort.findArtist(accessToken, artist)

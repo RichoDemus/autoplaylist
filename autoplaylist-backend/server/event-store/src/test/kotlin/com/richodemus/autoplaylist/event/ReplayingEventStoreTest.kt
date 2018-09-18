@@ -15,9 +15,10 @@ import com.richodemus.autoplaylist.eventstore.EventType
 import com.richodemus.autoplaylist.eventstore.UserCreated
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
-import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.CoroutineDispatcher
+import kotlinx.coroutines.experimental.CoroutineScope
 import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.ExecutorCoroutineDispatcher
+import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
@@ -29,7 +30,9 @@ import org.junit.Test
 import java.util.UUID
 import java.util.concurrent.Executors
 
-class ReplayingEventStoreTest {
+class ReplayingEventStoreTest
+    : CoroutineScope {
+    override val coroutineContext = Dispatchers.Default
     private val eventJson = "{\"id\":\"2b041378-66af-4cb0-a2b0-186fc0bdc139\",\"type\":\"USER_CREATED\",\"timestamp\":\"2018-08-29T11:27:14.623013Z\",\"userId\":\"2b041378-66af-4cb0-a2b0-186fc0bdc139\",\"spotifyUserId\":\"user\",\"refreshToken\":\"refresh-token\"}".trimIndent().toByteArray()
 
     private val event = UserCreated(
@@ -142,7 +145,7 @@ class ReplayingEventStoreTest {
 
     private fun EventStore.readEvents(
             count: Int,
-            dispatcher: ExecutorCoroutineDispatcher = CommonPool
+            dispatcher: CoroutineDispatcher = Dispatchers.Default
     ): Deferred<List<Event>> {
         var events = listOf<Event>()
         this.consume { events += it }
