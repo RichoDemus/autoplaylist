@@ -19,6 +19,7 @@ COPY --from=builder /src/jars .
 # the urandom thing reduces tomcat startup time, no idea if it's smart or not
 CMD java \
 -Djava.security.egd=file:/dev/./urandom \
+-Djava.util.concurrent.ForkJoinPool.common.parallelism=100 \
 -Dspring.profiles.active=prod \
 -Dspotify.clientId=$CLIENT_ID \
 -Dspotify.clientSecret=$CLIENT_SECRET \
