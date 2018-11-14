@@ -31,9 +31,9 @@ class Service(
         // todo refactor this method....
         logger.info("login: $oAuthCode")
         val tokens = spotifyPort.getToken(oAuthCode)
-
+        logger.info("Got tokens from spotify")
         val userId = getGetUserIdMemoized(tokens.accessToken)
-
+        logger.info("UserId is {}", userId)
         val refreshToken = tokens.refreshToken
                 ?: throw IllegalStateException("No refresh token for user $userId")
 
