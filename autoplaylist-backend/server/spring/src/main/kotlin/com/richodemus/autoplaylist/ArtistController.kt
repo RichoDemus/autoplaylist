@@ -52,7 +52,7 @@ internal class ArtistController(private val service: Service) {
 
         return runBlocking {
             try {
-                val artist = service.getArtist(userId, artistId)?:throw Exception("")
+                val artist = service.getArtist(userId, artistId) ?: throw Exception("")
                 ResponseEntity.ok(artist)
             } catch (e: Exception) {
                 ResponseEntity<Artist>(

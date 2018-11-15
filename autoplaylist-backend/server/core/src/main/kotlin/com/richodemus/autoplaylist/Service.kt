@@ -49,18 +49,11 @@ class Service(
         return user.spotifyUserId
     }
 
-    suspend fun getPlaylists(userId: UserId): List<com.richodemus.autoplaylist.playlist.Playlist> {
+    fun getPlaylists(userId: UserId): List<com.richodemus.autoplaylist.playlist.Playlist> {
         val user = userService.getUser(userId)
         user?.accessToken ?: throw IllegalStateException("No such user")
 
         return user.getPlaylists()
-    }
-
-    suspend fun getPlaylist(userId: UserId, playlistId: SpotifyPlaylistId): List<Track> {
-        val accessToken = userService.getUser(userId)?.accessToken
-                ?: throw IllegalStateException("No such user")
-
-        return spotifyPort.getTracks(accessToken, playlistId)
     }
 
     fun createPlaylist(
@@ -84,7 +77,7 @@ class Service(
         val accessToken = userService.getUser(userId)?.accessToken
                 ?: throw IllegalStateException("No such user")
 
-        return spotifyPort.getArtist(accessToken, artistId);
+        return spotifyPort.getArtist(accessToken, artistId)
     }
 
     private suspend fun getGetUserIdMemoized(accessToken: AccessToken) = spotifyPort.getUserId(accessToken)

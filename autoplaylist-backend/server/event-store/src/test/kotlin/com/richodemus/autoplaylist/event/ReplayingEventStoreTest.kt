@@ -48,7 +48,7 @@ class ReplayingEventStoreTest
 
     @Before
     fun setUp() {
-        registryMock = mock { _ ->
+        registryMock = mock {
             on { counter("events") } doReturn mock<Counter> {}
         }
     }

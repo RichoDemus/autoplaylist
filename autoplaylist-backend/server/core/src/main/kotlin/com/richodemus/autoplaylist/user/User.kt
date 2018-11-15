@@ -26,7 +26,6 @@ class User internal constructor(
         accessToken: AccessToken? = null,
         private var tokenExpiration: Instant = Instant.MIN
 ) {
-    private val logger = LoggerFactory.getLogger(javaClass)
     var accessToken = accessToken
         get() {
             // possible to suspend get method?

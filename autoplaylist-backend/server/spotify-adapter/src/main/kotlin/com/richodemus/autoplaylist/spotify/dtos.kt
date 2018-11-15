@@ -16,7 +16,6 @@ internal data class PlaylistsResponse(val items: List<Playlist>, val total: Int)
 
 
 internal data class FindArtistResponse(val artists: Artists)
-internal data class GetArtistREsponse(val artists: Artists)
 internal data class Artists(val items: List<Artist>, val total: Int)
 internal data class Artist(val id: ArtistId, val name: ArtistName)
 

@@ -58,13 +58,6 @@ class MainPage(private val port: Int, private val sessionId: Cookie) {
                 .then().assertThat().statusCode(200).extract().jsonPath().getList("", Artist::class.java)
     }
 
-    fun getTracks(id: PlaylistId): List<Track> {
-        return RestAssured
-                .given().cookie(sessionId)
-                .`when`().get("http://localhost:$port/v1/playlists/$id/tracks")
-                .then().assertThat().statusCode(200).extract().jsonPath().getList("", Track::class.java)
-    }
-
     fun setPlaylistRules(
             id: PlaylistId,
             rules: Rules

@@ -87,7 +87,7 @@ internal class SpotifyClient(
         return Fuel.get("$apiUrl/v1/artists/$artistId")
                 .header("Accept" to "application/json")
                 .addHeaders(accessToken)
-                .deserialize<Artist>() //todo proper exception handling and nullability
+                .deserialize() //todo proper exception handling and nullability
     }
 
     internal suspend fun getAlbums(accessToken: AccessToken, artistId: ArtistId): List<Album> {
