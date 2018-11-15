@@ -9,11 +9,10 @@ import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.UserId
 import com.richodemus.autoplaylist.spotify.AccessToken
-import com.richodemus.autoplaylist.spotify.Playlist
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import com.richodemus.autoplaylist.user.UserService
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.Dispatchers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import org.slf4j.LoggerFactory
 import javax.inject.Named
 import javax.inject.Singleton
@@ -52,8 +51,7 @@ class Service(
 
     suspend fun getPlaylists(userId: UserId): List<com.richodemus.autoplaylist.playlist.Playlist> {
         val user = userService.getUser(userId)
-        val accessToken = user?.accessToken
-                ?: throw IllegalStateException("No such user")
+        user?.accessToken ?: throw IllegalStateException("No such user")
 
         return user.getPlaylists()
     }

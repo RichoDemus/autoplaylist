@@ -1,14 +1,14 @@
 buildscript {
-    ext.kotlin_version = '1.2.70'
-    ext.kotlin_coroutines_version = '0.26.+'
+    ext.kotlin_version = '1.3.10'
+    ext.kotlin_coroutines_version = '1.0.+'
     ext.spring_boot_version = '2.0.5.RELEASE'
     ext.jackson_version = '2.9.+'
-    ext.fuel_version = '1.15.+'
-    ext.micrometer_version = '1.0.+'
-    ext.gcs_client_version = '1.41.+'
+    ext.fuel_version = '1.16.+'
+    ext.micrometer_version = '1.1.+'
+    ext.gcs_client_version = '1.52.+'
 
     ext.assertj_version = '3.11.+'
-    ext.rest_assured_version = '3.1.+'
+    ext.rest_assured_version = '3.2.+'
     ext.mockito_kotlin_version = '2.0.0-alpha03'
     repositories {
         jcenter()
@@ -45,11 +45,6 @@ subprojects {
     }
 
     configurations {
-        kotlin {
-            experimental {
-                coroutines 'enable'
-            }
-        }
         all*.exclude group: 'org.glassfish.hk2.external', module: 'javax.inject'
         all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
         all*.exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jre7'

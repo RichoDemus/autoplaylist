@@ -4,11 +4,13 @@ import com.richodemus.autoplaylist.event.gcs.GoogleCloudStorageAdapter
 import com.richodemus.autoplaylist.eventstore.Event
 import com.richodemus.autoplaylist.eventstore.EventStore
 import io.micrometer.core.instrument.MeterRegistry
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.channels.actor
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -30,6 +32,9 @@ internal class ReplayingEventStore(
         events += runBlocking { googleCloudStorageAdapter.read().asSequence() }
     }
 
+    // seems like actors are deprecated, will see what happens
+    @ExperimentalCoroutinesApi
+    @ObsoleteCoroutinesApi
     @Synchronized
     override fun consume(onEvent: suspend (Event) -> Unit) {
         actors += actor {

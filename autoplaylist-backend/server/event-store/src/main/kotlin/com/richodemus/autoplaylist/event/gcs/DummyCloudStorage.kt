@@ -1,6 +1,6 @@
 package com.richodemus.autoplaylist.event.gcs
 
-import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.Deferred
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 

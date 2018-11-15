@@ -22,7 +22,7 @@ import com.xebialabs.restito.semantics.Condition.withHeader
 import com.xebialabs.restito.semantics.Condition.withPostBodyContaining
 import com.xebialabs.restito.semantics.Condition.withPostBodyContainingJsonPath
 import com.xebialabs.restito.server.StubServer
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.glassfish.grizzly.http.util.HttpStatus.OK_200
 import org.junit.After

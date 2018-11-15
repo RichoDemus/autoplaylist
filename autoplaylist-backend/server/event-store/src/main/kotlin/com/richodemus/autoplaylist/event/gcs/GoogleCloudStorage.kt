@@ -1,6 +1,6 @@
 package com.richodemus.autoplaylist.event.gcs
 
-import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.Deferred
 
 interface GoogleCloudStorage {
     fun read(): List<Pair<Long, Deferred<ByteArray>>>

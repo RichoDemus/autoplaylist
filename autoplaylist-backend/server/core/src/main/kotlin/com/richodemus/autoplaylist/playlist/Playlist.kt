@@ -12,9 +12,9 @@ import com.richodemus.autoplaylist.eventstore.PlaylistRulesChanged
 import com.richodemus.autoplaylist.eventstore.PlaylistSyncChanged
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.SpotifyPort
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import java.time.Instant
 import java.time.ZoneId

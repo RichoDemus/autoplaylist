@@ -2,10 +2,10 @@ package com.richodemus.autoplaylist.event.gcs
 
 import com.richodemus.autoplaylist.event.EventSerde
 import com.richodemus.autoplaylist.eventstore.Event
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.Dispatchers
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.LongAdder

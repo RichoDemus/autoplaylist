@@ -12,7 +12,7 @@ import com.richodemus.autoplaylist.eventstore.RefreshTokenUpdated
 import com.richodemus.autoplaylist.playlist.Playlist
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.SpotifyPort
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.time.Instant

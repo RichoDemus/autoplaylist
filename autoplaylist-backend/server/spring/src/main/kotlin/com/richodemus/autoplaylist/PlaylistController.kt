@@ -7,7 +7,7 @@ import com.richodemus.autoplaylist.dto.PlaylistName
 import com.richodemus.autoplaylist.dto.Rules
 import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.user.UserService
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
