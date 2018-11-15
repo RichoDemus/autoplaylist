@@ -9,7 +9,7 @@ buildscript {
 
     ext.assertj_version = '3.11.+'
     ext.rest_assured_version = '3.2.+'
-    ext.mockito_kotlin_version = '2.0.0-alpha03'
+    ext.mockito_kotlin_version = '2.0.0'
     repositories {
         jcenter()
     }
@@ -34,8 +34,8 @@ subprojects {
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-        sourceCompatibility = JavaVersion.VERSION_1_10
-        targetCompatibility = JavaVersion.VERSION_1_10
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
 
         kotlinOptions {
             jvmTarget = "1.8"

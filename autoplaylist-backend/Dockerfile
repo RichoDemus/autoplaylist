@@ -1,4 +1,4 @@
-FROM openjdk:10-jdk as builder
+FROM openjdk:11-jdk as builder
 RUN mkdir src
 WORKDIR src
 
@@ -11,7 +11,7 @@ RUN ./gradlew --no-daemon
 RUN mkdir jars
 RUN cp server/spring/build/libs/spring.jar jars
 
-FROM openjdk:10-jre-slim
+FROM openjdk:11-jre-slim
 RUN mkdir app
 WORKDIR app
 COPY --from=builder /src/jars .
@@ -26,6 +26,6 @@ CMD java \
 -Dspotify.redirectUrl=$REDIRECT_URL \
 -Dgcs.project=$GCS_PROJECT \
 -Dgcs.bucket=$GCS_BUCKET \
--jar spring.jar \
+-jar spring.jar
 
 EXPOSE 8080
