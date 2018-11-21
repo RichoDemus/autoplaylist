@@ -1,5 +1,9 @@
 **
 !package.json
 !package-lock.json
+!tsconfig.json
+!tsconfig.prod.json
+!tsconfig.test.json
+!tslint.json
 !public
 !src

@@ -10,6 +10,10 @@ RUN npm install
 
 COPY public /app/public
 COPY src /app/src
+COPY tsconfig.json /app/
+COPY tsconfig.prod.json /app/
+COPY tsconfig.test.json /app/
+COPY tslint.json /app/
 RUN npm run build && npm install -g serve
 
 ENV NODE_ENV=production

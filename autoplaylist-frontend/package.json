@@ -3,20 +3,29 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "debounce": "^1.2.0",
+    "debounce": "1.2.0",
     "query-string": "6.2.0",
     "react": "16.6.3",
     "react-dom": "16.6.3",
     "react-redux": "5.1.1",
-    "react-scripts": "2.1.1",
+    "react-scripts-ts": "4.0.8",
     "redux": "4.0.1",
     "uuid": "3.3.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom",
+    "eject": "react-scripts-ts eject"
+  },
+  "devDependencies": {
+    "@types/jest": "23.3.9",
+    "@types/node": "10.12.9",
+    "@types/react": "16.7.6",
+    "@types/react-dom": "16.0.9",
+    "@types/react-redux": "6.0.9",
+    "eslint-plugin-jsx-a11y": "6.1.2",
+    "typescript": "3.1.6"
   },
   "browserslist": [
     ">0.2%",
