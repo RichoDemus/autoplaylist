@@ -15,7 +15,7 @@ export const checkForValidSession = () => {
         });
 };
 
-export const createSession = code => {
+export const createSession = (code: string) => {
     return fetch(getBackendBaseUrl() + '/sessions', {
         credentials: 'include',
         method: 'POST',
@@ -75,7 +75,7 @@ export const getPlaylists = () => {
         });
 };
 
-export const createPlaylist = name => {
+export const createPlaylist = (name: string) => {
     return fetch(getBackendBaseUrl() + '/playlists', {
         credentials: 'include',
         method: 'POST',
@@ -92,7 +92,7 @@ export const createPlaylist = name => {
         });
 };
 
-export const updateRules = (playlistId, rules) => {
+export const updateRules = (playlistId: string, rules: any) => {
     console.log("Set rules for playlist", playlistId, "to", rules);
     return fetch(getBackendBaseUrl() + '/playlists/' + playlistId + '/rules', {
         credentials: 'include',
@@ -110,7 +110,7 @@ export const updateRules = (playlistId, rules) => {
         });
 };
 
-export const findArtist = query => {
+export const findArtist = (query: string) => {
     if (query === "") {
         return Promise.resolve({
             query,
@@ -136,7 +136,7 @@ export const findArtist = query => {
         });
 };
 
-export const getArtist = id => {
+export const getArtist = (id: string) => {
     return fetch(getBackendBaseUrl() + '/artists/' + id, {
         credentials: 'include',
         method: 'GET',
@@ -147,15 +147,15 @@ export const getArtist = id => {
     }).then(response => response.json());
 };
 
-export const enableSync = playlistId => {
+export const enableSync = (playlistId: string) => {
     console.log("Enable sync for", playlistId)
 };
 
-export const disableSync = playlistId => {
+export const disableSync = (playlistId: string) => {
     console.log("Disable sync for", playlistId)
 };
 
-export const syncNow = playlistId => {
+export const syncNow = (playlistId: string) => {
     return fetch(getBackendBaseUrl() + '/playlists/' + playlistId + '/syncOnce', {
         credentials: 'include',
         method: 'POST',
