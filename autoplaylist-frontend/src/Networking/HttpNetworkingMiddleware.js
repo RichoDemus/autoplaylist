@@ -34,6 +34,7 @@ import {error} from "../Views/Error/Actions";
 const HttpNetworkingMiddleware = store => next => action => {
     switch (action.type) {
         case INIT:
+            console.log("iniit!!!:", window.location.pathname);
             if (window.location.pathname === "/callback") {
                 const state = getParameterByName("state");
                 const code = getParameterByName("code");

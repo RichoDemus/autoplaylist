@@ -8,6 +8,8 @@ const getBackendBaseUrl = () => {
 };
 
 export const checkForValidSession = () => {
+    console.log("Check for valid session");
+    throw new Error("This should not happen");
     return fetch(getBackendBaseUrl() + '/sessions', {credentials: 'include'})
         .then(response => {
             console.log("Check if logged in", response);
