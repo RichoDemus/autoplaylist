@@ -9,7 +9,7 @@ it('Adds exclusion to playlist', () => {
         name: "Powerwolf",
         rules: {
             artists: ["5HFkc3t0HYETL4JeEbDB1v"],
-            exclusions: [{id: "a", name: "live"}]
+            exclusions: [{id: "a", keyword: "live"}]
         },
         sync: false
     });
@@ -19,7 +19,7 @@ it('Adds exclusion to playlist', () => {
         name: "deadmau5",
         rules: {
             artists: ["asd"],
-            exclusions: [{id: "b", name: "excl1"}, {id: "c", name: "excl2"}]
+            exclusions: [{id: "b", keyword: "excl1"}, {id: "c", keyword: "excl2"}]
         },
         sync: false
     });
@@ -32,7 +32,7 @@ it('Adds exclusion to playlist', () => {
         name: "Powerwolf",
         rules: {
             artists: ["5HFkc3t0HYETL4JeEbDB1v"],
-            exclusions: [{id: "a", name: "live"}]
+            exclusions: [{id: "a", keyword: "live"}]
         },
         sync: false
     });
@@ -42,7 +42,7 @@ it('Adds exclusion to playlist', () => {
         name: "deadmau5",
         rules: {
             artists: ["asd"],
-            exclusions: [{id: "b", name: "excl1"}, {id: "c", name: "excl2"}, {id: "new-id", name: "new-exclusion"}]
+            exclusions: [{id: "b", keyword: "excl1"}, {id: "c", keyword: "excl2"}, {id: "new-id", keyword: "new-exclusion"}]
         },
         sync: false
     });
@@ -59,7 +59,7 @@ it('Removes exclusion from playlist', () => {
         name: "Powerwolf",
         rules: {
             artists: ["5HFkc3t0HYETL4JeEbDB1v"],
-            exclusions: [{id: "a", name: "live"}]
+            exclusions: [{id: "a", keyword: "live"}]
         },
         sync: false
     });
@@ -69,7 +69,7 @@ it('Removes exclusion from playlist', () => {
         name: "deadmau5",
         rules: {
             artists: ["asd"],
-            exclusions: [{id: "b", name: "excl1"}, {id: "c", name: "excl2"}]
+            exclusions: [{id: "b", keyword: "excl1"}, {id: "c", keyword: "excl2"}]
         },
         sync: false
     });
@@ -82,7 +82,7 @@ it('Removes exclusion from playlist', () => {
         name: "Powerwolf",
         rules: {
             artists: ["5HFkc3t0HYETL4JeEbDB1v"],
-            exclusions: [{id: "a", name: "live"}]
+            exclusions: [{id: "a", keyword: "live"}]
         },
         sync: false
     });
@@ -92,7 +92,7 @@ it('Removes exclusion from playlist', () => {
         name: "deadmau5",
         rules: {
             artists: ["asd"],
-            exclusions: [{id: "c", name: "excl2"}]
+            exclusions: [{id: "c", keyword: "excl2"}]
         },
         sync: false
     });
