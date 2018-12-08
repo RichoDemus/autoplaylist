@@ -12,12 +12,12 @@ const enhancer = compose(
     applyMiddleware(logger, HttpNetworkingMiddleware)
 );
 
-const store = createStore(
+export const store = createStore(
     BaseReducer,
     enhancer
 );
 
-const App = () => (
+export const App = () => (
     <Provider store={store}>
         <div className="App">
             <SelectViewContainer/>
@@ -31,5 +31,3 @@ const initApp = () => {
     store.dispatch(init());
 };
 initApp();
-
-export default App;
