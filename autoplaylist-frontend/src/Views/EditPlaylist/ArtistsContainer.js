@@ -38,7 +38,6 @@ export const enrichPlaylistWithArtists = (playlist, artists) => {
 
 const getArtistName = (artists, id) => {
     // todo this can be empty
-    console.log("Fidning", id, "in", artists);
     const matches = artists.filter(artist => artist.id === id);
     if (matches.length < 1) {
         return "Unknown artist"
