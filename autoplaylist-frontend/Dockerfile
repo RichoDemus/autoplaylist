@@ -14,7 +14,7 @@ COPY tsconfig.json /app/
 COPY tsconfig.prod.json /app/
 COPY tsconfig.test.json /app/
 COPY tslint.json /app/
-RUN npm run build && npm install -g serve
+RUN CI=true npm test && npm run build && npm install -g serve
 
 ENV NODE_ENV=production
 CMD serve -s build
