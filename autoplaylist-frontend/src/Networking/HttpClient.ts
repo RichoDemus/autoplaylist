@@ -1,4 +1,6 @@
 import {authenticate} from "./Oauth2";
+import Playlist from "../Domain/Playlist";
+import {toPlaylist} from "../Domain/PlaylistConverter";
 
 const getBackendBaseUrl = () => {
     if (window.location.hostname === "localhost") {
@@ -60,7 +62,7 @@ export const getUserId = () => {
         });
 };
 
-export const getPlaylists = () => {
+export const getPlaylists: () => Promise<Playlist[]> = () => {
     return fetch(getBackendBaseUrl() + '/playlists', {
         credentials: 'include'
     })
@@ -70,12 +72,12 @@ export const getPlaylists = () => {
                 console.log("error:", playlists.error);
                 throw new Error(playlists.error);
             } else {
-                return playlists;
+                return playlists.map((playlist: any) => toPlaylist(playlist))
             }
         });
 };
 
-export const createPlaylist = (name: string) => {
+export const createPlaylist: (name: string) => Promise<Playlist> = (name) => {
     return fetch(getBackendBaseUrl() + '/playlists', {
         credentials: 'include',
         method: 'POST',
@@ -88,7 +90,7 @@ export const createPlaylist = (name: string) => {
         .then(response => response.json())
         .then(response => {
             console.log("Create playlist response:", response);
-            return response.playlist;
+            return toPlaylist(response.playlist);
         });
 };
 
@@ -106,7 +108,7 @@ export const updateRules = (playlistId: string, rules: any) => {
         .then(response => response.json())
         .then(response => {
             console.log("Update rules response:", response);
-            return response.playlist;
+            return toPlaylist(response.playlist);
         });
 };
 

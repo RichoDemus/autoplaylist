@@ -115,7 +115,7 @@ const HttpNetworkingMiddleware = store => next => action => {
             // todo maybe turn ADD_ARTIST, REMOVE_ARTIST, etc into CHANGE_RULES
             const playlistId = action.playlistId;
             const exclusionId = action.exclusionId;
-            const keyword = action.keyword;
+            const keyword = action.name;
 
             const currentRules2 = store.getState().playlists.get(playlistId).rules;
 

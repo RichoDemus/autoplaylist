@@ -1,9 +1,10 @@
 import {playlists} from "./Reducers";
 import {addExclusion, removeExclusion} from "../EditPlaylist/Actions";
+import Playlist from "../../Domain/Playlist";
 
 it('Adds exclusion to playlist', () => {
 
-    const initialState = new Map();
+    const initialState = new Map<String, Playlist>();
     initialState.set("1", {
         id: "1",
         name: "Powerwolf",
@@ -26,7 +27,7 @@ it('Adds exclusion to playlist', () => {
 
     const result = playlists(initialState, addExclusion("2", "new-id", "new-exclusion"));
 
-    const expected = new Map();
+    const expected = new Map<String, Playlist>();
     expected.set("1", {
         id: "1",
         name: "Powerwolf",
