@@ -30,8 +30,12 @@ import {
 import {ARTIST_SEARCH_QUERY_UPDATED} from "../Views/ArtistSearch/Actions";
 import getParameterByName from "../Util/QueryString";
 import {error} from "../Views/Error/Actions";
+import {AnyAction, Dispatch, Store} from "redux";
+import Rules from "../Domain/Rules";
+import Exclusion from "../Domain/Exclusion";
+import Artist from "../Domain/Artist";
 
-const HttpNetworkingMiddleware = store => next => action => {
+const HttpNetworkingMiddleware = (store: Store) => (next: Dispatch<AnyAction>) => (action: AnyAction) => {
     switch (action.type) {
         case INIT:
             if (window.location.pathname === "/callback") {
@@ -74,12 +78,13 @@ const HttpNetworkingMiddleware = store => next => action => {
             getPlaylists()
                 .then(playlists => {
                     store.dispatch(setPlaylists(playlists));
-                    const artists = playlists.flatMap(playlist => playlist.rules.artists);
+                    const artists = playlists.map(playlist => playlist.rules.artists)
+                        .reduce((left, right) => [...left, ...right]);
                     const distinctArtists = new Set(artists);
                     console.log("all artists", distinctArtists);
-                    distinctArtists.forEach(artistId => {
-                        getArtist(artistId)
-                            .then(artist => store.dispatch(artistInformationUpdated([artist])))
+                    distinctArtists.forEach(artist => {
+                        getArtist(artist.id)
+                            .then(artistWithName => store.dispatch(artistInformationUpdated([artistWithName])))
                     })
                 });
             break;
@@ -92,10 +97,10 @@ const HttpNetworkingMiddleware = store => next => action => {
             break;
         case ADD_ARTIST:
             // todo maybe turn ADD_ARTIST, REMOVE_ARTIST, etc into CHANGE_RULES
-            const currentRules = store.getState().playlists.get(action.playlistId).rules;
+            const currentRules: Rules = store.getState().playlists.get(action.playlistId).rules;
 
 
-            updateRules(action.playlistId, addArtistToRules(currentRules, action.artistId));
+            updateRules(action.playlistId, currentRules.addArtist(new Artist(action.artistId)));
             break;
         case ARTIST_SEARCH_QUERY_UPDATED:
             findArtist(action.query)
@@ -107,9 +112,9 @@ const HttpNetworkingMiddleware = store => next => action => {
         case REMOVE_ARTIST:
             const playlistId1 = action.playlistId;
             const artistId1 = action.artistId;
-            const currentRules1 = store.getState().playlists.get(action.playlistId).rules;
+            const currentRules1: Rules = store.getState().playlists.get(action.playlistId).rules;
 
-            updateRules(playlistId1, removeArtistFromRules(currentRules1, artistId1));
+            updateRules(playlistId1, currentRules1.removeArtist(artistId1));
             break;
         case ADD_EXCLUSION:
             // todo maybe turn ADD_ARTIST, REMOVE_ARTIST, etc into CHANGE_RULES
@@ -117,16 +122,16 @@ const HttpNetworkingMiddleware = store => next => action => {
             const exclusionId = action.exclusionId;
             const keyword = action.name;
 
-            const currentRules2 = store.getState().playlists.get(playlistId).rules;
+            const currentRules2: Rules = store.getState().playlists.get(playlistId).rules;
 
-            updateRules(action.playlistId, addExclusionToRules(currentRules2, {id: exclusionId, keyword}));
+            updateRules(action.playlistId, currentRules2.addExclusion(new Exclusion(exclusionId, keyword)));
             break;
         case REMOVE_EXCLUSION:
             const playlistId3 = action.playlistId;
             const exclusionId3 = action.exclusionId;
-            const currentRules3 = store.getState().playlists.get(playlistId3).rules;
+            const currentRules3: Rules = store.getState().playlists.get(playlistId3).rules;
 
-            updateRules(playlistId3, removeExclusionFromRules(currentRules3, exclusionId3));
+            updateRules(playlistId3, currentRules3.removeExclusion(exclusionId3));
             break;
         case ENABLE_SYNC:
             enableSync(action.playlistId);
@@ -140,26 +145,6 @@ const HttpNetworkingMiddleware = store => next => action => {
         default:
     }
     return next(action);
-};
-
-const addArtistToRules = (rules, artist) => {
-    const newArtists = [...rules.artists, artist];
-    return Object.assign({}, rules, {artists: newArtists});
-};
-
-const removeArtistFromRules = (rules, artistId) => {
-    const newArtists = rules.artists.filter(artist => artist !== artistId);
-    return Object.assign(rules, {artists: newArtists});
-};
-
-const addExclusionToRules = (rules, keyword) => {
-    const newExclusions = [...rules.exclusions, keyword];
-    return Object.assign({}, rules, {exclusions: newExclusions});
-};
-
-const removeExclusionFromRules = (rules, exclusionId) => {
-    const newExclusions = rules.exclusions.filter(excl => excl.id !== exclusionId);
-    return Object.assign(rules, {exclusions: newExclusions});
 };
 
 export default HttpNetworkingMiddleware

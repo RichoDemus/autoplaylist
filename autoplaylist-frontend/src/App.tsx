@@ -1,21 +1,32 @@
 import * as React from 'react';
 import './App.css';
-import {applyMiddleware, compose, createStore} from "redux";
+import {AnyAction, applyMiddleware, compose, createStore, Store} from "redux";
 import HttpNetworkingMiddleware from './Networking/HttpNetworkingMiddleware';
 import SelectViewContainer from './ViewSelection/SelectViewContainer';
 import {init} from './Networking/Actions';
 import BaseReducer from './BaseReducer';
 import {Provider} from "react-redux";
 import {logger} from './LoggingMiddleware';
+import Playlist from "./Domain/Playlist";
 
 const enhancer = compose(
     applyMiddleware(logger, HttpNetworkingMiddleware)
 );
 
-export const store = createStore(
+export const store: Store<IState> = createStore<IState, AnyAction, any, any>(
     BaseReducer,
     enhancer
 );
+
+// todo figure out how to not need the I...
+export interface IState {
+    view: string,
+    userId: string,
+    playlists: Map<string, Playlist>,
+    currentlyEditedPlaylist: string,
+    artistSearchResults: any,
+    artists: any
+}
 
 export const App = () => (
     <Provider store={store}>

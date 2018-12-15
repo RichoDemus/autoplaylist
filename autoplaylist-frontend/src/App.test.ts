@@ -1,6 +1,7 @@
 import {store} from "./App"
 import {EDIT_PLAYLIST_VIEW, LIST_PLAYLISTS_VIEW} from "./ViewSelection/Views";
 import {newPlaylist} from "./Views/ListPlaylists/Actions";
+import Playlist from "./Domain/Playlist";
 
 const mockPlaylists: any[] = [
     {
@@ -48,17 +49,9 @@ jest.mock("./Networking/HttpClient", () => ({
         console.log("getPlaylists called");
         return Promise.resolve(mockPlaylists);
     },
-    createPlaylist: (name: String) => {
+    createPlaylist: (name: string) => {
         console.log("createPlaylist called");
-        return Promise.resolve({
-            id: "3",
-            name: name,
-            rules: {
-                artists: [],
-                exclusions: []
-            },
-            sync: false
-        })
+        return Promise.resolve(new Playlist("3", name))
     },
     updateRules: () => {
         console.log("updateRules called");
@@ -102,12 +95,16 @@ it('Test that does way to many things', () => {
 
     store.dispatch(newPlaylist("new playlist"));
     const done = changedViewToEditPlaylistView.then(() => {
-        const playlist = store.getState().playlists.get(id);
+        const playlists: Map<string, Playlist> = store.getState().playlists;
+        const playlist = playlists.get(id);
+        expect(playlist).toBeDefined();
+        // @ts-ignore
         expect(playlist.name).toEqual("new playlist");
+        // @ts-ignore
         expect(playlist.rules.artists.length).toBe(0);
+        // @ts-ignore
         expect(playlist.rules.exclusions.length).toBe(0);
     });
-
 
     return Promise.all([
         changedViewToEditPlaylistView,

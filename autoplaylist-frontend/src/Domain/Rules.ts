@@ -2,8 +2,8 @@ import Exclusion from "./Exclusion";
 import Artist from "./Artist";
 
 export default class Rules {
-    readonly artists: Artist[];
-    readonly exclusions: Exclusion[];
+    public readonly artists: Artist[];
+    public readonly exclusions: Exclusion[];
 
     constructor(
         artists: Artist[] = [],
@@ -13,19 +13,19 @@ export default class Rules {
         this.exclusions = exclusions;
     }
 
-    addArtist(artist:Artist): Rules {
+    public addArtist(artist:Artist): Rules {
         return new Rules([...this.artists, artist], this.exclusions);
     }
 
-    removeArtist(artistId: string) {
+    public removeArtist(artistId: string) {
         return new Rules(this.artists.filter(artist => artist.id !== artistId));
     }
 
-    addExclusion(exclusion: Exclusion) {
+    public addExclusion(exclusion: Exclusion) {
         return new Rules(this.artists, [...this.exclusions, exclusion]);
     }
 
-    removeExclusion(exclusionId: string) {
+    public removeExclusion(exclusionId: string) {
         return new Rules(this.exclusions.filter(exclusion => exclusion.id !== exclusionId));
     }
 }

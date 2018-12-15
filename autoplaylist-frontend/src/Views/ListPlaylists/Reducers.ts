@@ -5,10 +5,11 @@ import {AnyAction} from "redux";
 import Artist from "../../Domain/Artist";
 import Exclusion from "../../Domain/Exclusion";
 
-export const playlists = (state = new Map<String, Playlist>(), action: AnyAction) => {
+export const playlists: (state: Map<string, Playlist>, action: AnyAction) => Map<string, Playlist>
+    = (state = new Map<string, Playlist>(), action: AnyAction) => {
     switch (action.type) {
         case SET_PLAYLISTS:
-            return new Map(action.playlists.map((i:Playlist) => [i.id, i]));
+            return new Map(action.playlists.map((i: Playlist) => [i.id, i]));
         case PLAYLIST_CREATED:
             return addToMap(state, action.playlist);
         case ADD_EXCLUSION:
@@ -24,54 +25,54 @@ export const playlists = (state = new Map<String, Playlist>(), action: AnyAction
     }
 };
 
-const addToMap = (map:Map<String, Playlist>, item:Playlist) => {
+const addToMap = (map: Map<string, Playlist>, item: Playlist) => {
     const newMap = new Map(map);
     newMap.set(item.id, item);
     return newMap;
 };
 
 // todo take an arist instead
-const addArtist = (playlists:Map<String, Playlist>, targetPlaylistId:String, artistId:String) => {
-    const target = playlists.get(targetPlaylistId);
+const addArtist = (allPlaylists: Map<string, Playlist>, targetPlaylistId: string, artistId: string) => {
+    const target = allPlaylists.get(targetPlaylistId);
     if (target === undefined) {
         console.warn("Attempted to add artist to non-existing playlist:", targetPlaylistId);
-        return playlists;
+        return allPlaylists;
     }
 
     const newArtists = [...target.rules.artists, artistId];
     const newRules = Object.assign(target.rules, {artists: newArtists});
     const newPlaylist = Object.assign(target, {rules: newRules});
 
-    const newMap = new Map(playlists);
+    const newMap = new Map(allPlaylists);
     newMap.set(target.id, newPlaylist);
 
     return newMap;
 };
 
 // todo take an arist instead
-const removeArtist = (playlists:Map<String, Playlist>, targetPlaylistId:String, artistId:String) => {
-    const target = playlists.get(targetPlaylistId);
+const removeArtist = (allPlaylists: Map<string, Playlist>, targetPlaylistId: string, artistId: string) => {
+    const target = allPlaylists.get(targetPlaylistId);
     if (target === undefined) {
         console.warn("Attempted to remove artist to non-existing playlist:", targetPlaylistId);
-        return playlists;
+        return allPlaylists;
     }
 
-    const newArtists = target.rules.artists.filter((artist:Artist) => artist.id !== artistId);
+    const newArtists = target.rules.artists.filter((artist: Artist) => artist.id !== artistId);
     const newRules = Object.assign(target.rules, {artists: newArtists});
     const newPlaylist = Object.assign(target, {rules: newRules});
 
-    const newMap = new Map(playlists);
+    const newMap = new Map(allPlaylists);
     newMap.set(target.id, newPlaylist);
 
     return newMap;
 };
 
 // todo take an exclusion instead
-const addExclusion = (playlists:Map<String, Playlist>, targetPlaylistId:String, exclusionId:String, keyword:String) => {
-    const target = playlists.get(targetPlaylistId);
+const addExclusion = (allPlaylists: Map<string, Playlist>, targetPlaylistId: string, exclusionId: string, keyword: string) => {
+    const target = allPlaylists.get(targetPlaylistId);
     if (target === undefined) {
         console.warn("Attempted to add exclusion to non-existing playlist:", targetPlaylistId);
-        return playlists;
+        return allPlaylists;
     }
 
     const newExclusions = [...target.rules.exclusions, new Exclusion(exclusionId, keyword)];
@@ -79,25 +80,25 @@ const addExclusion = (playlists:Map<String, Playlist>, targetPlaylistId:String, 
     const newRules = Object.assign(target.rules, {exclusions: newExclusions});
     const newPlaylist = Object.assign(target, {rules: newRules});
 
-    const newMap = new Map(playlists);
+    const newMap = new Map(allPlaylists);
     newMap.set(target.id, newPlaylist);
 
     return newMap;
 };
 
 // finds the playlist that has the given exclusion and removes that exclusion from it
-const removeExclusion = (playlists:Map<String, Playlist>, targetPlaylistId:String, exclusionId:String) => {
-    const target = playlists.get(targetPlaylistId);
+const removeExclusion = (allPlaylists: Map<string, Playlist>, targetPlaylistId: string, exclusionId: string) => {
+    const target = allPlaylists.get(targetPlaylistId);
     if (target === undefined) {
         console.warn("Attempted to remove exclusion from non-existing playlist:", targetPlaylistId);
-        return playlists;
+        return allPlaylists;
     }
 
-    const newExclusions = target.rules.exclusions.filter((excl:Exclusion) => excl.id !== exclusionId);
+    const newExclusions = target.rules.exclusions.filter((excl: Exclusion) => excl.id !== exclusionId);
     const newRules = Object.assign(target.rules, {exclusions: newExclusions});
     const newPlaylist = Object.assign(target, {rules: newRules});
 
-    const newMap = new Map(playlists);
+    const newMap = new Map(allPlaylists);
     newMap.set(target.id, newPlaylist);
 
     return newMap;

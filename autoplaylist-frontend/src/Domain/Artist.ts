@@ -1,8 +1,8 @@
 export default class Artist {
-    readonly id: String;
+    public readonly id: string;
     // readonly name?: String;
 
-    constructor(id: String) {
+    constructor(id: string) {
         this.id = id;
         // this.name = name;
     }

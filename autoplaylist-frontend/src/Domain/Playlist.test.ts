@@ -66,7 +66,7 @@ it("should enable sync", () => {
     expect(playlist.sync).toEqual(true);
 });
 
-it("should not modify ordinal instance", function () {
+it("should not modify ordinal instance", () => {
     const original = new Playlist("id", "name");
     const modified = original.enableSync();
 

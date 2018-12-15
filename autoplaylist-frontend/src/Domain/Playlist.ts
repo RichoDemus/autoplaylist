@@ -3,14 +3,14 @@ import Artist from "./Artist";
 import Exclusion from "./Exclusion";
 
 export default class Playlist {
-    readonly id: String;
-    readonly name: String;
-    readonly rules: Rules;
-    readonly sync: boolean;
+    public readonly id: string;
+    public readonly name: string;
+    public readonly rules: Rules;
+    public readonly sync: boolean;
 
     constructor(
-        id: String,
-        name: String,
+        id: string,
+        name: string,
         rules: Rules = new Rules(),
         sync: boolean = false
     ) {
@@ -20,27 +20,27 @@ export default class Playlist {
         this.sync = sync;
     }
 
-    addArtist(artist: Artist): Playlist {
+    public addArtist(artist: Artist): Playlist {
         return this.copy({rules: this.rules.addArtist(artist)});
     }
 
-    removeArtist(artistId: string): Playlist {
+    public removeArtist(artistId: string): Playlist {
         return this.copy({rules: this.rules.removeArtist(artistId)});
     }
 
-    addExclusion(exclusion: Exclusion): Playlist {
+    public addExclusion(exclusion: Exclusion): Playlist {
         return this.copy({rules: this.rules.addExclusion(exclusion)});
     }
 
-    removeExclusion(exclusionId: string): Playlist {
+    public removeExclusion(exclusionId: string): Playlist {
         return this.copy({rules: this.rules.removeExclusion(exclusionId)});
     }
 
-    enableSync(): Playlist {
+    public enableSync(): Playlist {
         return this.copy({sync: true});
     }
 
-    private copy(copy: Copy): Playlist {
+    private copy(copy: ICopy): Playlist {
         return new Playlist(
             copy.id || this.id,
             copy.name || this.name,
@@ -50,9 +50,10 @@ export default class Playlist {
     }
 }
 
-interface Copy {
-    id?: String,
-    name?: String,
+// todo rename I...
+interface ICopy {
+    id?: string,
+    name?: string,
     rules?: Rules,
     sync?: boolean
 }

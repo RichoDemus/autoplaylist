@@ -1,8 +1,8 @@
 export default class Exclusion {
-    readonly id: String;
-    readonly keyword: String;
+    public readonly id: string;
+    public readonly keyword: string;
 
-    constructor(id: String, keyword: String) {
+    constructor(id: string, keyword: string) {
         this.id = id;
         this.keyword = keyword;
     }
