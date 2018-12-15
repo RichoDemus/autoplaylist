@@ -24,6 +24,8 @@ const mockPlaylists: any[] = [
     }
 ];
 
+const mockCreatePlaylist = (name: string) => new Playlist("3", name);
+
 jest.mock("./Networking/HttpClient", () => ({
     checkForValidSession: () => {
         console.log("checkForValidSession called");
@@ -51,7 +53,7 @@ jest.mock("./Networking/HttpClient", () => ({
     },
     createPlaylist: (name: string) => {
         console.log("createPlaylist called");
-        return Promise.resolve(new Playlist("3", name))
+        return Promise.resolve(mockCreatePlaylist(name));
     },
     updateRules: () => {
         console.log("updateRules called");
