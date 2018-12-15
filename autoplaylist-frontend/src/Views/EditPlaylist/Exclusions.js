@@ -4,7 +4,7 @@ export const Exclusions = ({playlistId, exclusions, removeExclusion, addExclusio
     <div>
         <strong>Exclusions:</strong>
         <ul>
-            {exclusions.map(exclusion => (<li id={exclusion.id} key={exclusion.id}>{exclusion.name}
+            {exclusions.map(exclusion => (<li id={exclusion.id} key={exclusion.id}>{exclusion.keyword}
                 <button id={exclusion.id} data-playlistid={playlistId} onClick={removeExclusion}>remove</button>
             </li>))}
         </ul>
