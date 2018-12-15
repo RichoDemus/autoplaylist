@@ -13,7 +13,7 @@ export default class Rules {
         this.exclusions = exclusions;
     }
 
-    public addArtist(artist:ArtistId): Rules {
+    public addArtist(artist: ArtistId): Rules {
         return new Rules([...this.artists, artist], this.exclusions);
     }
 

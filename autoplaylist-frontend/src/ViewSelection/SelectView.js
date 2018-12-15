@@ -1,12 +1,5 @@
 import React from "react";
-import {
-    ARTIST_SEARCH_VIEW,
-    EDIT_PLAYLIST_VIEW,
-    LIST_PLAYLISTS_VIEW,
-    LOADING_VIEW,
-    LOGIN_VIEW,
-    WELCOME_VIEW
-} from "./Views";
+import {ARTIST_SEARCH_VIEW, EDIT_PLAYLIST_VIEW, LIST_PLAYLISTS_VIEW, LOADING_VIEW, LOGIN_VIEW, WELCOME_VIEW} from "./Views";
 import LoginView from "../Views/Login/LoginView";
 import ErrorView from "../Views/Error/ErrorView";
 import WelcomeView from "../Welcome/WelcomeView";

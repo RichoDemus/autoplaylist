@@ -4,10 +4,10 @@ export const Sync = ({playlistId, enabled, lastSynced, disableSync, enableSync, 
     <div>
         <strong>Sync:</strong>
         {/*{enabled && <div>Automatic updates enabled*/}
-            {/*<button id={playlistId} onClick={disableSync}>Disable</button>*/}
+        {/*<button id={playlistId} onClick={disableSync}>Disable</button>*/}
         {/*</div>}*/}
         {/*{!enabled && <div>Automatic updates disabled*/}
-            {/*<button id={playlistId} onClick={enableSync}>Enable</button>*/}
+        {/*<button id={playlistId} onClick={enableSync}>Enable</button>*/}
         {/*</div>}*/}
         {lastSynced && <span>Last synced: {lastSynced}</span>}
         {!lastSynced && <span>Last synced: Never</span>}
