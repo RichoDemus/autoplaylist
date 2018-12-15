@@ -13,7 +13,7 @@ import {
     logout,
     syncNow,
     updateRules
-} from "./HttpClient";
+} from "./HttpClientMock";
 import {LOGGED_IN, loggedIn, loggedOut} from "../Views/Login/Actions";
 import {CREATE_NEW_PLAYLIST} from "../Views/ListPlaylists/Actions";
 import {LOGOUT} from "../Components/LogoutButton/Actions";
@@ -33,7 +33,7 @@ import {error} from "../Views/Error/Actions";
 import {AnyAction, Dispatch, Store} from "redux";
 import Rules from "../Domain/Rules";
 import Exclusion from "../Domain/Exclusion";
-import Artist from "../Domain/Artist";
+import ArtistId from "../Domain/ArtistId";
 
 const HttpNetworkingMiddleware = (store: Store) => (next: Dispatch<AnyAction>) => (action: AnyAction) => {
     switch (action.type) {
@@ -83,7 +83,7 @@ const HttpNetworkingMiddleware = (store: Store) => (next: Dispatch<AnyAction>) =
                     const distinctArtists = new Set(artists);
                     console.log("all artists", distinctArtists);
                     distinctArtists.forEach(artist => {
-                        getArtist(artist.id)
+                        getArtist(artist)
                             .then(artistWithName => store.dispatch(artistInformationUpdated([artistWithName])))
                     })
                 });
@@ -100,7 +100,7 @@ const HttpNetworkingMiddleware = (store: Store) => (next: Dispatch<AnyAction>) =
             const currentRules: Rules = store.getState().playlists.get(action.playlistId).rules;
 
 
-            updateRules(action.playlistId, currentRules.addArtist(new Artist(action.artistId)));
+            updateRules(action.playlistId, currentRules.addArtist(new ArtistId(action.artistId)));
             break;
         case ARTIST_SEARCH_QUERY_UPDATED:
             findArtist(action.query)

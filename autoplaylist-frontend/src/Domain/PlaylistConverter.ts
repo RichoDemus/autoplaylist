@@ -1,6 +1,6 @@
 import Playlist from "./Playlist";
 import Rules from "./Rules";
-import Artist from "./Artist";
+import ArtistId from "./ArtistId";
 import Exclusion from "./Exclusion";
 
 export const toPlaylist: (js: any) => Playlist = (js: any) => {
@@ -9,7 +9,7 @@ export const toPlaylist: (js: any) => Playlist = (js: any) => {
 
 const toRules: (js: any) => Rules = (js: any) => {
     return new Rules(
-        js.artists.map((artist: any) => new Artist(artist)),
+        js.artists.map((artist: any) => new ArtistId(artist)),
         js.exclusions.map((exclusion: any) => new Exclusion(exclusion.id, exclusion.keyword))
     );
 };

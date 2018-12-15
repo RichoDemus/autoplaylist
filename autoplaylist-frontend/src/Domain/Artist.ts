@@ -1,11 +1,11 @@
+import ArtistId from "./ArtistId";
+
 export default class Artist {
-    public readonly id: string;
-    // readonly name?: String;
+    public readonly id: ArtistId;
+    public readonly name: string;
 
-    constructor(id: string) {
+    constructor(id: ArtistId, name: string) {
         this.id = id;
-        // this.name = name;
+        this.name = name;
     }
-
-
 }

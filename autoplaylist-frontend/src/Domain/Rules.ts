@@ -1,24 +1,24 @@
 import Exclusion from "./Exclusion";
-import Artist from "./Artist";
+import ArtistId from "./ArtistId";
 
 export default class Rules {
-    public readonly artists: Artist[];
+    public readonly artists: ArtistId[];
     public readonly exclusions: Exclusion[];
 
     constructor(
-        artists: Artist[] = [],
+        artists: ArtistId[] = [],
         exclusions: Exclusion[] = []
     ) {
         this.artists = artists;
         this.exclusions = exclusions;
     }
 
-    public addArtist(artist:Artist): Rules {
+    public addArtist(artist:ArtistId): Rules {
         return new Rules([...this.artists, artist], this.exclusions);
     }
 
     public removeArtist(artistId: string) {
-        return new Rules(this.artists.filter(artist => artist.id !== artistId));
+        return new Rules(this.artists.filter(artist => artist.value !== artistId));
     }
 
     public addExclusion(exclusion: Exclusion) {
@@ -26,6 +26,6 @@ export default class Rules {
     }
 
     public removeExclusion(exclusionId: string) {
-        return new Rules(this.exclusions.filter(exclusion => exclusion.id !== exclusionId));
+        return new Rules(this.artists, this.exclusions.filter(exclusion => exclusion.id !== exclusionId));
     }
 }

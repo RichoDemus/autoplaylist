@@ -1,6 +1,6 @@
 import {toPlaylist} from "./PlaylistConverter";
 import Exclusion from "./Exclusion";
-import Artist from "./Artist";
+import ArtistId from "./ArtistId";
 import Playlist from "./Playlist";
 
 it("Should convert a js object to a playlist", () => {
@@ -16,7 +16,7 @@ it("Should convert a js object to a playlist", () => {
 
     expect(result.id).toEqual("1");
     expect(result.name).toEqual("Powerwolf");
-    expect(result.rules.artists).toContainEqual(new Artist("5HFkc3t0HYETL4JeEbDB1v"));
+    expect(result.rules.artists).toContainEqual(new ArtistId("5HFkc3t0HYETL4JeEbDB1v"));
     expect(result.rules.exclusions).toContainEqual(new Exclusion("a", "live"));
 });
 
@@ -32,14 +32,14 @@ it("should create a playlist", () => {
 
 it("should add artist", () => {
     const playlist = new Playlist("id", "name")
-        .addArtist(new Artist("artistId"));
+        .addArtist(new ArtistId("artistId"));
 
-    expect(playlist.rules.artists).toContainEqual(new Artist("artistId"))
+    expect(playlist.rules.artists).toContainEqual(new ArtistId("artistId"))
 });
 
 it("should remove artist", () => {
     const playlist = new Playlist("id", "name")
-        .addArtist(new Artist("artistId"))
+        .addArtist(new ArtistId("artistId"))
         .removeArtist("artistId");
 
     expect(playlist.rules.artists.length).toEqual(0);

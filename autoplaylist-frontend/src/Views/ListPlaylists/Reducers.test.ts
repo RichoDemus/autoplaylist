@@ -1,7 +1,7 @@
 import {playlists} from "./Reducers";
 import {addExclusion, removeExclusion} from "../EditPlaylist/Actions";
 import Playlist from "../../Domain/Playlist";
-import Artist from "../../Domain/Artist";
+import ArtistId from "../../Domain/ArtistId";
 import Rules from "../../Domain/Rules";
 import Exclusion from "../../Domain/Exclusion";
 
@@ -13,7 +13,7 @@ it('Adds exclusion to playlist', () => {
             "1",
             "Powerwolf",
             new Rules(
-                [new Artist("5HFkc3t0HYETL4JeEbDB1v")],
+                [new ArtistId("5HFkc3t0HYETL4JeEbDB1v")],
                 [new Exclusion("a", "live")]
             )
         )
@@ -24,7 +24,7 @@ it('Adds exclusion to playlist', () => {
             "2",
             "deadmau5",
             new Rules(
-                [new Artist("asd")],
+                [new ArtistId("asd")],
                 [new Exclusion("b", "excl1"), new Exclusion("c", "excl2")]
             )
         )
@@ -37,7 +37,7 @@ it('Adds exclusion to playlist', () => {
         "1",
         "Powerwolf",
         new Rules(
-            [new Artist("5HFkc3t0HYETL4JeEbDB1v")],
+            [new ArtistId("5HFkc3t0HYETL4JeEbDB1v")],
             [new Exclusion("a", "live")]
         )
     ));
@@ -47,7 +47,7 @@ it('Adds exclusion to playlist', () => {
             "2",
             "deadmau5",
             new Rules(
-                [new Artist("asd")],
+                [new ArtistId("asd")],
                 [
                     new Exclusion("b", "excl1"),
                     new Exclusion("c", "excl2"),
@@ -69,7 +69,7 @@ it('Removes exclusion from playlist', () => {
             "1",
             "Powerwolf",
             new Rules(
-                [new Artist("5HFkc3t0HYETL4JeEbDB1v")],
+                [new ArtistId("5HFkc3t0HYETL4JeEbDB1v")],
                 [new Exclusion("a", "live")]
             )
         )
@@ -80,7 +80,7 @@ it('Removes exclusion from playlist', () => {
             "2",
             "deadmau5",
             new Rules(
-                [new Artist("asd")],
+                [new ArtistId("asd")],
                 [new Exclusion("b", "excl1"), new Exclusion("c", "excl2")]
             )
         )
@@ -94,7 +94,7 @@ it('Removes exclusion from playlist', () => {
             "1",
             "Powerwolf",
             new Rules(
-                [new Artist("5HFkc3t0HYETL4JeEbDB1v")],
+                [new ArtistId("5HFkc3t0HYETL4JeEbDB1v")],
                 [new Exclusion("a", "live")]
             )
         )
@@ -105,7 +105,7 @@ it('Removes exclusion from playlist', () => {
             "2",
             "deadmau5",
             new Rules(
-                [new Artist("asd")],
+                [new ArtistId("asd")],
                 [new Exclusion("c", "excl2")]
             )
         )

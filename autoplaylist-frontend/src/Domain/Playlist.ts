@@ -1,5 +1,5 @@
 import Rules from "./Rules";
-import Artist from "./Artist";
+import ArtistId from "./ArtistId";
 import Exclusion from "./Exclusion";
 
 export default class Playlist {
@@ -20,7 +20,7 @@ export default class Playlist {
         this.sync = sync;
     }
 
-    public addArtist(artist: Artist): Playlist {
+    public addArtist(artist: ArtistId): Playlist {
         return this.copy({rules: this.rules.addArtist(artist)});
     }
 

@@ -2,7 +2,7 @@ import {PLAYLIST_CREATED, SET_PLAYLISTS} from "../../Networking/Actions";
 import {ADD_ARTIST, ADD_EXCLUSION, REMOVE_ARTIST, REMOVE_EXCLUSION} from "../EditPlaylist/Actions";
 import Playlist from "../../Domain/Playlist";
 import {AnyAction} from "redux";
-import Artist from "../../Domain/Artist";
+import ArtistId from "../../Domain/ArtistId";
 import Exclusion from "../../Domain/Exclusion";
 
 export const playlists: (state: Map<string, Playlist>, action: AnyAction) => Map<string, Playlist>
@@ -57,7 +57,7 @@ const removeArtist = (allPlaylists: Map<string, Playlist>, targetPlaylistId: str
         return allPlaylists;
     }
 
-    const newArtists = target.rules.artists.filter((artist: Artist) => artist.id !== artistId);
+    const newArtists = target.rules.artists.filter((artist: ArtistId) => artist.value !== artistId);
     const newRules = Object.assign(target.rules, {artists: newArtists});
     const newPlaylist = Object.assign(target, {rules: newRules});
 
