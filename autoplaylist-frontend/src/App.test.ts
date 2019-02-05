@@ -48,11 +48,11 @@ jest.mock("./Networking/HttpClient", () => ({
         console.log("getPlaylists called");
         return Promise.resolve(mockPlaylists);
     },
-    createPlaylist: (name: String) => {
+    createPlaylist: (name: string) => {
         console.log("createPlaylist called");
         return Promise.resolve({
             id: "3",
-            name: name,
+            name,
             rules: {
                 artists: [],
                 exclusions: []
