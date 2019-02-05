@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/uuid": "^3.4.4",
     "debounce": "1.2.0",
     "query-string": "6.2.0",
     "react": "16.6.3",

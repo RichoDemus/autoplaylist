@@ -1,9 +1,7 @@
 import {connect} from "react-redux";
 import {addExclusion, removeExclusion} from "./Actions";
 import {Exclusions} from "./Exclusions";
-// todo fix
-// @ts-ignore
-import uuidv4 from 'uuid/v4'
+import {v4} from 'uuid'
 import {IState} from "../../App";
 import {Dispatch} from "redux";
 
@@ -29,13 +27,13 @@ const mapDispatchToProps = (dispatch: Dispatch, ownProps: any) => {
         addExclusionClick: (event: any) => {
             const playlistId = event.target.id;
             const keyword = event.target.previousElementSibling.value;
-            dispatch(addExclusion(playlistId, uuidv4(), keyword));
+            dispatch(addExclusion(playlistId, v4(), keyword));
         },
         addExclusionKeyPress: (event: any) => {
             if (event.key === "Enter") {
                 const playlistId = event.target.id;
                 const keyword = event.target.value;
-                dispatch(addExclusion(playlistId, uuidv4(), keyword));
+                dispatch(addExclusion(playlistId, v4(), keyword));
             }
         }
     }
