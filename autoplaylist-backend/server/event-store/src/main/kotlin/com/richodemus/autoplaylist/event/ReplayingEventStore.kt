@@ -1,7 +1,7 @@
 package com.richodemus.autoplaylist.event
 
 import com.richodemus.autoplaylist.event.gcs.GoogleCloudStorageAdapter
-import com.richodemus.autoplaylist.eventstore.Event
+import com.richodemus.autoplaylist.dto.events.Event
 import com.richodemus.autoplaylist.eventstore.EventStore
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
  * Event store that replays all previous messages to each new consumer
  */
 @Component
-internal class ReplayingEventStore(
+class ReplayingEventStore internal constructor(
         private val googleCloudStorageAdapter: GoogleCloudStorageAdapter,
         registry: MeterRegistry
 ) : EventStore, CoroutineScope {
@@ -30,6 +30,7 @@ internal class ReplayingEventStore(
     init {
         registry.gauge("events", events) { it.size.toDouble() }
         events += runBlocking { googleCloudStorageAdapter.read().asSequence() }
+        logger.info("Got ${events.size} events")
     }
 
     // seems like actors are deprecated, will see what happens
