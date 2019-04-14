@@ -10,7 +10,6 @@ import com.richodemus.autoplaylist.event.gcs.GoogleCloudStorage
 import com.richodemus.autoplaylist.event.gcs.GoogleCloudStorageAdapter
 import com.richodemus.autoplaylist.dto.events.Event
 import com.richodemus.autoplaylist.dto.events.EventId
-import com.richodemus.autoplaylist.eventstore.EventStore
 import com.richodemus.autoplaylist.dto.events.EventType
 import com.richodemus.autoplaylist.dto.events.UserCreated
 import io.micrometer.core.instrument.Counter

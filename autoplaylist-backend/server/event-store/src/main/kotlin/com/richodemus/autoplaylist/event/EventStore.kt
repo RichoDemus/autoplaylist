@@ -1,4 +1,4 @@
-package com.richodemus.autoplaylist.eventstore
+package com.richodemus.autoplaylist.event
 
 import com.richodemus.autoplaylist.dto.events.Event
 

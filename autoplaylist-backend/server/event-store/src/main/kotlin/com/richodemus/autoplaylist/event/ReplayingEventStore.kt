@@ -2,7 +2,6 @@ package com.richodemus.autoplaylist.event
 
 import com.richodemus.autoplaylist.event.gcs.GoogleCloudStorageAdapter
 import com.richodemus.autoplaylist.dto.events.Event
-import com.richodemus.autoplaylist.eventstore.EventStore
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
