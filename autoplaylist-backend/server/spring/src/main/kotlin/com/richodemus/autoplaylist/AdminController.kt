@@ -26,7 +26,8 @@ class AdminController(val userService: UserService) {
         logger.info("Get users")
         val userId = session.getUserId() ?: return ResponseEntity(HttpStatus.FORBIDDEN)
         userService.getUser(userId)?.let {
-            if (it.spotifyUserId == SpotifyUserId("richodemus")) {
+//            if (it.spotifyUserId == SpotifyUserId("richodemus")) {
+            if(false){ // todo fix amind thing
                 return@let it
             }
             logger.warn("User {} tried to access admin stuff", userId)
@@ -36,7 +37,7 @@ class AdminController(val userService: UserService) {
         return ResponseEntity.ok(
                 userService.users.toList()
                         .map { it.second }
-                        .map { WebUser(it.userId, it.spotifyUserId) }
+                        .map { WebUser(it.userId, SpotifyUserId("todo fix :D")) }
         )
     }
 

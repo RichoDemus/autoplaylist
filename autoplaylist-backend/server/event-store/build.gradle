@@ -1,12 +1,13 @@
 dependencies {
     compile project(':server:dto')
-    compile project(':server:core')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "com.fasterxml.jackson.core:jackson-annotations:$jackson_version"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$kotlin_coroutines_version"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
-    compile 'org.springframework:spring-context:+' //spring boot will (hopefully) lock this down
+    compile 'org.springframework:spring-context:5.1.6.RELEASE' //spring boot will (hopefully) lock this down
     compile "io.micrometer:micrometer-core:$micrometer_version"
     compile "com.google.cloud:google-cloud-storage:$gcs_client_version"
+    compile 'com.github.jsr-330:core:1.4.0'
 
     testCompile 'junit:junit:4.12'
     testCompile "org.assertj:assertj-core:$assertj_version"

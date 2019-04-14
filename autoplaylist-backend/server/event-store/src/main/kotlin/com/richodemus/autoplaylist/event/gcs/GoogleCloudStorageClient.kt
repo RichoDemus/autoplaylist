@@ -20,7 +20,7 @@ internal class GoogleCloudStorageClient(
 ) : GoogleCloudStorage, CoroutineScope {
     private val logger = LoggerFactory.getLogger(javaClass)
     override val coroutineContext = Dispatchers.Default
-    private val directory = "events/v1/"
+    private val directory = "events/v2/"
 
     private val service = StorageOptions.newBuilder()
             .setProjectId(gcsProject)

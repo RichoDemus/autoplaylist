@@ -13,3 +13,5 @@
 !server/spotify-adapter/src
 !server/event-store/build.gradle
 !server/event-store/src
+!server/user-id-mapping-service/build.gradle
+!server/user-id-mapping-service/src

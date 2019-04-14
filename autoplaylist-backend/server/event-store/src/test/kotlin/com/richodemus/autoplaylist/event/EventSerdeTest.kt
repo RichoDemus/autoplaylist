@@ -23,9 +23,7 @@ class EventSerdeTest {
                 EventId("8f8d3ee2-ac7b-4b5c-bdcf-1f490275b4c2".toUUID()),
                 USER_CREATED,
                 "asd",
-                UserId("3076d07b-a289-4676-a7d2-4c7b7c1ea9de".toUUID()),
-                SpotifyUserId("spotify-user-id"),
-                RefreshToken("r")
+                UserId("3076d07b-a289-4676-a7d2-4c7b7c1ea9de".toUUID())
         ))
 
         assertJsonEquals(result, """
@@ -33,9 +31,7 @@ class EventSerdeTest {
                 "id":"8f8d3ee2-ac7b-4b5c-bdcf-1f490275b4c2",
                 "type":"USER_CREATED",
                 "timestamp":"asd",
-                "userId":"3076d07b-a289-4676-a7d2-4c7b7c1ea9de",
-                "spotifyUserId":"spotify-user-id",
-                "refreshToken":"r"
+                "userId":"3076d07b-a289-4676-a7d2-4c7b7c1ea9de"
             }
             """.trimIndent())
     }
@@ -49,9 +45,7 @@ class EventSerdeTest {
                 "id":"8f8d3ee2-ac7b-4b5c-bdcf-1f490275b4c2",
                 "type":"USER_CREATED",
                 "timestamp":"asd",
-                "userId":"3076d07b-a289-4676-a7d2-4c7b7c1ea9de",
-                "spotifyUserId":"spotify-user-id",
-                "refreshToken":"r"
+                "userId":"3076d07b-a289-4676-a7d2-4c7b7c1ea9de"
             }
             """.trimIndent().toByteArray())
 
@@ -59,9 +53,7 @@ class EventSerdeTest {
                 EventId("8f8d3ee2-ac7b-4b5c-bdcf-1f490275b4c2".toUUID()),
                 USER_CREATED,
                 "asd",
-                UserId("3076d07b-a289-4676-a7d2-4c7b7c1ea9de".toUUID()),
-                SpotifyUserId("spotify-user-id"),
-                RefreshToken("r")
+                UserId("3076d07b-a289-4676-a7d2-4c7b7c1ea9de".toUUID())
         ))
     }
 

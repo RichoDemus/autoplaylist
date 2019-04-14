@@ -1,8 +1,7 @@
 package com.richodemus.autoplaylist.event
 
-import com.richodemus.autoplaylist.event.gcs.GoogleCloudStorageAdapter
 import com.richodemus.autoplaylist.dto.events.Event
-import com.richodemus.autoplaylist.eventstore.EventStore
+import com.richodemus.autoplaylist.event.gcs.GoogleCloudStorageAdapter
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,5 +58,6 @@ class ReplayingEventStore internal constructor(
         googleCloudStorageAdapter.save(event)
         events += event
         runBlocking { actors.forEach { it.send(Any()) } }
+        logger.info("Event dispatched")
     }
 }

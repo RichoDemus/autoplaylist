@@ -31,7 +31,10 @@ internal class UserController(
     internal fun getSession(session: HttpSession): ResponseEntity<String> {
         val userId = session.getUserId()
         logger.info("Checking session ${session.id} for $userId")
-        val accessToken = userId?.let { userService.getUser(it) }?.accessToken
+
+        // todo check if we have a working access or refresh token
+        val accessToken = ""
+//        val accessToken = userId?.let { userService.getUser(it) }?.accessToken
 
         if (accessToken != null) {
             return ResponseEntity(HttpStatus.OK)
@@ -83,12 +86,12 @@ internal class UserController(
         }
 
         return runBlocking {
-            try {
-                ResponseEntity.ok(GetUserIdResponse(service.getSpotifyUserId(userId)))
-            } catch (e: Exception) {
-                logger.error("getSpotifyUserId failed: {}", e.message, e)
-                ResponseEntity<GetUserIdResponse>(HttpStatus.INTERNAL_SERVER_ERROR)
+            val spotifyUserId = service.getSpotifyUserId(userId)
+            if(spotifyUserId == null) {
+                logger.error("No spotify user id for user {}", userId)
+                return@runBlocking ResponseEntity<GetUserIdResponse>(HttpStatus.NOT_FOUND)
             }
+            return@runBlocking ResponseEntity.ok(GetUserIdResponse(spotifyUserId))
         }
     }
 }

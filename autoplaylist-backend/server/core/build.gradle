@@ -1,5 +1,7 @@
 dependencies {
     compile project(':server:dto')
+    compile project(':server:event-store')
+    compile project(':server:spotify-adapter')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$kotlin_coroutines_version"

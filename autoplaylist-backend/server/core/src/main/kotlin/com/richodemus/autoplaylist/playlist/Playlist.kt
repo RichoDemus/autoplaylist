@@ -7,11 +7,12 @@ import com.richodemus.autoplaylist.dto.PlaylistName
 import com.richodemus.autoplaylist.dto.Rules
 import com.richodemus.autoplaylist.dto.SpotifyPlaylistId
 import com.richodemus.autoplaylist.dto.Track
-import com.richodemus.autoplaylist.eventstore.EventStore
+import com.richodemus.autoplaylist.dto.UserId
 import com.richodemus.autoplaylist.dto.events.PlaylistRulesChanged
 import com.richodemus.autoplaylist.dto.events.PlaylistSyncChanged
+import com.richodemus.autoplaylist.event.EventStore
 import com.richodemus.autoplaylist.spotify.AccessToken
-import com.richodemus.autoplaylist.spotify.SpotifyPort
+import com.richodemus.autoplaylist.spotify.SpotifyService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,9 +27,9 @@ import java.time.ZonedDateTime
  */
 class Playlist(
         val id: PlaylistId,
+        val userId:  UserId,
         val name: PlaylistName,
-        private val accessToken: AccessToken,
-        private val spotifyPort: SpotifyPort,
+        private val spotifyPort: SpotifyService,
         private val eventStore: EventStore
 ) : CoroutineScope {
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -68,7 +69,7 @@ class Playlist(
      */
     suspend fun sync(): List<Album> {
         if (spotifyPlaylistId == null) {
-            val (generatedId, _) = spotifyPort.createPlaylist(accessToken, name)
+            val (generatedId, _) = spotifyPort.createPlaylist(userId, name)
             spotifyPlaylistId = generatedId
         }
 
@@ -80,8 +81,8 @@ class Playlist(
         logger.info("Sync playlist $name to Spotify")
 
         // todo I think we can do these in parallel?
-        val actualTracks = spotifyPort.getTracks(accessToken, spotifyPlaylistId)
-        val albumsWithTracks = rules.artists.flatMap { spotifyPort.getAlbums(accessToken, it) }
+        val actualTracks = spotifyPort.getTracks(userId,spotifyPlaylistId)
+        val albumsWithTracks = rules.artists.flatMap { spotifyPort.getAlbums(userId,it) }
 
         launch {
             logger.info("Got {} albums with {} tracks", albumsWithTracks.size, albumsWithTracks.flatMap { it.tracks }.size)
@@ -99,7 +100,7 @@ class Playlist(
         val missingTracks = expectedTracksDeduplicated.filterNot { it in actualTracks }
 
         try {
-            spotifyPort.addTracksToPlaylist(accessToken, spotifyPlaylistId, missingTracks.map { it.uri })
+            spotifyPort.addTracksToPlaylist(userId,spotifyPlaylistId, missingTracks.map { it.uri })
             logger.info("Done syncing {} tracks to {}", expectedTracksDeduplicated.size, this)
         } catch (e: Exception) {
             logger.error("Failed to create and fill {}", this, e)
@@ -160,7 +161,7 @@ class Playlist(
     @Synchronized
     suspend fun tracksFromRules(): List<Album> {
         if (tracksFromRules.isEmpty() && rules.artists.isNotEmpty()) {
-            tracksFromRules = rules.artists.flatMap { spotifyPort.getAlbums(accessToken, it) }
+            tracksFromRules = rules.artists.flatMap { spotifyPort.getAlbums(userId,it) }
                     .deduplicate()
                     .excludeTracks(rules.exclusions)
         }

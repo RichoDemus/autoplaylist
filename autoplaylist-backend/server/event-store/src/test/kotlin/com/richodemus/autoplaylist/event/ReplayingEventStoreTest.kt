@@ -10,7 +10,6 @@ import com.richodemus.autoplaylist.event.gcs.GoogleCloudStorage
 import com.richodemus.autoplaylist.event.gcs.GoogleCloudStorageAdapter
 import com.richodemus.autoplaylist.dto.events.Event
 import com.richodemus.autoplaylist.dto.events.EventId
-import com.richodemus.autoplaylist.eventstore.EventStore
 import com.richodemus.autoplaylist.dto.events.EventType
 import com.richodemus.autoplaylist.dto.events.UserCreated
 import io.micrometer.core.instrument.Counter
@@ -33,15 +32,14 @@ import java.util.concurrent.Executors
 class ReplayingEventStoreTest
     : CoroutineScope {
     override val coroutineContext = Dispatchers.Default
-    private val eventJson = "{\"id\":\"2b041378-66af-4cb0-a2b0-186fc0bdc139\",\"type\":\"USER_CREATED\",\"timestamp\":\"2018-08-29T11:27:14.623013Z\",\"userId\":\"2b041378-66af-4cb0-a2b0-186fc0bdc139\",\"spotifyUserId\":\"user\",\"refreshToken\":\"refresh-token\"}".trimIndent().toByteArray()
+    //language=JSON
+    private val eventJson = "{\"id\":\"2b041378-66af-4cb0-a2b0-186fc0bdc139\",\"type\":\"USER_CREATED\",\"timestamp\":\"2018-08-29T11:27:14.623013Z\",\"userId\":\"2b041378-66af-4cb0-a2b0-186fc0bdc139\"}".trimIndent().toByteArray()
 
     private val event = UserCreated(
             EventId(UUID.fromString("2b041378-66af-4cb0-a2b0-186fc0bdc139")),
             EventType.USER_CREATED,
             "2018-08-29T11:27:14.623013Z",
-            UserId(UUID.fromString("2b041378-66af-4cb0-a2b0-186fc0bdc139")),
-            SpotifyUserId("user"),
-            RefreshToken("refresh-token")
+            UserId(UUID.fromString("2b041378-66af-4cb0-a2b0-186fc0bdc139"))
     )
 
     private lateinit var registryMock: MeterRegistry
