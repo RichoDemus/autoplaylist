@@ -2,17 +2,17 @@ package com.richodemus.autoplaylist.event
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.richodemus.autoplaylist.eventstore.Event
-import com.richodemus.autoplaylist.eventstore.EventType
-import com.richodemus.autoplaylist.eventstore.EventType.PLAYLIST_CREATED
-import com.richodemus.autoplaylist.eventstore.EventType.PLAYLIST_RULES_CHANGED
-import com.richodemus.autoplaylist.eventstore.EventType.REFRESH_TOKEN_UPDATED
-import com.richodemus.autoplaylist.eventstore.EventType.USER_CREATED
-import com.richodemus.autoplaylist.eventstore.EventType.values
-import com.richodemus.autoplaylist.eventstore.PlaylistCreated
-import com.richodemus.autoplaylist.eventstore.PlaylistRulesChanged
-import com.richodemus.autoplaylist.eventstore.RefreshTokenUpdated
-import com.richodemus.autoplaylist.eventstore.UserCreated
+import com.richodemus.autoplaylist.dto.events.Event
+import com.richodemus.autoplaylist.dto.events.EventType
+import com.richodemus.autoplaylist.dto.events.EventType.PLAYLIST_CREATED
+import com.richodemus.autoplaylist.dto.events.EventType.PLAYLIST_RULES_CHANGED
+import com.richodemus.autoplaylist.dto.events.EventType.REFRESH_TOKEN_UPDATED
+import com.richodemus.autoplaylist.dto.events.EventType.USER_CREATED
+import com.richodemus.autoplaylist.dto.events.EventType.values
+import com.richodemus.autoplaylist.dto.events.PlaylistCreated
+import com.richodemus.autoplaylist.dto.events.PlaylistRulesChanged
+import com.richodemus.autoplaylist.dto.events.RefreshTokenUpdated
+import com.richodemus.autoplaylist.dto.events.UserCreated
 import javax.inject.Named
 import javax.inject.Singleton
 

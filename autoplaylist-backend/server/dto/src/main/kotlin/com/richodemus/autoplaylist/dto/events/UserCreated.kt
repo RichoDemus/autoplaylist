@@ -1,15 +1,16 @@
-package com.richodemus.autoplaylist.eventstore
+package com.richodemus.autoplaylist.dto.events
 
 import com.richodemus.autoplaylist.dto.RefreshToken
+import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
-import com.richodemus.autoplaylist.eventstore.EventType.REFRESH_TOKEN_UPDATED
-import com.richodemus.autoplaylist.now
+import com.richodemus.autoplaylist.dto.events.EventType.USER_CREATED
 
-data class RefreshTokenUpdated(
+data class UserCreated(
         val id: EventId = EventId(),
-        val type: EventType = REFRESH_TOKEN_UPDATED,
+        val type: EventType = USER_CREATED,
         val timestamp: String = now(),
         val userId: UserId = UserId(),
+        val spotifyUserId: SpotifyUserId,
         val refreshToken: RefreshToken
 ) : Event {
     override fun id() = id

@@ -8,11 +8,11 @@ import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
 import com.richodemus.autoplaylist.event.gcs.GoogleCloudStorage
 import com.richodemus.autoplaylist.event.gcs.GoogleCloudStorageAdapter
-import com.richodemus.autoplaylist.eventstore.Event
-import com.richodemus.autoplaylist.eventstore.EventId
+import com.richodemus.autoplaylist.dto.events.Event
+import com.richodemus.autoplaylist.dto.events.EventId
 import com.richodemus.autoplaylist.eventstore.EventStore
-import com.richodemus.autoplaylist.eventstore.EventType
-import com.richodemus.autoplaylist.eventstore.UserCreated
+import com.richodemus.autoplaylist.dto.events.EventType
+import com.richodemus.autoplaylist.dto.events.UserCreated
 import io.micrometer.core.instrument.Counter
 import io.micrometer.core.instrument.MeterRegistry
 import kotlinx.coroutines.CoroutineDispatcher

@@ -8,8 +8,8 @@ import com.richodemus.autoplaylist.dto.Rules
 import com.richodemus.autoplaylist.dto.SpotifyPlaylistId
 import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.eventstore.EventStore
-import com.richodemus.autoplaylist.eventstore.PlaylistRulesChanged
-import com.richodemus.autoplaylist.eventstore.PlaylistSyncChanged
+import com.richodemus.autoplaylist.dto.events.PlaylistRulesChanged
+import com.richodemus.autoplaylist.dto.events.PlaylistSyncChanged
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import kotlinx.coroutines.CoroutineScope

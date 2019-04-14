@@ -3,10 +3,10 @@ package com.richodemus.autoplaylist.user
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
-import com.richodemus.autoplaylist.eventstore.Event
+import com.richodemus.autoplaylist.dto.events.Event
 import com.richodemus.autoplaylist.eventstore.EventStore
-import com.richodemus.autoplaylist.eventstore.PlaylistCreated
-import com.richodemus.autoplaylist.eventstore.UserCreated
+import com.richodemus.autoplaylist.dto.events.PlaylistCreated
+import com.richodemus.autoplaylist.dto.events.UserCreated
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import org.slf4j.LoggerFactory
 import javax.inject.Named

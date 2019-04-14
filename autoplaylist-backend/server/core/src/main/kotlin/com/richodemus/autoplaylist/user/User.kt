@@ -5,15 +5,14 @@ import com.richodemus.autoplaylist.dto.PlaylistName
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
-import com.richodemus.autoplaylist.eventstore.Event
+import com.richodemus.autoplaylist.dto.events.Event
 import com.richodemus.autoplaylist.eventstore.EventStore
-import com.richodemus.autoplaylist.eventstore.PlaylistCreated
-import com.richodemus.autoplaylist.eventstore.RefreshTokenUpdated
+import com.richodemus.autoplaylist.dto.events.PlaylistCreated
+import com.richodemus.autoplaylist.dto.events.RefreshTokenUpdated
 import com.richodemus.autoplaylist.playlist.Playlist
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.SpotifyPort
 import kotlinx.coroutines.runBlocking
-import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.time.Instant
 

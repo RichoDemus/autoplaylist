@@ -4,9 +4,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyUserId
 import com.richodemus.autoplaylist.dto.UserId
-import com.richodemus.autoplaylist.eventstore.EventId
-import com.richodemus.autoplaylist.eventstore.EventType.USER_CREATED
-import com.richodemus.autoplaylist.eventstore.UserCreated
+import com.richodemus.autoplaylist.dto.events.EventId
+import com.richodemus.autoplaylist.dto.events.EventType.USER_CREATED
+import com.richodemus.autoplaylist.dto.events.UserCreated
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.util.UUID
