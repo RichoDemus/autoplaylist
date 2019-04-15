@@ -4,9 +4,7 @@ import com.richodemus.autoplaylist.dto.Artist
 import com.richodemus.autoplaylist.dto.ArtistId
 import com.richodemus.autoplaylist.dto.ArtistName
 import com.richodemus.autoplaylist.dto.PlaylistName
-import com.richodemus.autoplaylist.dto.SpotifyPlaylistId
 import com.richodemus.autoplaylist.dto.SpotifyUserId
-import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.UserId
 import com.richodemus.autoplaylist.spotify.AccessToken
 import com.richodemus.autoplaylist.spotify.SpotifyPort
