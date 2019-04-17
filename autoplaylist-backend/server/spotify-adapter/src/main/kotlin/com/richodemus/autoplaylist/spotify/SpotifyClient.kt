@@ -1,11 +1,12 @@
 package com.richodemus.autoplaylist.spotify
 
-import awaitStringResponse
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.Request
+import com.github.kittinunf.fuel.coroutines.awaitStringResponse
+import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import com.github.kittinunf.result.Result
 import com.richodemus.autoplaylist.dto.AlbumId
 import com.richodemus.autoplaylist.dto.ArtistId
@@ -155,13 +156,13 @@ internal class SpotifyClient(
     ))
 
     private suspend inline fun <reified T : Any> Request.deserialize(): T {
-        val (_, _, result) = this.awaitStringResponse()
+        val (_, _, result) = this.awaitStringResponseResult()
         when (result) {
             is Result.Failure -> {
                 val ex = result.getException()
                 if (result.error.response.statusCode == 429) {
                     logger.warn("Rate limit exceeded")
-                    val retryAfter = result.error.response.headers["Retry-After"]?.get(0)
+                    val retryAfter = result.error.response.headers["Retry-After"].firstOrNull()
                     if (retryAfter == null) {
                         logger.error("Missing retry-after header", ex)
                         throw ex
