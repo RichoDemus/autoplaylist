@@ -4,7 +4,6 @@ dependencies {
     compile project(':server:common:dto')
     compile project(':server:common:events')
 
-    compile "org.jetbrains.kotlin:kotlin-runtime:$rootProject.kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
     compile 'org.jetbrains:annotations'
 
