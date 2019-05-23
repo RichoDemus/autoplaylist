@@ -14,7 +14,7 @@ dependencies {
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$rootProject.jacksonVersion"
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
 
-    compile 'com.google.cloud:google-cloud-storage:1.35.0'
+    compile 'com.google.cloud:google-cloud-storage:1.75.0'
 
 //    testCompile "junit:junit:$rootProject.junitVersion"
 //    testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
