@@ -4,14 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import com.richo.reader.backend.exception.UserNotSubscribedToThatChannelException;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.ItemId;
-import com.richodemus.reader.dto.LegacyLabel;
 import com.richodemus.reader.dto.UserId;
 import com.richodemus.reader.dto.Username;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,16 +17,14 @@ public class User
 	public final UserId id;
 	private final Username name;
 	private final Map<FeedId, Set<ItemId>> feeds;
-	private final List<LegacyLabel> labels;
 	private long nextLabelId;
 
-	public User(final UserId id, final Username username, final long nextLabelId, final Map<FeedId, Set<ItemId>> feedsIds, final List<LegacyLabel> labels)
+	public User(final UserId id, final Username username, final long nextLabelId, final Map<FeedId, Set<ItemId>> feedsIds)
 	{
 		this.id = id;
 		this.name = username;
 		this.nextLabelId = nextLabelId;
 		this.feeds = feedsIds;
-		this.labels = labels;
 	}
 
 	public User(final UserId userId, Username username, Set<FeedId> feedIds)
@@ -37,7 +32,6 @@ public class User
 		this.id = userId;
 		this.name = username;
 		this.feeds = new HashMap<>();
-		this.labels = new ArrayList<>();
 		feedIds.forEach(id -> feeds.put(id, new HashSet<>()));
 	}
 
@@ -84,16 +78,6 @@ public class User
 	public synchronized long incrementAndGetNextLabelId()
 	{
 		return nextLabelId++;
-	}
-
-	public List<LegacyLabel> getLabels()
-	{
-		return labels;
-	}
-
-	public void addLabel(LegacyLabel label)
-	{
-		labels.add(label);
 	}
 
 	@Override

@@ -22,7 +22,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -58,7 +57,7 @@ public class BackendTest
 			Collections.singletonList(new Item(new ItemId("feed2-item1"), "title", "desc", "2017-01-01", "http", Duration.ZERO, 0L)));
 
 
-	private static final User EXISTING_USER = new User(new UserId("id"), new Username("existing_user"), 0L, ImmutableMap.of(FEED_1.getId(), Sets.newHashSet(ITEM_THAT_SHOULD_BE_READ.getId()), FEED_2.getId(), new HashSet<>()), new ArrayList<>());
+	private static final User EXISTING_USER = new User(new UserId("id"), new Username("existing_user"), 0L, ImmutableMap.of(FEED_1.getId(), Sets.newHashSet(ITEM_THAT_SHOULD_BE_READ.getId()), FEED_2.getId(), new HashSet<>()));
 
 	private Backend target;
 	private SubscriptionRepository subscriptionRepository;
