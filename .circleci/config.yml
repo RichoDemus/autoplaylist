@@ -85,8 +85,8 @@ jobs:
               -e CLIENT_ID=df0732a2defe44ecabd30868fa57a2d5 \
               -e CLIENT_SECRET=$SPOTIFY_SECRET \
               -e REDIRECT_URL=https://autoplaylists.richodemus.com/callback \
-              -e GCS_PROJECT=richo-reader \
-              -e GCS_BUCKET=autoplaylist \
+              -e GCS_PROJECT=richo-main \
+              -e GCS_BUCKET=richo-autoplaylist \
               richodemus/autoplaylists-backend:latest
 
             docker system prune -f
