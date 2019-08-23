@@ -10,9 +10,6 @@ RUN npm install
 
 COPY public /app/public
 COPY src /app/src
-COPY tsconfig.json /app/
-COPY tsconfig.prod.json /app/
-COPY tsconfig.test.json /app/
 COPY tslint.json /app/
 RUN CI=true npm test && npm run build && npm install -g serve
 
