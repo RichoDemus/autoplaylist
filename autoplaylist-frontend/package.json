@@ -8,24 +8,24 @@
     "react": "16.6.3",
     "react-dom": "16.6.3",
     "react-redux": "5.1.1",
-    "react-scripts-ts": "^4.0.8",
+    "react-scripts": "^3.1.1",
     "redux": "4.0.1",
     "uuid": "3.3.3"
   },
   "scripts": {
-    "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "watch": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "@types/jest": "24.0.18",
-    "@types/node": "12.7.2",
-    "@types/react": "16.9.2",
-    "@types/react-dom": "16.9.0",
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.2",
+    "@types/react": "^16.9.2",
+    "@types/react-dom": "^16.9.0",
     "@types/react-redux": "7.1.2",
     "eslint-plugin-jsx-a11y": "6.2.3",
-    "typescript": "3.5.3"
+    "typescript": "^3.5.3"
   },
   "browserslist": [
     ">0.2%",
