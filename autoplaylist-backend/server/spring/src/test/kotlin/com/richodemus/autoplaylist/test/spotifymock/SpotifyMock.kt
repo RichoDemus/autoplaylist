@@ -125,7 +125,7 @@ class SpotifyMock : SpotifyPort {
         }
 
         val playlist = PlaylistWithTracks(SpotifyPlaylistId(UUID.randomUUID().toString()), name)
-        playlists += playlist
+        playlists = playlists + playlist
         return playlist.toPlaylist()
     }
 

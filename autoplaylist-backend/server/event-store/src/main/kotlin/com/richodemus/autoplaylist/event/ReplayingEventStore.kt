@@ -28,7 +28,7 @@ class ReplayingEventStore internal constructor(
 
     init {
         registry.gauge("events", events) { it.size.toDouble() }
-        events += runBlocking { googleCloudStorageAdapter.read().asSequence() }
+        events = events + runBlocking { googleCloudStorageAdapter.read().asSequence() }
         logger.info("Got ${events.size} events")
     }
 
@@ -37,7 +37,7 @@ class ReplayingEventStore internal constructor(
     @ObsoleteCoroutinesApi
     @Synchronized
     override fun consume(onEvent: suspend (Event) -> Unit) {
-        actors += actor {
+        actors = actors + actor {
             var nextMessage = 0
             while (!channel.isClosedForSend) {
                 if (events.size > nextMessage) {
@@ -56,7 +56,7 @@ class ReplayingEventStore internal constructor(
     override fun produce(event: Event) {
         logger.info("New event: $event")
         googleCloudStorageAdapter.save(event)
-        events += event
+        events = events + event
         runBlocking { actors.forEach { it.send(Any()) } }
         logger.info("Event dispatched")
     }

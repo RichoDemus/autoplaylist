@@ -146,7 +146,7 @@ class ReplayingEventStoreTest
             dispatcher: CoroutineDispatcher = Dispatchers.Default
     ): Deferred<List<Event>> {
         var events = listOf<Event>()
-        this.consume { events += it }
+        this.consume { events = events + it }
         return async(dispatcher) {
             while (events.size < count) {
                 delay(10)

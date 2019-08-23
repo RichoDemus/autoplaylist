@@ -8,6 +8,7 @@ import com.richodemus.autoplaylist.dto.RefreshToken
 import com.richodemus.autoplaylist.dto.SpotifyPlaylistId
 import com.richodemus.autoplaylist.dto.Track
 import com.richodemus.autoplaylist.dto.TrackUri
+import kotlinx.coroutines.delay
 import org.slf4j.LoggerFactory
 import javax.inject.Named
 import javax.inject.Singleton
@@ -78,10 +79,10 @@ internal class SpotifyAdapter(private val spotifyClient: SpotifyClient) : Spotif
                 val exception = e.cause
                 if (exception is RateLimitExceededException) {
                     logger.warn("Rate Limit Exceeded, sleeping for ${exception.retryAfter} seconds")
-                    Thread.sleep(exception.retryAfter * 1000 + 1000) //lets sleep an extra second
+                    delay(exception.retryAfter * 1000 + 1000) //lets sleep an extra second
                 } else {
                     logger.warn("Failed call: ${e.message}, retrying", e)
-                    Thread.sleep(10L)
+                    delay(10L)
                 }
             }
         }
