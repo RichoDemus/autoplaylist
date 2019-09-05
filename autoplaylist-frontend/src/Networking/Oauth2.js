@@ -4,7 +4,7 @@ const getFrontendBaseUrl = () => {
     if (window.location.hostname === "localhost") {
         return "http://localhost:3000"
     }
-    return "https://autoplaylists.richodemus.com"
+    return "https://autoplaylist.richodemus.com"
 };
 
 export const authenticate = () => {

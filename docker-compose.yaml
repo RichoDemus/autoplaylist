@@ -1,12 +1,12 @@
 version: "3"
 services:
   frontend:
-    image: richodemus/autoplaylists-frontend:latest
+    image: richodemus/autoplaylist-frontend:latest
     ports:
       - "3000:5000"
 
   backend:
-    image: richodemus/autoplaylists-backend:latest
+    image: richodemus/autoplaylist-backend:latest
     ports:
       - "8080:8080"
     environment:

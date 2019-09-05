@@ -31,11 +31,11 @@ jobs:
           no_output_timeout: 30m
       - run:
           name: Write frontend image to disk
-          command: docker save --output /workspace/frontend.img richodemus/autoplaylists-frontend:latest
+          command: docker save --output /workspace/frontend.img richodemus/autoplaylist-frontend:latest
           no_output_timeout: 30m
       - run:
           name: Write backend image to disk
-          command: docker save --output /workspace/backend.img richodemus/autoplaylists-backend:latest
+          command: docker save --output /workspace/backend.img richodemus/autoplaylist-backend:latest
           no_output_timeout: 30m
       - persist_to_workspace:
           root: /workspace
@@ -60,8 +60,8 @@ jobs:
           no_output_timeout: 30m
       - run: |
           docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker push richodemus/autoplaylists-frontend:latest
-          docker push richodemus/autoplaylists-backend:latest
+          docker push richodemus/autoplaylist-frontend:latest
+          docker push richodemus/autoplaylist-backend:latest
 
   deploy:
     machine:
@@ -73,21 +73,21 @@ jobs:
       - run: |
           echo $KNOWN_HOST >> ~/.ssh/known_hosts
           ssh richodemus@richodemus.com << EOF
-            docker pull richodemus/autoplaylists-frontend:latest
-            docker pull richodemus/autoplaylists-backend:latest
+            docker pull richodemus/autoplaylist-frontend:latest
+            docker pull richodemus/autoplaylist-backend:latest
 
-            docker rm -f autoplaylists-frontend
-            docker rm -f autoplaylists-backend
+            docker rm -f autoplaylist-frontend
+            docker rm -f autoplaylist-backend
 
-            docker run --name autoplaylists-frontend -d --log-driver=gcplogs --log-driver=json-file richodemus/autoplaylists-frontend:latest
-            docker run --name autoplaylists-backend -d --log-driver=gcplogs --log-driver=json-file \
+            docker run --name autoplaylist-frontend -d --log-driver=gcplogs --log-driver=json-file richodemus/autoplaylist-frontend:latest
+            docker run --name autoplaylist-backend -d --log-driver=gcplogs --log-driver=json-file \
               -p 9090:8080 \
               -e CLIENT_ID=df0732a2defe44ecabd30868fa57a2d5 \
               -e CLIENT_SECRET=$SPOTIFY_SECRET \
-              -e REDIRECT_URL=https://autoplaylists.richodemus.com/callback \
+              -e REDIRECT_URL=https://autoplaylist.richodemus.com/callback \
               -e GCS_PROJECT=richo-main \
               -e GCS_BUCKET=richo-autoplaylist \
-              richodemus/autoplaylists-backend:latest
+              richodemus/autoplaylist-backend:latest
 
             docker system prune -f
           EOF

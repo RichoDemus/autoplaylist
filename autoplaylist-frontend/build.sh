@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker build -t richodemus/autoplaylists-frontend:latest .
+docker build -t richodemus/autoplaylist-frontend:latest .
