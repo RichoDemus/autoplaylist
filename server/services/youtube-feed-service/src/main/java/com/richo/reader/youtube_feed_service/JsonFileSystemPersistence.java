@@ -7,7 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.Optional;
@@ -47,7 +49,12 @@ public class JsonFileSystemPersistence {
             final String path = saveRoot + "/feeds/" + feed.getId();
             final boolean success = new File(path).mkdirs();
             logger.trace("Creating {} successful: {}", path, success);
-            objectMapper.writeValue(new File(path + "/data.json"), feed);
+            var file = new File(path + "/data.json");
+            objectMapper.writeValue(file, feed);
+            var asString = objectMapper.writeValueAsString(feed);
+            try(BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                writer.write(asString);
+            }
         } catch (IOException e) {
             logger.warn("Unable to write feed {} to disk", feed.getId(), e);
         }
