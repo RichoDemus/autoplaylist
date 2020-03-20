@@ -34,7 +34,11 @@ public class AdminResource
 	@Path("/download")
 	public DownloadJobStatus getStatus()
 	{
-		return new DownloadJobStatus(periodicDownloadOrchestrator.lastRun(), periodicDownloadOrchestrator.isRunning());
+		return new DownloadJobStatus(
+				periodicDownloadOrchestrator.lastRun(),
+				periodicDownloadOrchestrator.isRunning(),
+				periodicDownloadOrchestrator.lastRunOutCome()
+		);
 	}
 
 	@POST

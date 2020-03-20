@@ -14,6 +14,7 @@ $(function ()
             }
 
             $("#downloadJobLastRun").text("Download job last run: " + status.lastRun);
+            $("#downloadJobLastRunOutCome").text("Download job outcome: " + status.lastRunOutCome);
 
         });
     });
