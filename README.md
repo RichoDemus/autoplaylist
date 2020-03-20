@@ -14,6 +14,15 @@
 ### Check for outdated dependencies
     ./gradlew dependencyUpdates
 
+### Deploy
+```
+docker build -t richodemus/reader .
+docker push
+docker-compose pull #on server
+docker rm -f reader
+docker-compose up -d
+```
+
 ## Features TODO
 * Use my classpath scanner
 * add a captcha for signups

@@ -8,7 +8,7 @@ task copyDependencies(type: Copy) {
     into 'build/dependencies'
 }
 
-task buildImage(type: DockerBuildImage, dependsOn: copyDependencies) {
+task buildImage(type: DockerBuildImage) {
     description = "Build Docker Image, use -Ptag=X to tag with X instead of latest"
     dockerFile = file('./Dockerfile')
     inputDir = file('.')
