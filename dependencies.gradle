@@ -19,13 +19,13 @@ ext {
     // test dependencies
     junitVersion = '4.12'
     assertjVersion = '3.10.0'
-    mockitoVersion = '2.19.0'
+    mockitoVersion = '3.3.3'
     restassuredVersion = '3.1.0'
     dockerClientVersion = '6.1.0'
     awaitilityVersion = '3.1.1'
 
     // plugins
-    gradleVersionsPluginVersion = '0.20.0'
+    gradleVersionsPluginVersion = '0.28.0'
     gradleDependencyAnalyzePluginVersion = '1.2.2'
     gradleDockerPluginVersion = '3.4.3'
 }
