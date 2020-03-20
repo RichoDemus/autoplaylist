@@ -186,7 +186,7 @@ public class YoutubeChannelDownloader {
                     .getItems();
         } catch (IOException e) {
             logger.error("Unable to find channel {}", feedId, e);
-            return Optional.empty();
+            throw new RuntimeException(e);
         }
 
         if (channels == null) {

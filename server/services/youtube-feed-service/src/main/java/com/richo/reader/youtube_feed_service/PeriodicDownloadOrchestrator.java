@@ -32,6 +32,7 @@ public class PeriodicDownloadOrchestrator {
     private final ZonedDateTime timeToRun;
     private boolean isRunning = false;
     private LocalDateTime lastRun = LocalDateTime.MIN;
+    private String lastRunOutCome = "not run";
 
     @Inject
     public PeriodicDownloadOrchestrator(FeedCache cache, YoutubeDownloadManager downloader) {
@@ -84,16 +85,25 @@ public class PeriodicDownloadOrchestrator {
         return lastRun;
     }
 
+    public String lastRunOutCome() {
+        return lastRunOutCome;
+    }
+
     private void addDownloadsTasksToExecutor() {
         isRunning = true;
         try {
             logger.info("Midnight, time to download");
+            lastRun = LocalDateTime.now();
             final LinkedHashSet<FeedId> feedIds = new LinkedHashSet<>(cache.getAllFeedIds());
             logger.info("{} feeds to download", feedIds.size());
 
-            feedIds.forEach(feedId -> runWithExceptionHandling(feedId, downloader::downloadFeed));
-            lastRun = LocalDateTime.now();
+            feedIds.forEach(downloader::downloadFeed);
+
+        }catch (Exception e) {
+            logger.error("Failed to download feeds", e);
+            lastRunOutCome = e.getMessage();
         } finally {
+            lastRunOutCome = "OK";
             isRunning = false;
         }
     }
@@ -102,23 +112,19 @@ public class PeriodicDownloadOrchestrator {
         isRunning = true;
         try {
             logger.info("It's 4 in the morning, time to update statistics");
-            cache.getAllFeedIds().forEach(feedId -> runWithExceptionHandling(feedId, downloader::updateFeedStatistics));
+//            cache.getAllFeedIds().forEach(feedId -> runWithExceptionHandling(feedId, downloader::updateFeedStatistics));
+            cache.getAllFeedIds().forEach(downloader::updateFeedStatistics);
             lastRun = LocalDateTime.now();
+        }catch (Exception e) {
+            logger.error("Failed to update statistics", e);
+            lastRunOutCome += " and " + e.getMessage();
         } finally {
+            lastRunOutCome += " and OK";
             isRunning = false;
         }
     }
 
     private long calculateDelayUntilMidnight() {
         return ChronoUnit.MILLIS.between(Instant.now(), timeToRun);
-    }
-
-    private void runWithExceptionHandling(FeedId feedId, Consumer<FeedId> consumer) {
-        try {
-            consumer.accept(feedId);
-        } catch (Exception e) {
-            logger.error("Failed to run job", e);
-            throw e;
-        }
     }
 }
