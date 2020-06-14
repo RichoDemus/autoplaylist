@@ -1,0 +1,37 @@
+apply plugin: 'kotlin'
+
+description = 'youtube-feed-service'
+dependencies {
+    compile project(':server:common:dto')
+    compile project(':server:common:events')
+    compile project(':server:common:google-cloud-storage-adapter')
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
+    compile 'org.jetbrains:annotations'
+    compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
+    compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
+    compile "com.google.guava:guava:$rootProject.guavaVersion"
+    compile "com.fasterxml.jackson.core:jackson-databind:$rootProject.jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$rootProject.jacksonVersion"
+    compile "com.google.apis:google-api-services-youtube:$rootProject.youtubeApiVersion"
+    compile "com.google.http-client:google-http-client-jackson2:$rootProject.googleHttpClientVersion"
+    compile "com.google.http-client:google-http-client:$rootProject.googleHttpClientVersion"
+    compile "io.dropwizard.metrics:metrics-core:$rootProject.dropwizardMetricsVersion"
+
+    testCompile "junit:junit:$rootProject.junitVersion"
+    testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
+    testRuntime "org.slf4j:slf4j-simple:$rootProject.slf4jVersion"
+}
+
+repositories {
+    maven { url "http://google-api-client-libraries.appspot.com/mavenrepo" }
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.kotlinVersion"
+    }
+}

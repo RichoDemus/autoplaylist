@@ -1,0 +1,45 @@
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'ca.cutterslade.analyze'
+
+defaultTasks 'check', 'build'
+
+allprojects {
+//    apply plugin: 'ca.cutterslade.analyze'
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply from: "$rootProject.projectDir/dependencies.gradle"
+    repositories {
+        jcenter()
+    }
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:all" << "-Werror"
+        }
+    }
+    configurations {
+        all*.exclude group: 'org.glassfish.hk2.external', module: 'javax.inject'
+        all*.exclude group: 'com.google.guava', module: 'guava-jdk5'
+    }
+    dependencies {
+//        permitUnusedDeclared "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
+//        permitUnusedDeclared project(':server:core:web')
+    }
+    configurations.all {
+        resolutionStrategy {
+            force "org.jetbrains.kotlin:kotlin-reflect:$rootProject.kotlinVersion"
+        }
+    }
+}
+
+buildscript {
+    apply from: "$rootProject.projectDir/dependencies.gradle"
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.github.ben-manes:gradle-versions-plugin:$rootProject.gradleVersionsPluginVersion"
+        classpath "ca.cutterslade.gradle:gradle-dependency-analyze:$rootProject.gradleDependencyAnalyzePluginVersion"
+    }
+}

@@ -1,0 +1,17 @@
+description = 'Backend'
+dependencies {
+    compile project(':server:common:dto')
+    compile project(':server:services:user-service')
+    compile project(':server:services:youtube-feed-service')
+    compile project(':server:services:subscription-service')
+    compile project(':server:services:label-service')
+    compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
+    compile "com.google.inject:guice:$rootProject.guiceVersion"
+    compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
+    compile "com.google.guava:guava:$rootProject.guavaVersion"
+    compile "io.dropwizard.metrics:metrics-core:$rootProject.dropwizardMetricsVersion"
+
+    testCompile "junit:junit:$rootProject.junitVersion"
+    testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
+}

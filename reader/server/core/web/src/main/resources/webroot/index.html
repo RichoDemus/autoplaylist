@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Reader</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Bootstrap theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+
+    <!-- Custom styles for this template -->
+    <!-- <link href="theme.css" rel="stylesheet"> -->
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body role="document">
+
+<!-- Fixed navbar -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Reader</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a id="addFeedNav" href="#" data-toggle="modal" data-target="#addFeedModal">Add Feed</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li class="divider"></li>
+                        <li class="dropdown-header">Nav header</li>
+                        <li><a href="#">Separated link</a></li>
+                        <li><a href="#">One more separated link</a></li>
+                    </ul>
+                </li>
+                <li><a id="logoutButton" href="#" onclick="Buttons.logout()">Logout</a></li>
+                <li><a id="adminButton" href="#" data-toggle="modal" data-target="#adminModal">Admin</a></li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</nav>
+
+
+<div class="container theme-showcase" role="main">
+    <div class="mainDiv" id="loginDiv">
+        <div class="jumbotron">
+            <h1>Welcome to Reader</h1>
+
+            <p>A youtube subscription service</p>
+        </div>
+
+        <h3>Login</h3>
+
+        <div>
+            <label for="nameInput">Username</label><input type="text" name="username" id="nameInput"/> <br/>
+            <label for="passwordInput">Password</label><input type="password" name="password" id="passwordInput"/> <br/>
+            <button id="loginButton" type="button" class="btn" onclick="Buttons.login()">Login</button>
+        </div>
+    </div>
+    <div class="mainDiv" id="signupDiv">
+        <h3>Create new account</h3>
+        <div>
+            <label for="signupNameInput">Username</label><input type="text" name="username" id="signupNameInput"/> <br/>
+            <label for="signupPasswordInput">Password</label><input type="password" name="password" id="signupPasswordInput"/> <br/>
+            <label for="signupPasswordInput2">Confirm Password</label><input type="password" name="password2" id="signupPasswordInput2"/> <br/>
+            <label for="inviteCode">Invite Code</label><input type="text" name="inviteCode" id="inviteCode"/> <br/>
+            <button id="createUserButton" type="button" class="btn" onclick="Buttons.signup()">Create User</button>
+        </div>
+    </div>
+    <div class="mainDiv" id="mainPageDiv" style="display:none">
+        <!-- Main jumbotron for a primary marketing message or call to action -->
+        <div class="jumbotron">
+            <h1>Welcome to Reader</h1>
+
+            <p>This is a template showcasing the optional theme stylesheet included in Bootstrap. Use it as a starting
+                point
+                to create something more unique by building on or modifying it.</p>
+        </div>
+
+        <div class="page-header">
+            <h1>Tables</h1>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <label for="createLabelInput">Create label</label><input id="createLabelInput" type="text" name="label">
+                <button type="button" class="btn btn-xs btn-default" onclick="Buttons.createLabel()">Add</button> <br/>
+                <label for="feedToBeAddedToLabelInput">Add Feed</label><input id="feedToBeAddedToLabelInput" type="text" name="feedToAddToLabel"><label for="labelForFeedToBeAddedTo">to Label</label><input id="labelForFeedToBeAddedTo" type="text" name="labelForFeedToBeAddedTo">
+                <button type="button" class="btn btn-xs btn-default" onclick="Buttons.addFeedToLabel()">Add</button> <br/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <table class="table" id="labelListTable">
+                    <thead>Labels</thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <table class="table" id="feedListTable">
+                    <thead>Feeds</thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="col-md-9">
+                <table class="table table-striped table-bordered table-hover" id="itemListTable">
+                    <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Duration</th>
+                        <th>Views</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="adminModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Admin</h4>
+      </div>
+      <div class="modal-body">
+        <p id="downloadJobLastRun">Download job last run: Fetching...</p>
+        <p id="downloadJobStatus">Download job status: Fetching...</p>
+        <p id="downloadJobLastRunOutCome">Download job outcome: Fetching...</p>
+          <button id="runDownloadJobButton" type="button" class="btn btn-default" onclick="Buttons.runJob()" disabled>Run Job</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="addFeedModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Feed</h4>
+            </div>
+            <div class="modal-body">
+                <p>Please enter the full url to the channel.</p>
+                <label>URL<input type="url" id="newFeedUrl" size="35"></label>
+                <button id="addFeedButton" type="button" class="btn btn-default" onclick="Buttons.addFeed()">Add Feed</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+<script src="js/lib/persist-js/persist-min.js"></script>
+<script src="js/Main.js"></script>
+<script src="js/Api.js"></script>
+<script src="js/Authentication.js"></script>
+<script src="js/Navigation.js"></script>
+<script src="js/Buttons.js"></script>
+<script src="js/Persistence.js"></script>
+<script src="js/Table.js"></script>
+<script src="js/Service.js"></script>
+<script src="js/FormOnLoad.js"></script>
+</body>
+</html>

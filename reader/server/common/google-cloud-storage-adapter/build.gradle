@@ -1,0 +1,30 @@
+apply plugin: 'kotlin'
+
+dependencies {
+    compile project(':server:common:dto')
+    compile project(':server:common:events')
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$rootProject.kotlinVersion"
+    compile 'org.jetbrains:annotations'
+
+    compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
+    compile "com.fasterxml.jackson.core:jackson-core:$rootProject.jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-databind:$rootProject.jacksonVersion"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$rootProject.jacksonVersion"
+    compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
+
+    compile 'com.google.cloud:google-cloud-storage:1.75.0'
+
+//    testCompile "junit:junit:$rootProject.junitVersion"
+//    testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
+//    testCompile "org.awaitility:awaitility:$rootProject.awaitilityVersion"
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.kotlinVersion"
+    }
+}
