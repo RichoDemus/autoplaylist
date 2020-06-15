@@ -14,6 +14,9 @@ import ru.vyarus.dropwizard.guice.module.support.DropwizardAwareModule;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.time.Duration;
+import java.util.Optional;
+
+import static com.google.inject.name.Names.named;
 
 public class GuiceModule extends DropwizardAwareModule<ReaderConfiguration>
 {
@@ -27,11 +30,23 @@ public class GuiceModule extends DropwizardAwareModule<ReaderConfiguration>
 		bind(BackendHealthCheck.class);
 		bindEventStore();
 		bind(MetricRegistry.class).toInstance(environment().metrics());
+		bindApiKey();
+	}
+
+	protected void bindApiKey() {
+		bind(String.class).annotatedWith(named("apiKey")).toInstance(getApiKey());
 	}
 
 	protected void bindEventStore()
 	{
 		bind(EventStore.class).to(GoogleCloudStorageAdapter.class);
+	}
+
+	private String getApiKey() {
+		return Optional.ofNullable(System.getProperty("reader.gcs.key"))
+				.map(String::trim)
+				.filter(s -> !s.isEmpty())
+				.orElseThrow(() -> new IllegalArgumentException("Missing property reader.gcs.key/$GCS_KEY"));
 	}
 
 	//todo move to backend guice stuff

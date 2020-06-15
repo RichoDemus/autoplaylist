@@ -117,7 +117,7 @@ public class YoutubeChannelDownloader {
     }
 
     public static void main(String[] args) throws IOException {
-        final YoutubeChannelDownloader downloader = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
+        final YoutubeChannelDownloader downloader = new YoutubeChannelDownloader(null, "api-key-here");
         downloader.printVideoViewsfromItemApi();
         downloader.channelStatistics();
     }

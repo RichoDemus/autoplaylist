@@ -23,6 +23,7 @@ ENTRYPOINT []
 CMD java \
 -Dreader.gcs.project=$GCS_PROJECT \
 -Dreader.gcs.bucket=$GCS_BUCKET \
+-Dreader.gcs.key=$GCS_KEY \
 -Xmx2G \
 -XX:+UseConcMarkSweepGC \
 -XX:+CMSParallelRemarkEnabled \

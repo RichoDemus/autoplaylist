@@ -11,6 +11,7 @@ import com.richo.reader.backend.user.UserServicePort;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 import static com.google.inject.name.Names.named;
 
@@ -21,7 +22,6 @@ public class BackendModule extends AbstractModule
 	{
 		bind(Backend.class);
 		bind(Duration.class).toInstance(Duration.of(1, ChronoUnit.DAYS));
-		bind(String.class).annotatedWith(named("apiKey")).toInstance("AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
 		bind(SubscriptionRepository.class).to(SubscriptionServicePort.class);
 		bind(FeedRepository.class).to(FeedServicePort.class);
 		bind(UserRepository.class).to(UserServicePort.class);

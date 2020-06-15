@@ -53,7 +53,7 @@ public class PeriodicDownloadOrchestratorTest {
     @Test
     public void shouldWorkRealDownloader() throws Exception {
         final FeedCache cache = new FeedCache(new JsonFileSystemPersistence(saveRoot));
-        final YoutubeDownloadManager downloader = new YoutubeDownloadManager(new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30"), cache);
+        final YoutubeDownloadManager downloader = new YoutubeDownloadManager(new YoutubeChannelDownloader(null, "api-key-here"), cache);
         final PeriodicDownloadOrchestrator target = new PeriodicDownloadOrchestrator(cache, downloader, ZonedDateTime.now());
         target.start();
         System.out.println("Sleeping...");
@@ -67,7 +67,7 @@ public class PeriodicDownloadOrchestratorTest {
     @Test
     public void actuallyDownloadEverything() throws Exception {
         final FeedCache cache = new FeedCache(new JsonFileSystemPersistence("../data"));
-        final YoutubeDownloadManager downloader = new YoutubeDownloadManager(new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30"), cache);
+        final YoutubeDownloadManager downloader = new YoutubeDownloadManager(new YoutubeChannelDownloader(null, "api-key-here"), cache);
         final PeriodicDownloadOrchestrator target = new PeriodicDownloadOrchestrator(cache, downloader, ZonedDateTime.now());
         target.start();
         System.out.println("Sleeping...");

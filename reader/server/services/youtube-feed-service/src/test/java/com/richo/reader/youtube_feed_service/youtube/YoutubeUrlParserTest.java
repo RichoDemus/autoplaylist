@@ -51,7 +51,7 @@ public class YoutubeUrlParserTest {
 
     @Before
     public void setUp() {
-        target = new YoutubeChannelDownloader(null, "AIzaSyChI7lMyLfc1ckOqcC-z2Oz-Lrq6d09x30");
+        target = new YoutubeChannelDownloader(null, "api-key-here");
     }
 
     @Ignore("This test uses the live youtube api")
