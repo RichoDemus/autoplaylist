@@ -21,9 +21,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.time.ZoneOffset.UTC;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class YoutubeDownloadManager {
@@ -97,9 +98,10 @@ public class YoutubeDownloadManager {
     }
 
     private List<Item> toItemWithStatistics(List<Item> items) {
-        logger.info("Getting statistics for {} items", items.size());
-        final String ids = items.stream().map(Item::getId).map(ItemId::getValue).collect(joining(","));
-        final Map<ItemId, DurationAndViewcount> statistics = youtubeChannelDownloader.getStatistics(ids);
+        logger.debug("Getting statistics for {} items", items.size());
+        final Set<String> ids = items.stream().map(Item::getId).map(ItemId::getValue).collect(Collectors.toSet());
+        final String dedupedIds = String.join(",", ids);
+        final Map<ItemId, DurationAndViewcount> statistics = youtubeChannelDownloader.getStatistics(dedupedIds);
         return items.stream()
                 .map(item ->
                 {
