@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.MONTHS;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -135,6 +137,21 @@ public class YoutubeDownloadManagerTest {
         assertThat(result.getViews()).isEqualTo(newViewCount);
         assertThat(result.getDuration()).isEqualTo(newDuration);
         assertThat(result).isEqualToIgnoringGivenFields(originalItem, "views", "duration");
+    }
+
+    @Test
+    public void shouldNotAlwaysDownloadStatistics() {
+        LocalDateTime firstOfMay = LocalDateTime.of(2020, 1, 1, 0, 0);
+        Item uploadedToday = new Item(new ItemId("id"), "title", "desc", firstOfMay, LocalDateTime.MIN, Duration.ZERO, 0);
+
+        assertThat(YoutubeDownloadManager.shouldGetStatistics(uploadedToday, firstOfMay)).isTrue();
+
+        Item uploadedEightDaysAgo = new Item(new ItemId("id"), "title", "desc", firstOfMay.minus(8, DAYS), LocalDateTime.MIN, Duration.ZERO, 0);
+        assertThat(YoutubeDownloadManager.shouldGetStatistics(uploadedEightDaysAgo, firstOfMay)).isFalse();
+
+        Item uploadedAMonthAgo = new Item(new ItemId("id"), "title", "desc", firstOfMay.minus(1, MONTHS), LocalDateTime.MIN, Duration.ZERO, 0);
+        assertThat(YoutubeDownloadManager.shouldGetStatistics(uploadedAMonthAgo, firstOfMay)).isTrue();
+
     }
 
     private YoutubeChannelDownloader getYoutubeChannelDownloaderMock() {

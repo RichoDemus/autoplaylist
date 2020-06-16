@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.time.ZoneOffset.UTC;
+import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.toList;
 
 public class YoutubeDownloadManager {
@@ -99,7 +100,11 @@ public class YoutubeDownloadManager {
 
     private List<Item> toItemWithStatistics(List<Item> items) {
         logger.debug("Getting statistics for {} items", items.size());
-        final Set<String> ids = items.stream().map(Item::getId).map(ItemId::getValue).collect(Collectors.toSet());
+        final Set<String> ids = items.stream()
+                .filter(item -> shouldGetStatistics(item, LocalDateTime.now()))
+                .map(Item::getId)
+                .map(ItemId::getValue)
+                .collect(Collectors.toSet());
         final String dedupedIds = String.join(",", ids);
         final Map<ItemId, DurationAndViewcount> statistics = youtubeChannelDownloader.getStatistics(dedupedIds);
         return items.stream()
@@ -128,6 +133,14 @@ public class YoutubeDownloadManager {
                     }
                 })
                 .collect(toList());
+    }
+
+    public static boolean shouldGetStatistics(Item item, LocalDateTime now) {
+        if (item.getUploadDate().getDayOfMonth() == now.getDayOfMonth()) {
+            return true;
+        }
+
+        return item.getUploadDate().isAfter(now.minus(7, DAYS));
     }
 
     private Item toItem(PlaylistItem playlistItem) {
