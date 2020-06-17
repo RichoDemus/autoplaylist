@@ -25,6 +25,6 @@ class UpdateFeedStatisticsTask extends Task
 	@Override
 	public void execute(ImmutableMultimap<String, String> immutableMultimap, PrintWriter printWriter) {
 		logger.info("Execute...");
-		orchestrator.updateEverythingOnce();
+		orchestrator.downloadEverythingOnce();
 	}
 }

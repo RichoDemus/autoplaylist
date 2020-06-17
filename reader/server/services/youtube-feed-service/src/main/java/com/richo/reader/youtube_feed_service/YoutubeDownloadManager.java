@@ -39,7 +39,8 @@ public class YoutubeDownloadManager {
         this.cache = cache;
     }
 
-    public void downloadFeed(FeedId feedId) {
+    // this is not used :o
+    void downloadFeed(FeedId feedId) {
         //todo refactor this method, it's balls
         logger.info("Channel {} requested", feedId);
         final Optional<FeedName> feedName = youtubeChannelDownloader.getName(feedId);

@@ -16,6 +16,8 @@ class FeedCache
 
     fun getAllFeedIds() = cache.keys
 
+    fun getAllFeeds() = cache.entries
+
     operator fun get(feedId: FeedId): Optional<Feed> {
         logger.debug("Fetching channel {}", feedId)
         return Optional.ofNullable(cache.computeIfAbsent(feedId) {

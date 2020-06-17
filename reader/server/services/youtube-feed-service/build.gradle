@@ -16,6 +16,7 @@ dependencies {
     compile "com.google.http-client:google-http-client-jackson2:$rootProject.googleHttpClientVersion"
     compile "com.google.http-client:google-http-client:$rootProject.googleHttpClientVersion"
     compile "io.dropwizard.metrics:metrics-core:$rootProject.dropwizardMetricsVersion"
+    compile group: 'io.arrow-kt', name: 'arrow-core', version: '0.10.5'
 
     testCompile "junit:junit:$rootProject.junitVersion"
     testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"

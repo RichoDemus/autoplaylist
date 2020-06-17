@@ -13,10 +13,13 @@ import javax.inject.Singleton
 
 @Singleton
 class YoutubeFeedService @Inject
-internal constructor(private val cache: FeedCache,
-            private val youtubeChannelDownloader: YoutubeChannelDownloader,
-            registry: MetricRegistry,
-            eventStore: EventStore) {
+internal constructor(
+        private val cache: FeedCache,
+        private val youtubeChannelDownloader: YoutubeChannelDownloader,
+        private val youtubeRepository: YoutubeRepository,
+        registry: MetricRegistry,
+        eventStore: EventStore
+) {
     private val getChannelTimer = registry
             .timer(name(YoutubeFeedService::class.java, "getChannel"))
 
@@ -37,5 +40,15 @@ internal constructor(private val cache: FeedCache,
         cache[feedId]
     }
 
+    // this is used to add channels by url
     fun getFeedId(feedUrl: FeedUrl) = youtubeChannelDownloader.getFeedId(feedUrl)
+
+    internal fun updateChannelsAndVideos() {
+        val oldFeeds = cache.getAllFeeds()
+                .map { it.value }
+                .toList()
+
+        val feeds = youtubeRepository.getFeedsAndItems(oldFeeds)
+        feeds.forEach { cache.update(it) }
+    }
 }
