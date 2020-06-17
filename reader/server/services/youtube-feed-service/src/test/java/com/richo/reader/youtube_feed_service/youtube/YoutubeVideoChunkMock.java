@@ -12,11 +12,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-class YoutubeVideoChunkMock extends YoutubeVideoChunk {
+public class YoutubeVideoChunkMock extends YoutubeVideoChunk {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final List<PlaylistItem> chunks;
 
-    YoutubeVideoChunkMock(List<PlaylistItem> items) {
+    public YoutubeVideoChunkMock(List<PlaylistItem> items) {
         super(null, null, null);
         this.chunks = new LinkedList<>();
         chunks.addAll(items);
@@ -52,7 +52,7 @@ class YoutubeVideoChunkMock extends YoutubeVideoChunk {
                 .get();
     }
 
-    int chunksLeft() {
+    public int chunksLeft() {
         return chunks.size();
     }
 }

@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-internal class FeedCache
+class FeedCache
 @Inject constructor(private val fileSystemPersistence: JsonFileSystemPersistence) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val cache = mutableMapOf<FeedId, Feed>()

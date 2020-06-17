@@ -1,4 +1,4 @@
-package com.richo.reader.youtube_feed_service.youtube;
+package com.richo.reader.youtube_feed_service;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.PlaylistItem;
@@ -10,6 +10,10 @@ import com.richo.reader.youtube_feed_service.FeedCache;
 import com.richo.reader.youtube_feed_service.Item;
 import com.richo.reader.youtube_feed_service.JsonFileSystemPersistence;
 import com.richo.reader.youtube_feed_service.YoutubeDownloadManager;
+import com.richo.reader.youtube_feed_service.youtube.DurationAndViewcount;
+import com.richo.reader.youtube_feed_service.youtube.YoutubeChannelDownloader;
+import com.richo.reader.youtube_feed_service.youtube.YoutubeVideoChunk;
+import com.richo.reader.youtube_feed_service.youtube.YoutubeVideoChunkMock;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedName;
 import com.richodemus.reader.dto.ItemId;
