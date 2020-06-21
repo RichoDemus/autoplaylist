@@ -20,6 +20,7 @@ ext {
     junitVersion = '4.12'
     assertjVersion = '3.10.0'
     mockitoVersion = '3.3.3'
+    mockitoKotlinVersion = '2.2.0'
     restassuredVersion = '3.1.0'
     dockerClientVersion = '6.1.0'
     awaitilityVersion = '3.1.1'

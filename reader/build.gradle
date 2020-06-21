@@ -9,6 +9,7 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'kotlin'
     apply from: "$rootProject.projectDir/dependencies.gradle"
     repositories {
         jcenter()
@@ -31,6 +32,16 @@ subprojects {
             force "org.jetbrains.kotlin:kotlin-reflect:$rootProject.kotlinVersion"
         }
     }
+        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+            sourceCompatibility = JavaVersion.VERSION_11
+            targetCompatibility = JavaVersion.VERSION_11
+
+            kotlinOptions {
+                jvmTarget = "11"
+    //        apiVersion = "1.2"
+    //        languageVersion = "1.2"
+            }
+        }
 }
 
 buildscript {
@@ -39,6 +50,7 @@ buildscript {
         jcenter()
     }
     dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$rootProject.kotlinVersion"
         classpath "com.github.ben-manes:gradle-versions-plugin:$rootProject.gradleVersionsPluginVersion"
         classpath "ca.cutterslade.gradle:gradle-dependency-analyze:$rootProject.gradleDependencyAnalyzePluginVersion"
     }
