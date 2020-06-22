@@ -1,16 +1,13 @@
 package com.richo.reader.youtube_feed_service
 
 import arrow.core.Either
-import arrow.core.extensions.either.monad.map
 import arrow.core.filterOrElse
 import com.codahale.metrics.MetricRegistry
 import com.google.api.client.http.HttpRequest
 import com.google.api.client.http.HttpRequestInitializer
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.client.util.DateTime
 import com.google.api.services.youtube.YouTube
-import com.google.api.services.youtube.model.PlaylistItem
 import com.richodemus.reader.common.google_cloud_storage_adapter.InMemoryEventStore
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.ItemId
@@ -18,23 +15,26 @@ import com.richodemus.reader.dto.PlaylistId
 import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.events_v2.UserSubscribedToFeed
 import org.slf4j.LoggerFactory
-import java.time.Duration
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.util.Optional
 import java.util.UUID
 import javax.inject.Inject
-import javax.inject.Named
 
 fun main() {
     val apiKey = System.getProperty("apiKey") ?: throw IllegalArgumentException("missing prop apiKey")
 
+    val youtubeRepository = YoutubeRepository(YoutubeClient(apiKey))
+
+//    val videos = youtubeRepository.getVideos(PlaylistId("UU1E-JS8L0j1Ei70D9VEFrPQ"), ItemId("F1la4flgHKw"))
+    val videos = youtubeRepository.getVideos(PlaylistId("UU1E-JS8L0j1Ei70D9VEFrPQ"), null)
+
+    println()
+
+    return
     val saveRoot = "target/data/" + UUID.randomUUID()
     val eventStore = InMemoryEventStore()
     val feedService = YoutubeFeedService(
             Cache(JsonFileSystemPersistence(saveRoot, "channels", Channel::class.java)),
             Cache(JsonFileSystemPersistence(saveRoot, "videos", Videos::class.java)),
-            YoutubeRepository(YoutubeClient(apiKey)),
+            youtubeRepository,
             MetricRegistry(),
             eventStore
     )
@@ -153,7 +153,11 @@ internal class YoutubeRepository @Inject constructor(
                 .map { it.first() }
     }
 
-    fun getVideos(playlistId: PlaylistId) = youtubeClient.getVideos(playlistId).toList()
+    fun getVideos(playlistId: PlaylistId, lastUploaded: ItemId?): List<Video> {
+        return youtubeClient.getVideos(playlistId)
+                .takeWhile { it.id != lastUploaded }
+                .toList()
+    }
 
     fun getStatistics(ids: List<ItemId>) = youtubeClient.getStatistics(ids)
 

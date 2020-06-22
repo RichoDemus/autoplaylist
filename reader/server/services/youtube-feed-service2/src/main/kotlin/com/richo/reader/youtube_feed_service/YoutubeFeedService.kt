@@ -76,8 +76,9 @@ internal constructor(
         val playlists = videoCache.keys()
 
         val updatedVideos = playlists.map { Pair(PlaylistId(it), emptyList<Video>()) }
-                .map { (id, _) ->
-                    val vids = youtubeRepository.getVideos(id)
+                .map { (id, videos) ->
+                    val lastUploaded = videos.sortedBy { it.uploadDate }.map { it.id }.firstOrNull()
+                    val vids = youtubeRepository.getVideos(id, lastUploaded)
                     Pair(id, Videos(vids))
                 }
 
