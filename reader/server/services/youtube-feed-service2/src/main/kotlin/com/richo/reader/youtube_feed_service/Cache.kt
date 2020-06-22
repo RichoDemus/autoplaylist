@@ -13,7 +13,7 @@ internal class Cache<T>
     private val logger = LoggerFactory.getLogger(javaClass)
     private val cache = mutableMapOf<String, T>()
 
-    fun getAllFeedIds() = cache.keys
+    fun keys() = cache.keys.toList()
 
     operator fun get(id: String): T? {
         logger.debug("Fetching channel {}", id)

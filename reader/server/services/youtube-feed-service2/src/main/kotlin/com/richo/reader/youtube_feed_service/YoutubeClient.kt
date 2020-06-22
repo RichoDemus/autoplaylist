@@ -7,6 +7,7 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.youtube.YouTube
 import com.richodemus.reader.dto.FeedId
+import com.richodemus.reader.dto.PlaylistId
 import org.slf4j.LoggerFactory
 import java.util.Optional
 import javax.inject.Named
@@ -51,8 +52,42 @@ open class YoutubeClient(
                 Channel.from(channel)
             }.let { Either.right(it) }
         } catch (e: Exception) {
-//            logger.error("Failed to get channel {}", id, e)
+            logger.error("Failed to get channel {}", id, e)
             return Either.left(e.message.orEmpty())
+        }
+    }
+
+    internal open fun getVideos(playlistId: PlaylistId): Sequence<Video> {
+        var nextPagetoken: String? = ""
+        return sequence {
+            while (true) {
+                try {
+                    val exec = youtube.playlistItems()
+                            .list("snippet")
+                            .setKey(apiKey)
+                            .setPageToken(nextPagetoken)
+                            .setPlaylistId(playlistId.value)
+                            .setMaxResults(50L)
+                            .execute()
+
+                    val ajtems = exec
+                            .items
+                            ?: emptyList()
+
+                    nextPagetoken = exec.nextPageToken
+                    val items = ajtems.map { Video.from(it) }
+                    if (items.isEmpty()) {
+                        break
+                    }
+                    yieldAll(items)
+                    if (nextPagetoken == null) {
+                        break
+                    }
+                } catch (e: Exception) {
+                    logger.error("Reading videos failed for playlist {}", playlistId, e)
+                    break
+                }
+            }
         }
     }
 }

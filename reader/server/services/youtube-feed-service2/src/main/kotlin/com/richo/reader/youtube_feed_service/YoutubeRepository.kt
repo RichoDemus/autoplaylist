@@ -11,6 +11,7 @@ import com.google.api.client.util.DateTime
 import com.google.api.services.youtube.YouTube
 import com.google.api.services.youtube.model.PlaylistItem
 import com.richodemus.reader.dto.FeedId
+import com.richodemus.reader.dto.PlaylistId
 import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.time.LocalDateTime
@@ -21,6 +22,15 @@ import javax.inject.Named
 
 fun main() {
     val apiKey = System.getProperty("apiKey") ?: throw IllegalArgumentException("missing prop apiKey")
+
+    val client = YoutubeClient(apiKey)
+
+    var count = 0
+    client.getVideos(PlaylistId("UU1E-JS8L0j1Ei70D9VEFrPQ"))
+            .forEach { println("${count++}: ${it.uploadDate} - ${it.title}") }
+
+    return
+
     val builder = YouTube.Builder(
             NetHttpTransport(),
             JacksonFactory(),
@@ -114,6 +124,9 @@ internal class YoutubeRepository @Inject constructor(
                 .map { it.first() }
     }
 
+    fun getVideos(playlistId: PlaylistId): List<Video> {
+        return youtubeClient.getVideos(playlistId).toList()
+    }
 
 
 //    internal fun getFeedsAndItems(feeds: List<Feed>): List<Feed> {

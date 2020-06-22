@@ -2,6 +2,7 @@ package com.richo.reader.youtube_feed_service;
 
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedName;
+import com.richodemus.reader.dto.PlaylistId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,7 @@ public class JsonFileSystemPersistenceTest {
         target.updateChannel("id", new Channel(
                 new FeedId("channel-id"),
                 new FeedName("Channel"),
+                new PlaylistId("PlaylistId"),
                 OffsetDateTime.parse("2007-12-03T10:15:30+01:00"),
                 OffsetDateTime.parse("2007-12-03T10:15:30+01:00")
         ));
