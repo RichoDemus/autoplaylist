@@ -19,7 +19,7 @@ data class Video(
 ) {
     companion object {
         fun from(playlistItem: PlaylistItem): Video {
-            val id = ItemId(playlistItem.id)
+            val id = ItemId(playlistItem.snippet.resourceId.videoId)
             val title = playlistItem.snippet.title
             val description = playlistItem.snippet.description
             val publishedAt = playlistItem.snippet.publishedAt.toDate()

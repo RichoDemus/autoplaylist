@@ -3,12 +3,15 @@ package com.richo.reader.youtube_feed_service
 import arrow.core.Either
 import com.codahale.metrics.MetricRegistry
 import com.codahale.metrics.MetricRegistry.name
+import com.google.common.collect.Lists
 import com.richodemus.reader.common.google_cloud_storage_adapter.EventStore
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.FeedName
+import com.richodemus.reader.dto.ItemId
 import com.richodemus.reader.dto.PlaylistId
 import com.richodemus.reader.events_v2.EventType.USER_SUBSCRIBED_TO_FEED
 import com.richodemus.reader.events_v2.UserSubscribedToFeed
+import java.time.Duration
 import java.time.OffsetDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -62,7 +65,7 @@ internal constructor(
     }
 
     fun getVideos(feedId: FeedId) = getVideosTimer.time().use {
-        val channel = channelCache[feedId.value]?:return null
+        val channel = channelCache[feedId.value] ?: return null
         videoCache[channel.playlistId.value]
     }
 
@@ -72,13 +75,38 @@ internal constructor(
     internal fun updateChannelsAndVideos() {
         val playlists = videoCache.keys()
 
-        val updatedVideos = playlists.map { Pair(it, emptyList<Video>()) }
-                .map { (id, videos) ->
-                    val vids = youtubeRepository.getVideos(PlaylistId(id))
+        val updatedVideos = playlists.map { Pair(PlaylistId(it), emptyList<Video>()) }
+                .map { (id, _) ->
+                    val vids = youtubeRepository.getVideos(id)
                     Pair(id, Videos(vids))
                 }
 
-        updatedVideos.forEach { (id, videos) -> videoCache[id] = videos }
+        val allVideos = updatedVideos.flatMap { it.second.videos }.map { it.id }
+        val partitioned: List<List<ItemId>> = Lists.partition(allVideos, 50)
 
+        val withStatistics: Map<ItemId, Pair<Duration, Long>> = partitioned
+                .map { youtubeRepository.getStatistics(it) }
+                .fold(emptyMap()) { left, right -> left.plus(right) }
+
+
+        val videosWithStatistics = updateVideosWithStatistics(updatedVideos, withStatistics)
+
+        videosWithStatistics.forEach { (id, videos) -> videoCache[id.value] = videos }
+
+    }
+
+    private fun updateVideosWithStatistics(
+            videos: List<Pair<PlaylistId, Videos>>, statistics: Map<ItemId, Pair<Duration, Long>>
+    ): Map<PlaylistId, Videos> {
+        return videos.map { (id, videos) -> Pair(id, videos.videos) }
+                .map { (id, videos) ->
+                    val updatedVideos = videos.map { video ->
+                        statistics[video.id]?.let { stats ->
+                            video.copy(duration = stats.first, views = stats.second)
+                        }?:video
+                    }
+                    Pair(id, Videos(updatedVideos))
+                }
+                .toMap()
     }
 }

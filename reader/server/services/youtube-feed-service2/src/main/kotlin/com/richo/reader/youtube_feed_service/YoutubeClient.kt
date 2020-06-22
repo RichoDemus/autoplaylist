@@ -7,8 +7,10 @@ import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.youtube.YouTube
 import com.richodemus.reader.dto.FeedId
+import com.richodemus.reader.dto.ItemId
 import com.richodemus.reader.dto.PlaylistId
 import org.slf4j.LoggerFactory
+import java.time.Duration
 import java.util.Optional
 import javax.inject.Named
 
@@ -63,7 +65,7 @@ open class YoutubeClient(
             while (true) {
                 try {
                     val exec = youtube.playlistItems()
-                            .list("snippet")
+                            .list("id,snippet")
                             .setKey(apiKey)
                             .setPageToken(nextPagetoken)
                             .setPlaylistId(playlistId.value)
@@ -88,6 +90,33 @@ open class YoutubeClient(
                     break
                 }
             }
+        }
+    }
+
+    internal open fun getStatistics(ids: List<ItemId>): Map<ItemId, Pair<Duration, Long>> {
+        val idsString = ids.joinToString(",")
+        val statItems = youtube.videos()
+                .list("statistics,contentDetails")
+                .setKey(apiKey)
+                .setId(idsString)
+                .execute()
+                .items
+
+        return statItems
+                .map { Pair(ItemId(it.id), Pair(Duration.parse(it.contentDetails.duration), getViews(it))) }
+                .toMap()
+    }
+
+    private fun getViews(video: com.google.api.services.youtube.model.Video): Long {
+        val views = video.statistics.viewCount
+        return try {
+            views.longValueExact()
+        } catch (e: ArithmeticException) {
+            logger.error("Unable to convert view count of {} to a long for video {}", views, video.id)
+            views.toLong()
+        } catch (e: NullPointerException) {
+            logger.warn("No view count for video {}", video.id)
+            0L
         }
     }
 }

@@ -14,6 +14,7 @@ internal class Cache<T>
     private val cache = mutableMapOf<String, T>()
 
     fun keys() = cache.keys.toList()
+    fun values() = cache.values.toList()
 
     operator fun get(id: String): T? {
         logger.debug("Fetching channel {}", id)
