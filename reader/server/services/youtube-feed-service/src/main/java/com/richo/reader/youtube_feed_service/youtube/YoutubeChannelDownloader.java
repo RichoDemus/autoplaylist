@@ -40,6 +40,7 @@ public class YoutubeChannelDownloader {
         this.apiKey = apiKey;
         final Optional<String> url_override = getUrlOverride();
         logger.info("youtube url: \"{}\"", url_override.orElse("Not set"));
+        logger.info("Using api key {}", apiKey);
         final YouTube.Builder builder = new YouTube.Builder(
                 new NetHttpTransport(),
                 new JacksonFactory(),
