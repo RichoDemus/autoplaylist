@@ -13,7 +13,7 @@ public class StatusTestIT
 	private TestableApplication target;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
 		target = new TestableApplicationProvider().readerApplication();
 	}
 

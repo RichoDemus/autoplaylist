@@ -21,7 +21,7 @@ public class UserTestIT
 	private LoginPage loginPage;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
 		target = new TestableApplicationProvider().readerApplication();
 		loginPage = new LoginPage(target.getHttpPort());
 	}

@@ -5,14 +5,12 @@ import com.richo.reader.test.util.dropwizard.YoutubeMock;
 
 public class TestableApplicationProvider
 {
-	public TestableApplication readerApplication()
-	{
+	public TestableApplication readerApplication() throws Exception {
 		//return new DropwizardContainer("richodemus/reader");
 		return new TestableReaderApplication();
 	}
 
-	public TestableApplication readerApplication(int youtubeMockPort)
-	{
+	public TestableApplication readerApplication(int youtubeMockPort) throws Exception {
 		//return new DropwizardContainer("richodemus/reader");
 		return new TestableReaderApplication(youtubeMockPort);
 	}

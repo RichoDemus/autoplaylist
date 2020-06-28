@@ -29,7 +29,7 @@ public class LabelTestIT
 	private LoginPage loginPage;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
 		youtubeMock = new TestableApplicationProvider().youtubeMock();
 		target = new TestableApplicationProvider().readerApplication(youtubeMock.getHttpPort());
 		baseUrl = "http://localhost:" + target.getHttpPort();

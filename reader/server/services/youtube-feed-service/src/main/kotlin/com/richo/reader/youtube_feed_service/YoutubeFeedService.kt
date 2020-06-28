@@ -8,6 +8,8 @@ import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.FeedUrl
 import com.richodemus.reader.events_v2.EventType.USER_SUBSCRIBED_TO_FEED
 import com.richodemus.reader.events_v2.UserSubscribedToFeed
+import java.util.*
+import java.util.concurrent.Callable
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,7 +20,7 @@ internal constructor(private val cache: FeedCache,
             registry: MetricRegistry,
             eventStore: EventStore) {
     private val getChannelTimer = registry
-            .timer(name(YoutubeFeedService::class.java, "getChannel"))
+            .timer(name(YoutubeFeedService::class.java, "getChannel"))!!
 
     init {
         eventStore.consume { event ->
@@ -33,9 +35,9 @@ internal constructor(private val cache: FeedCache,
         cache.add(feedId)
     }
 
-    fun getChannel(feedId: FeedId) = getChannelTimer.time().use {
+    fun getChannel(feedId: FeedId) = getChannelTimer.time(Callable {
         cache[feedId]
-    }
+     })
 
     fun getFeedId(feedUrl: FeedUrl) = youtubeChannelDownloader.getFeedId(feedUrl)
 }

@@ -11,8 +11,7 @@ public class TestableReaderApplication implements TestableApplication
 {
 	private DropwizardTestSupport<ReaderConfiguration> support;
 
-	public TestableReaderApplication(final int youtubeMockPort)
-	{
+	public TestableReaderApplication(final int youtubeMockPort) throws Exception {
 		if (youtubeMockPort != -1)
 		{
 			System.setProperty("YOUTUBE_URL", "http://localhost:" + youtubeMockPort + "/");
@@ -25,8 +24,7 @@ public class TestableReaderApplication implements TestableApplication
 		support.before();
 	}
 
-	public TestableReaderApplication()
-	{
+	public TestableReaderApplication() throws Exception {
 		this(-1);
 	}
 
