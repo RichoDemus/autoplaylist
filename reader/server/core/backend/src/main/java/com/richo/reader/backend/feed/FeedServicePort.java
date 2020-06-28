@@ -1,9 +1,10 @@
 package com.richo.reader.backend.feed;
 
 import com.richo.reader.backend.model.Feed;
-import com.richo.reader.youtube_feed_service.Item;
+import com.richo.reader.youtube_feed_service.Video;
 import com.richo.reader.youtube_feed_service.YoutubeFeedService;
 import com.richodemus.reader.dto.FeedId;
+import com.richodemus.reader.dto.FeedName;
 import com.richodemus.reader.dto.FeedUrl;
 import com.richodemus.reader.dto.ItemId;
 
@@ -27,19 +28,22 @@ public class FeedServicePort implements FeedRepository
 	@Override
 	public Optional<Feed> getFeed(FeedId feedId)
 	{
-		return feedService.getChannel(feedId)
-				.map(feed -> new Feed(feed.getId(), feed.getName(), convertItems(feed.getItems())));
+		List<Video> videos = feedService.getVideos(feedId);
+		if(videos.isEmpty())
+			return Optional.empty();
+		return Optional.of(new Feed(feedId, new FeedName("used?"), convertVideos(videos)));
 	}
 
 	@Override
 	public List<ItemId> getItemIds(FeedId feedId)
 	{
-		return feedService.getChannel(feedId)
-				.map(com.richo.reader.youtube_feed_service.Feed::getItems)
-				.orElseGet(ArrayList::new)
-				.stream()
-				.map(Item::getId)
-				.collect(toList());
+		throw new IllegalStateException("Not used?");
+//		return feedService.getChannel(feedId)
+//				.map(com.richo.reader.youtube_feed_service.Feed::getItems)
+//				.orElseGet(ArrayList::new)
+//				.stream()
+//				.map(Item::getId)
+//				.collect(toList());
 	}
 
 	@Override
@@ -48,15 +52,15 @@ public class FeedServicePort implements FeedRepository
 		return feedService.getFeedId(feedUrl);
 	}
 
-	private List<com.richo.reader.backend.model.Item> convertItems(List<Item> items)
+	private List<com.richo.reader.backend.model.Item> convertVideos(List<Video> videos)
 	{
-		return items.stream()
-				.map(this::convertItem)
+		return videos.stream()
+				.map(this::convertVideo)
 				.collect(toList());
 	}
 
-	private com.richo.reader.backend.model.Item convertItem(Item item)
+	private com.richo.reader.backend.model.Item convertVideo(Video video)
 	{
-		return new com.richo.reader.backend.model.Item(item.getId(), item.getTitle(), item.getDescription(), item.getUploadDate().toString(), "https://youtube.com/watch?v=" + item.getId(), item.getDuration(), item.getViews());
+		return new com.richo.reader.backend.model.Item(video.getId(), video.getTitle(), video.getDescription(), video.getUploadDate().toString(), "https://youtube.com/watch?v=" + video.getId(), video.getDuration(), video.getViews());
 	}
 }

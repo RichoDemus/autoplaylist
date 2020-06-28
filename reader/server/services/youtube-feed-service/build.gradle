@@ -10,15 +10,16 @@ dependencies {
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
     compile "javax.inject:javax.inject:$rootProject.javaxInjectVersion"
     compile "com.google.guava:guava:$rootProject.guavaVersion"
-    compile "com.fasterxml.jackson.core:jackson-databind:$rootProject.jacksonVersion"
-    compile "com.fasterxml.jackson.core:jackson-annotations:$rootProject.jacksonVersion"
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '2.11.0'
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.11.0'
     compile "com.google.apis:google-api-services-youtube:$rootProject.youtubeApiVersion"
     compile "com.google.http-client:google-http-client-jackson2:$rootProject.googleHttpClientVersion"
     compile "com.google.http-client:google-http-client:$rootProject.googleHttpClientVersion"
     compile "io.dropwizard.metrics:metrics-core:$rootProject.dropwizardMetricsVersion"
+    compile group: 'io.arrow-kt', name: 'arrow-core', version: '0.10.5'
 
     testCompile "junit:junit:$rootProject.junitVersion"
-    testCompile "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$rootProject.mockitoKotlinVersion"
     testCompile "org.assertj:assertj-core:$rootProject.assertjVersion"
     testRuntime "org.slf4j:slf4j-simple:$rootProject.slf4jVersion"
 }

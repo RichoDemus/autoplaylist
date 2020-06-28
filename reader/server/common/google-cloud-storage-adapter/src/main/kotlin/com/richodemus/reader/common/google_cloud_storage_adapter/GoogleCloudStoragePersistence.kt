@@ -29,7 +29,7 @@ internal class GoogleCloudStoragePersistence {
             .service
 
     internal fun readEvents(): Iterator<Event> {
-        val threads = Runtime.getRuntime().availableProcessors() * 100
+        val threads = Runtime.getRuntime().availableProcessors() * 10
         val executor = Executors.newFixedThreadPool(threads)
         var run = true
         val eventsStarted = LongAdder()

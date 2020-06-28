@@ -21,7 +21,7 @@ dependencies {
     compile "io.dropwizard.metrics:metrics-core:$rootProject.dropwizardMetricsVersion"
     compile "io.dropwizard.metrics:metrics-healthchecks:$rootProject.dropwizardMetricsVersion"
     compile "io.dropwizard.metrics:metrics-annotation:$rootProject.dropwizardMetricsVersion"
-    compile 'ru.vyarus:dropwizard-guicey:4.0.1'
+    compile 'ru.vyarus:dropwizard-guicey:5.1.0'
     compile "org.slf4j:slf4j-api:$rootProject.slf4jVersion"
     compile "org.glassfish.jersey.core:jersey-server:$rootProject.jerseyServerVersion"
     compile "com.fasterxml.jackson.core:jackson-annotations:$rootProject.jacksonVersion"
