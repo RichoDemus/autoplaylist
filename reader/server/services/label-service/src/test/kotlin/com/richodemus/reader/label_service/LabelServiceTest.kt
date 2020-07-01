@@ -36,7 +36,7 @@ class LabelServiceTest {
         val result = target().get(userId)
 
         assertThat(result).isNotEmpty
-        assertThat(result.single().id).isEqualTo(id)
+        assertThat(result.single().id).isEqualTo(id.id)
         assertThat(result.single().name).isEqualTo(labelName)
     }
 
@@ -58,7 +58,7 @@ class LabelServiceTest {
     @Test
     fun `Should add feed to label`() {
         val id = target().create(labelName, userId)
-        target().addFeedToLabel(id, feedId)
+        target().addFeedToLabel(id.id, feedId)
 
         val result = target().get(userId).single().feeds.single()
 

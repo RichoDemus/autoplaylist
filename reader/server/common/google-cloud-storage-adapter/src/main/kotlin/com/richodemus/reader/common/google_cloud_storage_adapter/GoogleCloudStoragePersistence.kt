@@ -8,28 +8,33 @@ import com.richodemus.reader.common.google_cloud_storage_adapter.Event
 import com.richodemus.reader.common.google_cloud_storage_adapter.Key
 import com.richodemus.reader.common.google_cloud_storage_adapter.Offset
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Primary
+import org.springframework.context.annotation.Profile
+import org.springframework.stereotype.Component
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.LongAdder
 import java.util.function.Supplier
-import javax.inject.Singleton
 import kotlin.concurrent.thread
 
-
-@Singleton
-internal class GoogleCloudStoragePersistence {
+@Profile(value = ["!dev", "!test"])
+@Component
+internal class GoogleCloudStoragePersistence(
+        @Value("\${gcp.project}") val gcsProject:String,
+        @Value("\${gcp.bucket}") val gcsBucket:String
+) : Persistence {
     private val logger = LoggerFactory.getLogger(javaClass)
 
     private val directory = "events/v2/"
-    private val settings = Settings()
 
     private val service = StorageOptions.newBuilder()
-            .setProjectId(settings.gcsProject)
+            .setProjectId(gcsProject)
             .build()
             .service
 
-    internal fun readEvents(): Iterator<Event> {
-        val threads = Runtime.getRuntime().availableProcessors() * 100
+    override fun readEvents(): Sequence<Event> {
+        val threads = Runtime.getRuntime().availableProcessors() * 10
         val executor = Executors.newFixedThreadPool(threads)
         var run = true
         val eventsStarted = LongAdder()
@@ -51,9 +56,10 @@ internal class GoogleCloudStoragePersistence {
                     }
                     Thread.sleep(1_000L)
                 }
+                logger.info("Done Downloading!")
             }
 
-            return service.list(settings.gcsBucket)
+            return service.list(gcsBucket)
                     .iterateAll()
                     .filter { it.blobId.name.startsWith(directory) }
                     .map {
@@ -71,7 +77,7 @@ internal class GoogleCloudStoragePersistence {
                         it.get()
                     }
                     .sortedBy { it.offset.value }
-                    .iterator()
+                    .asSequence() // if we do asSequence before get the executor will have been closed
 
         } finally {
             run = false
@@ -79,11 +85,11 @@ internal class GoogleCloudStoragePersistence {
         }
     }
 
-    internal fun persist(event: Event) {
+    override fun persist(event: Event) {
         val filename = "$directory${event.offset.value}"
         val data = "${event.key.value},${event.data.value}"
         val eventBytes = data.toByteArray()
-        val blob = BlobId.of(settings.gcsBucket, filename)
+        val blob = BlobId.of(gcsBucket, filename)
         if (exists(blob)) {
             logger.info("File $filename already exists in GCS, skipping...")
             return

@@ -1,9 +1,13 @@
 version: '2'
 services:
   reader:
-    image: richodemus/reader:latest
+    build: .
     volumes:
       - "./data:/reader/data"
     ports:
       - "8080:8080"
       - "8081:8081"
+    environment:
+      GCP_PROJECT: richo-main
+      GCP_BUCKET: richo-reader
+      GOOGLE_APPLICATION_CREDENTIALS: /google-service-key.json

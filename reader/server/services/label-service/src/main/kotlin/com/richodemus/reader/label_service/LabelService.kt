@@ -8,12 +8,11 @@ import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.events_v2.FeedAddedToLabel
 import com.richodemus.reader.events_v2.LabelCreated
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
 import java.util.UUID
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class LabelService @Inject internal constructor(private val eventStore: EventStore) {
+@Service
+class LabelService(private val eventStore: EventStore) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private var labels = emptyList<Label>()
 
@@ -27,14 +26,15 @@ class LabelService @Inject internal constructor(private val eventStore: EventSto
         }
     }
 
-    fun create(name: LabelName, userId: UserId): LabelId {
+    fun create(name: LabelName, userId: UserId): Label {
         assertLabelDoesntExist(userId, name)
 
         val labelId = LabelId(UUID.randomUUID())
 
-        eventStore.produce(LabelCreated(labelId, name, userId))
+        val event = LabelCreated(labelId, name, userId)
+        eventStore.produce(event)
 
-        return labelId
+        return Label(event)
     }
 
     private fun add(label: LabelCreated) {

@@ -26,7 +26,7 @@ class EventSerializer {
      fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
     }
 
-     fun serialize(topic: String?, data: Event): ByteArray {
+     fun serialize(data: Event): ByteArray {
         return mapper.writeValueAsBytes(data)
     }
 
@@ -39,7 +39,7 @@ class EventDeserializer {
      fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
     }
 
-     fun deserialize(topic: String?, data: ByteArray): Event {
+     fun deserialize(data: ByteArray): Event {
         val str = String(data)
         return when {
             str isType USER_CREATED -> mapper.readValue<UserCreated>(data)
