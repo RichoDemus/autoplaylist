@@ -32,7 +32,8 @@ public class UserResource
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String createUser(final CreateUserCommand createUserCommand)
 	{
-		if (!INVITE_CODE.equals(createUserCommand.getInviteCode()))
+//		if (!INVITE_CODE.equals(createUserCommand.getInviteCode()))
+		if(true)
 		{
 			logger.info("{} tried to signup with invalid code {}", createUserCommand.getUsername(), createUserCommand.getInviteCode());
 			throw new ForbiddenException("Signup not allowed");

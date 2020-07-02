@@ -7,7 +7,7 @@ COPY gradle /src/gradle
 RUN ./gradlew --no-daemon #just so that we download gradle in its own layer
 
 COPY . /src/
-RUN ./gradlew --no-daemon
+RUN ./gradlew compileTestKotlin compileTestJava --no-daemon
 RUN ./gradlew server:docker:copyDependencies --no-daemon
 #RUN mkdir jars
 #RUN cp server/spring/build/libs/spring.jar jars
