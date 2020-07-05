@@ -11,7 +11,5 @@ import java.util.Optional;
 public interface FeedRepository {
     Optional<Feed> getFeed(FeedId feedId);
 
-    List<ItemId> getItemIds(FeedId feedId);
-
     FeedId getFeedId(FeedUrl feedUrl);
 }

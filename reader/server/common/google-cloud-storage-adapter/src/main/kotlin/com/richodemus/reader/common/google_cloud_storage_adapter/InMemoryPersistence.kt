@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
 @Primary // so that it's used in tests and dev properly..
-@Profile(value = ["dev", "test"])
+@Profile(value = ["test"])
 @Component
 internal class InMemoryPersistence : Persistence {
     private val events = mutableListOf<Event>()

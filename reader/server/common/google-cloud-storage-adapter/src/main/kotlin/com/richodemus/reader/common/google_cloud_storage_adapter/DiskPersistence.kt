@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import java.io.File
 
+@Primary
 @Profile(value = ["dev"])
 @Component
 internal class DiskPersistence(

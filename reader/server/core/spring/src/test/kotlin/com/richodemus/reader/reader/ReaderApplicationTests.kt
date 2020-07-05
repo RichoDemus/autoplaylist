@@ -3,13 +3,12 @@ package com.richodemus.reader.reader
 import com.richodemus.reader.reader.test.pages.LoginPage
 import com.richodemus.reader.reader.test.pages.model.FeedId
 import com.richodemus.reader.reader.test.pages.model.FeedUrl
-import com.richodemus.reader.youtube_feed_service.youtube.YoutubeChannelDownloader
+import com.richodemus.reader.youtube_feed_service.YoutubeClient
 import com.xebialabs.restito.builder.stub.StubHttp.whenHttp
 import com.xebialabs.restito.semantics.Action
 import com.xebialabs.restito.semantics.Condition
 import com.xebialabs.restito.server.StubServer
 import io.restassured.RestAssured
-import io.restassured.RestAssured.post
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.Awaitility.await
 import org.glassfish.grizzly.http.util.HttpStatus
@@ -20,11 +19,9 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
-import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.math.log
 
 
 @ActiveProfiles("test")
@@ -32,7 +29,7 @@ import kotlin.math.log
 class ReaderApplicationTests {
 
     @Autowired
-    private lateinit var downloader: YoutubeChannelDownloader
+    private lateinit var youtubeClient: YoutubeClient
 
     @LocalServerPort
     var randomServerPort = 0
@@ -73,7 +70,7 @@ class ReaderApplicationTests {
     @BeforeEach
     internal fun setUp() {
         loginPage = LoginPage(randomServerPort)
-        downloader.changeUrl("http://localhost:" + RestAssured.port)
+        youtubeClient.changeUrl("http://localhost:" + RestAssured.port)
     }
 
     @Test

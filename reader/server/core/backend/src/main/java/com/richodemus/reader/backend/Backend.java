@@ -85,7 +85,7 @@ public class Backend
 				.collect(toMap(Feed::getId, feed ->
 				{
 					final Optional<Feed> feedRepositoryFeed = feedRepository.getFeed(feed.getId());
-					return feedRepositoryFeed.orElseGet(() -> new Feed(feed.getId(), new FeedName("404: " + feed.getId()), emptyList()));
+					return feedRepositoryFeed.orElseGet(() -> new Feed(feed.getId(), new FeedName("UNKNOWN_FEED"), emptyList()));
 				}));
 	}
 

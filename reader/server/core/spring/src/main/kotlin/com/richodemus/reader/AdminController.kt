@@ -26,7 +26,7 @@ internal class AdminController(
     internal fun getStatus(): ResponseEntity<DownloadJobStatus> {
         return ResponseEntity.ok(DownloadJobStatus(
                 periodicDownloadOrchestrator.lastRun(),
-        periodicDownloadOrchestrator.isRunning(),
+        periodicDownloadOrchestrator.isRunning,
         periodicDownloadOrchestrator.lastRunOutCome()
         ))
     }
