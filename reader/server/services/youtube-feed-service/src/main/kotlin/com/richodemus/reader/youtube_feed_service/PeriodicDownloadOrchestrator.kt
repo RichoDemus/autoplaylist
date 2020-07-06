@@ -11,6 +11,8 @@ import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
+import javax.annotation.PostConstruct
+import javax.annotation.PreDestroy
 
 @Service
 class PeriodicDownloadOrchestrator internal constructor(
@@ -33,17 +35,19 @@ class PeriodicDownloadOrchestrator internal constructor(
         logger.error("Thread {} threw uncaught exception:", thread, throwable)
     }
 
+    @PostConstruct
     fun start() {
         val millisecondsUntilMidnight = calculateDelayUntilMidnight()
         val fourInTheMorning = millisecondsUntilMidnight + Duration.of(4, ChronoUnit.HOURS).toMillis()
-        executor.scheduleAtFixedRate({ addDownloadsTasksToExecutor() }, millisecondsUntilMidnight, MILLISECONDS_IN_A_DAY, TimeUnit.MILLISECONDS)
-        logger.info("Started orchestrator, will run at {}", Instant.ofEpochMilli(System.currentTimeMillis() + millisecondsUntilMidnight).toString())
+        executor.scheduleAtFixedRate({ addDownloadsTasksToExecutor() }, fourInTheMorning, MILLISECONDS_IN_A_DAY, TimeUnit.MILLISECONDS)
+        logger.info("Started orchestrator, will run at {}", Instant.ofEpochMilli(System.currentTimeMillis() + fourInTheMorning).toString())
     }
 
     fun downloadEverythingOnce() {
         executor.execute { addDownloadsTasksToExecutor() }
     }
 
+    @PreDestroy
     fun stop() {
         executor.shutdown()
     }
