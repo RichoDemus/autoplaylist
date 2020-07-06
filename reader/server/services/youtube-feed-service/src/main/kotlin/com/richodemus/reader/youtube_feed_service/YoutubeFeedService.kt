@@ -85,6 +85,7 @@ class YoutubeFeedService internal constructor(
         val updatedVideos = playlists.map { Pair(it, emptyList<Video>()) }
                 .map { (id, videos) ->
                     val lastUploaded = videos.sortedBy { it.uploadDate }.map { it.id }.firstOrNull()
+                    logger.info("Downloading new videos for {}", id)
                     val vids = youtubeRepository.getVideos(id, lastUploaded)
                     Pair(id, Videos(vids))
                 }
@@ -93,9 +94,11 @@ class YoutubeFeedService internal constructor(
         val partitioned: List<List<ItemId>> = Lists.partition(allVideos, 50)
 
         val withStatistics: Map<ItemId, Pair<Duration, Long>> = partitioned
-                .map { youtubeRepository.getStatistics(it) }
+                .map {
+                    logger.info("Getting statistics for {} items", it.size)
+                    youtubeRepository.getStatistics(it)
+                }
                 .fold(emptyMap()) { left, right -> left.plus(right) }
-
 
         val videosWithStatistics = updateVideosWithStatistics(updatedVideos, withStatistics)
 
