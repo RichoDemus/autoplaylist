@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration
 internal open class Config {
     @Bean
     @Qualifier("videoCache")
+    // todo use feed here aswell
     open fun videoCache(@Value("\${saveRoot}") saveRoot:String): Cache<PlaylistId, Videos> {
         return Cache(JsonFileSystemPersistence(saveRoot, "videos", Videos::class.java))
     }

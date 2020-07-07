@@ -82,29 +82,33 @@ class YoutubeFeedService internal constructor(
         logger.info("Syncing videos with youtube...")
         val playlists = channelCache.values().map { it.playlistId }
 
-        val updatedVideos = playlists.map { Pair(it, emptyList<Video>()) }
+        val updatedVideos = playlists
+                .map { Pair(it, videoCache[it]?.videos?: emptyList()) }
                 .map { (id, videos) ->
-                    val lastUploaded = videos.sortedBy { it.uploadDate }.map { it.id }.firstOrNull()
-                    logger.info("Downloading new videos for {}", id)
+                    val lastUploaded = videos.sortedBy { it.uploadDate }.map { it.id }.lastOrNull()
                     val vids = youtubeRepository.getVideos(id, lastUploaded)
-                    Pair(id, Videos(vids))
+                    val newVids = emptyList<Video>().plus(videos).plus(vids).distinctBy { it.id }.sortedBy { it.uploadDate }
+                    logger.info("Found {} new videos for {}", vids.size, id.toName())
+                    Pair(id, Videos(newVids))
                 }
 
         val allVideos = updatedVideos.flatMap { it.second.videos }.map { it.id }
         val partitioned: List<List<ItemId>> = Lists.partition(allVideos, 50)
 
-        val withStatistics: Map<ItemId, Pair<Duration, Long>> = partitioned
+        logger.info("Getting statistics for all {} videos", allVideos.size)
+        val asd = partitioned
                 .map {
-                    logger.info("Getting statistics for {} items", it.size)
+                    logger.info("Getting statistics for {} videos", it.size)
                     youtubeRepository.getStatistics(it)
                 }
+
+        val withStatistics: Map<ItemId, Pair<Duration, Long>> = asd
                 .fold(emptyMap()) { left, right -> left.plus(right) }
 
         val videosWithStatistics = updateVideosWithStatistics(updatedVideos, withStatistics)
 
         videosWithStatistics.forEach { (id, videos) -> videoCache[id] = videos }
         logger.info("Done downloading videos and statistics")
-
     }
 
     private fun updateVideosWithStatistics(
@@ -121,4 +125,5 @@ class YoutubeFeedService internal constructor(
                 }
                 .toMap()
     }
+    private fun PlaylistId.toName() = channelCache.values().firstOrNull { it.playlistId == this }?.name
 }
