@@ -99,11 +99,23 @@ class YoutubeFeedService internal constructor(
         val allVideos = updatedVideos.flatMap { it.second.videos }.map { it.id }
         val partitioned: List<List<ItemId>> = Lists.partition(allVideos, 50)
 
+        var failedOnce = false
         logger.info("Getting statistics for all {} videos", allVideos.size)
         val asd = partitioned
                 .map {
+                    if (failedOnce) {
+                        return@map emptyMap<ItemId, Pair<Duration, Long>>()
+                    }
                     logger.info("Getting statistics for {} videos", it.size)
-                    youtubeRepository.getStatistics(it)
+                    val either = youtubeRepository.getStatistics(it)
+                    when (either) {
+                        is Either.Left -> {
+                            logger.info("Stats failed: {}", either.a)
+                            failedOnce = true
+                            emptyMap()
+                        }
+                        is Either.Right -> either.b
+                    }
                 }
 
         val withStatistics: Map<ItemId, Pair<Duration, Long>> = asd

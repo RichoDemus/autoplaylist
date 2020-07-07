@@ -126,18 +126,23 @@ open class YoutubeClient(
         }
     }
 
-    internal open fun getStatistics(ids: List<ItemId>): Map<ItemId, Pair<Duration, Long>> {
-        val idsString = ids.joinToString(",")
-        val statItems = youtube.videos()
-                .list("statistics,contentDetails")
-                .setKey(apiKey)
-                .setId(idsString)
-                .execute()
-                .items
+    internal open fun getStatistics(ids: List<ItemId>): Either<String, Map<ItemId, Pair<Duration, Long>>> {
+        try {
+            val idsString = ids.joinToString(",")
+            val statItems = youtube.videos()
+                    .list("statistics,contentDetails")
+                    .setKey(apiKey)
+                    .setId(idsString)
+                    .execute()
+                    .items
 
-        return statItems
-                .map { Pair(ItemId(it.id), Pair(Duration.parse(it.contentDetails.duration), getViews(it))) }
-                .toMap()
+            return Either.right(statItems
+                    .map { Pair(ItemId(it.id), Pair(Duration.parse(it.contentDetails.duration), getViews(it))) }
+                    .toMap())
+        } catch (e: Exception) {
+            logger.error("Failed to get statistics", e)
+            return Either.left(e.message ?: "no msg?")
+        }
     }
 
     private fun getViews(video: com.google.api.services.youtube.model.Video): Long {

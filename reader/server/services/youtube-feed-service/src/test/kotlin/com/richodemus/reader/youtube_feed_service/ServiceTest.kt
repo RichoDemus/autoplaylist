@@ -47,6 +47,7 @@ class ServiceTest {
                     Video(ItemId("item-1"), "title1", "desc1", OffsetDateTime.MIN, OffsetDateTime.MIN, Duration.ZERO, 0),
                     Video(ItemId("item-2"), "title2", "desc2", OffsetDateTime.MIN, OffsetDateTime.MIN, Duration.ZERO, 0)
             )
+            on { getStatistics(any()) } doReturn Either.left("no stats!")
         }
 
         val saveRoot = "target/data/" + UUID.randomUUID()
@@ -91,12 +92,12 @@ class ServiceTest {
             )
 
             on { getStatistics(eq(listOf("item-1", "item-2", "item-3", "item-4").map { ItemId(it) })) } doReturn
-                    mapOf(
+                    Either.right(mapOf(
                             Pair(ItemId("item-1"), Pair(Duration.ofSeconds(1), 1L)),
                             Pair(ItemId("item-2"), Pair(Duration.ofMinutes(1), 2L)),
                             Pair(ItemId("item-3"), Pair(Duration.ofHours(1), 3L)),
                             Pair(ItemId("item-4"), Pair(Duration.ofDays(1), 4L))
-                    )
+                    ))
         }
 
         val saveRoot = "target/data/" + UUID.randomUUID()
@@ -140,12 +141,17 @@ class ServiceTest {
                     Video(ItemId("item-2"), "title2", "desc2", date("2020-01-02"), OffsetDateTime.MIN, Duration.ZERO, 0),
                     Video(ItemId("item-1"), "title1", "desc1", date("2020-01-01"), OffsetDateTime.MIN, Duration.ZERO, 0)
             )
+            on { getStatistics(eq(listOf("item-1", "item-2").map { ItemId(it) })) } doReturn
+                    Either.right(mapOf(
+                            Pair(ItemId("item-1"), Pair(Duration.ofSeconds(1), 1L)),
+                            Pair(ItemId("item-2"), Pair(Duration.ofMinutes(1), 2L))
+                    ))
             on { getStatistics(eq(listOf("item-1", "item-2", "item-3").map { ItemId(it) })) } doReturn
-                    mapOf(
+                    Either.right(mapOf(
                             Pair(ItemId("item-1"), Pair(Duration.ofSeconds(1), 1L)),
                             Pair(ItemId("item-2"), Pair(Duration.ofMinutes(1), 2L)),
                             Pair(ItemId("item-3"), Pair(Duration.ofHours(1), 3L))
-                    )
+                    ))
         }
 
         val saveRoot = "target/data/" + UUID.randomUUID()
@@ -163,8 +169,8 @@ class ServiceTest {
 
         assertThat(result).isNotNull
         assertThat(result).containsOnly(
-                Video(ItemId("item-2"), "title2", "desc2", date("2020-01-02"), OffsetDateTime.MIN, Duration.ZERO, 0),
-                Video(ItemId("item-1"), "title1", "desc1", date("2020-01-01"), OffsetDateTime.MIN, Duration.ZERO, 0)
+                Video(ItemId("item-2"), "title2", "desc2", date("2020-01-02"), OffsetDateTime.MIN, Duration.ofMinutes(1), 2),
+                Video(ItemId("item-1"), "title1", "desc1", date("2020-01-01"), OffsetDateTime.MIN, Duration.ofSeconds(1), 1)
         )
 
         target.updateChannelsAndVideos()
