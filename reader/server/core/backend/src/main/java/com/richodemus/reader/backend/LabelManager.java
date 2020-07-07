@@ -18,41 +18,36 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 @Service
-public class LabelManager
-{
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final UserRepository userRepository;
-	private final LabelService labelService;
+public class LabelManager {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final UserRepository userRepository;
+    private final LabelService labelService;
 
-	public LabelManager(final UserRepository userRepository,
-						final LabelService labelService)
-	{
-		this.userRepository = userRepository;
-		this.labelService = labelService;
-	}
+    public LabelManager(final UserRepository userRepository,
+                        final LabelService labelService) {
+        this.userRepository = userRepository;
+        this.labelService = labelService;
+    }
 
-	public Label createLabelForUser(Username username, String labelName) throws NoSuchUserException
-	{
-		logger.info("Creating label {} for user {}", labelName, username);
-		final UserId userId = userRepository.getUserId(username);
-		final LabelName name = new LabelName(labelName);
-		final com.richodemus.reader.label_service.Label label = labelService.create(name, userId);
-		return new Label(label.getId(), label.getName());
-	}
+    public Label createLabelForUser(Username username, String labelName) throws NoSuchUserException {
+        logger.info("Creating label {} for user {}", labelName, username);
+        final UserId userId = userRepository.getUserId(username);
+        final LabelName name = new LabelName(labelName);
+        final com.richodemus.reader.label_service.Label label = labelService.create(name, userId);
+        return new Label(label.getId(), label.getName());
+    }
 
-	public void addFeedToLabel(LabelId labelId, final FeedId feedId)
-	{
-		logger.debug("Adding feed {} to label {}", feedId, labelId);
-		labelService.addFeedToLabel(labelId, feedId);
-	}
+    public void addFeedToLabel(LabelId labelId, final FeedId feedId) {
+        logger.debug("Adding feed {} to label {}", feedId, labelId);
+        labelService.addFeedToLabel(labelId, feedId);
+    }
 
-	public List<Label> getLabels(Username username) throws NoSuchUserException
-	{
-		final UserId userId = userRepository.getUserId(username);
-		final List<Label> labels = labelService.get(userId).stream()
-				.map(label -> new Label(label.getId(), label.getName(), label.getFeeds()))
-				.collect(toList());
-		logger.info("Found {} labels for user {}", labels.size(), userId);
-		return labels;
-	}
+    public List<Label> getLabels(Username username) throws NoSuchUserException {
+        final UserId userId = userRepository.getUserId(username);
+        final List<Label> labels = labelService.get(userId).stream()
+                .map(label -> new Label(label.getId(), label.getName(), label.getFeeds()))
+                .collect(toList());
+        logger.info("Found {} labels for user {}", labels.size(), userId);
+        return labels;
+    }
 }

@@ -3,7 +3,6 @@ package com.richodemus.reader.youtube_feed_service;
 import com.richodemus.reader.dto.FeedId;
 import com.richodemus.reader.dto.FeedName;
 import com.richodemus.reader.dto.PlaylistId;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class JsonFileSystemPersistenceTest {
-    private JsonFileSystemPersistence<String,String> target;
+    private JsonFileSystemPersistence<String, String> target;
     private String path;
 
     @Before

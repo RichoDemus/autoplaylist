@@ -1,11 +1,9 @@
 package com.richodemus.reader.backend.exception;
 
-public class NoSuchLabelException extends Exception
-{
-	private static final long serialVersionUID = 1L;
+public class NoSuchLabelException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-	public NoSuchLabelException(String msg)
-	{
-		super(msg);
-	}
+    public NoSuchLabelException(String msg) {
+        super(msg);
+    }
 }
