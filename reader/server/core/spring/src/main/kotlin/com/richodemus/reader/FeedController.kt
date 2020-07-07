@@ -1,19 +1,30 @@
 package com.richodemus.reader
 
 import com.richodemus.reader.backend.LabelManager
-import com.richodemus.reader.dto.*
-import com.richodemus.reader.dto.ItemOperation.Operation.*
+import com.richodemus.reader.dto.Feed
+import com.richodemus.reader.dto.FeedId
+import com.richodemus.reader.dto.FeedUrl
+import com.richodemus.reader.dto.FeedWithoutItems
+import com.richodemus.reader.dto.ItemId
+import com.richodemus.reader.dto.ItemOperation
+import com.richodemus.reader.dto.ItemOperation.Operation.MARK_OLDER_ITEMS_AS_READ
+import com.richodemus.reader.dto.ItemOperation.Operation.MARK_READ
+import com.richodemus.reader.dto.ItemOperation.Operation.MARK_UNREAD
+import com.richodemus.reader.dto.Label
+import com.richodemus.reader.dto.User
 import io.micrometer.core.annotation.Timed
 import isLoggedIn
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
-import org.springframework.http.HttpStatus.*
+import org.springframework.http.HttpStatus.BAD_REQUEST
+import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
-import userId
+import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
 import username
-import java.util.*
-import java.util.function.Supplier
 import javax.servlet.http.HttpSession
 
 @CrossOrigin(
@@ -47,7 +58,7 @@ internal class FeedController(
         if (!session.isLoggedIn() || username == null) {
             return ResponseEntity(FORBIDDEN)
         }
-        return  backendPort.getFeed(username, feedId)
+        return backendPort.getFeed(username, feedId)
                 ?.let { ResponseEntity.ok(it) }
                 ?: ResponseEntity(BAD_REQUEST)
     }

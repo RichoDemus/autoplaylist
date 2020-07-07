@@ -2,7 +2,6 @@ package com.richodemus.reader
 
 import com.richodemus.reader.youtube_feed_service.PeriodicDownloadOrchestrator
 import isLoggedIn
-import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -26,14 +25,14 @@ internal class AdminController(
     internal fun getStatus(): ResponseEntity<DownloadJobStatus> {
         return ResponseEntity.ok(DownloadJobStatus(
                 periodicDownloadOrchestrator.lastRun(),
-        periodicDownloadOrchestrator.isRunning,
-        periodicDownloadOrchestrator.lastRunOutCome()
+                periodicDownloadOrchestrator.isRunning,
+                periodicDownloadOrchestrator.lastRunOutCome()
         ))
     }
 
-    class DownloadJobStatus(lastRun: LocalDateTime, val running: Boolean, lastRunOutCome:String) {
+    class DownloadJobStatus(lastRun: LocalDateTime, val running: Boolean, lastRunOutCome: String) {
         val lastRun: String = lastRun.toString()
-        val lastRunOutCome:String = lastRunOutCome
+        val lastRunOutCome: String = lastRunOutCome
     }
 
     @PostMapping("v1/admin/download")

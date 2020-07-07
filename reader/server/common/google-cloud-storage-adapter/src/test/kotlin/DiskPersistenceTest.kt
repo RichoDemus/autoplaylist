@@ -2,7 +2,7 @@ package com.richodemus.reader.common.google_cloud_storage_adapter
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.util.*
+import java.util.UUID
 
 internal class DiskPersistenceTest {
     @Test

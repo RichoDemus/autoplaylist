@@ -1,6 +1,5 @@
 package com.richodemus.reader.dto
 
-import com.richodemus.reader.dto.ItemId
 import java.time.Duration
 
 class Item(val id: ItemId,

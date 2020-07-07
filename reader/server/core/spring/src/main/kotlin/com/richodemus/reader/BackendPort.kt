@@ -1,18 +1,18 @@
 package com.richodemus.reader
 
 import com.richodemus.reader.backend.Backend
+import com.richodemus.reader.dto.Feed
 import com.richodemus.reader.dto.FeedId
 import com.richodemus.reader.dto.FeedUrl
-import com.richodemus.reader.dto.ItemId
-import com.richodemus.reader.dto.Username
-import com.richodemus.reader.dto.Feed
 import com.richodemus.reader.dto.FeedWithoutItems
 import com.richodemus.reader.dto.Item
+import com.richodemus.reader.dto.ItemId
+import com.richodemus.reader.dto.Username
 import org.springframework.stereotype.Component
 import java.util.Optional
 
 @Component
-class BackendPort (private val backend: Backend) {
+class BackendPort(private val backend: Backend) {
     fun getAllFeedsWithoutItems(username: Username) = backend.getAllFeedsWithoutItems(username).map { f -> f.toDto() }
 
     fun getFeed(username: Username, feedId: FeedId): Feed? {

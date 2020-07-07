@@ -1,13 +1,15 @@
 package com.richodemus.reader.youtube_feed_service
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder
-import com.richodemus.reader.dto.FeedId
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.time.*
+import java.time.Duration
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
-import java.util.*
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -68,7 +70,7 @@ class PeriodicDownloadOrchestrator internal constructor(
             feedService.updateChannelsAndVideos()
         } catch (e: Exception) {
             logger.error("Failed to download feeds", e)
-            lastRunOutCome = e.message ?:"empty exception msg"
+            lastRunOutCome = e.message ?: "empty exception msg"
         } finally {
             lastRunOutCome = "OK"
             isRunning = false

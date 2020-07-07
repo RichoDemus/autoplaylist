@@ -1,16 +1,20 @@
 package com.richodemus.reader
 
-import com.google.common.base.Strings
-import com.richodemus.reader.dto.*
+import com.richodemus.reader.dto.FeedId
+import com.richodemus.reader.dto.Label
+import com.richodemus.reader.dto.LabelId
+import com.richodemus.reader.dto.LabelName
 import com.richodemus.reader.label_service.LabelService
 import isLoggedIn
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
 import userId
-import java.util.*
-import javax.annotation.security.RolesAllowed
+import java.util.UUID
 import javax.servlet.http.HttpSession
 
 @CrossOrigin(
@@ -20,11 +24,11 @@ import javax.servlet.http.HttpSession
 )
 @RestController
 internal class LabelController(
-private val labelService: LabelService
+        private val labelService: LabelService
 ) {
 
     @PostMapping("v1/labels")
-    internal fun createLabel(session: HttpSession, @RequestBody labelName:String): ResponseEntity<Label> {
+    internal fun createLabel(session: HttpSession, @RequestBody labelName: String): ResponseEntity<Label> {
         val userId = session.userId
         if (!session.isLoggedIn() || userId == null) {
             return ResponseEntity(HttpStatus.FORBIDDEN)
@@ -39,7 +43,7 @@ private val labelService: LabelService
             session: HttpSession,
             @PathVariable("labelId") labelIdStr: String,
             @RequestBody feedId: FeedId
-    ) :ResponseEntity<String> {
+    ): ResponseEntity<String> {
         val labelId = LabelId(UUID.fromString(labelIdStr))
         val userId = session.userId
         if (!session.isLoggedIn() || userId == null) {

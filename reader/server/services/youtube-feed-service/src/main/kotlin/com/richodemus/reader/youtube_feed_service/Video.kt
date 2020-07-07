@@ -1,12 +1,10 @@
 package com.richodemus.reader.youtube_feed_service
 
 import com.google.api.services.youtube.model.PlaylistItem
-import com.richodemus.reader.dto.FeedName
 import com.richodemus.reader.dto.ItemId
 import java.time.Duration
 import java.time.OffsetDateTime
 import java.time.ZoneId
-import java.time.ZonedDateTime
 
 data class Video(
         val id: ItemId,

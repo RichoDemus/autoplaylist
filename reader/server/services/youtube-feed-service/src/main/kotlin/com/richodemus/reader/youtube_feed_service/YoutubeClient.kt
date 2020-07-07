@@ -17,7 +17,7 @@ import java.util.Optional
 
 @Component
 open class YoutubeClient(
-        @Value("\${gcp.apiKey}")  private val apiKey: String
+        @Value("\${gcp.apiKey}") private val apiKey: String
 ) {
     private var youtube: YouTube
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -34,7 +34,7 @@ open class YoutubeClient(
         youtube = builder.build()
     }
 
-    fun changeUrl(url:String) {
+    fun changeUrl(url: String) {
         val builder = YouTube.Builder(
                 NetHttpTransport(),
                 JacksonFactory(),

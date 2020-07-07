@@ -8,7 +8,8 @@ class FeedUrl(url: String) {
     @get:JsonIgnore
     val value = URL(url)
 
-    @JsonValue override fun toString() = value.toString()
+    @JsonValue
+    override fun toString() = value.toString()
 
     override fun equals(other: Any?): Boolean {
         if (other is FeedUrl) {

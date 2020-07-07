@@ -8,7 +8,7 @@ import kotlin.concurrent.thread
 
 @Service
 internal class GoogleCloudStorageAdapter(
-        private val persistence : Persistence
+        private val persistence: Persistence
 ) : EventStore {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val expectedListeners = 4

@@ -1,10 +1,8 @@
 package com.richodemus.reader
 
 import com.richodemus.reader.dto.Password
-import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.dto.Username
 import com.richodemus.reader.user_service.UserService
-import org.apache.http.HttpStatus
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.http.ResponseEntity

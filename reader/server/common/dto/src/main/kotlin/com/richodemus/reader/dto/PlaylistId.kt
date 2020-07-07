@@ -5,8 +5,9 @@ import com.fasterxml.jackson.annotation.JsonValue
 
 data class PlaylistId(@get:JsonIgnore val value: String) {
     init {
-        require(value.isNotBlank()) { "PlaylistId can't be empty" }
+        require(value.isNotBlank()) { "${javaClass.simpleName} can't be empty" }
     }
 
-    @JsonValue override fun toString() = value
+    @JsonValue
+    override fun toString() = value
 }

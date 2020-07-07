@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service
 import java.util.concurrent.atomic.AtomicLong
 
 @Service
-class SubscriptionService (private val eventStore: EventStore) {
+class SubscriptionService(private val eventStore: EventStore) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private var processedEvents = AtomicLong()
 

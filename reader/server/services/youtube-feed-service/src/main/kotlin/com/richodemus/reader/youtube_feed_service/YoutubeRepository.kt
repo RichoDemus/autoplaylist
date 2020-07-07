@@ -17,18 +17,18 @@ internal class YoutubeRepository(
 
     fun getChannel(id: FeedId): Either<String, Channel> {
         return youtubeClient.getChannel(id)
-                .filterOrElse({it.isNotEmpty()}, {"No such channel: $id"})
+                .filterOrElse({ it.isNotEmpty() }, { "No such channel: $id" })
                 .peek {
                     if ((it.size > 1)) {
                         logger.warn("More than 1 channels for id {}", id)
-                    } 
+                    }
                 }
                 .map { it.first() }
     }
 
     fun getChannel(username: ChannelName): Either<String, FeedId> {
         return youtubeClient.getId(username)
-                .filterOrElse({it.isNotEmpty()}, {"No such channel: $username"})
+                .filterOrElse({ it.isNotEmpty() }, { "No such channel: $username" })
                 .peek {
                     if ((it.size > 1)) {
                         logger.warn("More than 1 channels for {}", username)

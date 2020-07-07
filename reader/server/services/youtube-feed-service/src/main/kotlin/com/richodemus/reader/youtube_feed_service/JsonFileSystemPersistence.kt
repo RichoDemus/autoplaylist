@@ -1,7 +1,7 @@
 package com.richodemus.reader.youtube_feed_service
 
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.module.kotlin.*
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -12,7 +12,7 @@ import java.io.IOException
 import java.util.Optional
 
 @Component
-class JsonFileSystemPersistence<K,V>(
+class JsonFileSystemPersistence<K, V>(
         private val saveRoot: String,
         private val fileName: String,
         private val clazz: Class<V>?
@@ -20,7 +20,7 @@ class JsonFileSystemPersistence<K,V>(
 
     // todo this is a weird hack to please spring....
     @Autowired
-    constructor(): this("","",null){
+    constructor() : this("", "", null) {
 
     }
 
@@ -37,7 +37,7 @@ class JsonFileSystemPersistence<K,V>(
                 return Optional.empty<V>()
             }
             logger.trace("Reading feed {} from disk", id)
-            Optional.ofNullable(objectMapper.readValue(file,clazz))
+            Optional.ofNullable(objectMapper.readValue(file, clazz))
         } catch (e: Exception) {
             logger.warn("Unable to load feed: {}", id, e)
             Optional.empty<V>()

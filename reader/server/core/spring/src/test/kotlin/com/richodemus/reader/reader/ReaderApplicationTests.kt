@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.test.context.ActiveProfiles
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 
@@ -219,7 +219,7 @@ class ReaderApplicationTests {
 
         feedPage.addFeedToLabel(FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw"), labelId)
 
-                val result = feedPage.labels;
+        val result = feedPage.labels;
         assertThat(result).flatExtracting("feeds").containsOnly(FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw").toString());
     }
 }

@@ -4,14 +4,17 @@ import arrow.core.Either
 import arrow.core.orNull
 import com.google.common.collect.Lists
 import com.richodemus.reader.common.google_cloud_storage_adapter.EventStore
-import com.richodemus.reader.dto.*
+import com.richodemus.reader.dto.FeedId
+import com.richodemus.reader.dto.FeedName
+import com.richodemus.reader.dto.FeedUrl
+import com.richodemus.reader.dto.ItemId
+import com.richodemus.reader.dto.PlaylistId
 import com.richodemus.reader.events_v2.EventType.USER_SUBSCRIBED_TO_FEED
 import com.richodemus.reader.events_v2.UserSubscribedToFeed
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
-import java.lang.IllegalArgumentException
 import java.time.Duration
 import java.time.OffsetDateTime
 
@@ -30,6 +33,7 @@ class YoutubeFeedService internal constructor(
             }
         }
     }
+
     val logger: Logger = LoggerFactory.getLogger(javaClass)
 
     private fun registerChannel(feedId: FeedId) {
@@ -60,15 +64,15 @@ class YoutubeFeedService internal constructor(
 
     fun getChannel(feedId: FeedId) = channelCache[feedId]
 
-    fun getVideos(feedId: FeedId) : List<Video>{
+    fun getVideos(feedId: FeedId): List<Video> {
         val channel = channelCache[feedId] ?: return emptyList()
-        return videoCache[channel.playlistId]?.videos?: emptyList()
+        return videoCache[channel.playlistId]?.videos ?: emptyList()
     }
 
     fun getFeedId(feedUrl: FeedUrl): FeedId? {
         val path = feedUrl.value.path;
-        val id:String = if (path.startsWith("/user") || path.startsWith("/channel")) {
-             path.split("/")[2];
+        val id: String = if (path.startsWith("/user") || path.startsWith("/channel")) {
+            path.split("/")[2];
         } else {
             throw IllegalArgumentException("Unsupported format: " + feedUrl.value)
         }
@@ -83,7 +87,7 @@ class YoutubeFeedService internal constructor(
         val playlists = channelCache.values().map { it.playlistId }
 
         val updatedVideos = playlists
-                .map { Pair(it, videoCache[it]?.videos?: emptyList()) }
+                .map { Pair(it, videoCache[it]?.videos ?: emptyList()) }
                 .map { (id, videos) ->
                     val lastUploaded = videos.sortedBy { it.uploadDate }.map { it.id }.lastOrNull()
                     val vids = youtubeRepository.getVideos(id, lastUploaded)
@@ -119,11 +123,12 @@ class YoutubeFeedService internal constructor(
                     val updatedVideos = videos.map { video ->
                         statistics[video.id]?.let { stats ->
                             video.copy(duration = stats.first, views = stats.second)
-                        }?:video
+                        } ?: video
                     }
                     Pair(id, Videos(updatedVideos))
                 }
                 .toMap()
     }
+
     private fun PlaylistId.toName() = channelCache.values().firstOrNull { it.playlistId == this }?.name
 }

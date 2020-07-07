@@ -3,13 +3,8 @@ package com.richodemus.reader.common.google_cloud_storage_adapter
 import com.google.cloud.storage.BlobId
 import com.google.cloud.storage.BlobInfo
 import com.google.cloud.storage.StorageOptions
-import com.richodemus.reader.common.google_cloud_storage_adapter.Data
-import com.richodemus.reader.common.google_cloud_storage_adapter.Event
-import com.richodemus.reader.common.google_cloud_storage_adapter.Key
-import com.richodemus.reader.common.google_cloud_storage_adapter.Offset
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Primary
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import java.util.concurrent.CompletableFuture
@@ -21,8 +16,8 @@ import kotlin.concurrent.thread
 @Profile(value = ["!dev", "!test"])
 @Component
 internal class GoogleCloudStoragePersistence(
-        @Value("\${gcp.project}") val gcsProject:String,
-        @Value("\${gcp.bucket}") val gcsBucket:String
+        @Value("\${gcp.project}") val gcsProject: String,
+        @Value("\${gcp.bucket}") val gcsBucket: String
 ) : Persistence {
     private val logger = LoggerFactory.getLogger(javaClass)
 

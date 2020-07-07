@@ -23,23 +23,23 @@ import com.richodemus.reader.events_v2.UserWatchedItem
 private val mapper = jacksonObjectMapper()
 
 class EventSerializer {
-     fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
+    fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
     }
 
-     fun serialize(data: Event): ByteArray {
+    fun serialize(data: Event): ByteArray {
         return mapper.writeValueAsBytes(data)
     }
 
-     fun close() {
+    fun close() {
     }
 
 }
 
 class EventDeserializer {
-     fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
+    fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
     }
 
-     fun deserialize(data: ByteArray): Event {
+    fun deserialize(data: ByteArray): Event {
         val str = String(data)
         return when {
             str isType USER_CREATED -> mapper.readValue<UserCreated>(data)
@@ -53,34 +53,34 @@ class EventDeserializer {
         }
     }
 
-     fun close() {
+    fun close() {
     }
 
     private infix fun String.isType(type: EventType) = type.toString() in this // todo use regexp
 }
 
 
-class EventIdSerializer  {
-     fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
+class EventIdSerializer {
+    fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
     }
 
-     fun serialize(topic: String?, data: EventId): ByteArray {
+    fun serialize(topic: String?, data: EventId): ByteArray {
         return mapper.writeValueAsBytes(data)
     }
 
-     fun close() {
+    fun close() {
     }
 }
 
 class EventIdDeserializer {
-     fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
+    fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
     }
 
-     fun deserialize(topic: String?, data: ByteArray): EventId {
+    fun deserialize(topic: String?, data: ByteArray): EventId {
         val content = String(data)
         return mapper.readValue(content)
     }
 
-     fun close() {
+    fun close() {
     }
 }

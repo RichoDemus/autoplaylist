@@ -8,11 +8,12 @@ class Username(value: String) {
     val value: String
 
     init {
-        require(value.isNotBlank()) { "Username can't be empty" }
+        require(value.isNotBlank()) { "${javaClass.simpleName} can't be empty" }
         this.value = value.toLowerCase()
     }
 
-    @JsonValue override fun toString() = value
+    @JsonValue
+    override fun toString() = value
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
