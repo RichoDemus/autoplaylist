@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import java.time.Clock
 
 @Configuration
 internal open class Config {
@@ -20,5 +21,10 @@ internal open class Config {
     @Qualifier("channelCache")
     open fun channelCache(@Value("\${saveRoot}") saveRoot: String): Cache<FeedId, Channel> {
         return Cache(JsonFileSystemPersistence(saveRoot, "channel", Channel::class.java))
+    }
+
+    @Bean
+    open fun clock(): Clock {
+        return Clock.systemDefaultZone()
     }
 }

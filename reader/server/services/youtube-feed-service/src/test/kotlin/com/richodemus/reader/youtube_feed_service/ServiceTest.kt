@@ -12,11 +12,13 @@ import com.richodemus.reader.dto.ItemId
 import com.richodemus.reader.dto.PlaylistId
 import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.events_v2.UserSubscribedToFeed
+import date
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import java.time.Clock
 import java.time.Duration
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
+import java.time.ZoneId
 import java.util.UUID
 
 class ServiceTest {
@@ -31,7 +33,8 @@ class ServiceTest {
                 Cache(JsonFileSystemPersistence(saveRoot, "channels", Channel::class.java)),
                 Cache(JsonFileSystemPersistence(saveRoot, "videos", Videos::class.java)),
                 YoutubeRepository(youtubeClient),
-                InMemoryEventStore()
+                InMemoryEventStore(),
+                Clock.fixed(date("2020-01-04").toInstant(), ZoneId.of("UTC"))
         )
 
         val result = target.getChannel(FeedId("asd"))
@@ -56,7 +59,8 @@ class ServiceTest {
                 Cache(JsonFileSystemPersistence(saveRoot, "channels", Channel::class.java)),
                 Cache(JsonFileSystemPersistence(saveRoot, "videos", Videos::class.java)),
                 YoutubeRepository(youtubeClient),
-                eventStore
+                eventStore,
+                Clock.fixed(date("2020-01-04").toInstant(), ZoneId.of("UTC"))
         )
 
         eventStore.produce(UserSubscribedToFeed(UserId("asd"), FeedId("channel-id")))
@@ -78,8 +82,8 @@ class ServiceTest {
                             Channel(FeedId("channel-id"), FeedName("Channel"), PlaylistId("playlist-id"), OffsetDateTime.MIN, OffsetDateTime.MIN)
                     ))
             on { getVideos(eq(PlaylistId("playlist-id"))) } doReturn sequenceOf(
-                    Video(ItemId("item-1"), "title1", "desc1", OffsetDateTime.MIN, OffsetDateTime.MIN, Duration.ZERO, 0),
-                    Video(ItemId("item-2"), "title2", "desc2", OffsetDateTime.MIN, OffsetDateTime.MIN, Duration.ZERO, 0)
+                    Video(ItemId("item-1"), "title1", "desc1", date("2020-01-01"), OffsetDateTime.MIN, Duration.ZERO, 0),
+                    Video(ItemId("item-2"), "title2", "desc2", date("2020-01-02"), OffsetDateTime.MIN, Duration.ZERO, 0)
             )
 
             on { getChannel(eq(FeedId("channel-id2"))) } doReturn
@@ -87,8 +91,8 @@ class ServiceTest {
                             Channel(FeedId("channel-id2"), FeedName("Channel2"), PlaylistId("playlist-id2"), OffsetDateTime.MIN, OffsetDateTime.MIN)
                     ))
             on { getVideos(eq(PlaylistId("playlist-id2"))) } doReturn sequenceOf(
-                    Video(ItemId("item-3"), "title3", "desc3", OffsetDateTime.MIN, OffsetDateTime.MIN, Duration.ZERO, 0),
-                    Video(ItemId("item-4"), "title4", "desc4", OffsetDateTime.MIN, OffsetDateTime.MIN, Duration.ZERO, 0)
+                    Video(ItemId("item-3"), "title3", "desc3", date("2020-01-03"), OffsetDateTime.MIN, Duration.ZERO, 0),
+                    Video(ItemId("item-4"), "title4", "desc4", date("2020-01-04"), OffsetDateTime.MIN, Duration.ZERO, 0)
             )
 
             on { getStatistics(eq(listOf("item-1", "item-2", "item-3", "item-4").map { ItemId(it) })) } doReturn
@@ -106,7 +110,8 @@ class ServiceTest {
                 Cache(JsonFileSystemPersistence(saveRoot, "channels", Channel::class.java)),
                 Cache(JsonFileSystemPersistence(saveRoot, "videos", Videos::class.java)),
                 YoutubeRepository(youtubeClient),
-                eventStore
+                eventStore,
+                Clock.fixed(date("2020-01-04").toInstant(), ZoneId.of("UTC"))
         )
 
         eventStore.produce(UserSubscribedToFeed(UserId("asd"), FeedId("channel-id")))
@@ -116,16 +121,16 @@ class ServiceTest {
 
         assertThat(result).isNotNull
         assertThat(result).containsOnly(
-                Video(ItemId("item-1"), "title1", "desc1", OffsetDateTime.MIN, OffsetDateTime.MIN, Duration.ofSeconds(1), 1),
-                Video(ItemId("item-2"), "title2", "desc2", OffsetDateTime.MIN, OffsetDateTime.MIN, Duration.ofMinutes(1), 2)
+                Video(ItemId("item-1"), "title1", "desc1", date("2020-01-01"), OffsetDateTime.MIN, Duration.ofSeconds(1), 1),
+                Video(ItemId("item-2"), "title2", "desc2", date("2020-01-02"), OffsetDateTime.MIN, Duration.ofMinutes(1), 2)
         )
 
         result = target.getVideos(FeedId("channel-id2"))
 
         assertThat(result).isNotNull
         assertThat(result).containsOnly(
-                Video(ItemId("item-3"), "title3", "desc3", OffsetDateTime.MIN, OffsetDateTime.MIN, Duration.ofHours(1), 3),
-                Video(ItemId("item-4"), "title4", "desc4", OffsetDateTime.MIN, OffsetDateTime.MIN, Duration.ofDays(1), 4)
+                Video(ItemId("item-3"), "title3", "desc3", date("2020-01-03"), OffsetDateTime.MIN, Duration.ofHours(1), 3),
+                Video(ItemId("item-4"), "title4", "desc4", date("2020-01-04"), OffsetDateTime.MIN, Duration.ofDays(1), 4)
         )
     }
 
@@ -160,7 +165,8 @@ class ServiceTest {
                 Cache(JsonFileSystemPersistence(saveRoot, "channels", Channel::class.java)),
                 Cache(JsonFileSystemPersistence(saveRoot, "videos", Videos::class.java)),
                 YoutubeRepository(youtubeClient),
-                eventStore
+                eventStore,
+                Clock.fixed(date("2020-01-04").toInstant(), ZoneId.of("UTC"))
         )
 
         eventStore.produce(UserSubscribedToFeed(UserId("asd"), FeedId("channel-id")))
@@ -181,13 +187,5 @@ class ServiceTest {
                 Video(ItemId("item-2"), "title2", "desc2", date("2020-01-02"), OffsetDateTime.MIN, Duration.ofMinutes(1), 2),
                 Video(ItemId("item-1"), "title1", "desc1", date("2020-01-01"), OffsetDateTime.MIN, Duration.ofSeconds(1), 1)
         )
-    }
-
-    private fun date(str: String): OffsetDateTime {
-        val split = str.split("-")
-        val year = split[0].toInt()
-        val month = split[1].toInt()
-        val day = split[2].toInt()
-        return OffsetDateTime.of(year, month, day, 0, 0, 0, 0, ZoneOffset.UTC)
     }
 }

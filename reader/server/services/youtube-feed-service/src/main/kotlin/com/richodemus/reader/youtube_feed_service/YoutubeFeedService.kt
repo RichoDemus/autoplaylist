@@ -15,6 +15,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
+import java.time.Clock
 import java.time.Duration
 import java.time.OffsetDateTime
 
@@ -23,7 +24,8 @@ class YoutubeFeedService internal constructor(
         @Qualifier("channelCache") private val channelCache: Cache<FeedId, Channel>,
         @Qualifier("videoCache") private val videoCache: Cache<PlaylistId, Videos>,
         private val youtubeRepository: YoutubeRepository,
-        eventStore: EventStore
+        eventStore: EventStore,
+        private val clock: Clock
 ) {
     init {
         eventStore.consume { event ->
@@ -96,11 +98,14 @@ class YoutubeFeedService internal constructor(
                     Pair(id, Videos(newVids))
                 }
 
-        val allVideos = updatedVideos.flatMap { it.second.videos }.map { it.id }
-        val partitioned: List<List<ItemId>> = Lists.partition(allVideos, 50)
+        val videoIdsToFetchStatistics = updatedVideos
+                .flatMap { it.second.videos }
+                .filter { shouldFetchStatistics(it, OffsetDateTime.now(clock)) }
+                .map { it.id }
+        val partitioned: List<List<ItemId>> = Lists.partition(videoIdsToFetchStatistics, 50)
 
         var failedOnce = false
-        logger.info("Getting statistics for all {} videos", allVideos.size)
+        logger.info("Getting statistics for all {} videos", videoIdsToFetchStatistics.size)
         val asd = partitioned
                 .map {
                     if (failedOnce) {

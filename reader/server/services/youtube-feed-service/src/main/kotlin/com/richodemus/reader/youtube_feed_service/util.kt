@@ -29,3 +29,13 @@ data class ChannelName(@get:JsonIgnore val value: String) {
     @JsonValue
     override fun toString() = value
 }
+
+internal fun shouldFetchStatistics(video: Video, now: OffsetDateTime): Boolean {
+    if (video.uploadDate.isAfter(now.minusDays(7))) {
+        return true
+    }
+    if (video.uploadDate.dayOfMonth == now.dayOfMonth) {
+        return true
+    }
+    return false
+}
