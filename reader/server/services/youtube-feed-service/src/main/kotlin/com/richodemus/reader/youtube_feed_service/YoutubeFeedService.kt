@@ -82,7 +82,7 @@ class YoutubeFeedService internal constructor(
         return youtubeRepository.getChannel(ChannelName(id)).orNull()
     }
 
-    internal fun updateChannelsAndVideos() {
+    internal fun updateChannelsAndVideos(): Either<String, String> {
         logger.info("Syncing videos with youtube...")
         val playlists = channelCache.values().map { it.playlistId }
 
@@ -125,6 +125,11 @@ class YoutubeFeedService internal constructor(
 
         videosWithStatistics.forEach { (id, videos) -> videoCache[id] = videos }
         logger.info("Done downloading videos and statistics")
+        return if (failedOnce) {
+            Either.left("stats failed")
+        } else {
+            Either.right("OK")
+        }
     }
 
     private fun updateVideosWithStatistics(

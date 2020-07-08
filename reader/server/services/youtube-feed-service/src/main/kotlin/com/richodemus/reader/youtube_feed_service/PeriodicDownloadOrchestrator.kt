@@ -1,5 +1,6 @@
 package com.richodemus.reader.youtube_feed_service
 
+import arrow.core.Either
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -64,15 +65,23 @@ class PeriodicDownloadOrchestrator internal constructor(
 
     private fun addDownloadsTasksToExecutor() {
         isRunning = true
+        lastRunOutCome = ""
         try {
             logger.info("Midnight, time to download")
             lastRun = LocalDateTime.now()
-            feedService.updateChannelsAndVideos()
+            val either = feedService.updateChannelsAndVideos()
+            when (either) {
+                is Either.Left -> {
+                    lastRunOutCome += either.a
+                }
+                is Either.Right -> {
+                    lastRunOutCome += either.b
+                }
+            }
         } catch (e: Exception) {
             logger.error("Failed to download feeds", e)
-            lastRunOutCome = e.message ?: "empty exception msg"
+            lastRunOutCome += e.message ?: "empty exception msg"
         } finally {
-            lastRunOutCome = "OK"
             isRunning = false
         }
     }
