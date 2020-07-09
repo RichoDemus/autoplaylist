@@ -98,17 +98,21 @@ class YoutubeFeedService internal constructor(
                     Pair(id, Videos(newVids))
                 }
 
-        val videoIdsToFetchStatistics = updatedVideos
+        val candidatesToFetchStats = updatedVideos
                 .flatMap { it.second.videos }
+        logger.info("There are a total of {} videos", candidatesToFetchStats.size)
+        val videoIdsToFetchStatistics = candidatesToFetchStats
                 .filter { shouldFetchStatistics(it, OffsetDateTime.now(clock)) }
                 .map { it.id }
         val partitioned: List<List<ItemId>> = Lists.partition(videoIdsToFetchStatistics, 50)
 
         var failedOnce = false
-        logger.info("Getting statistics for all {} videos", videoIdsToFetchStatistics.size)
+        var skippedVideos = 0
+        logger.info("Getting statistics for {} of them", videoIdsToFetchStatistics.size)
         val asd = partitioned
                 .map {
                     if (failedOnce) {
+                        skippedVideos += it.size
                         return@map emptyMap<ItemId, Pair<Duration, Long>>()
                     }
                     logger.info("Getting statistics for {} videos", it.size)
@@ -122,6 +126,7 @@ class YoutubeFeedService internal constructor(
                         is Either.Right -> either.b
                     }
                 }
+        logger.info("Had to skip statistics for {} videos", skippedVideos)
 
         val withStatistics: Map<ItemId, Pair<Duration, Long>> = asd
                 .fold(emptyMap()) { left, right -> left.plus(right) }
