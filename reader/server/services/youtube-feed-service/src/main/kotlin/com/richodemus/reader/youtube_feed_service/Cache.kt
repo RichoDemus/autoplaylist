@@ -10,7 +10,6 @@ internal class Cache<K, V>(
     private val logger = LoggerFactory.getLogger(javaClass)
     private val cache = mutableMapOf<K, V>()
 
-    fun keys() = cache.keys.toList()
     fun values() = cache.values.toList()
 
     operator fun get(id: K): V? {

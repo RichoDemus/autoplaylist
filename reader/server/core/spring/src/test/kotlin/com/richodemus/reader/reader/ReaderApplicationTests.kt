@@ -75,20 +75,20 @@ class ReaderApplicationTests {
 
     @Test
     internal fun `Login should fail if user doesn't exist`() {
-        val result = loginPage.login(UUID.randomUUID().toString());
-        assertThat(result).isFalse();
+        val result = loginPage.login(UUID.randomUUID().toString())
+        assertThat(result).isFalse()
 
-        assertThat(loginPage.isLoggedIn).isFalse();
+        assertThat(loginPage.isLoggedIn).isFalse()
     }
 
     @Test
     internal fun `Should login`() {
         loginPage.createUser()
 
-        val result = loginPage.login();
-        assertThat(result).isTrue();
+        val result = loginPage.login()
+        assertThat(result).isTrue()
 
-        assertThat(loginPage.isLoggedIn).isTrue();
+        assertThat(loginPage.isLoggedIn).isTrue()
     }
 
     @Test
@@ -114,10 +114,10 @@ class ReaderApplicationTests {
     internal fun `Usernames should be case insensitive`() {
         loginPage.createUser("lowercase-username")
 
-        val result = loginPage.login(loginPage.username.get().toUpperCase());
-        assertThat(result).isTrue();
+        val result = loginPage.login(loginPage.username.get().toUpperCase())
+        assertThat(result).isTrue()
 
-        assertThat(loginPage.isLoggedIn).isTrue();
+        assertThat(loginPage.isLoggedIn).isTrue()
     }
 
     // Todo fix these eventually
@@ -150,8 +150,8 @@ class ReaderApplicationTests {
         loginPage.createUser()
         loginPage.login()
 
-        val feedPage = loginPage.toFeedPage();
-        feedPage.addFeed(FeedUrl("https://www.youtube.com/user/richodemus"));
+        val feedPage = loginPage.toFeedPage()
+        feedPage.addFeed(FeedUrl("https://www.youtube.com/user/richodemus"))
 
         loginPage.downloadFeeds()
 
@@ -160,8 +160,8 @@ class ReaderApplicationTests {
         }
 
 
-        assertThat(feedPage.getItemNames(FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw"))).containsExactly("Zs6bAFlcH0M", "vtuDTx1oJGA");
-        assertThat(feedPage.allFeeds).extracting("numberOfAvailableItems").containsExactly(2);
+        assertThat(feedPage.getItemNames(FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw"))).containsExactly("Zs6bAFlcH0M", "vtuDTx1oJGA")
+        assertThat(feedPage.allFeeds).extracting("numberOfAvailableItems").containsExactly(2)
     }
 
     @Test
@@ -169,8 +169,8 @@ class ReaderApplicationTests {
         loginPage.createUser()
         loginPage.login()
 
-        val feedPage = loginPage.toFeedPage();
-        feedPage.addFeed(FeedUrl("https://www.youtube.com/user/richodemus"));
+        val feedPage = loginPage.toFeedPage()
+        feedPage.addFeed(FeedUrl("https://www.youtube.com/user/richodemus"))
 
         loginPage.downloadFeeds()
 
@@ -182,8 +182,8 @@ class ReaderApplicationTests {
 
         feedPage.markAsRead(FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw"), "vtuDTx1oJGA")
 
-        assertThat(feedPage.getItemNames(FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw"))).containsExactly("Zs6bAFlcH0M");
-        assertThat(feedPage.allFeeds).extracting("numberOfAvailableItems").containsExactly(1);
+        assertThat(feedPage.getItemNames(FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw"))).containsExactly("Zs6bAFlcH0M")
+        assertThat(feedPage.allFeeds).extracting("numberOfAvailableItems").containsExactly(1)
     }
 
 
@@ -219,7 +219,7 @@ class ReaderApplicationTests {
 
         feedPage.addFeedToLabel(FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw"), labelId)
 
-        val result = feedPage.labels;
-        assertThat(result).flatExtracting("feeds").containsOnly(FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw").toString());
+        val result = feedPage.labels
+        assertThat(result).flatExtracting("feeds").containsOnly(FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw").toString())
     }
 }

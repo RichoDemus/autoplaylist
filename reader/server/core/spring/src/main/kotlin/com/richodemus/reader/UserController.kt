@@ -27,16 +27,17 @@ internal class UserController(
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
 
+    @Suppress("unused")
     @PostMapping("v1/users")
     internal fun createUser(@RequestBody createUserCommand: CreateUserCommand): ResponseEntity<String> {
         if (inviteCode != createUserCommand.inviteCode) {
-            logger.info("{} tried to signup with invalid code {}", createUserCommand.username, createUserCommand.inviteCode);
+            logger.info("{} tried to signup with invalid code {}", createUserCommand.username, createUserCommand.inviteCode)
             return ResponseEntity(FORBIDDEN)
         }
         try {
             userService.create(createUserCommand.username, createUserCommand.password)
         } catch (e: Exception) {
-            logger.error("Exception when creating user {}", e);
+            logger.error("Exception when creating user {}", e)
             return ResponseEntity(INTERNAL_SERVER_ERROR)
         }
         return ResponseEntity.ok("${createUserCommand.username} created")

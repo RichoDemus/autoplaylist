@@ -27,6 +27,7 @@ internal class LabelController(
         private val labelService: LabelService
 ) {
 
+    @Suppress("unused")
     @PostMapping("v1/labels")
     internal fun createLabel(session: HttpSession, @RequestBody labelName: String): ResponseEntity<Label> {
         val userId = session.userId
@@ -38,6 +39,7 @@ internal class LabelController(
         return ResponseEntity.ok(Label(label.id, label.name, label.feeds))
     }
 
+    @Suppress("unused")
     @PostMapping("v1/labels/{labelId}")
     internal fun addFeedToLabel(
             session: HttpSession,

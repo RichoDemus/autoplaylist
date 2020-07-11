@@ -40,6 +40,7 @@ internal class FeedController(
     private val logger = LoggerFactory.getLogger(javaClass)
 
 
+    @Suppress("unused")
     @Timed("getAllFeedsAndLabels")
     @GetMapping("/v1/feeds")
     internal fun getAllFeedsAndLabels(session: HttpSession): ResponseEntity<User> {
@@ -52,6 +53,7 @@ internal class FeedController(
         return ResponseEntity.ok(User(feeds, labels))
     }
 
+    @Suppress("unused")
     @GetMapping("v1/feeds/{id}")
     internal fun getFeed(session: HttpSession, @PathVariable("id") feedId: FeedId): ResponseEntity<Feed> {
         val username = session.username
@@ -63,6 +65,7 @@ internal class FeedController(
                 ?: ResponseEntity(BAD_REQUEST)
     }
 
+    @Suppress("unused")
     @PostMapping("v1/feeds/{feedId}/items/{itemId}")
     internal fun performFeedOperation(
             session: HttpSession,
@@ -85,6 +88,7 @@ internal class FeedController(
         return ResponseEntity.ok("\"OK\"")
     }
 
+    @Suppress("unused")
     @PostMapping("/v1/feeds")
     internal fun addFeed(
             session: HttpSession,

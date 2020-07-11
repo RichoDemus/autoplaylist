@@ -72,9 +72,9 @@ class YoutubeFeedService internal constructor(
     }
 
     fun getFeedId(feedUrl: FeedUrl): FeedId? {
-        val path = feedUrl.value.path;
+        val path = feedUrl.value.path
         val id: String = if (path.startsWith("/user") || path.startsWith("/channel")) {
-            path.split("/")[2];
+            path.split("/")[2]
         } else {
             throw IllegalArgumentException("Unsupported format: " + feedUrl.value)
         }

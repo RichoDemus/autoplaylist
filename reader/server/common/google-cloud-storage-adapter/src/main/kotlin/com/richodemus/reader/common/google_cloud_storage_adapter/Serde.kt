@@ -2,7 +2,6 @@ package com.richodemus.reader.common.google_cloud_storage_adapter
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.richodemus.reader.dto.EventId
 import com.richodemus.reader.events_v2.Event
 import com.richodemus.reader.events_v2.EventType
 import com.richodemus.reader.events_v2.EventType.FEED_ADDED_TO_LABEL
@@ -23,21 +22,14 @@ import com.richodemus.reader.events_v2.UserWatchedItem
 private val mapper = jacksonObjectMapper()
 
 class EventSerializer {
-    fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
-    }
 
     fun serialize(data: Event): ByteArray {
         return mapper.writeValueAsBytes(data)
     }
 
-    fun close() {
-    }
-
 }
 
 class EventDeserializer {
-    fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
-    }
 
     fun deserialize(data: ByteArray): Event {
         val str = String(data)
@@ -53,34 +45,7 @@ class EventDeserializer {
         }
     }
 
-    fun close() {
-    }
-
     private infix fun String.isType(type: EventType) = type.toString() in this // todo use regexp
 }
 
 
-class EventIdSerializer {
-    fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
-    }
-
-    fun serialize(topic: String?, data: EventId): ByteArray {
-        return mapper.writeValueAsBytes(data)
-    }
-
-    fun close() {
-    }
-}
-
-class EventIdDeserializer {
-    fun configure(configs: MutableMap<String, *>?, isKey: Boolean) {
-    }
-
-    fun deserialize(topic: String?, data: ByteArray): EventId {
-        val content = String(data)
-        return mapper.readValue(content)
-    }
-
-    fun close() {
-    }
-}

@@ -21,6 +21,7 @@ internal class AdminController(
         private val periodicDownloadOrchestrator: PeriodicDownloadOrchestrator
 ) {
 
+    @Suppress("unused")
     @GetMapping("v1/admin/download")
     internal fun getStatus(): ResponseEntity<DownloadJobStatus> {
         return ResponseEntity.ok(DownloadJobStatus(
@@ -30,17 +31,15 @@ internal class AdminController(
         ))
     }
 
-    class DownloadJobStatus(lastRun: LocalDateTime, val running: Boolean, lastRunOutCome: String) {
-        val lastRun: String = lastRun.toString()
-        val lastRunOutCome: String = lastRunOutCome
-    }
+    data class DownloadJobStatus(val lastRun: LocalDateTime, val running: Boolean, val lastRunOutCome: String)
 
+    @Suppress("unused")
     @PostMapping("v1/admin/download")
     internal fun download(session: HttpSession): ResponseEntity<String> {
         if (!session.isLoggedIn()) {
             return ResponseEntity(FORBIDDEN)
         }
-        periodicDownloadOrchestrator.downloadEverythingOnce();
+        periodicDownloadOrchestrator.downloadEverythingOnce()
         return ResponseEntity.ok("\"OK\"")
     }
 }

@@ -38,6 +38,7 @@ class PeriodicDownloadOrchestrator internal constructor(
         logger.error("Thread {} threw uncaught exception:", thread, throwable)
     }
 
+    @Suppress("unused")
     @PostConstruct
     fun start() {
         val millisecondsUntilMidnight = calculateDelayUntilMidnight()
@@ -50,6 +51,7 @@ class PeriodicDownloadOrchestrator internal constructor(
         executor.execute { addDownloadsTasksToExecutor() }
     }
 
+    @Suppress("unused")
     @PreDestroy
     fun stop() {
         executor.shutdown()
