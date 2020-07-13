@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import userId
 import username
+import java.time.Duration
 import javax.servlet.http.HttpSession
 
 /**
@@ -49,6 +50,7 @@ internal class SessionController(
                 val id = userService.find(request.username)!!.id
                 session.userId = id
                 session.username = request.username
+                session.maxInactiveInterval = Duration.ofDays(30).seconds.toInt()
                 ResponseEntity.ok("OK")
             } else {
                 ResponseEntity(UNAUTHORIZED)
