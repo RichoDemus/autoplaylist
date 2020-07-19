@@ -121,16 +121,16 @@ class ServiceTest {
 
         assertThat(result).isNotNull
         assertThat(result).containsOnly(
-                Video(ItemId("item-1"), "title1", "desc1", date("2020-01-01"), OffsetDateTime.MIN, Duration.ofSeconds(1), 1),
-                Video(ItemId("item-2"), "title2", "desc2", date("2020-01-02"), OffsetDateTime.MIN, Duration.ofMinutes(1), 2)
+                Video(ItemId("item-1"), "title1", "desc1", date("2020-01-01"), date("2020-01-04"), Duration.ofSeconds(1), 1),
+                Video(ItemId("item-2"), "title2", "desc2", date("2020-01-02"), date("2020-01-04"), Duration.ofMinutes(1), 2)
         )
 
         result = target.getVideos(FeedId("channel-id2"))
 
         assertThat(result).isNotNull
         assertThat(result).containsOnly(
-                Video(ItemId("item-3"), "title3", "desc3", date("2020-01-03"), OffsetDateTime.MIN, Duration.ofHours(1), 3),
-                Video(ItemId("item-4"), "title4", "desc4", date("2020-01-04"), OffsetDateTime.MIN, Duration.ofDays(1), 4)
+                Video(ItemId("item-3"), "title3", "desc3", date("2020-01-03"), date("2020-01-04"), Duration.ofHours(1), 3),
+                Video(ItemId("item-4"), "title4", "desc4", date("2020-01-04"), date("2020-01-04"), Duration.ofDays(1), 4)
         )
     }
 
@@ -175,17 +175,17 @@ class ServiceTest {
 
         assertThat(result).isNotNull
         assertThat(result).containsOnly(
-                Video(ItemId("item-2"), "title2", "desc2", date("2020-01-02"), OffsetDateTime.MIN, Duration.ofMinutes(1), 2),
-                Video(ItemId("item-1"), "title1", "desc1", date("2020-01-01"), OffsetDateTime.MIN, Duration.ofSeconds(1), 1)
+                Video(ItemId("item-2"), "title2", "desc2", date("2020-01-02"), date("2020-01-04"), Duration.ofMinutes(1), 2),
+                Video(ItemId("item-1"), "title1", "desc1", date("2020-01-01"), date("2020-01-04"), Duration.ofSeconds(1), 1)
         )
 
         target.updateChannelsAndVideos()
         result = target.getVideos(FeedId("channel-id"))
         assertThat(result).isNotNull
         assertThat(result).containsOnly(
-                Video(ItemId("item-3"), "title3", "desc3", date("2020-01-03"), OffsetDateTime.MIN, Duration.ofHours(1), 3),
-                Video(ItemId("item-2"), "title2", "desc2", date("2020-01-02"), OffsetDateTime.MIN, Duration.ofMinutes(1), 2),
-                Video(ItemId("item-1"), "title1", "desc1", date("2020-01-01"), OffsetDateTime.MIN, Duration.ofSeconds(1), 1)
+                Video(ItemId("item-3"), "title3", "desc3", date("2020-01-03"), date("2020-01-04"), Duration.ofHours(1), 3),
+                Video(ItemId("item-2"), "title2", "desc2", date("2020-01-02"), date("2020-01-04"), Duration.ofMinutes(1), 2),
+                Video(ItemId("item-1"), "title1", "desc1", date("2020-01-01"), date("2020-01-04"), Duration.ofSeconds(1), 1)
         )
     }
 }

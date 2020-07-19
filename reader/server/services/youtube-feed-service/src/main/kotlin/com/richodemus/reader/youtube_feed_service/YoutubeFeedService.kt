@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service
 import java.time.Clock
 import java.time.Duration
 import java.time.OffsetDateTime
+import java.time.ZoneId
 
 @Service
 class YoutubeFeedService internal constructor(
@@ -133,7 +134,8 @@ class YoutubeFeedService internal constructor(
 
         val videosWithStatistics = updateVideosWithStatistics(updatedVideos, withStatistics)
 
-        videosWithStatistics.forEach { (id, videos) -> videoCache[id] = videos }
+        videosWithStatistics
+                .forEach { (id, videos) -> videoCache[id] = videos }
         logger.info("Done downloading videos and statistics")
         return if (failedOnce) {
             Either.left("stats failed")
@@ -149,7 +151,11 @@ class YoutubeFeedService internal constructor(
                 .map { (id, videos) ->
                     val updatedVideos = videos.map { video ->
                         statistics[video.id]?.let { stats ->
-                            video.copy(duration = stats.first, views = stats.second)
+                            video.copy(
+                                    duration = stats.first,
+                                    views = stats.second,
+                                    lastUpdated = OffsetDateTime.now(clock)
+                            )
                         } ?: video
                     }
                     Pair(id, Videos(updatedVideos))
