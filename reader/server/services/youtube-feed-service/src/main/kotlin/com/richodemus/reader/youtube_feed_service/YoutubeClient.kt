@@ -82,9 +82,7 @@ open class YoutubeClient(
                     .items
                     ?: emptyList()
 
-            return items.map { channel ->
-                Channel.from(channel)
-            }.map { it.id }
+            return items.map { channel -> FeedId(channel.id) }
                     .let { Either.right(it) }
         } catch (e: Exception) {
             logger.error("Failed to get channel {}", name, e)
