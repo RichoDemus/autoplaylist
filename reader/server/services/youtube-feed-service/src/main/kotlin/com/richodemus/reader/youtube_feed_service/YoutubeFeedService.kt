@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service
 import java.time.Clock
 import java.time.Duration
 import java.time.OffsetDateTime
-import java.time.ZoneId
 
 @Service
 class YoutubeFeedService internal constructor(
@@ -26,7 +25,8 @@ class YoutubeFeedService internal constructor(
         @Qualifier("videoCache") private val videoCache: Cache<PlaylistId, Videos>,
         private val youtubeRepository: YoutubeRepository,
         eventStore: EventStore,
-        private val clock: Clock
+        private val clock: Clock,
+        private val prioritizer: StatisticsUpdatePrioritizer
 ) {
     init {
         eventStore.consume { event ->
@@ -101,15 +101,15 @@ class YoutubeFeedService internal constructor(
 
         val candidatesToFetchStats = updatedVideos
                 .flatMap { it.second.videos }
-        logger.info("There are a total of {} videos", candidatesToFetchStats.size)
-        val videoIdsToFetchStatistics = candidatesToFetchStats
-                .filter { shouldFetchStatistics(it, OffsetDateTime.now(clock)) }
-                .map { it.id }
-        val partitioned: List<List<ItemId>> = Lists.partition(videoIdsToFetchStatistics, 50)
+        val prioritized = prioritizer.prioritize(candidatesToFetchStats)
+
+        logger.info("There are a total of {} videos", prioritized.size)
+
+        val partitioned: List<List<ItemId>> = Lists.partition(prioritized, 50)
 
         var failedOnce = false
         var skippedVideos = 0
-        logger.info("Getting statistics for {} of them", videoIdsToFetchStatistics.size)
+//        logger.info("Getting statistics for {} of them", videoIdsToFetchStatistics.size)
         val asd = partitioned
                 .map {
                     if (failedOnce) {

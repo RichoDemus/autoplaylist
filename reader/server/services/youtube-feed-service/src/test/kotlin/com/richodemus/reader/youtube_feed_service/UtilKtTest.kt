@@ -1,7 +1,6 @@
 package com.richodemus.reader.youtube_feed_service
 
 import com.richodemus.reader.dto.ItemId
-import date
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.time.Duration

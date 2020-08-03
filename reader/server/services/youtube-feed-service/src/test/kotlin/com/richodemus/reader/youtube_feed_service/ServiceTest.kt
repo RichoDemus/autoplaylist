@@ -12,7 +12,6 @@ import com.richodemus.reader.dto.ItemId
 import com.richodemus.reader.dto.PlaylistId
 import com.richodemus.reader.dto.UserId
 import com.richodemus.reader.events_v2.UserSubscribedToFeed
-import date
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.time.Clock
@@ -34,7 +33,8 @@ class ServiceTest {
                 Cache(JsonFileSystemPersistence(saveRoot, "videos", Videos::class.java)),
                 YoutubeRepository(youtubeClient),
                 InMemoryEventStore(),
-                Clock.fixed(date("2020-01-04").toInstant(), ZoneId.of("UTC"))
+                Clock.fixed(date("2020-01-04").toInstant(), ZoneId.of("UTC")),
+                PassthroughPrioritizer()
         )
 
         val result = target.getChannel(FeedId("asd"))
@@ -60,7 +60,8 @@ class ServiceTest {
                 Cache(JsonFileSystemPersistence(saveRoot, "videos", Videos::class.java)),
                 YoutubeRepository(youtubeClient),
                 eventStore,
-                Clock.fixed(date("2020-01-04").toInstant(), ZoneId.of("UTC"))
+                Clock.fixed(date("2020-01-04").toInstant(), ZoneId.of("UTC")),
+                PassthroughPrioritizer()
         )
 
         eventStore.produce(UserSubscribedToFeed(UserId("asd"), FeedId("channel-id")))
@@ -111,7 +112,8 @@ class ServiceTest {
                 Cache(JsonFileSystemPersistence(saveRoot, "videos", Videos::class.java)),
                 YoutubeRepository(youtubeClient),
                 eventStore,
-                Clock.fixed(date("2020-01-04").toInstant(), ZoneId.of("UTC"))
+                Clock.fixed(date("2020-01-04").toInstant(), ZoneId.of("UTC")),
+                PassthroughPrioritizer()
         )
 
         eventStore.produce(UserSubscribedToFeed(UserId("asd"), FeedId("channel-id")))
@@ -166,7 +168,8 @@ class ServiceTest {
                 Cache(JsonFileSystemPersistence(saveRoot, "videos", Videos::class.java)),
                 YoutubeRepository(youtubeClient),
                 eventStore,
-                Clock.fixed(date("2020-01-04").toInstant(), ZoneId.of("UTC"))
+                Clock.fixed(date("2020-01-04").toInstant(), ZoneId.of("UTC")),
+                PassthroughPrioritizer()
         )
 
         eventStore.produce(UserSubscribedToFeed(UserId("asd"), FeedId("channel-id")))

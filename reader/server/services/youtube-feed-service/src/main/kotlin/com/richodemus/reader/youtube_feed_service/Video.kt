@@ -4,7 +4,6 @@ import com.google.api.services.youtube.model.PlaylistItem
 import com.richodemus.reader.dto.ItemId
 import java.time.Duration
 import java.time.OffsetDateTime
-import java.time.ZoneId
 
 data class Video(
         val id: ItemId,
@@ -27,7 +26,7 @@ data class Video(
                     title,
                     description,
                     publishedAt,
-                    OffsetDateTime.now(ZoneId.of("UTC")),
+                    date("1970-01-01"),
                     Duration.ZERO,
                     0L
             )
