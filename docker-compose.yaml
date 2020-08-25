@@ -1,15 +1,24 @@
 version: "3"
 services:
-  frontend:
+  autoplaylist-frontend:
     image: richodemus/autoplaylists-frontend:latest
+    container_name: autoplaylist-frontend
     ports:
       - "3000:5000"
+    networks:
+      nginx-network:
 
-  backend:
+  autoplaylist-backend:
     image: richodemus/autoplaylists-backend:latest
+    container_name: autoplaylist-backend
     ports:
       - "8080:8080"
+    networks:
+      nginx-network:
     environment:
       - CLIENT_ID=${CLIENT_ID}
       - CLIENT_SECRET=${CLIENT_SECRET}
       - REDIRECT_URL=${REDIRECT_URL}
+networks:
+  nginx-network:
+    external: true
