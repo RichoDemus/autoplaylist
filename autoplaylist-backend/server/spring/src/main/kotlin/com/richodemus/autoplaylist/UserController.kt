@@ -33,10 +33,10 @@ internal class UserController(
         logger.info("Checking session ${session.id} for $userId")
 
         // todo check if we have a working access or refresh token
-        val accessToken = ""
+//        val accessToken = ""
 //        val accessToken = userId?.let { userService.getUser(it) }?.accessToken
 
-        if (accessToken != null) {
+        if (userId != null) {
             return ResponseEntity(HttpStatus.OK)
         }
         return ResponseEntity(HttpStatus.NOT_FOUND)
