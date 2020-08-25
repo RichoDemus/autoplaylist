@@ -24,7 +24,7 @@ import java.util.UUID
 import javax.servlet.http.HttpSession
 
 @CrossOrigin(
-        origins = ["http://localhost:3000", "https://autoplaylists.richodemus.com"],
+        origins = ["http://localhost:3000", "https://autoplaylist.richodemus.com"],
         maxAge = 3600,
         allowCredentials = "true"
 )

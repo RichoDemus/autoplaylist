@@ -1,7 +1,7 @@
 # Autoplaylists
 Build status: [![CircleCI](https://circleci.com/gh/RichoDemus/autoplaylist/tree/master.svg?style=svg)](https://circleci.com/gh/RichoDemus/autoplaylist/tree/master)  
 Webapp to attempt to replicate "Smart playlists" from programs like Foobar2000 and iTunes  
-Deployed at [autoplaylists.richodemus.com](https://autoplaylists.richodemus.com)
+Deployed at [autoplaylist.richodemus.com](https://autoplaylist.richodemus.com)
 
 Frontend written in a mix of Javascript and typescript  
 Backend written in Kotlin

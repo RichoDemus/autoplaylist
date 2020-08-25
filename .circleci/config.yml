@@ -76,15 +76,15 @@ jobs:
             docker pull richodemus/autoplaylists-frontend:latest
             docker pull richodemus/autoplaylists-backend:latest
 
-            docker rm -f autoplaylists-frontend
-            docker rm -f autoplaylists-backend
+            docker rm -f autoplaylist-frontend
+            docker rm -f autoplaylist-backend
 
-            docker run --name autoplaylists-frontend -d --log-driver=gcplogs --log-driver=json-file richodemus/autoplaylists-frontend:latest
-            docker run --name autoplaylists-backend -d --log-driver=gcplogs --log-driver=json-file \
+            docker run --name autoplaylist-frontend --network nginx-network -p 5000:5000 -d --log-driver=gcplogs --log-driver=json-file richodemus/autoplaylists-frontend:latest
+            docker run --name autoplaylist-backend --network nginx-network -d --log-driver=gcplogs --log-driver=json-file \
               -p 9090:8080 \
               -e CLIENT_ID=df0732a2defe44ecabd30868fa57a2d5 \
               -e CLIENT_SECRET=$SPOTIFY_SECRET \
-              -e REDIRECT_URL=https://autoplaylists.richodemus.com/callback \
+              -e REDIRECT_URL=https://autoplaylist.richodemus.com/callback \
               -e GCS_PROJECT=richo-main \
               -e GCS_BUCKET=richo-autoplaylist \
               richodemus/autoplaylists-backend:latest
