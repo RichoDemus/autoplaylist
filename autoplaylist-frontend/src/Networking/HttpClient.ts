@@ -4,7 +4,7 @@ const getBackendBaseUrl = () => {
     if (window.location.hostname === "localhost") {
         return "http://localhost:8080/v1"
     }
-    return "https://api.autoplaylist.richodemus.com"
+    return "https://api.autoplaylist.richodemus.com/v1"
 };
 
 export const checkForValidSession = () => {
