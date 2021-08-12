@@ -20,7 +20,7 @@ docker run yadda yadda -e GCS_PROJECT=X -e GCS_BUCKET=Y`
 ### Deploy
 ```
 docker build -t richodemus/reader .
-docker push
+docker push richodemus/reader
 docker-compose pull #on server
 docker rm -f reader
 docker-compose up -d
