@@ -43,7 +43,6 @@
         <dependency>
             <groupId>io.arrow-kt</groupId>
             <artifactId>arrow-syntax</artifactId>
-            <version>0.10.4</version>
         </dependency>
 
         <dependency>
