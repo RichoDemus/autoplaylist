@@ -9,6 +9,7 @@ import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
+import java.lang.RuntimeException
 import java.util.Optional
 
 @Component
@@ -55,6 +56,7 @@ class JsonFileSystemPersistence<K, V>(
             BufferedWriter(FileWriter(file)).use { writer -> writer.write(asString) }
         } catch (e: IOException) {
             logger.warn("Unable to write feed {} to disk", id, e)
+            throw RuntimeException("Unable to write feed $id to disk", e);
         }
     }
 

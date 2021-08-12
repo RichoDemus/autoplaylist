@@ -55,9 +55,9 @@ open class YoutubeClient(
         try {
             val items = youtube
                     .channels()
-                    .list("contentDetails,snippet")
+                    .list(listOf("contentDetails","snippet"))
                     .setKey(apiKey)
-                    .setId(id.value)
+                    .setId(listOf(id.value))
                     .execute()
                     .items
                     ?: emptyList()
@@ -75,7 +75,7 @@ open class YoutubeClient(
         try {
             val items = youtube
                     .channels()
-                    .list("snippet,status,id,statistics")
+                    .list(listOf("snippet","status","id","statistics"))
                     .setKey(apiKey)
                     .setForUsername(name.value)
                     .execute()
@@ -96,7 +96,7 @@ open class YoutubeClient(
             while (true) {
                 try {
                     val exec = youtube.playlistItems()
-                            .list("id,snippet")
+                            .list(listOf("id","snippet"))
                             .setKey(apiKey)
                             .setPageToken(nextPagetoken)
                             .setPlaylistId(playlistId.value)
@@ -128,9 +128,9 @@ open class YoutubeClient(
         try {
             val idsString = ids.joinToString(",")
             val statItems = youtube.videos()
-                    .list("statistics,contentDetails")
+                    .list(listOf("statistics","contentDetails"))
                     .setKey(apiKey)
-                    .setId(idsString)
+                    .setId(listOf(idsString))
                     .execute()
                     .items
 
