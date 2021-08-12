@@ -3,16 +3,19 @@
 ## Instructions
 
 ### Run
-`docker run yadda yadda -e GCS_PROJECT=X -e GCS_BUCKET=Y`
+```
+docker run yadda yadda -e GCS_PROJECT=X -e GCS_BUCKET=Y`
+```
 
 ### Compile and run all test
-`./gradlew`
-
-### Compile and run in foreground
-`./build-and-run.sh`
+```
+.\mvnw verify
+```
 
 ### Check for outdated dependencies
-    ./gradlew dependencyUpdates
+```
+.\mvnw versions:display-dependency-updates
+```
 
 ### Deploy
 ```
