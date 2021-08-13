@@ -114,7 +114,7 @@ class ReaderApplicationTests {
     internal fun `Usernames should be case insensitive`() {
         loginPage.createUser("lowercase-username")
 
-        val result = loginPage.login(loginPage.username.get().toUpperCase())
+        val result = loginPage.login(loginPage.username!!.toUpperCase())
         assertThat(result).isTrue()
 
         assertThat(loginPage.isLoggedIn).isTrue()
