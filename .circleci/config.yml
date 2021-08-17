@@ -69,7 +69,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "17:44:01:92:1d:87:c1:ac:af:5d:f0:b4:78:6d:1f:fb"
+            - "00:aa:c3:0b:30:bd:7c:6e:18:03:6d:7b:a4:84:b7:45"
       - run: |
           echo $KNOWN_HOST >> ~/.ssh/known_hosts
           ssh richodemus@richodemus.com << EOF
