@@ -30,12 +30,17 @@ mod tests {
             );
         }
 
-        let freq: HashMap<String, u8> = tracks.iter().fold(HashMap::new(), |mut acc, track| {
-            *acc.entry(track.track_name.clone()).or_insert(0) += 1;
+        let freq = tracks.iter()
+            .filter(|track|!track.track_name.to_lowercase().contains("live"))
+            .fold(HashMap::new(), |mut acc, track| {
+            acc.entry(track.track_name.clone()).or_insert(vec![]).push(track.clone());
             acc
         });
-        for (name, count) in freq {
-            println!("{} {}", count, name);
+        for (name, tracks) in freq {
+            println!("{name}");
+            for track in tracks {
+                println!("\t{track:?}");
+            }
         }
 
         Ok(())
