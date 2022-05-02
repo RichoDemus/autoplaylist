@@ -1,5 +1,6 @@
+use std::collections::HashMap;
 use anyhow::*;
-use log::info;
+use log::{info, log};
 use reqwest::Client;
 use serde::Deserialize;
 use serde::Serialize;
@@ -11,7 +12,7 @@ pub struct SpotifyClient {
     client: Client,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Track {
     pub album_name: String,
     pub artist_name: String,
@@ -36,12 +37,12 @@ impl SpotifyClient {
         }
     }
 
-    pub async fn artist(&self) -> Result<Vec<Track>> {
+    pub async fn artist(&self, artist: &str) -> Result<Vec<Track>> {
         let json: Value = self
             .client
             .get(" 	https://api.spotify.com/v1/search")
             .header("Authorization", format!("Bearer {}", self.access_token))
-            .query(&[("q", "powerwolf"), ("type", "artist"), ("market", "SE")])
+            .query(&[("q", artist), ("type", "artist"), ("market", "SE")])
             .send()
             .await
             .context("search")?
@@ -156,4 +157,83 @@ impl SpotifyClient {
         info!("Result:\n{print}");
         Ok(tracks)
     }
+
+    pub(crate) async fn create_or_update_playlist(&self, playlist_name: &str, tracks: Vec<Track>) -> Result<()> {
+        let playlists = self.get_playlists().await?;
+
+        let maybe_exists = playlists.into_iter().find(|playlist|playlist.name == playlist_name);
+        info!("Playlist found?: {}", maybe_exists.is_some());
+        let playlist_id = match maybe_exists {
+            None => self.create_playlist(playlist_name).await?,
+            Some(playlist) => playlist.id,
+        };
+
+        info!("playlist id: {}", playlist_id);
+
+        self.set_playlist_content(playlist_id, tracks).await
+    }
+
+    async fn create_playlist(&self, playlist_name: &str) -> Result<PlaylistId> {
+        let mut map = HashMap::new();
+        map.insert("name",playlist_name);
+        map.insert("public","false");
+        map.insert ("collaborative","false");
+        map.insert("description","Created by autoplaylist-cli");
+        let response = self.client
+            .post("https://api.spotify.com/v1/me/playlists")
+            .header("Authorization", format!("Bearer {}", self.access_token))
+            .json(&map)
+            .send().await.context("Create playlist")?;
+        let json: Value = response.json().await.context("Parse create playlist json")?;
+        let playlist_id = json["id"].as_str()
+            .context("Unpack id from create playlist")?
+            .to_string();
+        Ok(playlist_id)
+    }
+
+    async fn set_playlist_content(&self, playlist_id: PlaylistId, tracks: Vec<Track>) -> Result<()> {
+        self.client
+            .put(format!("https://api.spotify.com/v1/playlists/{playlist_id}/tracks"))
+            .header("Authorization", format!("Bearer {}", self.access_token))
+
+    }
+
+    async fn get_playlists(&self) -> Result<Vec<Playlist>> {
+        let mut offset = 0;
+        let mut playlists = vec![];
+        loop {
+            let response = self
+                .client
+                .get("https://api.spotify.com/v1/me/playlists")
+                .header("Authorization", format!("Bearer {}", self.access_token))
+                .query(&[("limit", "50"), ("offset", offset.to_string().as_str())])
+                .send()
+                .await
+                .context("get playlists")?;
+            if !response.status().is_success() {
+                break;
+            }
+            let json: Value = response
+                .json()
+                .await
+                .context("parse get playlists")?;
+            let next = &json["next"].as_str();
+            info!("{next:?}");
+
+            let items = &json["items"].as_array().context("get items")?;
+            for value in &**items {
+                let name = value["name"].as_str().context("get playlist name")?.to_string();
+                let id = value["id"].as_str().context("get playlist id")?.to_string();
+                playlists.push(Playlist {id,name});
+            }
+            // todo parse next query string and use offset instead of incrementing
+            offset += 50;
+            if next.is_none() {
+                break;
+            }
+        }
+        Ok(playlists)
+    }
 }
+type PlaylistId = String;
+struct Playlist {id: PlaylistId, name:String}

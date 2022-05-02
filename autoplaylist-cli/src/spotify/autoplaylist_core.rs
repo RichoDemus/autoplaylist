@@ -1,15 +1,24 @@
-use crate::spotify::spotify_client::SpotifyClient;
+use std::ops::Not;
+use crate::spotify::spotify_client::{SpotifyClient, Track};
 use anyhow::*;
 use log::info;
 
 pub(crate) async fn do_stuff(access_token: String) -> Result<()> {
     let mut client = SpotifyClient::new(access_token);
     info!("got a client");
-    let tracks = client.artist().await?;
-    info!("tracks:\n{:#?}", tracks);
-    let tracks_str = serde_json::to_string(&tracks)?;
-    info!("json: {}", tracks_str);
+    // let tracks = client.artist("Powerwolf").await?;
+    // info!("tracks:\n{:#?}", tracks);
+    // let tracks_str = serde_json::to_string(&tracks)?;
+    // info!("json: {}", tracks_str);
+    client.create_or_update_playlist("Powerwolf - gen", vec![]).await?;
     Ok(())
+}
+
+fn deduplicate_tracks(mut tracks: Vec<Track>) -> Track {
+    assert!(tracks.is_empty().not(), "Tracks can't be empty");
+    // for now, lets just take the latest release
+    tracks.sort_by_key(|track|track.release_date.clone());
+    tracks.pop().expect("we just asserted that it's not empty")
 }
 
 #[cfg(test)]
@@ -31,16 +40,19 @@ mod tests {
         }
 
         let freq = tracks.iter()
-            .filter(|track|!track.track_name.to_lowercase().contains("live"))
+            // .filter(|track|!track.track_name.to_lowercase().contains("live"))
             .fold(HashMap::new(), |mut acc, track| {
             acc.entry(track.track_name.clone()).or_insert(vec![]).push(track.clone());
             acc
         });
-        for (name, tracks) in freq {
-            println!("{name}");
-            for track in tracks {
-                println!("\t{track:?}");
-            }
+        let mut freq = freq.into_iter()
+            .map(|(key, tracks)|{
+                (key, deduplicate_tracks(tracks))
+            }).collect::<HashMap<_,_>>();
+        let mut tracks = freq.into_values().collect::<Vec<_>>();
+        tracks.sort_by_key(|track|track.release_date.clone());
+        for track in tracks {
+            println!("{} - {}", track.album_name, track.track_name);
         }
 
         Ok(())
