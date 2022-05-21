@@ -6,11 +6,11 @@ use log::info;
 pub(crate) async fn do_stuff(access_token: String) -> Result<()> {
     let mut client = SpotifyClient::new(access_token);
     info!("got a client");
-    // let tracks = client.artist("Powerwolf").await?;
+    let tracks = client.artist("Powerwolf").await?;
     // info!("tracks:\n{:#?}", tracks);
     // let tracks_str = serde_json::to_string(&tracks)?;
     // info!("json: {}", tracks_str);
-    client.create_or_update_playlist("Powerwolf - gen", vec![]).await?;
+    client.create_or_update_playlist("Powerwolf - gen", tracks).await?;
     Ok(())
 }
 

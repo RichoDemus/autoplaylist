@@ -192,10 +192,27 @@ impl SpotifyClient {
     }
 
     async fn set_playlist_content(&self, playlist_id: PlaylistId, tracks: Vec<Track>) -> Result<()> {
-        self.client
+        let tracks = tracks[0..99].to_vec();
+        assert!(tracks.len() < 100, "don't currently support more than 100 tracks");
+        assert!(!tracks.is_empty(), "tracks cant be empty");
+        // let track_ids = tracks.into_iter().map(|track|track.track_id).collect::<Vec<_>>();
+        // let track_ids = serde_json::to_string(&track_ids)?;
+        // info!("tracks: {}", track_ids);
+        info!("playlist id: {}", playlist_id);
+        info!("access token: {}", self.access_token);
+        // let mut body = HashMap::new();
+        // body.insert("uris", track_ids);
+        let body = create_body(tracks)?;
+        let response = self.client
             .put(format!("https://api.spotify.com/v1/playlists/{playlist_id}/tracks"))
             .header("Authorization", format!("Bearer {}", self.access_token))
+            .header("Accept","application/json")
+            .body(body)
+            .send().await.context("Add tracks to playlist")?;
 
+        info!("put tracks resp: {:?}", response);
+        info!("text: {:?}", response.text().await);
+Ok(())
     }
 
     async fn get_playlists(&self) -> Result<Vec<Playlist>> {
@@ -237,3 +254,44 @@ impl SpotifyClient {
 }
 type PlaylistId = String;
 struct Playlist {id: PlaylistId, name:String}
+
+fn create_body(tracks: Vec<Track>) -> Result<String> {
+    let uris = tracks.into_iter().map(|track|format!("spotify:track:{}", track.track_id)).collect::<Vec<_>>();
+    #[derive(Serialize)]
+    struct Body {
+        uris:Vec<String>,
+    }
+    serde_json::to_string(&Body {uris}).context("serialize body")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        let expected = r#"{"uris":["spotify:track:70aIp3AQtpSePVE7eIFTxi","spotify:track:2BxmDUvrfdW5GrNIGTROgk"]}"#;
+        let result = create_body(vec![
+            Track {
+                album_name: "".to_string(),
+                artist_name: "".to_string(),
+                release_date: "".to_string(),
+                track_name: "".to_string(),
+                album_id: "".to_string(),
+                artist_id: "".to_string(),
+                track_id: "70aIp3AQtpSePVE7eIFTxi".to_string()
+            },
+              Track {
+                album_name: "".to_string(),
+                artist_name: "".to_string(),
+                release_date: "".to_string(),
+                track_name: "".to_string(),
+                album_id: "".to_string(),
+                artist_id: "".to_string(),
+                track_id: "2BxmDUvrfdW5GrNIGTROgk".to_string()
+            },
+        ]).unwrap();
+
+        assert_eq!(expected, result);
+    }
+}
