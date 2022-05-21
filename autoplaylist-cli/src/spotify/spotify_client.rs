@@ -1,11 +1,12 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
+use std::fmt::{Display, Formatter};
+
 use anyhow::*;
 use log::{info, log};
 use reqwest::Client;
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::Value;
-use std::fmt::{Display, Formatter};
 
 pub struct SpotifyClient {
     access_token: String,
@@ -65,7 +66,11 @@ impl SpotifyClient {
                 "https://api.spotify.com/v1/artists/{artist_id}/albums"
             ))
             .header("Authorization", format!("Bearer {}", self.access_token))
-            .query(&[("market", "SE")])
+            .query(&[
+                ("market", "SE"),
+                ("limit", "50"),
+                ("include_groups", "album,single"),
+            ])
             .send()
             .await
             .context("get albums")?
@@ -88,6 +93,17 @@ impl SpotifyClient {
                 }
             })
             .collect::<Vec<_>>();
+        assert!(
+            album_names.len() < 50,
+            "we got 50 albums, we probably don't handle that"
+        );
+        // info!("Received {} albums:", album_names.len());
+        // for (name,_id) in album_names {
+        //     info!("\t{name}")
+        // }
+        // assert!(album_names.iter()
+        //     .map(|(name,_id)|name.to_string())
+        //     .collect::<HashSet<_>>().contains("Coat of Arms"), "Missing coat of arms");
 
         // info!("albums: {:#?}", album_names);
 
@@ -158,10 +174,16 @@ impl SpotifyClient {
         Ok(tracks)
     }
 
-    pub(crate) async fn create_or_update_playlist(&self, playlist_name: &str, tracks: Vec<Track>) -> Result<()> {
+    pub(crate) async fn create_or_update_playlist(
+        &self,
+        playlist_name: &str,
+        tracks: Vec<Track>,
+    ) -> Result<()> {
         let playlists = self.get_playlists().await?;
 
-        let maybe_exists = playlists.into_iter().find(|playlist|playlist.name == playlist_name);
+        let maybe_exists = playlists
+            .into_iter()
+            .find(|playlist| playlist.name == playlist_name);
         info!("Playlist found?: {}", maybe_exists.is_some());
         let playlist_id = match maybe_exists {
             None => self.create_playlist(playlist_name).await?,
@@ -175,44 +197,93 @@ impl SpotifyClient {
 
     async fn create_playlist(&self, playlist_name: &str) -> Result<PlaylistId> {
         let mut map = HashMap::new();
-        map.insert("name",playlist_name);
-        map.insert("public","false");
-        map.insert ("collaborative","false");
-        map.insert("description","Created by autoplaylist-cli");
-        let response = self.client
+        map.insert("name", playlist_name);
+        map.insert("public", "false");
+        map.insert("collaborative", "false");
+        map.insert("description", "Created by autoplaylist-cli");
+        let response = self
+            .client
             .post("https://api.spotify.com/v1/me/playlists")
             .header("Authorization", format!("Bearer {}", self.access_token))
             .json(&map)
-            .send().await.context("Create playlist")?;
-        let json: Value = response.json().await.context("Parse create playlist json")?;
-        let playlist_id = json["id"].as_str()
+            .send()
+            .await
+            .context("Create playlist")?;
+        let json: Value = response
+            .json()
+            .await
+            .context("Parse create playlist json")?;
+        let playlist_id = json["id"]
+            .as_str()
             .context("Unpack id from create playlist")?
             .to_string();
         Ok(playlist_id)
     }
 
-    async fn set_playlist_content(&self, playlist_id: PlaylistId, tracks: Vec<Track>) -> Result<()> {
-        let tracks = tracks[0..99].to_vec();
-        assert!(tracks.len() < 100, "don't currently support more than 100 tracks");
+    async fn set_playlist_content(
+        &self,
+        playlist_id: PlaylistId,
+        tracks: Vec<Track>,
+    ) -> Result<()> {
         assert!(!tracks.is_empty(), "tracks cant be empty");
+        for (i, chunk) in tracks.chunks(100).enumerate() {
+            //test with 100
+            info!("Adding {i}th chunk");
+            if i == 0 {
+                let body = create_body(chunk)?;
+                let response = self
+                    .client
+                    .put(format!(
+                        "https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+                    ))
+                    .header("Authorization", format!("Bearer {}", self.access_token))
+                    .header("Accept", "application/json")
+                    .body(body)
+                    .send()
+                    .await
+                    .context("Add tracks to playlist")?;
+
+                info!("put tracks resp: {:?}", response);
+                info!("text: {:?}", response.text().await);
+                continue;
+            }
+            let body = create_body(chunk)?;
+            let response = self
+                .client
+                .post(format!(
+                    "https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+                ))
+                .header("Authorization", format!("Bearer {}", self.access_token))
+                .header("Accept", "application/json")
+                .body(body)
+                .send()
+                .await
+                .context("Add tracks to playlist")?;
+
+            info!("put tracks resp: {:?}", response);
+            info!("text: {:?}", response.text().await);
+        }
+        // let tracks = tracks[0..99].to_vec();
+        // assert!(tracks.len() < 100, "don't currently support more than 100 tracks");
+
         // let track_ids = tracks.into_iter().map(|track|track.track_id).collect::<Vec<_>>();
         // let track_ids = serde_json::to_string(&track_ids)?;
         // info!("tracks: {}", track_ids);
-        info!("playlist id: {}", playlist_id);
-        info!("access token: {}", self.access_token);
-        // let mut body = HashMap::new();
-        // body.insert("uris", track_ids);
-        let body = create_body(tracks)?;
-        let response = self.client
-            .put(format!("https://api.spotify.com/v1/playlists/{playlist_id}/tracks"))
-            .header("Authorization", format!("Bearer {}", self.access_token))
-            .header("Accept","application/json")
-            .body(body)
-            .send().await.context("Add tracks to playlist")?;
-
-        info!("put tracks resp: {:?}", response);
-        info!("text: {:?}", response.text().await);
-Ok(())
+        // info!("playlist id: {}", playlist_id);
+        // info!("access token: {}", self.access_token);
+        // // let mut body = HashMap::new();
+        // // body.insert("uris", track_ids);
+        // let body = create_body(tracks)?;
+        // let response = self.client
+        //     .put(format!("https://api.spotify.com/v1/playlists/{playlist_id}/tracks"))
+        //     .header("Authorization", format!("Bearer {}", self.access_token))
+        //     .header("Accept","application/json")
+        //     .body(body)
+        //     .send().await.context("Add tracks to playlist")?;
+        //
+        // info!("put tracks resp: {:?}", response);
+        // info!("text: {:?}", response.text().await);
+        Ok(())
     }
 
     async fn get_playlists(&self) -> Result<Vec<Playlist>> {
@@ -230,18 +301,18 @@ Ok(())
             if !response.status().is_success() {
                 break;
             }
-            let json: Value = response
-                .json()
-                .await
-                .context("parse get playlists")?;
+            let json: Value = response.json().await.context("parse get playlists")?;
             let next = &json["next"].as_str();
             info!("{next:?}");
 
             let items = &json["items"].as_array().context("get items")?;
             for value in &**items {
-                let name = value["name"].as_str().context("get playlist name")?.to_string();
+                let name = value["name"]
+                    .as_str()
+                    .context("get playlist name")?
+                    .to_string();
                 let id = value["id"].as_str().context("get playlist id")?.to_string();
-                playlists.push(Playlist {id,name});
+                playlists.push(Playlist { id, name });
             }
             // todo parse next query string and use offset instead of incrementing
             offset += 50;
@@ -252,16 +323,24 @@ Ok(())
         Ok(playlists)
     }
 }
-type PlaylistId = String;
-struct Playlist {id: PlaylistId, name:String}
 
-fn create_body(tracks: Vec<Track>) -> Result<String> {
-    let uris = tracks.into_iter().map(|track|format!("spotify:track:{}", track.track_id)).collect::<Vec<_>>();
+type PlaylistId = String;
+
+struct Playlist {
+    id: PlaylistId,
+    name: String,
+}
+
+fn create_body(tracks: &[Track]) -> Result<String> {
+    let uris = tracks
+        .into_iter()
+        .map(|track| format!("spotify:track:{}", track.track_id))
+        .collect::<Vec<_>>();
     #[derive(Serialize)]
     struct Body {
-        uris:Vec<String>,
+        uris: Vec<String>,
     }
-    serde_json::to_string(&Body {uris}).context("serialize body")
+    serde_json::to_string(&Body { uris }).context("serialize body")
 }
 
 #[cfg(test)]
@@ -279,18 +358,19 @@ mod tests {
                 track_name: "".to_string(),
                 album_id: "".to_string(),
                 artist_id: "".to_string(),
-                track_id: "70aIp3AQtpSePVE7eIFTxi".to_string()
+                track_id: "70aIp3AQtpSePVE7eIFTxi".to_string(),
             },
-              Track {
+            Track {
                 album_name: "".to_string(),
                 artist_name: "".to_string(),
                 release_date: "".to_string(),
                 track_name: "".to_string(),
                 album_id: "".to_string(),
                 artist_id: "".to_string(),
-                track_id: "2BxmDUvrfdW5GrNIGTROgk".to_string()
+                track_id: "2BxmDUvrfdW5GrNIGTROgk".to_string(),
             },
-        ]).unwrap();
+        ])
+        .unwrap();
 
         assert_eq!(expected, result);
     }

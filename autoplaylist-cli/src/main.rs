@@ -1,12 +1,14 @@
-mod auth;
-mod config;
-mod spotify;
+use std::future::Future;
+
+use anyhow::*;
+use log::{info, LevelFilter};
 
 use crate::auth::{get_access_token, get_new_refresh_token};
 use crate::config::{read_refresh_token, write_refresh_token};
-use anyhow::*;
-use log::{info, LevelFilter};
-use std::future::Future;
+
+mod auth;
+mod config;
+mod spotify;
 
 #[tokio::main]
 async fn main() -> Result<()> {

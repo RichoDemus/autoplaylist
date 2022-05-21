@@ -1,8 +1,9 @@
-use anyhow::*;
-use log::info;
 use std::fs::File;
 use std::ops::Not;
 use std::path::PathBuf;
+
+use anyhow::*;
+use log::info;
 use tokio::fs;
 
 #[cfg(test)]
@@ -52,11 +53,12 @@ pub async fn clear_refresh_token() -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use log::LevelFilter;
     use tokio::fs;
     use tokio::fs::File;
     use tokio::io::AsyncWriteExt;
+
+    use super::*;
 
     #[tokio::test]
     async fn test_config() -> Result<()> {
