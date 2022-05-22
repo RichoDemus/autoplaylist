@@ -8,7 +8,9 @@ use crate::config::{read_refresh_token, write_refresh_token};
 
 mod auth;
 mod config;
-mod spotify;
+pub mod spotify;
+#[cfg(test)]
+mod test;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -44,7 +46,7 @@ async fn run_cli() -> Result<()> {
     write_refresh_token(access_token.refresh_token.as_str()).await?;
     info!("And now we have an access token: {:#?}", access_token);
 
-    spotify::autoplaylist_core::do_stuff(access_token.access_token).await?;
+    spotify::autoplaylist_core::do_stuff("Powerwolf", access_token.access_token, None).await?;
     Ok(())
 }
 

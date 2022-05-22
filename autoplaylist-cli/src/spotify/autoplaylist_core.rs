@@ -6,10 +6,9 @@ use log::info;
 
 use crate::spotify::spotify_client::{SpotifyClient, Track};
 
-pub(crate) async fn do_stuff(access_token: String) -> Result<()> {
-    let mut client = SpotifyClient::new(access_token);
+pub(crate) async fn do_stuff(artist: &str, access_token: String, base_url: Option<String>) -> Result<()> {
+    let mut client = SpotifyClient::new(access_token, base_url);
     info!("got a client");
-    let artist = "Powerwolf";
     let tracks = client.artist(artist).await?;
     // info!("tracks:\n{:#?}", tracks);
     // let tracks_str = serde_json::to_string(&tracks)?;

@@ -11,6 +11,7 @@ use serde_json::Value;
 pub struct SpotifyClient {
     access_token: String,
     client: Client,
+    base_url: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -31,17 +32,19 @@ impl Display for Track {
 }
 
 impl SpotifyClient {
-    pub fn new(access_token: String) -> Self {
+    pub fn new(access_token: String, base_url: Option<String>) -> Self {
         Self {
             access_token,
             client: Client::new(),
+            base_url: base_url.unwrap_or("https://api.spotify.com".to_string()),
         }
     }
 
     pub async fn artist(&self, artist: &str) -> Result<Vec<Track>> {
+        let base_url = &self.base_url;
         let json: Value = self
             .client
-            .get(" 	https://api.spotify.com/v1/search")
+            .get(format!("{base_url}/v1/search"))
             .header("Authorization", format!("Bearer {}", self.access_token))
             .query(&[("q", artist), ("type", "artist"), ("market", "SE")])
             .send()
@@ -63,7 +66,7 @@ impl SpotifyClient {
         let json: Value = self
             .client
             .get(format!(
-                "https://api.spotify.com/v1/artists/{artist_id}/albums"
+                "{base_url}/v1/artists/{artist_id}/albums"
             ))
             .header("Authorization", format!("Bearer {}", self.access_token))
             .query(&[
@@ -112,7 +115,7 @@ impl SpotifyClient {
         for (album_name, album_id) in album_names {
             let json: Value = self
                 .client
-                .get(format!("https://api.spotify.com/v1/albums/{album_id}"))
+                .get(format!("{base_url}/v1/albums/{album_id}"))
                 .header("Authorization", format!("Bearer {}", self.access_token))
                 .query(&[("market", "SE")])
                 .send()
@@ -126,7 +129,7 @@ impl SpotifyClient {
             let json: Value = self
                 .client
                 .get(format!(
-                    "https://api.spotify.com/v1/albums/{album_id}/tracks"
+                    "{base_url}/v1/albums/{album_id}/tracks"
                 ))
                 .header("Authorization", format!("Bearer {}", self.access_token))
                 .query(&[("market", "SE")])
@@ -196,6 +199,7 @@ impl SpotifyClient {
     }
 
     async fn create_playlist(&self, playlist_name: &str) -> Result<PlaylistId> {
+        let base_url = &self.base_url;
         let mut map = HashMap::new();
         map.insert("name", playlist_name);
         map.insert("public", "false");
@@ -203,7 +207,7 @@ impl SpotifyClient {
         map.insert("description", "Created by autoplaylist-cli");
         let response = self
             .client
-            .post("https://api.spotify.com/v1/me/playlists")
+            .post(format!("{base_url}/v1/me/playlists"))
             .header("Authorization", format!("Bearer {}", self.access_token))
             .json(&map)
             .send()
@@ -226,6 +230,7 @@ impl SpotifyClient {
         tracks: Vec<Track>,
     ) -> Result<()> {
         assert!(!tracks.is_empty(), "tracks cant be empty");
+        let base_url = &self.base_url;
         for (i, chunk) in tracks.chunks(100).enumerate() {
             //test with 100
             info!("Adding {i}th chunk");
@@ -234,7 +239,7 @@ impl SpotifyClient {
                 let response = self
                     .client
                     .put(format!(
-                        "https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+                        "{base_url}/v1/playlists/{playlist_id}/tracks"
                     ))
                     .header("Authorization", format!("Bearer {}", self.access_token))
                     .header("Accept", "application/json")
@@ -251,7 +256,7 @@ impl SpotifyClient {
             let response = self
                 .client
                 .post(format!(
-                    "https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+                    "{base_url}/v1/playlists/{playlist_id}/tracks"
                 ))
                 .header("Authorization", format!("Bearer {}", self.access_token))
                 .header("Accept", "application/json")
@@ -275,7 +280,7 @@ impl SpotifyClient {
         // // body.insert("uris", track_ids);
         // let body = create_body(tracks)?;
         // let response = self.client
-        //     .put(format!("https://api.spotify.com/v1/playlists/{playlist_id}/tracks"))
+        //     .put(format!("{BASE_URL}/v1/playlists/{playlist_id}/tracks"))
         //     .header("Authorization", format!("Bearer {}", self.access_token))
         //     .header("Accept","application/json")
         //     .body(body)
@@ -287,12 +292,13 @@ impl SpotifyClient {
     }
 
     async fn get_playlists(&self) -> Result<Vec<Playlist>> {
+        let base_url = &self.base_url;
         let mut offset = 0;
         let mut playlists = vec![];
         loop {
             let response = self
                 .client
-                .get("https://api.spotify.com/v1/me/playlists")
+                .get(format!("{base_url}/v1/me/playlists"))
                 .header("Authorization", format!("Bearer {}", self.access_token))
                 .query(&[("limit", "50"), ("offset", offset.to_string().as_str())])
                 .send()
@@ -350,7 +356,7 @@ mod tests {
     #[test]
     fn it_works() {
         let expected = r#"{"uris":["spotify:track:70aIp3AQtpSePVE7eIFTxi","spotify:track:2BxmDUvrfdW5GrNIGTROgk"]}"#;
-        let result = create_body(vec![
+        let result = create_body(&[
             Track {
                 album_name: "".to_string(),
                 artist_name: "".to_string(),
