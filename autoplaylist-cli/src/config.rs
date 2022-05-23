@@ -1,9 +1,7 @@
-use std::fs::File;
 use std::ops::Not;
 use std::path::PathBuf;
 
 use anyhow::*;
-use log::info;
 use tokio::fs;
 
 #[cfg(test)]
@@ -42,6 +40,7 @@ pub async fn write_refresh_token(token: &str) -> Result<()> {
         .context("write config")
 }
 
+#[allow(dead_code)]
 pub async fn clear_refresh_token() -> Result<()> {
     let config_dir = get_config_dir()?;
     let dir = config_dir.join("autoplaylist-cli");

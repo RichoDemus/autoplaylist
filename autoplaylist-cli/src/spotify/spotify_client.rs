@@ -1,8 +1,8 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 
 use anyhow::*;
-use log::{info, log};
+use log::info;
 use reqwest::Client;
 use serde::Deserialize;
 use serde::Serialize;
@@ -36,7 +36,7 @@ impl SpotifyClient {
         Self {
             access_token,
             client: Client::new(),
-            base_url: base_url.unwrap_or("https://api.spotify.com".to_string()),
+            base_url: base_url.unwrap_or_else(|| "https://api.spotify.com".to_string()),
         }
     }
 
@@ -65,9 +65,7 @@ impl SpotifyClient {
 
         let json: Value = self
             .client
-            .get(format!(
-                "{base_url}/v1/artists/{artist_id}/albums"
-            ))
+            .get(format!("{base_url}/v1/artists/{artist_id}/albums"))
             .header("Authorization", format!("Bearer {}", self.access_token))
             .query(&[
                 ("market", "SE"),
@@ -85,11 +83,11 @@ impl SpotifyClient {
         let album_names = &json["items"]
             .as_array()
             .context("iterate albums")?
-            .into_iter()
-            .flat_map(|value| {
+            .iter()
+            .filter_map(|value| {
                 match (
-                    value["name"].as_str().map(|s| s.to_string()),
-                    value["id"].as_str().map(|s| s.to_string()),
+                    value["name"].as_str().map(std::string::ToString::to_string),
+                    value["id"].as_str().map(std::string::ToString::to_string),
                 ) {
                     (Some(name), Some(id)) => Some((name, id)),
                     _ => None,
@@ -100,15 +98,6 @@ impl SpotifyClient {
             album_names.len() < 50,
             "we got 50 albums, we probably don't handle that"
         );
-        // info!("Received {} albums:", album_names.len());
-        // for (name,_id) in album_names {
-        //     info!("\t{name}")
-        // }
-        // assert!(album_names.iter()
-        //     .map(|(name,_id)|name.to_string())
-        //     .collect::<HashSet<_>>().contains("Coat of Arms"), "Missing coat of arms");
-
-        // info!("albums: {:#?}", album_names);
 
         let mut print = String::new();
         let mut tracks = vec![];
@@ -128,9 +117,7 @@ impl SpotifyClient {
 
             let json: Value = self
                 .client
-                .get(format!(
-                    "{base_url}/v1/albums/{album_id}/tracks"
-                ))
+                .get(format!("{base_url}/v1/albums/{album_id}/tracks"))
                 .header("Authorization", format!("Bearer {}", self.access_token))
                 .query(&[("market", "SE")])
                 .send()
@@ -141,11 +128,11 @@ impl SpotifyClient {
             let track_names = &json["items"]
                 .as_array()
                 .context("iterate tracks")?
-                .into_iter()
-                .flat_map(|value| {
+                .iter()
+                .filter_map(|value| {
                     match (
-                        value["name"].as_str().map(|s| s.to_string()),
-                        value["id"].as_str().map(|s| s.to_string()),
+                        value["name"].as_str().map(std::string::ToString::to_string),
+                        value["id"].as_str().map(std::string::ToString::to_string),
                     ) {
                         (Some(name), Some(id)) => Some((name, id)),
                         _ => None,
@@ -154,11 +141,11 @@ impl SpotifyClient {
                 .collect::<Vec<_>>();
             // info!("tracks: {:#?}", track_names);
             print.push_str(album_name);
-            print.push_str("\n");
+            print.push('\n');
             for (track_name, track_id) in track_names {
-                print.push_str("\t");
+                print.push('\t');
                 print.push_str(track_name);
-                print.push_str("\n");
+                print.push('\n');
                 tracks.push(Track {
                     album_name: album_name.clone(),
                     artist_name: artist_name.to_string(),
@@ -171,7 +158,7 @@ impl SpotifyClient {
                     track_id: track_id.clone(),
                 });
             }
-            print.push_str("\n");
+            print.push('\n');
         }
         info!("Result:\n{print}");
         Ok(tracks)
@@ -238,11 +225,8 @@ impl SpotifyClient {
                 let body = create_body(chunk)?;
                 let response = self
                     .client
-                    .put(format!(
-                        "{base_url}/v1/playlists/{playlist_id}/tracks"
-                    ))
+                    .put(format!("{base_url}/v1/playlists/{playlist_id}/tracks"))
                     .header("Authorization", format!("Bearer {}", self.access_token))
-                    .header("Accept", "application/json")
                     .body(body)
                     .send()
                     .await
@@ -255,9 +239,7 @@ impl SpotifyClient {
             let body = create_body(chunk)?;
             let response = self
                 .client
-                .post(format!(
-                    "{base_url}/v1/playlists/{playlist_id}/tracks"
-                ))
+                .post(format!("{base_url}/v1/playlists/{playlist_id}/tracks"))
                 .header("Authorization", format!("Bearer {}", self.access_token))
                 .header("Accept", "application/json")
                 .body(body)
@@ -339,7 +321,7 @@ struct Playlist {
 
 fn create_body(tracks: &[Track]) -> Result<String> {
     let uris = tracks
-        .into_iter()
+        .iter()
         .map(|track| format!("spotify:track:{}", track.track_id))
         .collect::<Vec<_>>();
     #[derive(Serialize)]

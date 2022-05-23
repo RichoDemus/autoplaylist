@@ -1,11 +1,11 @@
 #[cfg(test)]
 mod tests {
+    use crate::spotify::autoplaylist_core;
     use anyhow::*;
-    use httpmock::MockServer;
     use httpmock::prelude::*;
+    use httpmock::MockServer;
     use serde_json::json;
     use warp::test::request;
-    use crate::spotify::autoplaylist_core;
 
     #[tokio::test]
     async fn it_works() -> Result<()> {
@@ -50,16 +50,44 @@ mod tests {
                 .path("/v1/albums/album-id/tracks")
                 .header("Authorization", "Bearer access_token")
                 .query_param("market", "SE")
-                // .query_param("limit", "50") //todo should probably set limit here as well
-                ;
+            // .query_param("limit", "50") //todo should probably set limit here as well
+            ;
             then.status(200)
                 .header("content-type", "application/json")
                 .json_body(json!({"items":[{"name":"track-name","id":"track-id"}]}));
         });
 
+        let create_playlist = mock.mock(|when, then| {
+            when.method(POST)
+                .path("/v1/me/playlists")
+                .header("Authorization", "Bearer access_token")
+                .json_body(json!({"name":"Powerwolf - gen", "public":"false", "collaborative":"false", "description": "Created by autoplaylist-cli"}))
+            ;
+            then.status(200)
+                .header("content-type", "application/json")
+                .json_body(json!({"id":"playlist-id"}));
+        });
 
-        autoplaylist_core::do_stuff("Powerwolf","access_token".to_string(), Some(mock.base_url())).await?;
+        let add_tracks_to_playlist = mock.mock(|when, then| {
+            when.method(PUT)
+                .path("/v1/playlists/playlist-id/tracks")
+                .header("Authorization", "Bearer access_token")
+                .json_body(json!({"uris":["spotify:track:track-id"]}));
+            then.status(200)
+                .header("content-type", "application/json")
+                .json_body(json!({}));
+        });
 
+        let resp = autoplaylist_core::do_stuff(
+            "Powerwolf",
+            "access_token".to_string(),
+            Some(mock.base_url()),
+        )
+        .await;
+        println!("{:?}", resp);
+
+        create_playlist.assert();
+        add_tracks_to_playlist.assert();
 
         Ok(())
     }

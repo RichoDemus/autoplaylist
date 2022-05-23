@@ -1,4 +1,3 @@
-use std::collections::HashSet;
 use std::ops::Not;
 
 use anyhow::*;
@@ -6,8 +5,12 @@ use log::info;
 
 use crate::spotify::spotify_client::{SpotifyClient, Track};
 
-pub(crate) async fn do_stuff(artist: &str, access_token: String, base_url: Option<String>) -> Result<()> {
-    let mut client = SpotifyClient::new(access_token, base_url);
+pub(crate) async fn do_stuff(
+    artist: &str,
+    access_token: String,
+    base_url: Option<String>,
+) -> Result<()> {
+    let client = SpotifyClient::new(access_token, base_url);
     info!("got a client");
     let tracks = client.artist(artist).await?;
     // info!("tracks:\n{:#?}", tracks);
@@ -25,6 +28,7 @@ pub(crate) async fn do_stuff(artist: &str, access_token: String, base_url: Optio
     Ok(())
 }
 
+#[allow(dead_code)]
 fn deduplicate_tracks(mut tracks: Vec<Track>) -> Track {
     assert!(tracks.is_empty().not(), "Tracks can't be empty");
     // for now, lets just take the latest release

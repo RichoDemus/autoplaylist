@@ -1,5 +1,3 @@
-use std::future::Future;
-
 use anyhow::*;
 use log::{info, LevelFilter};
 
@@ -17,8 +15,8 @@ async fn main() -> Result<()> {
     env_logger::builder()
         .filter_module("autoplaylist_cli", LevelFilter::Info)
         .init();
-    let mut envs = std::env::args();
-    let _ = envs.next();
+    let envs = std::env::args();
+    let mut envs = envs.skip(1);
     let asd = match envs.next() {
         None => run_cli().await,
         Some(arg) if arg == "--auth" => run_auth().await,
@@ -29,16 +27,13 @@ async fn main() -> Result<()> {
 }
 
 async fn run_cli() -> Result<()> {
-    let refresh_token = match read_refresh_token().await {
-        anyhow::Result::Ok(token) => {
-            info!("We have a token: {}", token);
-            token
-        }
-        Err(_) => {
-            let refresh_token = get_new_refresh_token().await?;
-            write_refresh_token(refresh_token.as_str()).await?;
-            refresh_token
-        }
+    let refresh_token = if let anyhow::Result::Ok(token) = read_refresh_token().await {
+        info!("We have a token: {}", token);
+        token
+    } else {
+        let refresh_token = get_new_refresh_token().await?;
+        write_refresh_token(refresh_token.as_str()).await?;
+        refresh_token
     };
 
     info!("Now we have a refresh token: {}", refresh_token);

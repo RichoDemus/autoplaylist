@@ -5,7 +5,7 @@ use anyhow::*;
 use log::{error, info};
 use serde::Deserialize;
 use serde::Serialize;
-use warp::http::{Response, Uri};
+use warp::http::Uri;
 use warp::{Filter, Rejection};
 
 const LOGIN_URL: &str = "https://accounts.spotify.com/authorize?response_type=code&client_id=df0732a2defe44ecabd30868fa57a2d5&scope=user-read-private&redirect_uri=http://localhost:8080/callback&state=hello";
@@ -16,7 +16,7 @@ struct CallbackParameters {
     state: String,
 }
 
-pub async fn get_new_refresh_token() -> Result<(String)> {
+pub async fn get_new_refresh_token() -> Result<String> {
     let verifier = pkce::code_verifier(43);
     let challenge = pkce::code_challenge(&verifier);
     let verifier_str = String::from_utf8(verifier)?;
