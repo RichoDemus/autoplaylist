@@ -66,7 +66,7 @@ mod tests {
                     .push(track.clone());
                 acc
             });
-        let mut freq = freq
+        let freq = freq
             .into_iter()
             .map(|(key, tracks)| (key, deduplicate_tracks(tracks)))
             .collect::<HashMap<_, _>>();

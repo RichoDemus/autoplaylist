@@ -5,13 +5,12 @@ mod tests {
     use httpmock::prelude::*;
     use httpmock::MockServer;
     use serde_json::json;
-    use warp::test::request;
 
     #[tokio::test]
     async fn it_works() -> Result<()> {
         let mock = MockServer::start();
 
-        let search_artist = mock.mock(|when, then| {
+        let _search_artist = mock.mock(|when, then| {
             when.method(GET)
                 .path("/v1/search")
                 .header("Authorization", "Bearer access_token")
@@ -23,7 +22,7 @@ mod tests {
                 .json_body(json!({"artists": {"items":[{"name":"Powerwolf","id":"pw-id"}]}}));
         });
 
-        let get_albums = mock.mock(|when, then| {
+        let _get_albums = mock.mock(|when, then| {
             when.method(GET)
                 .path("/v1/artists/pw-id/albums")
                 .header("Authorization", "Bearer access_token")
@@ -35,7 +34,7 @@ mod tests {
                 .json_body(json!({"items":[{"name":"album-name","id":"album-id"}]}));
         });
 
-        let get_album_details = mock.mock(|when, then| {
+        let _get_album_details = mock.mock(|when, then| {
             when.method(GET)
                 .path("/v1/albums/album-id")
                 .header("Authorization", "Bearer access_token")
@@ -45,7 +44,7 @@ mod tests {
                 .json_body(json!({"release_date":"1900-01-01"}));
         });
 
-        let get_tracks = mock.mock(|when, then| {
+        let _get_tracks = mock.mock(|when, then| {
             when.method(GET)
                 .path("/v1/albums/album-id/tracks")
                 .header("Authorization", "Bearer access_token")

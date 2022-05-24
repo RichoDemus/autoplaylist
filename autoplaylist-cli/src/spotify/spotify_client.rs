@@ -40,6 +40,7 @@ impl SpotifyClient {
         }
     }
 
+    #[allow(clippy::too_many_lines)]
     pub async fn artist(&self, artist: &str) -> Result<Vec<Track>> {
         let base_url = &self.base_url;
         let json: Value = self

@@ -53,9 +53,6 @@ pub async fn clear_refresh_token() -> Result<()> {
 #[cfg(test)]
 mod tests {
     use log::LevelFilter;
-    use tokio::fs;
-    use tokio::fs::File;
-    use tokio::io::AsyncWriteExt;
 
     use super::*;
 
