@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 
-use anyhow::*;
+use anyhow::{Context, Ok, Result};
 use log::info;
 use reqwest::Client;
 use serde::Deserialize;
@@ -319,15 +319,16 @@ struct Playlist {
     name: String,
 }
 
+#[derive(Serialize)]
+struct Body {
+    uris: Vec<String>,
+}
+
 fn create_body(tracks: &[Track]) -> Result<String> {
     let uris = tracks
         .iter()
         .map(|track| format!("spotify:track:{}", track.track_id))
         .collect::<Vec<_>>();
-    #[derive(Serialize)]
-    struct Body {
-        uris: Vec<String>,
-    }
     serde_json::to_string(&Body { uris }).context("serialize body")
 }
 

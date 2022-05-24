@@ -1,4 +1,4 @@
-use anyhow::*;
+use anyhow::{bail, Ok, Result};
 use log::{info, LevelFilter};
 
 use crate::auth::{get_access_token, get_new_refresh_token};

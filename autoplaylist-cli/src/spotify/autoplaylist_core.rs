@@ -1,6 +1,6 @@
 use std::ops::Not;
 
-use anyhow::*;
+use anyhow::{Ok, Result};
 use log::info;
 
 use crate::spotify::spotify_client::{SpotifyClient, Track};
