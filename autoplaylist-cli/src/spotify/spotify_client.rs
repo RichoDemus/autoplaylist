@@ -128,6 +128,8 @@ impl SpotifyClient {
             // info!("album {name}: {:#?}",json);
             let track_names = &json["items"]
                 .as_array()
+                .context(format!("artist: {}", artist_name))
+                .context(format!("album: {}", album_name))
                 .context("iterate tracks")?
                 .iter()
                 .filter_map(|value| {
@@ -212,7 +214,7 @@ impl SpotifyClient {
         Ok(playlist_id)
     }
 
-    async fn set_playlist_content(
+    pub async fn set_playlist_content(
         &self,
         playlist_id: PlaylistId,
         tracks: Vec<Track>,
@@ -274,7 +276,7 @@ impl SpotifyClient {
         Ok(())
     }
 
-    async fn get_playlists(&self) -> Result<Vec<Playlist>> {
+    pub(crate) async fn get_playlists(&self) -> Result<Vec<Playlist>> {
         let base_url = &self.base_url;
         let mut offset = 0;
         let mut playlists = vec![];
@@ -301,7 +303,15 @@ impl SpotifyClient {
                     .context("get playlist name")?
                     .to_string();
                 let id = value["id"].as_str().context("get playlist id")?.to_string();
-                playlists.push(Playlist { id, name });
+                let description = value["description"]
+                    .as_str()
+                    .filter(|s| !s.is_empty())
+                    .map(|s| s.to_string());
+                playlists.push(Playlist {
+                    id,
+                    name,
+                    description,
+                });
             }
             // todo parse next query string and use offset instead of incrementing
             offset += 50;
@@ -315,9 +325,22 @@ impl SpotifyClient {
 
 type PlaylistId = String;
 
-struct Playlist {
-    id: PlaylistId,
-    name: String,
+#[derive(Debug)]
+pub struct Playlist {
+    pub id: PlaylistId,
+    pub name: String,
+    pub description: Option<String>,
+}
+
+impl Playlist {
+    pub fn is_autoplaylist(&self) -> bool {
+        if let Some(description) = self.description.as_ref() {
+            if description.starts_with("AP:") {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 #[derive(Serialize)]

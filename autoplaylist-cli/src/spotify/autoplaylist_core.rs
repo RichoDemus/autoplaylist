@@ -1,9 +1,9 @@
 use std::ops::Not;
 
-use anyhow::{Ok, Result};
+use anyhow::{Context, Ok, Result};
 use log::info;
 
-use crate::spotify::spotify_client::{SpotifyClient, Track};
+use crate::spotify::spotify_client::{Playlist, SpotifyClient, Track};
 
 pub(crate) async fn do_stuff(
     artist: &str,
@@ -26,6 +26,36 @@ pub(crate) async fn do_stuff(
         .create_or_update_playlist(format!("{artist} - gen").as_str(), tracks)
         .await?;
     Ok(())
+}
+
+pub(crate) async fn do_stuff2(access_token: String, base_url: Option<String>) -> Result<()> {
+    let client = SpotifyClient::new(access_token, base_url);
+    info!("got a client");
+    let playlists = client.get_playlists().await?;
+
+    if playlists.is_empty() {
+        info!("No autoplaylists");
+    }
+    for pl in playlists.into_iter().filter(|pl| pl.is_autoplaylist()) {
+        info!("\tAutoplaylist: {:?}", pl);
+        update_playlist(&client, pl).await?;
+    }
+    Ok(())
+}
+
+pub async fn update_playlist(client: &SpotifyClient, playlist: Playlist) -> Result<()> {
+    let description = playlist
+        .description
+        .expect("since it's an autoplaylist this is a some");
+    let artist = description
+        .split(":")
+        .skip(1)
+        .next()
+        .context("Getting autoplaylist artist from description")?;
+
+    let tracks = client.artist(artist).await?;
+
+    client.set_playlist_content(playlist.id, tracks).await
 }
 
 #[allow(dead_code)]
