@@ -58,9 +58,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_config() -> Result<()> {
-        env_logger::builder()
+        let _ = env_logger::builder()
             .filter_module("autoplaylist_cli", LevelFilter::Info)
-            .init();
+            .try_init();
 
         let no_token = read_refresh_token().await;
         assert!(no_token.is_err(), "should not have gotten a token");

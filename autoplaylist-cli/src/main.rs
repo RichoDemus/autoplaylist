@@ -18,18 +18,20 @@ async fn main() -> Result<()> {
 
     let local = tokio::task::LocalSet::new();
 
-    local.run_until(async move {
-        let envs = std::env::args();
-        let mut envs = envs.skip(1);
-        let asd = match envs.next() {
-            Some(arg) if arg == "--v2" => run_cli_v2().await,
-            None => run_cli().await,
-            Some(arg) if arg == "--auth" => run_auth().await,
-            Some(o) => bail!("unexpected arg: {}", o),
-        };
+    local
+        .run_until(async move {
+            let envs = std::env::args();
+            let mut envs = envs.skip(1);
+            let asd = match envs.next() {
+                Some(arg) if arg == "--v2" => run_cli_v2().await,
+                None => run_cli().await,
+                Some(arg) if arg == "--auth" => run_auth().await,
+                Some(o) => bail!("unexpected arg: {}", o),
+            };
 
-        asd
-    }).await
+            asd
+        })
+        .await
 }
 
 async fn run_cli() -> Result<()> {

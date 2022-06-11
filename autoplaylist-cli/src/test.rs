@@ -9,9 +9,9 @@ mod tests {
 
     #[tokio::test]
     async fn new_style() -> Result<()> {
-        env_logger::builder()
+        let _ = env_logger::builder()
             .filter_module("autoplaylist_cli", LevelFilter::Info)
-            .init();
+            .try_init();
 
         let mock = MockServer::start();
 
