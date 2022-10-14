@@ -29,3 +29,4 @@ CMD java \
 -jar spring.jar
 
 EXPOSE 8080
+
