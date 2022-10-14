@@ -63,6 +63,7 @@ jobs:
           docker push richodemus/autoplaylists-frontend:latest
           docker push richodemus/autoplaylists-backend:latest
 
+
   deploy:
     machine:
       enabled: true
