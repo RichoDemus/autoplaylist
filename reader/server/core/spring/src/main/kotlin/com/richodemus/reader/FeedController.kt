@@ -46,6 +46,7 @@ internal class FeedController(
     internal fun getAllFeedsAndLabels(session: HttpSession): ResponseEntity<User> {
         val username = session.username
         if (!session.isLoggedIn() || username == null) {
+            logger.warn("feeds called when not logged in: {}", username)
             return ResponseEntity(FORBIDDEN)
         }
         val feeds: List<FeedWithoutItems> = backendPort.getAllFeedsWithoutItems(username)
@@ -58,6 +59,7 @@ internal class FeedController(
     internal fun getFeed(session: HttpSession, @PathVariable("id") feedId: FeedId): ResponseEntity<Feed> {
         val username = session.username
         if (!session.isLoggedIn() || username == null) {
+            logger.warn("feed called when not logged in: {}", username)
             return ResponseEntity(FORBIDDEN)
         }
         return backendPort.getFeed(username, feedId)
@@ -75,6 +77,7 @@ internal class FeedController(
     ): ResponseEntity<String> {
         val username = session.username
         if (!session.isLoggedIn() || username == null) {
+            logger.warn("feed operation called when not logged in: {}", username)
             return ResponseEntity(FORBIDDEN)
         }
 
