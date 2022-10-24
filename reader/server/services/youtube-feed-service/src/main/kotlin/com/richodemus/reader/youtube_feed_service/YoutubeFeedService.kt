@@ -1,7 +1,6 @@
 package com.richodemus.reader.youtube_feed_service
 
 import arrow.core.Either
-import arrow.core.orNull
 import com.google.common.collect.Lists
 import com.richodemus.reader.common.google_cloud_storage_adapter.EventStore
 import com.richodemus.reader.dto.FeedId
@@ -96,6 +95,9 @@ class YoutubeFeedService internal constructor(
                     val vids = youtubeRepository.getVideos(id, lastUploaded)
                     val newVids = emptyList<Video>().plus(videos).plus(vids).distinctBy { it.id }.sortedBy { it.uploadDate }
                     logger.info("Found {} new videos for {}", vids.size, id.toName())
+                    if (newVids.isNotEmpty()) {
+                        videoCache[id] = Videos(newVids)
+                    }
                     Pair(id, Videos(newVids))
                 }
 
@@ -110,7 +112,7 @@ class YoutubeFeedService internal constructor(
         var failedOnce = false
         var skippedVideos = 0
 //        logger.info("Getting statistics for {} of them", videoIdsToFetchStatistics.size)
-        val asd = partitioned
+        val statistics = partitioned
                 .map {
                     if (failedOnce) {
                         skippedVideos += it.size
@@ -129,10 +131,10 @@ class YoutubeFeedService internal constructor(
                 }
         logger.info("Had to skip statistics for {} videos", skippedVideos)
 
-        val withStatistics: Map<ItemId, Pair<Duration, Long>> = asd
+        val videoIdWithStatistics: Map<ItemId, Pair<Duration, Long>> = statistics
                 .fold(emptyMap()) { left, right -> left.plus(right) }
 
-        val videosWithStatistics = updateVideosWithStatistics(updatedVideos, withStatistics)
+        val videosWithStatistics = updateVideosWithStatistics(updatedVideos, videoIdWithStatistics)
 
         videosWithStatistics
                 .forEach { (id, videos) -> videoCache[id] = videos }

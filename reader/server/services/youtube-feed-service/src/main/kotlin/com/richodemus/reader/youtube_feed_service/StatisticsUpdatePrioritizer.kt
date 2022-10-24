@@ -17,8 +17,11 @@ open class StatisticsUpdatePrioritizer(
         val now = OffsetDateTime.now(clock)
 
         val (newVideos, olderVideos) = videos.partition { it.uploadDate.isAfter(now.minusDays(7)) }
-        val (moreThanTwoMonthsSinceUpdate, lessThanTwoMonthsSinceUpdate) = olderVideos.partition { it.lastUpdated.isBefore(now.minusMonths(2)) }
+        var (moreThanTwoMonthsSinceUpdate, lessThanTwoMonthsSinceUpdate) = olderVideos.partition { it.lastUpdated.isBefore(now.minusMonths(2)) }
         val (uploadDaySameAsCurrentDay, restOfVideos) = lessThanTwoMonthsSinceUpdate.partition { it.uploadDate.dayOfMonth == now.dayOfMonth }
+        if (moreThanTwoMonthsSinceUpdate.size > 1000) {
+            moreThanTwoMonthsSinceUpdate = moreThanTwoMonthsSinceUpdate.subList(0,1000);
+        }
 
         val allVideos = newVideos + moreThanTwoMonthsSinceUpdate + uploadDaySameAsCurrentDay
         logger.info("There are ${newVideos.size} new videos, ${moreThanTwoMonthsSinceUpdate.size} last updated over 2 months ago ${uploadDaySameAsCurrentDay.size} with same weekday, for a total of ${allVideos.size}")
