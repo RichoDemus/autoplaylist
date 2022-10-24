@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>11</java.version>
-        <kotlin.version>1.6.20</kotlin.version>
+        <kotlin.version>1.7.20</kotlin.version>
     </properties>
 
     <modules>
@@ -77,12 +77,12 @@
             <dependency>
                 <groupId>com.google.cloud</groupId>
                 <artifactId>google-cloud-storage</artifactId>
-                <version>2.6.0</version>
+                <version>2.13.1</version>
             </dependency>
             <dependency>
                 <groupId>com.google.apis</groupId>
                 <artifactId>google-api-services-youtube</artifactId>
-                <version>v3-rev20220320-1.32.1</version>
+                <version>v3-rev20220926-2.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.mindrot</groupId>
@@ -103,7 +103,7 @@
             <dependency>
                 <groupId>com.xebialabs.restito</groupId>
                 <artifactId>restito</artifactId>
-                <version>0.9.4</version>
+                <version>1.1.0</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
