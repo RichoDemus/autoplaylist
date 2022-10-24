@@ -5,6 +5,7 @@ activemq-data/
 /data
 /classes
 .DS_Store
+google-service-account.json
 
 ### Intellij ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
@@ -83,5 +84,3 @@ gradle-app.setting
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
 # gradle/wrapper/gradle-wrapper.properties
-
-
