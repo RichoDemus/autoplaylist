@@ -100,7 +100,7 @@ class YoutubeFeedService internal constructor(
                     }
                     Pair(id, Videos(newVids))
                 }
-
+        logger.info("Done downloading new videos, time for stats")
         val candidatesToFetchStats = updatedVideos
                 .flatMap { it.second.videos }
         val prioritized = prioritizer.prioritize(candidatesToFetchStats)
