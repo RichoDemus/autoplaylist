@@ -66,9 +66,9 @@ class PeriodicDownloadOrchestrator internal constructor(
     }
 
     private fun addDownloadsTasksToExecutor() {
+        try {
         isRunning = true
         lastRunOutCome = ""
-        try {
             logger.info("Midnight, time to download")
             lastRun = LocalDateTime.now()
             val either = feedService.updateChannelsAndVideos()
@@ -85,6 +85,7 @@ class PeriodicDownloadOrchestrator internal constructor(
             lastRunOutCome += e.message ?: "empty exception msg"
         } finally {
             isRunning = false
+            logger.info("Done downloading and updating")
         }
     }
 
