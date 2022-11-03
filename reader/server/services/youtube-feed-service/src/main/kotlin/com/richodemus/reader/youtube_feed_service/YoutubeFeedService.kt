@@ -94,11 +94,14 @@ class YoutubeFeedService internal constructor(
                     val lastUploaded = videos.sortedBy { it.uploadDate }.map { it.id }.lastOrNull()
                     val vids = youtubeRepository.getVideos(id, lastUploaded)
                     val newVids = emptyList<Video>().plus(videos).plus(vids).distinctBy { it.id }.sortedBy { it.uploadDate }
-                    logger.info("Found {} new videos for {}", vids.size, id.toName())
+                    logger.info("Found {} new videos for {} ({})", vids.size, id.toName(), id)
                     if (newVids.isNotEmpty()) {
+                        logger.info("\tSaving vids")
                         videoCache[id] = Videos(newVids)
                     }
-                    Pair(id, Videos(newVids))
+                    val res = Pair(id, Videos(newVids))
+                    logger.info("\tDone")
+                    res
                 }
         logger.info("Done downloading new videos, time for stats")
         val candidatesToFetchStats = updatedVideos
