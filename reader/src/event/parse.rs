@@ -28,7 +28,7 @@ mod tests {
 
     use crate::event::events::Event;
     use crate::event::parse::{parse, to_data};
-    use crate::types::{EventId, FeedId, ItemId, UserId};
+    use crate::types::{EventId, UserId};
 
     #[test]
     fn test_parse() {

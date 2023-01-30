@@ -1,11 +1,7 @@
-use std::collections::HashMap;
-use std::sync::Mutex;
-
 use actix_session::Session;
 use actix_web::http::StatusCode;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::info;
-use once_cell::sync::Lazy;
 use serde_json::Value;
 
 use crate::projections::user_service;
@@ -20,7 +16,7 @@ pub async fn create_user(json: web::Json<Value>) -> impl Responder {
 
     let username = Username(username.to_string());
     let password = Password(password.to_string());
-    let result = user_service::create_user(username, password).await.unwrap();
+    let _result = user_service::create_user(username, password).await.unwrap();
 
     HttpResponse::Ok()
 }

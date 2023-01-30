@@ -5,17 +5,14 @@ use std::time::Duration;
 
 use actix_cors::Cors;
 use actix_session::storage::CookieSessionStore;
-use actix_session::{Session, SessionGetError, SessionMiddleware};
+use actix_session::{Session, SessionMiddleware};
 use actix_web::cookie::Key;
-use actix_web::dev::{ServiceFactory, ServiceRequest, ServiceResponse};
-use actix_web::http::header;
 use actix_web::middleware::Logger;
-use actix_web::{cookie, get, post, web, App, Error, HttpResponse, HttpServer, Responder};
+use actix_web::{cookie, get, App, HttpServer, Responder};
 use anyhow::Context;
 use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::output::ListObjectsV2Output;
 use aws_sdk_s3::Client;
-use log::{error, info};
 
 use crate::endpoints::user::create_user;
 use crate::event::events::Event;
@@ -125,7 +122,7 @@ async fn main() -> anyhow::Result<()> {
         .filter(|id| id.starts_with("events/v2"))
         .filter_map(|id| id[10..].parse::<i32>().ok())
         .collect::<Vec<_>>();
-    ids_num.sort();
+    ids_num.sort_unstable();
     let mut last_num = -1;
     for num in &ids_num {
         if last_num + 1 == *num {

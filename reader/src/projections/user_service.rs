@@ -15,8 +15,8 @@ static USERS: Lazy<Mutex<HashMap<Username, (UserId, Password)>>> =
 
 pub fn process_event(event: &Event) {
     if let Event::UserCreated {
-        id,
-        timestamp,
+        id: _,
+        timestamp: _,
         user_id,
         username,
         password,

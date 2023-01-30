@@ -1,12 +1,11 @@
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
 
     use actix_cors::Cors;
     use actix_session::storage::CookieSessionStore;
     use actix_session::SessionMiddleware;
     use actix_web::cookie::Key;
-    use actix_web::{cookie, get, http::header::ContentType, post, test, web, App, Responder};
+    use actix_web::{cookie, test, App};
     use anyhow::Result;
     use serde_json::json;
 

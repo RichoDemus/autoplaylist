@@ -1,7 +1,6 @@
 use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use serde::Serialize;
-use uuid::Uuid;
 
 use crate::types::{EventId, FeedId, ItemId, LabelId, LabelName, Password, UserId, Username};
 

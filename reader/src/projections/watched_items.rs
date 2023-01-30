@@ -22,7 +22,7 @@ pub fn process_event(event: &Event) {
                 .lock()
                 .unwrap()
                 .entry((user_id.clone(), feed_id.clone()))
-                .or_insert(HashSet::new())
+                .or_default()
                 .insert(item_id.clone());
         }
         Event::UserUnwatchedItem {
@@ -36,7 +36,7 @@ pub fn process_event(event: &Event) {
                 .lock()
                 .unwrap()
                 .entry((user_id.clone(), feed_id.clone()))
-                .or_insert(HashSet::new())
+                .or_default()
                 .remove(item_id);
         }
         _ => {}

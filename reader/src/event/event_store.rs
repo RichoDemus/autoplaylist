@@ -2,7 +2,7 @@ use anyhow::Result;
 use tokio::fs;
 use tokio::fs::File;
 use tokio::io::AsyncReadExt;
-use uuid::{uuid, Uuid};
+use uuid::uuid;
 
 use crate::event::events::Event;
 use crate::event::parse;
@@ -31,11 +31,11 @@ pub async fn init() -> Result<()> {
     println!("Subscribed to {} feeds", subscribed_feeds.len());
 
     let watched = watched_items::get_watched_items(&(
-        UserId((uuid!("44ad3e54-a977-4242-9d3c-bbee8187514a"))),
+        UserId(uuid!("44ad3e54-a977-4242-9d3c-bbee8187514a")),
         FeedId("UC554eY5jNUfDq3yDOJYirOQ".to_string()),
     ));
 
-    println!("{:?}", watched);
+    println!("{watched:?}");
 
     Ok(())
 }
