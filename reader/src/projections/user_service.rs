@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 
 use anyhow::{bail, Result};
-use log::warn;
+use log::{info, warn};
 use once_cell::sync::Lazy;
 use uuid::Uuid;
 
@@ -49,9 +49,18 @@ pub async fn create_user(username: Username, password: Password) -> Result<UserI
 }
 
 pub fn is_password_valid(username: &Username, password_input: &Password) -> bool {
-    if let Some((_id, password)) = USERS.lock().unwrap().get(username) {
+    let guard = USERS.lock().unwrap();
+    if let Some((_id, password)) = guard.get(username) {
+        info!("checking password for {username:?} in {guard:?}");
         password == password_input
     } else {
         false
     }
+}
+
+pub fn get_user_id(username: &Username) -> Option<UserId> {
+    let guard = USERS.lock().unwrap();
+    let option = guard.get(username);
+    info!("user id for {username:?}: {option:?} in {guard:?}");
+    option.map(|(id, _pass)|id.clone())
 }

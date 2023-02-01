@@ -71,6 +71,7 @@ mod tests {
             let resp = test::call_service(&app, req).await;
             println!("headers: {:?}", resp.headers());
             assert!(resp.status().is_success());
+            assert!(resp.headers().get("set-cookie").is_some())
         }
 
         Ok(())

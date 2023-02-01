@@ -26,3 +26,9 @@ pub struct LabelId(pub Uuid);
 
 #[derive(NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct LabelName(pub String);
+
+#[derive(Serialize, Deserialize)]
+pub struct UserSession {
+    user_id: UserId,
+    username: Username,
+}
