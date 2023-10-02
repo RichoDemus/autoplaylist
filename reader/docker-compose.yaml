@@ -11,8 +11,3 @@ services:
       GCP_PROJECT: richo-main
       GCP_BUCKET: richo-reader
       GOOGLE_APPLICATION_CREDENTIALS: /google-service-key.json
-
-
-
-
-$env:GOOGLE_APPLICATION_CREDENTIALS = ".\google-service-key.json";$env:GCP_PROJECT:="richo-main"; $env:GCP_BUCKET = "richo-reader"; $env:GCP_APIKEY = "AIzaSyDvupZKTWkBuAEu3oqT_rwPlvYbW3nMr2I"; java -jar .\server\core\spring\target\spring-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
