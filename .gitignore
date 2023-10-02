@@ -1,4 +1,5 @@
-
+google-service-key.json
+start.ps1
 # Created by https://www.gitignore.io/api/node,macos,kotlin,gradle,intellij
 .env
 ### Intellij ###

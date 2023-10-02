@@ -43,7 +43,7 @@ class PeriodicDownloadOrchestrator internal constructor(
     fun start() {
         val millisecondsUntilMidnight = calculateDelayUntilMidnight()
         val fourInTheMorning = millisecondsUntilMidnight + Duration.of(4, ChronoUnit.HOURS).toMillis()
-        executor.scheduleAtFixedRate({ addDownloadsTasksToExecutor() }, fourInTheMorning, MILLISECONDS_IN_A_DAY, TimeUnit.MILLISECONDS)
+        //executor.scheduleAtFixedRate({ addDownloadsTasksToExecutor() }, fourInTheMorning, MILLISECONDS_IN_A_DAY, TimeUnit.MILLISECONDS)
         logger.info("Started orchestrator, will run at {}", Instant.ofEpochMilli(System.currentTimeMillis() + fourInTheMorning).toString())
     }
 
