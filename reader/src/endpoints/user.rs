@@ -3,10 +3,9 @@ use actix_web::http::StatusCode;
 use actix_web::{post, web, HttpResponse, Responder};
 use log::info;
 use serde_json::Value;
-use uuid::Uuid;
 
 use crate::projections::user_service;
-use crate::types::{Password, UserId, Username};
+use crate::types::{Password, Username};
 
 #[post("/v1/users")]
 pub async fn create_user(json: web::Json<Value>) -> impl Responder {

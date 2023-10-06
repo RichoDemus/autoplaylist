@@ -24,6 +24,7 @@ pub mod projections;
 #[cfg(test)]
 pub mod test;
 pub mod types;
+mod gcs;
 
 #[get("/")]
 async fn index(_session: Session) -> impl Responder {
