@@ -22,14 +22,13 @@ mod tests {
     use std::sync::atomic::AtomicUsize;
     use std::sync::atomic::AtomicBool;
     use actix_rt::time::sleep;
-    use futures_util::future::join_all;
     use std::time::Duration;
     #[actix_web::test]
     async fn test() {
-        env_logger::builder()
+        let _ = env_logger::builder()
             .filter_module("reader::gcs::gcs_client", LevelFilter::Info)
             // .format_timestamp_millis()
-            .try_init().unwrap();
+            .try_init();
         // std::env::set_var("RUST_LOG", "info");
         // env_logger::init();
         let cred: CredentialsFile = CredentialsFile::new_from_file("google-service-key.json".into()).await.unwrap();

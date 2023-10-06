@@ -28,16 +28,16 @@ pub async  fn read_file(filename: String) -> Option<Vec<u8>> {
     }).await?
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+// #[cfg(test)]
+// mod tests {
+    // use super::*;
 
     // #[actix_web::test]
-    async fn test() {
-        assert!(read_file("test.txt".to_string()).await.is_none() );
-
-        assert!(write_file("test.txt".to_string(), "hello".as_bytes().to_vec()).await.is_ok());
-
-        assert_eq!(read_file("test.txt".to_string()).await, Some("hello".as_bytes().to_vec()));
-    }
-}
+    // async fn test() {
+    //     assert!(read_file("test.txt".to_string()).await.is_none() );
+    //
+    //     assert!(write_file("test.txt".to_string(), "hello".as_bytes().to_vec()).await.is_ok());
+    //
+    //     assert_eq!(read_file("test.txt".to_string()).await, Some("hello".as_bytes().to_vec()));
+    // }
+// }

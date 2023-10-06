@@ -14,7 +14,7 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn login_should_fail_if_user_doesnt_exist() -> Result<()> {
         std::env::set_var("RUST_LOG", "info");
-        env_logger::try_init().unwrap();
+        let _ = env_logger::try_init();
         let secret_key = Key::from(&[0; 64]);
         let app = test::init_service(
             App::new()
