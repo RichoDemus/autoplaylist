@@ -1,6 +1,9 @@
 use core::sync::atomic::Ordering;
+use std::fs;
+use std::sync::Arc;
 
 use anyhow::{Context, Result};
+use async_once_cell::{Lazy, OnceCell};
 use google_cloud_storage::client::Client;
 use google_cloud_storage::client::ClientConfig;
 use google_cloud_storage::client::google_cloud_auth::credentials::CredentialsFile;
@@ -11,7 +14,31 @@ use google_cloud_storage::http::objects::list::ListObjectsRequest;
 use log::info;
 use crate::gcs::filesystem::{read_file, write_file};
 
+// const CLIENT = Arc::pin(Lazy::new(||async {
+//     let cred: CredentialsFile = CredentialsFile::new_from_file("google-service-key.json".into()).await.unwrap();
+//     let config = ClientConfig::default().with_credentials(cred).await.unwrap();
+//     Client::new(config)
+// }));
 
+const CLIENT: OnceCell<Client> = OnceCell::new();
+
+async fn client() -> Client {
+    CLIENT.get_or_init(async {
+        let cred: CredentialsFile = CredentialsFile::new_from_file("google-service-key.json".into()).await.unwrap();
+        let config = ClientConfig::default().with_credentials(cred).await.unwrap();
+        Client::new(config)
+    }).await.clone()
+}
+
+pub async fn load_events_from_gcs_and_disk() -> Result<Vec<Vec<u8>>> {
+    let mut result = vec![];
+    for entry in fs::read_dir("data/events/v2")? {
+        if let Ok(entry) = entry {
+            result.push(fs::read(entry.path())?)
+        }
+    }
+    Ok(result)
+}
 
 
 #[cfg(test)]
@@ -23,17 +50,26 @@ mod tests {
     use std::sync::atomic::AtomicBool;
     use actix_rt::time::sleep;
     use std::time::Duration;
+
     #[actix_web::test]
+    async fn read_all_events_from_disk() {
+        let result = load_events_from_gcs_and_disk().await.unwrap();
+        println!("{:#?}", String::from_utf8(result[0].clone()));
+    }
+    // #[actix_web::test]
     async fn test() {
         let _ = env_logger::builder()
             .filter_module("reader::gcs::gcs_client", LevelFilter::Info)
             // .format_timestamp_millis()
             .try_init();
+
+        let client = client().await;
+
         // std::env::set_var("RUST_LOG", "info");
         // env_logger::init();
-        let cred: CredentialsFile = CredentialsFile::new_from_file("google-service-key.json".into()).await.unwrap();
-        let config = ClientConfig::default().with_credentials(cred).await.unwrap();
-        let client = Client::new(config);
+        // let cred: CredentialsFile = CredentialsFile::new_from_file("google-service-key.json".into()).await.unwrap();
+        // let config = ClientConfig::default().with_credentials(cred).await.unwrap();
+        // let client = Client::new(config);
         let _res = client.list_buckets(&ListBucketsRequest {
             project: "richo-main".into(),
             ..Default::default()

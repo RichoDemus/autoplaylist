@@ -8,13 +8,14 @@ use actix_session::storage::CookieSessionStore;
 use actix_session::{Session, SessionMiddleware};
 use actix_web::cookie::Key;
 use actix_web::middleware::Logger;
-use actix_web::{cookie, get, App, HttpServer, Responder};
+use actix_web::{cookie, get, App, HttpServer, Responder, web};
 use anyhow::Context;
 use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::output::ListObjectsV2Output;
 use aws_sdk_s3::Client;
+use crate::endpoints::serve_assets::static_fie;
 
-use crate::endpoints::user::create_user;
+use crate::endpoints::user::{create_user, login};
 use crate::event::events::Event;
 use crate::event::{event_store, parse};
 
@@ -26,10 +27,10 @@ pub mod test;
 pub mod types;
 mod gcs;
 
-#[get("/")]
-async fn index(_session: Session) -> impl Responder {
-    "Hello, World!"
-}
+// #[get("/")]
+// async fn index(_session: Session) -> impl Responder {
+//     "Hello, World!"
+// }
 
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
@@ -57,120 +58,121 @@ async fn main() -> anyhow::Result<()> {
                     .allow_any_method()
                     .allow_any_header(),
             )
-            .service(index)
             .service(create_user)
+            .service(login)
+            .route("/{filename:.*}", web::get().to(static_fie))
     })
     .bind(("0.0.0.0", 8080))?
     .run()
     .await?;
 
-    if true {
-        return Ok(());
-    }
-
-    // snippet-start:[s3.rust.client-client]
-    let region_provider = RegionProviderChain::default_provider().or_else("us-east-1");
-    let config = aws_config::from_env().region(region_provider).load().await;
-    let client = Client::new(&config);
-    // snippet-end:[s3.rust.client-client]
-
-    let bucket_name = {
-        let resp = client.list_buckets().send().await?;
-        let buckets = resp.buckets().unwrap();
-
-        let bucket_name = buckets
-            .iter()
-            .map(|b| b.name().unwrap().to_string())
-            .find(|b| b == "richo-reader")
-            .unwrap();
-        bucket_name
-    };
-
-    let mut ids = vec![];
-    let objects = client
-        .list_objects_v2()
-        .bucket(&bucket_name)
-        .max_keys(10_000)
-        .send()
-        .await?;
-    let mut cont_token = objects.next_continuation_token().map(ToString::to_string);
-    let mut new_ids = get_ids(&objects);
-    ids.append(&mut new_ids);
-
-    loop {
-        match cont_token {
-            None => {
-                break;
-            }
-            Some(token) => {
-                let objects = client
-                    .list_objects_v2()
-                    .bucket(&bucket_name)
-                    .max_keys(10_000)
-                    .continuation_token(token)
-                    .send()
-                    .await?;
-                cont_token = objects.next_continuation_token().map(ToString::to_string);
-                let mut new_ids = get_ids(&objects);
-                ids.append(&mut new_ids);
-            }
-        }
-    }
-
-    println!("{bucket_name}: {}", ids.len());
-    let mut ids_num = ids
-        .iter()
-        .filter(|id| id.starts_with("events/v2"))
-        .filter_map(|id| id[10..].parse::<i32>().ok())
-        .collect::<Vec<_>>();
-    ids_num.sort_unstable();
-    let mut last_num = -1;
-    for num in &ids_num {
-        if last_num + 1 == *num {
-            last_num = *num;
-        } else {
-            panic!("Missing event {}", last_num + 1)
-        }
-    }
-    // println!("{:?}", ids_num);
-
-    let tot_events = ids_num.len();
-    let finished_events_counter = Arc::new(AtomicUsize::new(0));
-    let fe = finished_events_counter.clone();
-
-    tokio::spawn(async move {
-        let mut v = VecDeque::new();
-        let mut last_events = 0;
-
-        loop {
-            let events = fe.load(Ordering::SeqCst);
-            while v.len() > 10 {
-                v.pop_front();
-            }
-            v.push_back(events - last_events);
-
-            let events_per_second: usize = v.iter().sum::<usize>() / v.len();
-
-            let events_left = tot_events - events;
-            let seconds_left = chrono::Duration::seconds(
-                events_left
-                    .checked_div(events_per_second)
-                    .unwrap_or_default() as i64,
-            );
-
-            println!(
-                "Events: {events}/{tot_events} {events_per_second} events/s. {}:{}",
-                seconds_left.num_minutes(),
-                seconds_left.num_seconds() % 60
-            );
-            if events >= tot_events {
-                break;
-            }
-            last_events = events;
-            tokio::time::sleep(Duration::from_secs(1)).await;
-        }
-        println!("Downloaded {} events", fe.load(Ordering::SeqCst));
-    });
+    // if true {
+    //     return Ok(());
+    // }
+    //
+    // // snippet-start:[s3.rust.client-client]
+    // let region_provider = RegionProviderChain::default_provider().or_else("us-east-1");
+    // let config = aws_config::from_env().region(region_provider).load().await;
+    // let client = Client::new(&config);
+    // // snippet-end:[s3.rust.client-client]
+    //
+    // let bucket_name = {
+    //     let resp = client.list_buckets().send().await?;
+    //     let buckets = resp.buckets().unwrap();
+    //
+    //     let bucket_name = buckets
+    //         .iter()
+    //         .map(|b| b.name().unwrap().to_string())
+    //         .find(|b| b == "richo-reader")
+    //         .unwrap();
+    //     bucket_name
+    // };
+    //
+    // let mut ids = vec![];
+    // let objects = client
+    //     .list_objects_v2()
+    //     .bucket(&bucket_name)
+    //     .max_keys(10_000)
+    //     .send()
+    //     .await?;
+    // let mut cont_token = objects.next_continuation_token().map(ToString::to_string);
+    // let mut new_ids = get_ids(&objects);
+    // ids.append(&mut new_ids);
+    //
+    // loop {
+    //     match cont_token {
+    //         None => {
+    //             break;
+    //         }
+    //         Some(token) => {
+    //             let objects = client
+    //                 .list_objects_v2()
+    //                 .bucket(&bucket_name)
+    //                 .max_keys(10_000)
+    //                 .continuation_token(token)
+    //                 .send()
+    //                 .await?;
+    //             cont_token = objects.next_continuation_token().map(ToString::to_string);
+    //             let mut new_ids = get_ids(&objects);
+    //             ids.append(&mut new_ids);
+    //         }
+    //     }
+    // }
+    //
+    // println!("{bucket_name}: {}", ids.len());
+    // let mut ids_num = ids
+    //     .iter()
+    //     .filter(|id| id.starts_with("events/v2"))
+    //     .filter_map(|id| id[10..].parse::<i32>().ok())
+    //     .collect::<Vec<_>>();
+    // ids_num.sort_unstable();
+    // let mut last_num = -1;
+    // for num in &ids_num {
+    //     if last_num + 1 == *num {
+    //         last_num = *num;
+    //     } else {
+    //         panic!("Missing event {}", last_num + 1)
+    //     }
+    // }
+    // // println!("{:?}", ids_num);
+    //
+    // let tot_events = ids_num.len();
+    // let finished_events_counter = Arc::new(AtomicUsize::new(0));
+    // let fe = finished_events_counter.clone();
+    //
+    // tokio::spawn(async move {
+    //     let mut v = VecDeque::new();
+    //     let mut last_events = 0;
+    //
+    //     loop {
+    //         let events = fe.load(Ordering::SeqCst);
+    //         while v.len() > 10 {
+    //             v.pop_front();
+    //         }
+    //         v.push_back(events - last_events);
+    //
+    //         let events_per_second: usize = v.iter().sum::<usize>() / v.len();
+    //
+    //         let events_left = tot_events - events;
+    //         let seconds_left = chrono::Duration::seconds(
+    //             events_left
+    //                 .checked_div(events_per_second)
+    //                 .unwrap_or_default() as i64,
+    //         );
+    //
+    //         println!(
+    //             "Events: {events}/{tot_events} {events_per_second} events/s. {}:{}",
+    //             seconds_left.num_minutes(),
+    //             seconds_left.num_seconds() % 60
+    //         );
+    //         if events >= tot_events {
+    //             break;
+    //         }
+    //         last_events = events;
+    //         tokio::time::sleep(Duration::from_secs(1)).await;
+    //     }
+    //     println!("Downloaded {} events", fe.load(Ordering::SeqCst));
+    // });
 
     // let mut events = vec![];
     // for id in ids_num {
@@ -202,32 +204,32 @@ async fn main() -> anyhow::Result<()> {
     //     finished_events.push(event);
     // }
 
-    let mut events = vec![];
-    for id in ids_num {
-        let key = format!("events/v2/{id}");
-        let raw = client
-            .get_object()
-            .bucket(&bucket_name)
-            .key(key)
-            .send()
-            .await?;
-        let data = raw.body.collect().await.unwrap();
-        let v = data.to_vec();
-
-        let s = String::from_utf8(v).unwrap();
-        let (_id, event) = s.split_once(',').unwrap();
-
-        // println!("{id} - {event}");
-        let event: Event = parse::parse(event)?;
-        events.push(event);
-        finished_events_counter.store(id as usize, Ordering::SeqCst);
-    }
-
-    // for event in events {
-    //     println!("{event:?}");
+    // let mut events = vec![];
+    // for id in ids_num {
+    //     let key = format!("events/v2/{id}");
+    //     let raw = client
+    //         .get_object()
+    //         .bucket(&bucket_name)
+    //         .key(key)
+    //         .send()
+    //         .await?;
+    //     let data = raw.body.collect().await.unwrap();
+    //     let v = data.to_vec();
+    //
+    //     let s = String::from_utf8(v).unwrap();
+    //     let (_id, event) = s.split_once(',').unwrap();
+    //
+    //     // println!("{id} - {event}");
+    //     let event: Event = parse::parse(event)?;
+    //     events.push(event);
+    //     finished_events_counter.store(id as usize, Ordering::SeqCst);
     // }
-
-    println!("done");
+    //
+    // // for event in events {
+    // //     println!("{event:?}");
+    // // }
+    //
+    // println!("done");
 
     Ok(())
 }

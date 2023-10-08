@@ -28,3 +28,9 @@ actix-http = "3.2.2"
 uuid = { version = "1.2.2", features = ["v4", "serde"] }
 google-cloud-storage = "*"
 actix-rt = "2.9.0"
+async-once-cell = "0.5.3"
+static-files = "0.2.3"
+actix-test = "0.1.2"
+
+[build-dependencies]
+static-files = "0.2.3"
