@@ -1,18 +1,18 @@
-use actix_cors::Cors;
-use actix_session::SessionMiddleware;
-use actix_session::storage::CookieSessionStore;
-use actix_test::TestServer;
-use actix_web::{App, HttpResponse, web};
-use actix_web::cookie::Key;
-use log::{LevelFilter, warn};
 use crate::endpoints::admin::download;
 use crate::endpoints::feeds::{add_feed, get_all_feeds};
 use crate::endpoints::user::{create_user, login};
 use crate::service::Services;
 use crate::test::test_client::LoginPage;
+use actix_cors::Cors;
+use actix_session::storage::CookieSessionStore;
+use actix_session::SessionMiddleware;
+use actix_test::TestServer;
+use actix_web::cookie::Key;
+use actix_web::{web, App, HttpResponse};
+use log::{warn, LevelFilter};
 
 pub struct TestService {
-    pub service: TestServer
+    pub service: TestServer,
 }
 impl TestService {
     pub fn new() -> Self {
@@ -23,17 +23,20 @@ impl TestService {
         let state = web::Data::new(Services::default());
 
         Self {
-            service: actix_test::start(move ||
+            service: actix_test::start(move || {
                 App::new()
                     .app_data(state.clone())
                     .wrap(
-                        SessionMiddleware::builder(CookieSessionStore::default(), secret_key.clone())
-                            .cookie_secure(false)
-                            .session_lifecycle(
-                                actix_session::config::PersistentSession::default()
-                                    .session_ttl(actix_web::cookie::time::Duration::days(365)),
-                            )
-                            .build(),
+                        SessionMiddleware::builder(
+                            CookieSessionStore::default(),
+                            secret_key.clone(),
+                        )
+                        .cookie_secure(false)
+                        .session_lifecycle(
+                            actix_session::config::PersistentSession::default()
+                                .session_ttl(actix_web::cookie::time::Duration::days(365)),
+                        )
+                        .build(),
                     )
                     .wrap(
                         Cors::default()
@@ -47,7 +50,7 @@ impl TestService {
                     .service(get_all_feeds)
                     .service(add_feed)
                     .service(download)
-            )
+            }),
         }
     }
 

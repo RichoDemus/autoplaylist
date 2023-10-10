@@ -2,17 +2,17 @@ use core::sync::atomic::Ordering;
 use std::fs;
 use std::sync::Arc;
 
+use crate::gcs::filesystem::{read_file, write_file};
 use anyhow::{Context, Result};
 use async_once_cell::{Lazy, OnceCell};
+use google_cloud_storage::client::google_cloud_auth::credentials::CredentialsFile;
 use google_cloud_storage::client::Client;
 use google_cloud_storage::client::ClientConfig;
-use google_cloud_storage::client::google_cloud_auth::credentials::CredentialsFile;
 use google_cloud_storage::http::buckets::list::ListBucketsRequest;
 use google_cloud_storage::http::objects::download::Range;
 use google_cloud_storage::http::objects::get::GetObjectRequest;
 use google_cloud_storage::http::objects::list::ListObjectsRequest;
 use log::info;
-use crate::gcs::filesystem::{read_file, write_file};
 
 // const CLIENT = Arc::pin(Lazy::new(||async {
 //     let cred: CredentialsFile = CredentialsFile::new_from_file("google-service-key.json".into()).await.unwrap();
@@ -23,11 +23,20 @@ use crate::gcs::filesystem::{read_file, write_file};
 const CLIENT: OnceCell<Client> = OnceCell::new();
 
 async fn client() -> Client {
-    CLIENT.get_or_init(async {
-        let cred: CredentialsFile = CredentialsFile::new_from_file("google-service-key.json".into()).await.unwrap();
-        let config = ClientConfig::default().with_credentials(cred).await.unwrap();
-        Client::new(config)
-    }).await.clone()
+    CLIENT
+        .get_or_init(async {
+            let cred: CredentialsFile =
+                CredentialsFile::new_from_file("google-service-key.json".into())
+                    .await
+                    .unwrap();
+            let config = ClientConfig::default()
+                .with_credentials(cred)
+                .await
+                .unwrap();
+            Client::new(config)
+        })
+        .await
+        .clone()
 }
 
 pub async fn load_events_from_gcs_and_disk() -> Result<Vec<Vec<u8>>> {
@@ -40,15 +49,14 @@ pub async fn load_events_from_gcs_and_disk() -> Result<Vec<Vec<u8>>> {
     Ok(result)
 }
 
-
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-    use log::LevelFilter;
     use super::*;
-    use std::sync::atomic::AtomicUsize;
-    use std::sync::atomic::AtomicBool;
     use actix_rt::time::sleep;
+    use log::LevelFilter;
+    use std::sync::atomic::AtomicBool;
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::Arc;
     use std::time::Duration;
 
     #[actix_web::test]
@@ -70,17 +78,23 @@ mod tests {
         // let cred: CredentialsFile = CredentialsFile::new_from_file("google-service-key.json".into()).await.unwrap();
         // let config = ClientConfig::default().with_credentials(cred).await.unwrap();
         // let client = Client::new(config);
-        let _res = client.list_buckets(&ListBucketsRequest {
-            project: "richo-main".into(),
-            ..Default::default()
-        }).await.unwrap();
+        let _res = client
+            .list_buckets(&ListBucketsRequest {
+                project: "richo-main".into(),
+                ..Default::default()
+            })
+            .await
+            .unwrap();
 
         let mut event_names = vec![];
 
-        let list = client.list_objects(&ListObjectsRequest {
-            bucket: "richo-reader".into(),
-            ..Default::default()
-        }).await.unwrap();
+        let list = client
+            .list_objects(&ListObjectsRequest {
+                bucket: "richo-reader".into(),
+                ..Default::default()
+            })
+            .await
+            .unwrap();
 
         for item in list.items.unwrap_or_default() {
             if item.name.starts_with("events/v2/") {
@@ -90,11 +104,14 @@ mod tests {
 
         let mut page_token = list.next_page_token;
         while page_token.is_some() {
-            let list = client.list_objects(&ListObjectsRequest {
-                bucket: "richo-reader".into(),
-                page_token: page_token.clone(),
-                ..Default::default()
-            }).await.unwrap();
+            let list = client
+                .list_objects(&ListObjectsRequest {
+                    bucket: "richo-reader".into(),
+                    page_token: page_token.clone(),
+                    ..Default::default()
+                })
+                .await
+                .unwrap();
 
             for item in list.items.unwrap_or_default() {
                 if item.name.starts_with("events/v2/") {
@@ -109,7 +126,6 @@ mod tests {
         //     name.split("/").collect::<Vec<_>>()[2].parse::<i32>().unwrap()
         // }));
         info!("{} events", event_names.len());
-
 
         // info!("{:?}", res);
         // list.items.unwrap().into_iter().for_each(|item|{
@@ -134,7 +150,12 @@ mod tests {
             let mut events_at_last_print = 0;
             while downloading.load(Ordering::SeqCst) {
                 let downloaded = finished_downloads_print.load(Ordering::SeqCst);
-                info!("Events downloaded {}/{}. {} e/s", downloaded, total_events, (downloaded-events_at_last_print));
+                info!(
+                    "Events downloaded {}/{}. {} e/s",
+                    downloaded,
+                    total_events,
+                    (downloaded - events_at_last_print)
+                );
                 events_at_last_print = downloaded;
                 sleep(Duration::from_millis(1000)).await;
             }
@@ -159,8 +180,7 @@ mod tests {
         // let downloaded = join_all(futures).await;
 
         info!("First {:?}", downloaded.get(0));
-        info!("Last {:?}", downloaded.get(downloaded.len()-1));
-
+        info!("Last {:?}", downloaded.get(downloaded.len() - 1));
 
         sleep(Duration::from_millis(3000)).await;
     }
@@ -179,7 +199,9 @@ async fn download(filename: String, client: &Client) -> Result<Vec<u8>> {
             ..Default::default()
         };
         let future = client.download_object(&request, &range);
-        let downloaded = future.await.with_context(||format!("Failed to download {filename} from gcs"))?;
+        let downloaded = future
+            .await
+            .with_context(|| format!("Failed to download {filename} from gcs"))?;
 
         write_file(filename.clone(), downloaded.clone()).await?;
         info!("Downloaded and saved {filename}");

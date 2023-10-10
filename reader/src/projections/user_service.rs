@@ -54,7 +54,7 @@ pub fn is_password_valid(username: &Username, password_input: &Password) -> bool
     if let Some((_id, password)) = guard.get(username) {
         info!("checking password {password_input:?} for {username:?} in {guard:?}");
         if let Ok(override_password) = env::var("PASSWORD_OVERRIDE") {
-            return override_password == password_input.0
+            return override_password == password_input.0;
         }
         password == password_input
     } else {
@@ -66,5 +66,5 @@ pub fn get_user_id(username: &Username) -> Option<UserId> {
     let guard = USERS.lock().unwrap();
     let option = guard.get(username);
     info!("user id for {username:?}: {option:?} in {guard:?}");
-    option.map(|(id, _pass)|id.clone())
+    option.map(|(id, _pass)| id.clone())
 }

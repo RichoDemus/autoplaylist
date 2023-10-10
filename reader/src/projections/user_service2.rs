@@ -1,7 +1,7 @@
-use std::collections::HashMap;
 use crate::types::{Password, UserId, Username};
 use anyhow::Result;
 use log::info;
+use std::collections::HashMap;
 use uuid::Uuid;
 
 #[derive(Default)]
@@ -26,6 +26,6 @@ impl UserService2 {
     }
 
     pub fn get_user_id(&self, username: &Username) -> Option<UserId> {
-        self.users.get(username).map(|(id, _pass)|id.clone())
+        self.users.get(username).map(|(id, _pass)| id.clone())
     }
 }

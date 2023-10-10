@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod tests {
-    use std::sync::Once;
     use actix_cors::Cors;
     use actix_http::body::{BoxBody, EitherBody};
     use actix_http::Request;
@@ -8,10 +7,11 @@ mod tests {
     use actix_session::SessionMiddleware;
     use actix_test::TestServer;
     use actix_web::cookie::Key;
-    use actix_web::{cookie, test, App, get, Responder, Error, HttpResponse};
     use actix_web::dev::{Service, ServiceResponse};
+    use actix_web::{cookie, get, test, App, Error, HttpResponse, Responder};
     use anyhow::Result;
     use serde_json::json;
+    use std::sync::Once;
 
     use crate::endpoints::user::{create_user, login};
 
@@ -118,16 +118,13 @@ mod tests {
         Ok(())
     }
 
-
     #[get("/")]
     async fn my_handler() -> Result<impl Responder, Error> {
         Ok(HttpResponse::Ok())
     }
     #[actix_rt::test]
     async fn test_example() {
-        let srv: TestServer = actix_test::start(||
-            App::new().service(my_handler)
-        );
+        let srv: TestServer = actix_test::start(|| App::new().service(my_handler));
 
         let req = srv.get("/");
         let res = req.send().await.unwrap();

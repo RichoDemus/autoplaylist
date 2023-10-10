@@ -1,10 +1,10 @@
+use crate::types::UserId;
 use actix_http::StatusCode;
 use actix_session::Session;
-use actix_web::{get, HttpResponse, post};
 use actix_web::web::Json;
+use actix_web::{get, post, HttpResponse};
 use log::{info, warn};
 use serde_json::{json, Value};
-use crate::types::UserId;
 
 #[get("/v1/feeds")]
 pub async fn get_all_feeds(session: Session) -> HttpResponse {
@@ -19,7 +19,7 @@ pub async fn get_all_feeds(session: Session) -> HttpResponse {
         return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
     };
     info!("cool session cooke, userid: {user_id:?}");
-    return HttpResponse::Ok().json(json!([]))
+    return HttpResponse::Ok().json(json!([]));
 }
 
 #[post("/v1/feeds")]
@@ -35,5 +35,5 @@ pub async fn add_feed(session: Session, json: Json<Value>) -> HttpResponse {
         return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
     };
     info!("cool session cooke, userid: {user_id:?}");
-    return HttpResponse::Ok().into()
+    return HttpResponse::Ok().into();
 }

@@ -27,7 +27,7 @@ pub async fn init() -> Result<()> {
     Ok(())
 }
 
-pub fn publish_event(event: Event, also_persist:bool) -> Result<()> {
+pub fn publish_event(event: Event, also_persist: bool) -> Result<()> {
     // todo save
     subscriptions::process_event(&event);
     watched_items::process_event(&event);

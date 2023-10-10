@@ -3,19 +3,19 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 
+use crate::endpoints::admin::download;
+use crate::endpoints::feeds::{add_feed, get_all_feeds};
+use crate::endpoints::serve_assets::static_fie;
 use actix_cors::Cors;
 use actix_session::storage::CookieSessionStore;
 use actix_session::{Session, SessionMiddleware};
 use actix_web::cookie::Key;
 use actix_web::middleware::Logger;
-use actix_web::{cookie, get, App, HttpServer, Responder, web};
+use actix_web::{cookie, get, web, App, HttpServer, Responder};
 use anyhow::Context;
 use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::output::ListObjectsV2Output;
 use aws_sdk_s3::Client;
-use crate::endpoints::admin::download;
-use crate::endpoints::feeds::{add_feed, get_all_feeds};
-use crate::endpoints::serve_assets::static_fie;
 
 use crate::endpoints::user::{create_user, login};
 use crate::event::events::Event;
@@ -24,19 +24,17 @@ use crate::service::Services;
 
 pub mod endpoints;
 pub mod event;
+mod gcs;
 pub mod projections;
+pub mod service;
 #[cfg(test)]
 pub mod test;
 pub mod types;
-mod gcs;
-pub mod service;
 
 // #[get("/")]
 // async fn index(_session: Session) -> impl Responder {
 //     "Hello, World!"
 // }
-
-
 
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {

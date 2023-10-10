@@ -1,12 +1,11 @@
+use crate::types::UserId;
 use actix_http::StatusCode;
 use actix_session::Session;
-use actix_web::{HttpResponse, post};
+use actix_web::{post, HttpResponse};
 use log::{info, warn};
-use crate::types::UserId;
 
 #[post("/admin/download")]
 pub async fn download(session: Session) -> HttpResponse {
-
     info!("Session status: {:?}", session.status());
     info!("Session entries: {:?}", session.entries());
 
@@ -18,5 +17,5 @@ pub async fn download(session: Session) -> HttpResponse {
     };
     info!("cool session cooke, userid: {user_id:?}");
     info!("Downloading feeds");
-    return HttpResponse::Ok().into()
+    return HttpResponse::Ok().into();
 }
