@@ -1,10 +1,9 @@
 use core::sync::atomic::Ordering;
 use std::fs;
-use std::sync::Arc;
 
 use crate::gcs::filesystem::{read_file, write_file};
 use anyhow::{Context, Result};
-use async_once_cell::{Lazy, OnceCell};
+use async_once_cell::OnceCell;
 use google_cloud_storage::client::google_cloud_auth::credentials::CredentialsFile;
 use google_cloud_storage::client::Client;
 use google_cloud_storage::client::ClientConfig;

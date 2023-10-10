@@ -1,15 +1,12 @@
 use actix_session::Session;
 use actix_web::http::StatusCode;
 use actix_web::web::Bytes;
-use actix_web::{post, web, HttpResponse, Responder};
-use aws_sdk_s3::model::Protocol::Http;
+use actix_web::{post, web, HttpResponse};
 use log::{info, warn};
 use serde_json::Value;
-use uuid::uuid;
 
-use crate::projections::user_service;
 use crate::service::Services;
-use crate::types::{Password, UserId, Username};
+use crate::types::{Password, Username};
 
 #[post("/v1/users")]
 pub async fn create_user(json: web::Json<Value>, services: web::Data<Services>) -> HttpResponse {

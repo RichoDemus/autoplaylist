@@ -8,8 +8,8 @@ use actix_session::storage::CookieSessionStore;
 use actix_session::SessionMiddleware;
 use actix_test::TestServer;
 use actix_web::cookie::Key;
-use actix_web::{web, App, HttpResponse};
-use log::{warn, LevelFilter};
+use actix_web::{web, App};
+use log::LevelFilter;
 
 pub struct TestService {
     pub service: TestServer,

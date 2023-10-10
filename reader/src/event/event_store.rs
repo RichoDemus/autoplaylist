@@ -1,15 +1,10 @@
 use anyhow::Result;
 use log::info;
-use tokio::fs;
-use tokio::fs::File;
-use tokio::io::AsyncReadExt;
-use uuid::uuid;
 
 use crate::event::events::Event;
 use crate::event::parse;
 use crate::gcs::gcs_client;
 use crate::projections::{subscriptions, user_service, watched_items};
-use crate::types::{FeedId, UserId};
 
 pub async fn init() -> Result<()> {
     let events = gcs_client::load_events_from_gcs_and_disk().await?;
@@ -27,7 +22,7 @@ pub async fn init() -> Result<()> {
     Ok(())
 }
 
-pub fn publish_event(event: Event, also_persist: bool) -> Result<()> {
+pub fn publish_event(event: Event, _also_persist: bool) -> Result<()> {
     // todo save
     subscriptions::process_event(&event);
     watched_items::process_event(&event);

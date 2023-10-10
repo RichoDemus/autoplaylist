@@ -1,5 +1,5 @@
 use crate::test::models::FeedWithoutItem;
-use anyhow::{anyhow, bail, Context, Result};
+use anyhow::{bail, Result};
 use reqwest::Client;
 use serde_json::json;
 
@@ -40,12 +40,24 @@ impl LoginPage {
             .to_str()
             .unwrap()
             .to_string();
-        // println!("cookie: {:?}", cookie_str);
         let split = cookie_str.split(";").collect::<Vec<_>>();
         let cookie = split.get(0).unwrap();
-        // println!("{}", cookie);
-        // panic!();
         Ok(MainPage::new(self.port, cookie.to_string(), self.client))
+    }
+
+    pub async fn login_wrong_password(self) -> Result<()> {
+        let response = self
+            .client
+            .post(format!("http://localhost:{}/v1/sessions", self.port))
+            .json(&json!({"username":"cool-user", "password":"wrong-password"}))
+            .send()
+            .await?;
+
+        if response.status().is_client_error() {
+            Ok(())
+        } else {
+            bail!("Expected error")
+        }
     }
 
     pub async fn create_user(&self) -> Result<()> {
