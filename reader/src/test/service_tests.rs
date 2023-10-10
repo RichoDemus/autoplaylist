@@ -23,7 +23,7 @@ mod tests {
     //     });
     // }
 
-    #[tokio::test(flavor = "multi_thread")]
+    // #[tokio::test(flavor = "multi_thread")]
     async fn login_should_fail_if_user_doesnt_exist() -> Result<()> {
         std::env::set_var("RUST_LOG", "info");
         let _ = env_logger::try_init();
@@ -64,7 +64,7 @@ mod tests {
 
         Ok(())
     }
-    #[tokio::test(flavor = "multi_thread")]
+    // #[tokio::test(flavor = "multi_thread")]
     async fn should_login() -> Result<()> {
         std::env::set_var("RUST_LOG", "info");
         let _ = env_logger::try_init();

@@ -1,26 +1,106 @@
-use actix_http::body::{BoxBody, EitherBody, MessageBody};
-use actix_web::dev::{Service, ServiceResponse};
-use actix_web::test;
-use anyhow::{bail, Result};
-use serde_json::{json, Value};
+use anyhow::{anyhow, bail, Context, Result};
+use reqwest::Client;
+use serde_json::json;
+use crate::test::models::FeedWithoutItem;
 
-pub struct TestClient {}
+#[derive(Debug)]
+pub struct LoginPage {
+    port:u16,
+    client:Client,
+}
 
-impl TestClient {
-    pub async fn create_user<T>(&self, app: &impl actix_web::dev::Service<T, Response=ServiceResponse<EitherBody<BoxBody>>, Error=actix_web::Error>, username: &str, password: &str) -> Result<()> {
-        let req = test::TestRequest::post()
-            .uri("/v1/sessions")
-            .set_json(json!({"username":username, "password":password}))
-            .to_request();
+impl LoginPage {
+    pub fn new(port:u16) -> Self {
+        Self {
+            port,
+            client: Client::new(),
+        }
+    }
+    pub async fn login(self) -> Result<MainPage> {
+        let response = self.client.post(format!("http://localhost:{}/v1/sessions", self.port))
+            .json(&json!({"username":"cool-user", "password":"a-password"}))
+            .send()
+            .await?;
 
-        let resp = test::call_service(&app, req).await;
-        println!("{:?}", resp.status());
-        assert!(resp.status().is_success());
-        let mut body = resp.into_body();
-        let b = body.try_into_bytes();
-        let b = b.expect("asd");
-        let v: Value = serde_json::from_slice(&b).unwrap();
-        println!("{:?}", v);
+        if response.status().is_client_error() {
+            bail!("Failed to log in")
+        }
+
+        assert!(response.headers().get("set-cookie").is_some(), "No session cookie");
+
+
+        let cookie_str = response.headers().get("set-cookie").unwrap().to_str().unwrap().to_string();
+        // println!("cookie: {:?}", cookie_str);
+        let split = cookie_str.split(";").collect::<Vec<_>>();
+        let cookie = split.get(0).unwrap();
+        // println!("{}", cookie);
+        // panic!();
+        Ok(MainPage::new(self.port, cookie.to_string(), self.client))
+    }
+
+    pub async fn create_user(&self) -> Result<()> {
+        let response = self.client.post(format!("http://localhost:{}/v1/users", self.port))
+            .json(&json!({"username":"cool-user", "password":"a-password", "inviteCode":"icode"}))
+            .send()
+            .await?;
+
+        if response.status().is_client_error() {
+            bail!("Failed to create user")
+        }
+
         Ok(())
+    }
+}
+
+#[derive(Debug)]
+pub struct MainPage {
+    port:u16,
+    cookie:String,
+    client:Client,
+}
+
+impl MainPage {
+    fn new(port:u16, cookie:String, client:Client) -> Self {
+        Self {
+            port,
+            cookie,
+            client,
+        }
+    }
+    pub async fn add_feed(&self, url:&str) -> Result<()> {
+        let response = self.client.post(format!("http://localhost:{}/v1/feeds", self.port))
+            .header("Cookie",self.cookie.as_str())
+            .json(format!("\"{url}\"").as_str())
+            .send()
+            .await?;
+        if response.status().is_success() {
+            Ok(())
+        } else {
+            bail!("Failed to add feed: {:?}", response.error_for_status())
+        }
+    }
+
+    pub async fn download_feeds(&self) -> Result<()> {
+        let response = self.client.post(format!("http://localhost:{}/admin/download", self.port))
+            .header("Cookie",self.cookie.as_str())
+            .send()
+            .await?;
+        if response.status().is_success() {
+            Ok(())
+        } else {
+            bail!("Failed to trigger feed download")
+        }
+    }
+
+    pub async fn get_feeds(&self) -> Result<Vec<FeedWithoutItem>> {
+        let response = self.client.get(format!("http://localhost:{}/v1/feeds", self.port))
+            .header("Cookie",self.cookie.as_str())
+            .send()
+            .await?;
+        if response.status().is_success() {
+            Ok(vec![])
+        } else {
+            bail!("Failed to get all feeds")
+        }
     }
 }

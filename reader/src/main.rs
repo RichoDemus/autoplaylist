@@ -13,11 +13,14 @@ use anyhow::Context;
 use aws_config::meta::region::RegionProviderChain;
 use aws_sdk_s3::output::ListObjectsV2Output;
 use aws_sdk_s3::Client;
+use crate::endpoints::admin::download;
+use crate::endpoints::feeds::{add_feed, get_all_feeds};
 use crate::endpoints::serve_assets::static_fie;
 
 use crate::endpoints::user::{create_user, login};
 use crate::event::events::Event;
 use crate::event::{event_store, parse};
+use crate::service::Services;
 
 pub mod endpoints;
 pub mod event;
@@ -26,11 +29,14 @@ pub mod projections;
 pub mod test;
 pub mod types;
 mod gcs;
+pub mod service;
 
 // #[get("/")]
 // async fn index(_session: Session) -> impl Responder {
 //     "Hello, World!"
 // }
+
+
 
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
@@ -39,8 +45,10 @@ async fn main() -> anyhow::Result<()> {
 
     event_store::init().await?;
     let secret_key = Key::from(&[0; 64]); // todo use proper key
+    let state = web::Data::new(Services::default());
     HttpServer::new(move || {
         App::new()
+            .app_data(state.clone())
             .wrap(Logger::default())
             .wrap(
                 SessionMiddleware::builder(CookieSessionStore::default(), secret_key.clone())
@@ -60,6 +68,9 @@ async fn main() -> anyhow::Result<()> {
             )
             .service(create_user)
             .service(login)
+            .service(get_all_feeds)
+            .service(add_feed)
+            .service(download)
             .route("/{filename:.*}", web::get().to(static_fie))
     })
     .bind(("0.0.0.0", 8080))?
