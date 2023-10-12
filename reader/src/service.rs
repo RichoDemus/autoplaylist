@@ -2,6 +2,7 @@ use crate::event::event_store::EventStore;
 use crate::projections::feed_service::FeedService;
 use crate::projections::subscriptions::SubscriptionsService;
 use crate::projections::user_service2::UserService2;
+use crate::youtube::youtube_client::YoutubeClient;
 use std::sync::{Arc, Mutex};
 
 pub struct Services {
@@ -18,7 +19,10 @@ impl Default for Services {
             subscriptions_service: Arc::new(Mutex::new(SubscriptionsService::new(
                 event_store.clone(),
             ))),
-            feed_service: Arc::new(Mutex::new(FeedService::new(event_store.clone()))),
+            feed_service: Arc::new(Mutex::new(FeedService::new(
+                event_store.clone(),
+                YoutubeClient::new(),
+            ))),
         }
     }
 }

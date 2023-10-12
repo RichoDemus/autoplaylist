@@ -1,3 +1,5 @@
+extern crate core;
+
 use crate::endpoints::admin::download;
 use crate::endpoints::feeds::{add_feed, get_all_feeds};
 use crate::endpoints::serve_assets::static_fie;
@@ -17,6 +19,7 @@ pub mod event;
 mod gcs;
 pub mod projections;
 pub mod service;
+pub mod sled_wrapper;
 #[cfg(test)]
 pub mod test;
 pub mod types;

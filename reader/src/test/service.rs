@@ -9,16 +9,25 @@ use actix_session::SessionMiddleware;
 use actix_test::TestServer;
 use actix_web::cookie::Key;
 use actix_web::{web, App};
+use httpmock::prelude::*;
+use httpmock::MockServer;
 use log::LevelFilter;
+use serde_json::json;
+use std::env;
 
 pub struct TestService {
     pub service: TestServer,
+    mock_server: MockServer,
 }
 impl TestService {
     pub fn new() -> Self {
         let _ = env_logger::builder()
             .filter_module("reader", LevelFilter::Info)
             .try_init();
+
+        let mock_server = MockServer::start();
+        setup_youtube_mock(&mock_server);
+
         let secret_key = Key::from(&[0; 64]);
         let state = web::Data::new(Services::default());
 
@@ -51,10 +60,28 @@ impl TestService {
                     .service(add_feed)
                     .service(download)
             }),
+            mock_server,
         }
     }
 
     pub fn client(&self) -> LoginPage {
         LoginPage::new(self.service.addr().port())
     }
+}
+
+fn setup_youtube_mock(mock_server: &MockServer) {
+    env::set_var("YOUTUBE_API_KEY", "YT_KEY".to_string());
+    env::set_var("YOUTUBE_BASE_DIR", mock_server.base_url());
+
+    mock_server.mock(|when, then| {
+        when.method(GET).path("/youtube/v3/search/");
+        then.status(200).json_body(json!({
+            "items": [{
+                "snippet": {
+                    "channelTitle": "RichoDemus",
+                    "channelId": "richo-feed-id",
+                }
+            }]
+        }));
+    });
 }

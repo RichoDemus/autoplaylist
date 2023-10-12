@@ -24,8 +24,8 @@ impl UserService2 {
                     Ok(event) => {
                         info!("Received event {event:?}");
                         if let Event::UserCreated {
-                            id,
-                            timestamp,
+                            id: _,
+                            timestamp: _,
                             user_id,
                             username,
                             password,

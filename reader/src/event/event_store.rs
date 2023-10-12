@@ -34,7 +34,7 @@ pub fn publish_event(event: Event, _also_persist: bool) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    // use super::*;
 
     // #[actix_web::test]
     // async fn read_and_parse_events() {

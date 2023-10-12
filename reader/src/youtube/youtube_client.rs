@@ -1,6 +1,6 @@
 use crate::types::{FeedId, FeedName, FeedUrl};
 use anyhow::{bail, Context, Result};
-use log::warn;
+use log::{info, warn};
 use reqwest::Client;
 use serde_json::Value;
 use std::env;
@@ -8,13 +8,16 @@ use std::env;
 pub struct YoutubeClient {
     client: Client,
     key: String,
+    base_url: String,
 }
 
 impl YoutubeClient {
     pub fn new() -> Self {
         Self {
             client: Default::default(),
-            key: env::var("YOUTUBE_API_KEY").expect("Missing env API_KEY"),
+            key: env::var("YOUTUBE_API_KEY").expect("Missing env YOUTUBE_API_KEY"),
+            base_url: env::var("YOUTUBE_BASE_DIR")
+                .unwrap_or("https://www.googleapis.com".to_string()),
         }
     }
 
@@ -24,7 +27,7 @@ impl YoutubeClient {
         }
         let resp = self
             .client
-            .get("https://www.googleapis.com/youtube/v3/search/")
+            .get(format!("{}/youtube/v3/search/", self.base_url))
             .query(&[
                 ("key", self.key.as_str()),
                 ("part", "snippet"),
@@ -38,8 +41,6 @@ impl YoutubeClient {
             .await
             .context("read body")?;
 
-        // info!("Url: {:?}", feed_url);
-        // info!("Resp: {:#?}", resp);
         let items = &resp["items"].as_array().context("items")?;
         if items.len() > 1 {
             warn!("More than one channel for url {:?}", feed_url);
@@ -52,7 +53,10 @@ impl YoutubeClient {
             .as_str()
             .context("no title")?;
 
-        Ok((FeedId(id.to_string()), FeedName(title.to_string())))
+        let id = FeedId(id.to_string());
+        let name = FeedName(title.to_string());
+        info!("{} -> {} [{}]", *feed_url, *name, *id);
+        Ok((id, name))
     }
 }
 

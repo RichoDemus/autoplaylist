@@ -1,5 +1,5 @@
 use crate::service::Services;
-use crate::types::{FeedId, FeedWithoutItem, UserId};
+use crate::types::{FeedId, FeedUrl, FeedWithoutItem, UserId};
 use actix_http::StatusCode;
 use actix_session::Session;
 use actix_web::web::{Data, Json};
@@ -59,12 +59,19 @@ pub async fn add_feed(
         warn!("No session cookie");
         return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
     };
-    info!("add feed: {}", json.as_str().unwrap());
+    let url = FeedUrl(json.as_str().unwrap().to_string());
+    let (id, _) = services
+        .feed_service
+        .lock()
+        .unwrap()
+        .url_to_id(url)
+        .await
+        .unwrap(); //todo no unwrap
     services
         .subscriptions_service
         .lock()
         .unwrap()
-        .subscribe(user_id, FeedId(json.as_str().unwrap().to_string()))
+        .subscribe(user_id, id)
         .unwrap();
     return HttpResponse::Ok().into();
 }

@@ -23,8 +23,8 @@ impl SubscriptionsService {
                     Ok(event) => {
                         info!("Received event {event:?}");
                         if let Event::UserSubscribedToFeed {
-                            id,
-                            timestamp,
+                            id: _,
+                            timestamp: _,
                             user_id,
                             feed_id,
                         } = event

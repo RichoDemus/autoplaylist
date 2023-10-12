@@ -1,1 +1,1 @@
-mod youtube_client;
+pub mod youtube_client;

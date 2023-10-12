@@ -1,4 +1,5 @@
 use crate::test::service::TestService;
+use itertools::assert_equal;
 
 #[actix_rt::test]
 async fn login_should_fail_if_no_user_exists() {
@@ -51,4 +52,7 @@ async fn downloaded_feeds_should_be_in_feed_response() {
     let feeds = main_page.get_feeds().await.unwrap();
     println!("got feed: {:?}", feeds);
     assert_eq!(feeds.len(), 1, "Should be subscribed to one feed");
+    let feed = feeds.get(0).unwrap();
+    assert_eq!(*feed.id, "richo-feed-id");
+    assert_eq!(*feed.name, "RichoDemus");
 }
