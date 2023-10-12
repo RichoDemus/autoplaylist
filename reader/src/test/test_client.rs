@@ -1,5 +1,5 @@
-use crate::test::models::FeedWithoutItem;
-use anyhow::{bail, Result};
+use crate::types::FeedWithoutItem;
+use anyhow::{bail, Context, Result};
 use reqwest::Client;
 use serde_json::json;
 
@@ -96,7 +96,7 @@ impl MainPage {
             .client
             .post(format!("http://localhost:{}/v1/feeds", self.port))
             .header("Cookie", self.cookie.as_str())
-            .json(format!("\"{url}\"").as_str())
+            .json(&json!(url))
             .send()
             .await?;
         if response.status().is_success() {
@@ -128,7 +128,11 @@ impl MainPage {
             .send()
             .await?;
         if response.status().is_success() {
-            Ok(vec![])
+            let feeds: Vec<FeedWithoutItem> = response
+                .json()
+                .await
+                .context("Parse feedwithoutitems json")?;
+            Ok(feeds)
         } else {
             bail!("Failed to get all feeds")
         }

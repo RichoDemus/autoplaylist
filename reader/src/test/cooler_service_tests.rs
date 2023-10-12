@@ -48,34 +48,7 @@ async fn downloaded_feeds_should_be_in_feed_response() {
         .unwrap();
     main_page.download_feeds().await.unwrap();
 
-    // let instant = Instant::now();
-    // let two_seconds = Duration::from_secs(2);
-    // while (main_page.get_feeds().await.unwrap().is_empty() && Instant::now() - instant < two_seconds) {
-    //     actix_rt::time::sleep(Duration::from_millis(10)).await;
-    // }
-
     let feeds = main_page.get_feeds().await.unwrap();
-    println!("{:?}", feeds);
-    // assert_eq!(feeds.len(), 1, "Should be subscribed to one feed");
+    println!("got feed: {:?}", feeds);
+    assert_eq!(feeds.len(), 1, "Should be subscribed to one feed");
 }
-
-/*
-   @Test
-   internal fun `Downloaded items should be in feed response`() {
-       loginPage.createUser()
-       loginPage.login()
-
-       val feedPage = loginPage.toFeedPage()
-       feedPage.addFeed(FeedUrl("https://www.youtube.com/user/richodemus"))
-
-       loginPage.downloadFeeds()
-
-       await().atMost(1, TimeUnit.MINUTES).untilAsserted {
-           assertThat(feedPage.getItemNames(FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw"))).isNotEmpty()
-       }
-
-
-       assertThat(feedPage.getItemNames(FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw"))).containsExactly("Zs6bAFlcH0M", "vtuDTx1oJGA")
-       assertThat(feedPage.allFeeds).extracting("numberOfAvailableItems").containsExactly(2)
-   }
-*/

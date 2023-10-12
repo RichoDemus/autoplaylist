@@ -20,6 +20,7 @@ pub mod service;
 #[cfg(test)]
 pub mod test;
 pub mod types;
+pub mod youtube;
 
 // #[get("/")]
 // async fn index(_session: Session) -> impl Responder {

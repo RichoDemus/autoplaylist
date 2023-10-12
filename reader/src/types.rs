@@ -3,7 +3,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
-#[derive(NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
+#[derive(NewType, Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
 pub struct EventId(pub Uuid);
 
 #[derive(Hash, NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
@@ -11,6 +11,12 @@ pub struct UserId(pub Uuid);
 
 #[derive(Hash, NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct FeedId(pub String);
+
+#[derive(Hash, NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
+pub struct FeedUrl(pub String);
+
+#[derive(Hash, NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
+pub struct FeedName(pub String);
 
 #[derive(Hash, NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct ItemId(pub String);
@@ -26,6 +32,14 @@ pub struct LabelId(pub Uuid);
 
 #[derive(NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct LabelName(pub String);
+
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
+pub struct FeedWithoutItem {
+    pub(crate) id: FeedId,
+    pub(crate) name: FeedName,
+    #[serde(rename = "numberOfAvailableItems")]
+    pub(crate) number_of_available_items: i32,
+}
 
 #[derive(Serialize, Deserialize)]
 pub struct UserSession {

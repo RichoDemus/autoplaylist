@@ -6,7 +6,7 @@ use crate::types::{EventId, FeedId, ItemId, LabelId, LabelName, Password, UserId
 
 // todo normalize field names
 
-#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 #[serde(deny_unknown_fields)]
 #[serde(tag = "type")]
 pub enum Event {
