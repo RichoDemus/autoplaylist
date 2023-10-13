@@ -9,6 +9,7 @@ use actix_session::SessionMiddleware;
 use actix_web::cookie::Key;
 use actix_web::middleware::Logger;
 use actix_web::{cookie, web, App, HttpServer};
+use log::LevelFilter;
 
 use crate::endpoints::user::{create_user, login};
 use crate::event::event_store;
@@ -32,10 +33,11 @@ pub mod youtube;
 
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
-    std::env::set_var("RUST_LOG", "info");
-    env_logger::init();
+    let _ = env_logger::builder()
+        .filter_module("reader", LevelFilter::Info)
+        .try_init();
 
-    event_store::init().await?;
+    // event_store::init().await?;
     let secret_key = Key::from(&[0; 64]); // todo use proper key
     let state = web::Data::new(Services::default());
     HttpServer::new(move || {

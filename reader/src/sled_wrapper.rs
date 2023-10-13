@@ -3,20 +3,24 @@ use log::warn;
 use serde::{Deserialize, Serialize};
 use sled::Db;
 use std::fmt::Debug;
+use std::ops::Deref;
 
 pub struct DiskCache {
     sled: Db,
 }
 
 impl DiskCache {
-    pub fn new() -> Self {
+    pub fn new(name: &str) -> Self {
         Self {
-            sled: sled::open("target/sled_db").unwrap(),
+            sled: sled::open(format!("target/{}_db", name)).unwrap(),
         }
     }
-    pub fn get<K: AsRef<[u8]>, V: Debug + for<'a> Deserialize<'a>>(&self, key: K) -> Option<V> {
+    pub fn get<K: Deref<Target = String>, V: Debug + for<'a> Deserialize<'a>>(
+        &self,
+        key: K,
+    ) -> Option<V> {
         self.sled
-            .get(key)
+            .get(key.deref())
             .expect("Failed to read from disk")
             .map(|ivec| {
                 let vec = ivec.to_vec();
@@ -30,8 +34,10 @@ impl DiskCache {
             .flatten()
     }
 
-    pub fn insert<K: AsRef<[u8]>, V: Serialize>(&self, key: K, value: V) {
-        let _ = self.sled.insert(key, serde_json::to_vec(&value).unwrap());
+    pub fn insert<K: Deref<Target = String>, V: Serialize>(&self, key: K, value: V) {
+        let _ = self
+            .sled
+            .insert(key.deref(), serde_json::to_vec(&value).unwrap());
     }
 }
 
@@ -43,7 +49,7 @@ mod tests {
 
     #[test]
     fn test_cache() {
-        let cache = DiskCache::new();
+        let cache = DiskCache::new("test");
         let id = FeedId(Uuid::new_v4().to_string());
         let name = FeedName(Uuid::new_v4().to_string());
         let feed = Feed {
@@ -51,10 +57,8 @@ mod tests {
             name,
         };
 
-        let key: String = id.0.clone();
-        let should_be_none: Option<Feed> = cache.get(key);
-        assert!(should_be_none.is_none());
-        cache.insert(id.clone().0, feed.clone());
-        assert_eq!(cache.get::<String, Feed>(id.0), Some(feed));
+        assert!(cache.get::<FeedId, Feed>(id.clone()).is_none());
+        cache.insert(id.clone(), feed.clone());
+        assert_eq!(cache.get::<FeedId, Feed>(id), Some(feed));
     }
 }

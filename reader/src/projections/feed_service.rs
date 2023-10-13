@@ -1,5 +1,6 @@
 use crate::event::event_store::EventStore;
 use crate::event::events::Event;
+use crate::sled_wrapper::DiskCache;
 use crate::types::{FeedId, FeedName, FeedUrl};
 use crate::youtube::youtube_client::YoutubeClient;
 use anyhow::Result;
@@ -32,13 +33,7 @@ impl FeedService {
                             feed_id,
                         } = event
                         {
-                            feeds_spawn.lock().unwrap().insert(
-                                feed_id.clone(),
-                                Feed {
-                                    id: feed_id,
-                                    name: FeedName("cool-feed-name".to_string()),
-                                },
-                            );
+                            register_feed(feeds_spawn.clone().clone(), feed_id);
                         }
                     }
 
@@ -70,6 +65,16 @@ impl FeedService {
     pub async fn url_to_id(&self, url: FeedUrl) -> Result<(FeedId, FeedName)> {
         self.client.feed_id(url).await
     }
+}
+
+fn register_feed(feeds: Arc<Mutex<HashMap<FeedId, Feed>>>, feed_id: FeedId) {
+    feeds.lock().unwrap().insert(
+        feed_id.clone(),
+        Feed {
+            id: feed_id,
+            name: FeedName("RichoDemus".to_string()),
+        },
+    );
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq)]
