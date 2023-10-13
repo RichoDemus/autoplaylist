@@ -1,5 +1,5 @@
 use crate::endpoints::admin::download;
-use crate::endpoints::feeds::{add_feed, get_all_feeds};
+use crate::endpoints::feeds::{add_feed, get_all_feeds, get_feed};
 use crate::endpoints::user::{create_user, login};
 use crate::service::Services;
 use crate::test::test_client::LoginPage;
@@ -57,6 +57,7 @@ impl TestService {
                     .service(login)
                     .service(create_user)
                     .service(get_all_feeds)
+                    .service(get_feed)
                     .service(add_feed)
                     .service(download)
             }),

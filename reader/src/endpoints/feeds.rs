@@ -2,7 +2,7 @@ use crate::service::Services;
 use crate::types::{FeedId, FeedUrl, FeedWithoutItem, UserId};
 use actix_http::StatusCode;
 use actix_session::Session;
-use actix_web::web::{Data, Json};
+use actix_web::web::{Data, Json, Path};
 use actix_web::{get, post, HttpResponse};
 use log::{info, warn};
 use serde_json::Value;
@@ -31,16 +31,31 @@ fn build_feeds(user: UserId, services: Data<Services>) -> Vec<FeedWithoutItem> {
         .get_feeds(&user);
     let feed_service = services.feed_service.lock().unwrap();
     feeds
-        .into_iter()
-        .map(|feed_id| {
-            let feed = feed_service.feed(&feed_id).unwrap(); //todo not unwrap
-            FeedWithoutItem {
-                id: feed_id,
-                name: feed.name,
-                number_of_available_items: 0,
-            }
+        .iter()
+        .flat_map(|feed_id| feed_service.feed(feed_id))
+        .map(|feed| FeedWithoutItem {
+            id: feed.id,
+            name: feed.name,
+            number_of_available_items: feed.items.len(),
         })
         .collect()
+}
+
+#[get("/v1/feeds/{id}")]
+pub async fn get_feed(
+    session: Session,
+    services: Data<Services>,
+    feed_id: Path<FeedId>,
+) -> HttpResponse {
+    info!("get feed {feed_id:?}");
+    let feed = services
+        .feed_service
+        .lock()
+        .unwrap()
+        .feed(&feed_id)
+        .unwrap(); //todo no unwrap
+
+    HttpResponse::Ok().json(feed)
 }
 
 #[post("/v1/feeds")]

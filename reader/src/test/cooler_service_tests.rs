@@ -55,4 +55,7 @@ async fn downloaded_feeds_should_be_in_feed_response() {
     let feed = feeds.get(0).unwrap();
     assert_eq!(*feed.id, "richo-feed-id");
     assert_eq!(*feed.name, "RichoDemus");
+
+    let items = main_page.get_feed(feed.id.clone()).await.unwrap();
+    println!("items: {:?}", items);
 }

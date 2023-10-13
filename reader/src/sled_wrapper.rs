@@ -1,4 +1,3 @@
-use crate::projections::feed_service::Feed;
 use log::warn;
 use serde::{Deserialize, Serialize};
 use sled::Db;
@@ -44,7 +43,7 @@ impl DiskCache {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{FeedId, FeedName};
+    use crate::types::{Feed, FeedId, FeedName};
     use uuid::Uuid;
 
     #[test]
@@ -55,6 +54,7 @@ mod tests {
         let feed = Feed {
             id: id.clone(),
             name,
+            items: vec![],
         };
 
         assert!(cache.get::<FeedId, Feed>(id.clone()).is_none());

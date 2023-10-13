@@ -1,7 +1,7 @@
 use crate::event::event_store::EventStore;
 use crate::event::events::Event;
 use crate::sled_wrapper::DiskCache;
-use crate::types::{FeedId, FeedName, FeedUrl};
+use crate::types::{Feed, FeedId, FeedName, FeedUrl};
 use crate::youtube::youtube_client::YoutubeClient;
 use anyhow::Result;
 use log::{error, info, warn};
@@ -73,12 +73,7 @@ fn register_feed(feeds: Arc<Mutex<HashMap<FeedId, Feed>>>, feed_id: FeedId) {
         Feed {
             id: feed_id,
             name: FeedName("RichoDemus".to_string()),
+            items: vec![],
         },
     );
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq)]
-pub struct Feed {
-    pub id: FeedId,
-    pub name: FeedName,
 }

@@ -1,4 +1,4 @@
-use crate::types::FeedWithoutItem;
+use crate::types::{Feed, FeedId, FeedWithoutItem};
 use anyhow::{bail, Context, Result};
 use reqwest::Client;
 use serde_json::json;
@@ -135,6 +135,24 @@ impl MainPage {
             Ok(feeds)
         } else {
             bail!("Failed to get all feeds")
+        }
+    }
+
+    pub async fn get_feed(&self, feed_id: FeedId) -> Result<Feed> {
+        let response = self
+            .client
+            .get(format!(
+                "http://localhost:{}/v1/feeds/{}",
+                self.port, feed_id.0
+            ))
+            .header("Cookie", self.cookie.as_str())
+            .send()
+            .await?;
+        if response.status().is_success() {
+            let feed: Feed = response.json().await.context("Parse feed json")?;
+            Ok(feed)
+        } else {
+            bail!("Failed to get feed {:?}", response.error_for_status())
         }
     }
 }
