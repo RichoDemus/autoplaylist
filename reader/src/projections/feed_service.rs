@@ -6,18 +6,21 @@ use crate::youtube::youtube_client::YoutubeClient;
 use anyhow::Result;
 use log::{error, info, warn};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
 use tokio::sync::broadcast::error::RecvError;
 
 pub struct FeedService {
     // event_store: Arc<EventStore>,
+    ids: Arc<Mutex<HashSet<FeedId>>>,
     feeds: Arc<Mutex<HashMap<FeedId, Feed>>>,
     client: YoutubeClient,
 }
 
 impl FeedService {
     pub fn new(event_store: Arc<EventStore>, client: YoutubeClient) -> Self {
+        let ids: Arc<Mutex<HashSet<FeedId>>> = Default::default();
+        let ids_spawn = ids.clone();
         let feeds: Arc<Mutex<HashMap<FeedId, Feed>>> = Default::default();
         let feeds_spawn = feeds.clone();
         let mut receiver = event_store.receiver();
@@ -33,7 +36,7 @@ impl FeedService {
                             feed_id,
                         } = event
                         {
-                            register_feed(feeds_spawn.clone().clone(), feed_id);
+                            register_feed(ids_spawn.clone(), feed_id);
                         }
                     }
 
@@ -47,19 +50,19 @@ impl FeedService {
                 }
             }
         });
-        Self {
-            // event_store,
-            feeds,
-            client,
-        }
+        Self { feeds, client, ids }
     }
     pub fn feed(&self, feed: &FeedId) -> Option<Feed> {
-        let guard = self.feeds.lock().unwrap();
+        let guard = self.ids.lock().unwrap();
         let feed = guard.get(feed);
         if feed.is_none() {
             warn!("Feed {feed:?} not found");
         }
-        feed.cloned()
+        feed.map(|id| Feed {
+            id: id.clone(),
+            name: FeedName("RichoDemus".to_string()),
+            items: vec![],
+        })
     }
 
     pub async fn url_to_id(&self, url: FeedUrl) -> Result<(FeedId, FeedName)> {
@@ -67,13 +70,6 @@ impl FeedService {
     }
 }
 
-fn register_feed(feeds: Arc<Mutex<HashMap<FeedId, Feed>>>, feed_id: FeedId) {
-    feeds.lock().unwrap().insert(
-        feed_id.clone(),
-        Feed {
-            id: feed_id,
-            name: FeedName("RichoDemus".to_string()),
-            items: vec![],
-        },
-    );
+fn register_feed(ids: Arc<Mutex<HashSet<FeedId>>>, feed_id: FeedId) {
+    ids.lock().unwrap().insert(feed_id);
 }
