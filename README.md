@@ -1,7 +1,5 @@
 # Autoplaylists
-Build status: [![CircleCI](https://circleci.com/gh/RichoDemus/autoplaylist/tree/master.svg?style=svg)](https://circleci.com/gh/RichoDemus/autoplaylist/tree/master)  
-Webapp to attempt to replicate "Smart playlists" from programs like Foobar2000 and iTunes  
-Deployed at [autoplaylist.richodemus.com](https://autoplaylist.richodemus.com)
+A way to programaticaly add content to spotify playlists, similar to iTunes Smart Playlist or foobar2k autoplayllist
 
 Frontend written in a mix of Javascript and typescript  
 Backend written in Kotlin
