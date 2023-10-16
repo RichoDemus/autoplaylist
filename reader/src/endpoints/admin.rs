@@ -9,7 +9,7 @@ pub async fn download(session: Session) -> HttpResponse {
     info!("Session status: {:?}", session.status());
     info!("Session entries: {:?}", session.entries());
 
-    let user_id = if let Ok(Some(user_id)) = session.get::<UserId>("user_id") {
+    let user_id: UserId = if let Ok(user_id) = session.try_into() {
         user_id
     } else {
         warn!("No session cookie");

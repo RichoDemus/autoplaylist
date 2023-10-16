@@ -1,9 +1,10 @@
 use crate::service::Services;
 use crate::types::{FeedId, FeedUrl, FeedWithoutItem, UserId};
 use actix_http::StatusCode;
-use actix_session::Session;
+use actix_session::{Session, SessionGetError};
 use actix_web::web::{Data, Json, Path};
 use actix_web::{get, post, HttpResponse};
+use anyhow::anyhow;
 use log::{info, warn};
 use serde_json::Value;
 
@@ -13,7 +14,7 @@ pub async fn get_all_feeds(session: Session, services: Data<Services>) -> HttpRe
     info!("Session status: {:?}", session.status());
     info!("Session entries: {:?}", session.entries());
 
-    let user_id = if let Ok(Some(user_id)) = session.get::<UserId>("user_id") {
+    let user_id = if let Ok(user_id) = session.try_into() {
         user_id
     } else {
         warn!("No session cookie");
@@ -68,7 +69,7 @@ pub async fn add_feed(
     info!("Session status: {:?}", session.status());
     info!("Session entries: {:?}", session.entries());
 
-    let user_id = if let Ok(Some(user_id)) = session.get::<UserId>("user_id") {
+    let user_id = if let Ok(user_id) = session.try_into() {
         user_id
     } else {
         warn!("No session cookie");
