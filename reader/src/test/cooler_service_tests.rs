@@ -53,8 +53,8 @@ async fn downloaded_feeds_should_be_in_feed_response() {
     println!("got feed: {:?}", feeds);
     assert_eq!(feeds.len(), 1, "Should be subscribed to one feed");
     let feed = feeds.get(0).unwrap();
-    assert_eq!(*feed.id, "richo-feed-id");
-    assert_eq!(*feed.name, "RichoDemus");
+    assert_eq!(*feed.id, "richo-channel-id");
+    assert_eq!(*feed.name, "richo-channel-name");
 
     let items = main_page.get_feed(feed.id.clone()).await.unwrap();
     println!("items: {:?}", items);

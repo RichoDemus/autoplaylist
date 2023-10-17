@@ -22,7 +22,7 @@ pub struct TestService {
 impl TestService {
     pub fn new() -> Self {
         let _ = env_logger::builder()
-            .filter_module("reader", LevelFilter::Info)
+            .filter_module("reader", LevelFilter::Trace)
             .try_init();
 
         let mock_server = MockServer::start();
@@ -74,13 +74,30 @@ fn setup_youtube_mock(mock_server: &MockServer) {
     env::set_var("YOUTUBE_API_KEY", "YT_KEY".to_string());
     env::set_var("YOUTUBE_BASE_DIR", mock_server.base_url());
 
+    // todo add proper checks to mocks, like query params
     mock_server.mock(|when, then| {
         when.method(GET).path("/youtube/v3/search/");
         then.status(200).json_body(json!({
             "items": [{
                 "snippet": {
-                    "channelTitle": "RichoDemus",
-                    "channelId": "richo-feed-id",
+                    "channelTitle": "richo-channel-name",
+                    "channelId": "richo-channel-id",
+                }
+            }]
+        }));
+    });
+
+    mock_server.mock(|when, then| {
+        when.method(GET).path("/youtube/v3/channels/");
+        then.status(200).json_body(json!({
+            "items": [{
+                "snippet": {
+                    "title": "richo-channel-name",
+                },
+                "contentDetails": {
+                    "relatedPlaylists": {
+                        "uploads" : "uploads-playlist-id",
+                    }
                 }
             }]
         }));

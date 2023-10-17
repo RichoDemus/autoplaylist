@@ -37,7 +37,7 @@ fn build_feeds(user: UserId, services: Data<Services>) -> Vec<ChannelWithoutVide
         .map(|feed| ChannelWithoutVideos {
             id: feed.id,
             name: feed.name,
-            number_of_available_items: feed.items.len(),
+            number_of_available_items: 0,
         })
         .collect()
 }

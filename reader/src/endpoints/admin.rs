@@ -1,11 +1,13 @@
+use crate::service::Services;
 use crate::types::UserId;
 use actix_http::StatusCode;
 use actix_session::Session;
+use actix_web::web::Data;
 use actix_web::{post, HttpResponse};
-use log::{info, warn};
+use log::{error, info, warn};
 
 #[post("/admin/download")]
-pub async fn download(session: Session) -> HttpResponse {
+pub async fn download(session: Session, services: Data<Services>) -> HttpResponse {
     info!("Session status: {:?}", session.status());
     info!("Session entries: {:?}", session.entries());
 
@@ -17,5 +19,9 @@ pub async fn download(session: Session) -> HttpResponse {
     };
     info!("cool session cooke, userid: {user_id:?}");
     info!("Downloading feeds");
+    if let Err(e) = services.feed_service.lock().unwrap().download().await {
+        error!("Failed to download: {e:?}");
+        return HttpResponse::InternalServerError().into();
+    }
     return HttpResponse::Ok().into();
 }

@@ -54,7 +54,6 @@ mod tests {
         let feed = Channel {
             id: id.clone(),
             name,
-            items: vec![],
         };
 
         assert!(cache.get::<ChannelId, Channel>(id.clone()).is_none());

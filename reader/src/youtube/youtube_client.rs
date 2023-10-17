@@ -5,6 +5,7 @@ use reqwest::Client;
 use serde_json::Value;
 use std::env;
 
+#[derive(Clone)]
 pub struct YoutubeClient {
     client: Client,
     key: String,
@@ -63,7 +64,7 @@ impl YoutubeClient {
         Ok((id, name))
     }
 
-    pub async fn playlist_id(&self, id: ChannelId) -> Result<PlaylistId> {
+    pub async fn channel(&self, id: &ChannelId) -> Result<(ChannelName, PlaylistId)> {
         let resp = self
             .client
             .get(format!("{}/youtube/v3/channels/", self.base_url))
@@ -79,16 +80,21 @@ impl YoutubeClient {
             .await
             .context("read body")?;
         trace!("resp: {:#?}", resp);
-        let items = &resp["items"].as_array().context("items")?;
+        let items = &resp["items"].as_array().context("parse items")?;
         if items.len() > 1 {
             warn!("More than one channel for id {:?}", id);
         }
         let channel = items.get(0).context("no channel")?;
+        let title = channel["snippet"]["title"]
+            .as_str()
+            .context("No channel title")?;
+        let name = ChannelName(title.to_string());
         let playlist_id = channel["contentDetails"]["relatedPlaylists"]["uploads"]
             .as_str()
             .context("No upploads playlist")?;
+        let playlist = PlaylistId(playlist_id.to_string());
 
-        Ok(PlaylistId(playlist_id.to_string()))
+        Ok((name, playlist))
     }
 
     pub async fn videos(&self, id: PlaylistId) -> Result<Vec<Video>> {
@@ -196,7 +202,7 @@ mod tests {
     }
 
     #[actix_web::test]
-    async fn test_get_playlist_id() {
+    async fn test_get_channel() {
         if env::var("YOUTUBE_API_KEY").is_err() {
             //no key, skip test
             return;
@@ -207,11 +213,12 @@ mod tests {
 
         let client = YoutubeClient::new();
 
-        let id = client
-            .playlist_id(ChannelId("UCIZi8VWcokrX4hG377au_FA".to_string()))
+        let (name, id) = client
+            .channel(&ChannelId("UCIZi8VWcokrX4hG377au_FA".to_string()))
             .await
             .unwrap();
         println!("{:?}", id);
+        assert_eq!(name, ChannelName("BrightWorksGaming".to_string()));
         assert_eq!(id, PlaylistId("UUIZi8VWcokrX4hG377au_FA".to_string()));
     }
 
