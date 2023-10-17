@@ -52,9 +52,9 @@ impl FeedService {
         });
         Self { feeds, client, ids }
     }
-    pub fn feed(&self, feed: &ChannelId) -> Option<Channel> {
+    pub fn channel(&self, channel_id: &ChannelId) -> Option<Channel> {
         let guard = self.ids.lock().unwrap();
-        let feed = guard.get(feed);
+        let feed = guard.get(channel_id);
         if feed.is_none() {
             warn!("Feed {feed:?} not found");
         }

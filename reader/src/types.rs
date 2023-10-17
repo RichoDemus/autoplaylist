@@ -14,6 +14,9 @@ pub struct UserId(pub Uuid);
 pub struct ChannelId(pub String);
 
 #[derive(Hash, NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
+pub struct PlaylistId(pub String);
+
+#[derive(Hash, NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct YoutubeChannelUrl(pub String);
 
 #[derive(Hash, NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
@@ -60,6 +63,6 @@ pub struct Video {
     pub(crate) description: String,
     pub(crate) upload_date: String,
     pub(crate) url: String,
-    pub(crate) duration: Duration,
-    pub(crate) views: u64,
+    // pub(crate) duration: Duration,
+    // pub(crate) views: u64,
 }

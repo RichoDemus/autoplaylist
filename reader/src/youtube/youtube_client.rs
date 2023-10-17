@@ -1,6 +1,6 @@
-use crate::types::{ChannelId, ChannelName, YoutubeChannelUrl};
+use crate::types::{ChannelId, ChannelName, PlaylistId, Video, VideoId, YoutubeChannelUrl};
 use anyhow::{bail, Context, Result};
-use log::{info, warn};
+use log::{info, trace, warn};
 use reqwest::Client;
 use serde_json::Value;
 use std::env;
@@ -44,6 +44,7 @@ impl YoutubeClient {
             .await
             .context("read body")?;
 
+        trace!("resp: {:?}", resp);
         let items = &resp["items"].as_array().context("items")?;
         if items.len() > 1 {
             warn!("More than one channel for url {:?}", channel_urll);
@@ -62,7 +63,71 @@ impl YoutubeClient {
         Ok((id, name))
     }
 
-    // pub async fn videos(&self, playlist_id: PlaylistId) -> Result<Vec<Video>>
+    pub async fn playlist_id(&self, id: ChannelId) -> Result<PlaylistId> {
+        let resp = self
+            .client
+            .get(format!("{}/youtube/v3/channels/", self.base_url))
+            .query(&[
+                ("key", self.key.as_str()),
+                ("part", "snippet,contentDetails"),
+                ("id", id.0.as_str()),
+            ])
+            .send()
+            .await
+            .context("get channel")?
+            .json::<Value>()
+            .await
+            .context("read body")?;
+        trace!("resp: {:#?}", resp);
+        let items = &resp["items"].as_array().context("items")?;
+        if items.len() > 1 {
+            warn!("More than one channel for id {:?}", id);
+        }
+        let channel = items.get(0).context("no channel")?;
+        let playlist_id = channel["contentDetails"]["relatedPlaylists"]["uploads"]
+            .as_str()
+            .context("No upploads playlist")?;
+
+        Ok(PlaylistId(playlist_id.to_string()))
+    }
+
+    pub async fn videos(&self, id: PlaylistId) -> Result<Vec<Video>> {
+        let resp = self
+            .client
+            .get(format!("{}/youtube/v3/playlistItems/", self.base_url))
+            .query(&[
+                ("key", self.key.as_str()),
+                ("part", "snippet"),
+                ("playlistId", id.0.as_str()),
+            ])
+            .send()
+            .await
+            .context("get playlist items")?
+            .json::<Value>()
+            .await
+            .context("read body")?;
+        trace!("resp: {:#?}", resp);
+        let videos = resp["items"]
+            .as_array()
+            .context("no items")?
+            .into_iter()
+            .map(|item| {
+                trace!("Parsing: {item:#?}");
+                let id = item["snippet"]["resourceId"]["videoId"]
+                    .as_str()
+                    .unwrap()
+                    .to_string();
+                Video {
+                    id: VideoId(id.clone()),
+                    title: item["snippet"]["title"].as_str().unwrap().to_string(),
+                    description: item["snippet"]["description"].as_str().unwrap().to_string(),
+                    upload_date: item["snippet"]["publishedAt"].as_str().unwrap().to_string(),
+                    url: format!("https://www.youtube.com/watch?v={}", id),
+                }
+            })
+            .collect::<Vec<_>>();
+        Ok(videos)
+    }
 }
 
 #[cfg(test)]
@@ -77,7 +142,7 @@ mod tests {
             return;
         }
         let _ = env_logger::builder()
-            .filter_module("reader", LevelFilter::Info)
+            .filter_module("reader", LevelFilter::Trace)
             .try_init();
 
         let client = YoutubeClient::new();
@@ -128,5 +193,44 @@ mod tests {
                 .to_string(),
             "https://www.youtube.com/channel urls are not supported right now"
         );
+    }
+
+    #[actix_web::test]
+    async fn test_get_playlist_id() {
+        if env::var("YOUTUBE_API_KEY").is_err() {
+            //no key, skip test
+            return;
+        }
+        let _ = env_logger::builder()
+            .filter_module("reader", LevelFilter::Trace)
+            .try_init();
+
+        let client = YoutubeClient::new();
+
+        let id = client
+            .playlist_id(ChannelId("UCIZi8VWcokrX4hG377au_FA".to_string()))
+            .await
+            .unwrap();
+        println!("{:?}", id);
+        assert_eq!(id, PlaylistId("UUIZi8VWcokrX4hG377au_FA".to_string()));
+    }
+
+    #[actix_web::test]
+    async fn test_get_videos() {
+        if env::var("YOUTUBE_API_KEY").is_err() {
+            //no key, skip test
+            return;
+        }
+        let _ = env_logger::builder()
+            .filter_module("reader", LevelFilter::Trace)
+            .try_init();
+
+        let client = YoutubeClient::new();
+
+        let videos = client
+            .videos(PlaylistId("UUIZi8VWcokrX4hG377au_FA".to_string()))
+            .await
+            .unwrap();
+        println!("{:?}", videos);
     }
 }

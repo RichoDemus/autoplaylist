@@ -33,7 +33,7 @@ fn build_feeds(user: UserId, services: Data<Services>) -> Vec<ChannelWithoutVide
     let feed_service = services.feed_service.lock().unwrap();
     feeds
         .iter()
-        .flat_map(|feed_id| feed_service.feed(feed_id))
+        .flat_map(|feed_id| feed_service.channel(feed_id))
         .map(|feed| ChannelWithoutVideos {
             id: feed.id,
             name: feed.name,
@@ -53,7 +53,7 @@ pub async fn get_feed(
         .feed_service
         .lock()
         .unwrap()
-        .feed(&feed_id)
+        .channel(&feed_id)
         .unwrap(); //todo no unwrap
 
     HttpResponse::Ok().json(feed)
