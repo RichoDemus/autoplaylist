@@ -6,7 +6,6 @@ use tokio::sync::broadcast::{Receiver, Sender};
 use crate::event::events::Event;
 use crate::event::parse;
 use crate::gcs::gcs_client;
-use crate::projections::{user_service, watched_items};
 
 pub async fn init() -> Result<()> {
     let events = gcs_client::load_events_from_gcs_and_disk().await?;
@@ -18,19 +17,21 @@ pub async fn init() -> Result<()> {
 
         // println!("{id} - {event}");
         let event = parse::parse(event)?;
-        publish_event(event, false)?;
+        // publish_event(event, false)?;
+        todo!()
     }
 
     Ok(())
 }
 
-pub fn publish_event(event: Event, _also_persist: bool) -> Result<()> {
-    // todo save
-    // subscriptions::process_event(&event);
-    watched_items::process_event(&event);
-    user_service::process_event(&event);
-    Ok(())
-}
+// pub fn publish_event(event: Event, _also_persist: bool) -> Result<()> {
+//     todo!();
+// todo save
+// subscriptions::process_event(&event);
+// watched_items::process_event(&event);
+// user_service::process_event(&event);
+// Ok(())
+// }
 
 #[cfg(test)]
 mod tests {
