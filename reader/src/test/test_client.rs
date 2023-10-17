@@ -1,4 +1,4 @@
-use crate::types::{Channel, ChannelId, ChannelWithoutVideos, Video};
+use crate::types::{Channel, ChannelId, ChannelWithoutVideos, Video, VideoId};
 use anyhow::{bail, Context, Result};
 use reqwest::Client;
 use serde_json::json;
@@ -182,6 +182,42 @@ impl MainPage {
             Ok(feed)
         } else {
             bail!("Failed to get feed {:?}", response.error_for_status())
+        }
+    }
+
+    pub async fn mark_as_read(&self, feed_id: ChannelId, item_id: VideoId) -> Result<()> {
+        let response = self
+            .client
+            .post(format!(
+                "http://localhost:{}/v1/feeds/{}/items/{}",
+                self.port, feed_id.0, item_id.0
+            ))
+            .header("Cookie", self.cookie.as_str())
+            .body(r#"{"action":"MARK_READ"}"#)
+            .send()
+            .await?;
+        if response.status().is_success() {
+            Ok(())
+        } else {
+            bail!("Failed to mark as read")
+        }
+    }
+
+    pub async fn mark_as_unread(&self, feed_id: ChannelId, item_id: VideoId) -> Result<()> {
+        let response = self
+            .client
+            .post(format!(
+                "http://localhost:{}/v1/feeds/{}/items/{}",
+                self.port, feed_id.0, item_id.0
+            ))
+            .header("Cookie", self.cookie.as_str())
+            .body(r#"{"action":"MARK_UNREAD"}"#)
+            .send()
+            .await?;
+        if response.status().is_success() {
+            Ok(())
+        } else {
+            bail!("Failed to mark as read")
         }
     }
 }
