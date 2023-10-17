@@ -1,7 +1,7 @@
 use crate::types::{ChannelId, ChannelName, PlaylistId, Video, VideoId, YoutubeChannelUrl};
 use anyhow::{bail, Context, Result};
-use log::{info, trace, warn};
-use reqwest::Client;
+use log::{error, info, trace, warn};
+use reqwest::{Client, StatusCode};
 use serde_json::Value;
 use std::env;
 
@@ -29,7 +29,7 @@ impl YoutubeClient {
         if channel_urll.starts_with("https://www.youtube.com/channel") {
             bail!("https://www.youtube.com/channel urls are not supported right now")
         }
-        let resp = self
+        let result = self
             .client
             .get(format!("{}/youtube/v3/search/", self.base_url))
             .query(&[
@@ -40,12 +40,18 @@ impl YoutubeClient {
             ])
             .send()
             .await
-            .context("search channel")?
-            .json::<Value>()
-            .await
-            .context("read body")?;
+            .context("search channel")?;
+        if !result.status().is_success() {
+            error!("YT call failed: {:?}", result);
+            let body = result.text().await.context("unwrap error")?;
+            if body.to_lowercase().contains("quotaexceeded") {
+                bail!("Quota Exceeded");
+            }
+            bail!("other failure: {}", body);
+        }
+        let resp = result.json::<Value>().await.context("read body")?;
 
-        trace!("resp: {:?}", resp);
+        trace!("resp: {:#?}", resp);
         let items = &resp["items"].as_array().context("items")?;
         if items.len() > 1 {
             warn!("More than one channel for url {:?}", channel_urll);
@@ -54,9 +60,7 @@ impl YoutubeClient {
         let title = channel["snippet"]["channelTitle"]
             .as_str()
             .context("no title")?;
-        let id = channel["snippet"]["channelId"]
-            .as_str()
-            .context("no title")?;
+        let id = channel["snippet"]["channelId"].as_str().context("no id")?;
 
         let id = ChannelId(id.to_string());
         let name = ChannelName(title.to_string());
@@ -97,7 +101,7 @@ impl YoutubeClient {
         Ok((name, playlist))
     }
 
-    pub async fn videos(&self, id: PlaylistId) -> Result<Vec<Video>> {
+    pub async fn videos(&self, id: &PlaylistId) -> Result<Vec<Video>> {
         let resp = self
             .client
             .get(format!("{}/youtube/v3/playlistItems/", self.base_url))
@@ -213,10 +217,17 @@ mod tests {
 
         let client = YoutubeClient::new();
 
-        let (name, id) = client
+        // let (name, id) = client
+        //     .channel(&ChannelId("UCIZi8VWcokrX4hG377au_FA".to_string()))
+        //     .await
+        //     .unwrap();
+        let (name, id) = match client
             .channel(&ChannelId("UCIZi8VWcokrX4hG377au_FA".to_string()))
             .await
-            .unwrap();
+        {
+            Ok(r) => r,
+            Err(e) => panic!("get channel: {:?}", e),
+        };
         println!("{:?}", id);
         assert_eq!(name, ChannelName("BrightWorksGaming".to_string()));
         assert_eq!(id, PlaylistId("UUIZi8VWcokrX4hG377au_FA".to_string()));
@@ -235,7 +246,7 @@ mod tests {
         let client = YoutubeClient::new();
 
         let videos = client
-            .videos(PlaylistId("UUIZi8VWcokrX4hG377au_FA".to_string()))
+            .videos(&PlaylistId("UUIZi8VWcokrX4hG377au_FA".to_string()))
             .await
             .unwrap();
         println!("{:?}", videos);

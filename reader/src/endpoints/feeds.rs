@@ -42,19 +42,14 @@ fn build_feeds(user: UserId, services: Data<Services>) -> Vec<ChannelWithoutVide
         .collect()
 }
 
-#[get("/v1/feeds/{id}")]
-pub async fn get_feed(
+#[get("/v1/feeds/{id}/items")]
+pub async fn get_videos(
     session: Session,
     services: Data<Services>,
     feed_id: Path<ChannelId>,
 ) -> HttpResponse {
-    info!("get feed {feed_id:?}");
-    let feed = services
-        .feed_service
-        .lock()
-        .unwrap()
-        .channel(&feed_id)
-        .unwrap(); //todo no unwrap
+    info!("get videos {feed_id:?}");
+    let feed = services.feed_service.lock().unwrap().videos(&feed_id);
 
     HttpResponse::Ok().json(feed)
 }

@@ -43,7 +43,7 @@ impl DiskCache {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{Channel, ChannelId, ChannelName};
+    use crate::types::{Channel, ChannelId, ChannelName, PlaylistId};
     use uuid::Uuid;
 
     #[test]
@@ -51,9 +51,11 @@ mod tests {
         let cache = DiskCache::new("test");
         let id = ChannelId(Uuid::new_v4().to_string());
         let name = ChannelName(Uuid::new_v4().to_string());
+        let playlist = PlaylistId(Uuid::new_v4().to_string());
         let feed = Channel {
             id: id.clone(),
             name,
+            playlist,
         };
 
         assert!(cache.get::<ChannelId, Channel>(id.clone()).is_none());

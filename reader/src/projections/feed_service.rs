@@ -1,10 +1,10 @@
 use crate::event::event_store::EventStore;
 use crate::event::events::Event;
 use crate::sled_wrapper::DiskCache;
-use crate::types::{Channel, ChannelId, ChannelName, YoutubeChannelUrl};
+use crate::types::{Channel, ChannelId, ChannelName, Video, YoutubeChannelUrl};
 use crate::youtube::youtube_client::YoutubeClient;
-use anyhow::Result;
-use log::{error, info, warn};
+use anyhow::{Context, Result};
+use log::{error, info, trace, warn};
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::future::Future;
@@ -15,6 +15,7 @@ pub struct FeedService {
     // event_store: Arc<EventStore>,
     // ids: Arc<Mutex<HashSet<ChannelId>>>,
     channels: Arc<Mutex<HashMap<ChannelId, Channel>>>,
+    videos: Arc<Mutex<HashMap<ChannelId, Vec<Video>>>>,
     client: YoutubeClient,
 }
 
@@ -52,7 +53,11 @@ impl FeedService {
                 }
             }
         });
-        Self { channels, client }
+        Self {
+            channels,
+            client,
+            videos: Default::default(),
+        }
     }
     pub fn channel(&self, channel_id: &ChannelId) -> Option<Channel> {
         let guard = self.channels.lock().unwrap();
@@ -63,13 +68,31 @@ impl FeedService {
         feed.cloned()
     }
 
+    pub fn videos(&self, id: &ChannelId) -> Vec<Video> {
+        self.videos
+            .lock()
+            .unwrap()
+            .get(id)
+            .cloned()
+            .unwrap_or_default()
+    }
+
     pub async fn url_to_id(&self, url: YoutubeChannelUrl) -> Result<(ChannelId, ChannelName)> {
         self.client.channel_id(url).await
     }
 
     pub async fn download(&self) -> Result<()> {
         info!("Synchronizing all data with youtube");
-
+        for (id, channel) in self.channels.lock().unwrap().iter() {
+            let videos = self
+                .client
+                .videos(&channel.playlist)
+                .await
+                .with_context(|| format!("download {:?} ({:?})", channel.name, channel.id))?;
+            self.videos.lock().unwrap().insert(id.clone(), videos);
+        }
+        info!("Done synchronizing data!");
+        trace!("Videos: {:?}", self.videos.lock().unwrap());
         Ok(())
     }
 }
@@ -86,7 +109,7 @@ fn register_channel(
                 channels
                     .lock()
                     .unwrap()
-                    .insert(id.clone(), Channel { id, name });
+                    .insert(id.clone(), Channel { id, name, playlist });
             }
         }
     });

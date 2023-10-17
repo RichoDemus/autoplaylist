@@ -1,5 +1,5 @@
 use crate::endpoints::admin::download;
-use crate::endpoints::feeds::{add_feed, get_all_feeds, get_feed};
+use crate::endpoints::feeds::{add_feed, get_all_feeds, get_videos};
 use crate::endpoints::user::{create_user, login};
 use crate::service::Services;
 use crate::test::test_client::LoginPage;
@@ -57,7 +57,7 @@ impl TestService {
                     .service(login)
                     .service(create_user)
                     .service(get_all_feeds)
-                    .service(get_feed)
+                    .service(get_videos)
                     .service(add_feed)
                     .service(download)
             }),
@@ -98,6 +98,31 @@ fn setup_youtube_mock(mock_server: &MockServer) {
                     "relatedPlaylists": {
                         "uploads" : "uploads-playlist-id",
                     }
+                }
+            }]
+        }));
+    });
+
+    mock_server.mock(|when, then| {
+        when.method(GET).path("/youtube/v3/playlistItems/");
+        then.status(200).json_body(json!({
+            "items": [{
+                "snippet": {
+                    "resourceId": {
+                        "videoId": "video1-id"
+                    },
+                    "title": "video1-title",
+                    "description": "video1-desc",
+                    "publishedAt": "2023-10-15T00:59:50Z"
+                }
+            },{
+                "snippet": {
+                    "resourceId": {
+                        "videoId": "video2-id"
+                    },
+                    "title": "video2-title",
+                    "description": "video2-desc",
+                    "publishedAt": "2022-10-15T00:59:50Z"
                 }
             }]
         }));

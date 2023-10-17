@@ -1,5 +1,8 @@
 use crate::test::service::TestService;
+use crate::types::{Video, VideoId};
 use itertools::assert_equal;
+use std::future::Future;
+use std::time::{Duration, Instant};
 
 #[actix_rt::test]
 async fn login_should_fail_if_no_user_exists() {
@@ -47,6 +50,7 @@ async fn downloaded_feeds_should_be_in_feed_response() {
         .add_feed("https://www.youtube.com/user/richodemus")
         .await
         .unwrap();
+    actix_rt::time::sleep(Duration::from_millis(200)).await;
     main_page.download_feeds().await.unwrap();
 
     let feeds = main_page.get_feeds().await.unwrap();
@@ -56,6 +60,36 @@ async fn downloaded_feeds_should_be_in_feed_response() {
     assert_eq!(*feed.id, "richo-channel-id");
     assert_eq!(*feed.name, "richo-channel-name");
 
-    let items = main_page.get_feed(feed.id.clone()).await.unwrap();
-    println!("items: {:?}", items);
+    let mut videos = vec![];
+    let deadline = Instant::now() + Duration::from_secs(1);
+    loop {
+        videos = main_page.get_videos(feed.id.clone()).await.unwrap();
+        if !videos.is_empty() {
+            break;
+        }
+        if Instant::now() > deadline {
+            panic!("Timeout exceeded getting videos");
+        }
+        actix_rt::time::sleep(Duration::from_millis(10)).await;
+    }
+    println!("res videos: {:?}", videos);
+    assert_eq!(
+        videos,
+        vec![
+            Video {
+                id: VideoId("video1-id".into()),
+                title: "video1-title".into(),
+                description: "video1-desc".into(),
+                upload_date: "2023-10-15T00:59:50Z".into(),
+                url: "https://www.youtube.com/watch?v=video1-id".into(),
+            },
+            Video {
+                id: VideoId("video2-id".into()),
+                title: "video2-title".into(),
+                description: "video2-desc".into(),
+                upload_date: "2022-10-15T00:59:50Z".into(),
+                url: "https://www.youtube.com/watch?v=video2-id".into(),
+            }
+        ]
+    );
 }

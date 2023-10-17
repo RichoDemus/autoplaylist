@@ -54,6 +54,7 @@ pub struct UserSession {
 pub struct Channel {
     pub(crate) id: ChannelId,
     pub(crate) name: ChannelName,
+    pub(crate) playlist: PlaylistId,
     // pub(crate) items: Vec<Video>,
 }
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
