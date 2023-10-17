@@ -1,7 +1,7 @@
 use crate::types::{ChannelId, ChannelName, PlaylistId, Video, VideoId, YoutubeChannelUrl};
 use anyhow::{bail, Context, Result};
 use log::{error, info, trace, warn};
-use reqwest::{Client, StatusCode};
+use reqwest::{Client, RequestBuilder, StatusCode};
 use serde_json::Value;
 use std::env;
 
@@ -29,30 +29,19 @@ impl YoutubeClient {
         if channel_urll.starts_with("https://www.youtube.com/channel") {
             bail!("https://www.youtube.com/channel urls are not supported right now")
         }
-        let result = self
-            .client
-            .get(format!("{}/youtube/v3/search/", self.base_url))
-            .query(&[
-                ("key", self.key.as_str()),
-                ("part", "snippet"),
-                ("type", "channel"),
-                ("q", channel_urll.0.as_str()),
-            ])
-            .send()
-            .await
-            .context("search channel")?;
-        if !result.status().is_success() {
-            error!("YT call failed: {:?}", result);
-            let body = result.text().await.context("unwrap error")?;
-            if body.to_lowercase().contains("quotaexceeded") {
-                bail!("Quota Exceeded");
-            }
-            bail!("other failure: {}", body);
-        }
-        let resp = result.json::<Value>().await.context("read body")?;
+        let value = self
+            .call_yt(
+                self.client
+                    .get(format!("{}/youtube/v3/search/", self.base_url))
+                    .query(&[
+                        ("part", "snippet"),
+                        ("type", "channel"),
+                        ("q", channel_urll.0.as_str()),
+                    ]),
+            )
+            .await?;
 
-        trace!("resp: {:#?}", resp);
-        let items = &resp["items"].as_array().context("items")?;
+        let items = &value["items"].as_array().context("items")?;
         if items.len() > 1 {
             warn!("More than one channel for url {:?}", channel_urll);
         }
@@ -69,22 +58,14 @@ impl YoutubeClient {
     }
 
     pub async fn channel(&self, id: &ChannelId) -> Result<(ChannelName, PlaylistId)> {
-        let resp = self
-            .client
-            .get(format!("{}/youtube/v3/channels/", self.base_url))
-            .query(&[
-                ("key", self.key.as_str()),
-                ("part", "snippet,contentDetails"),
-                ("id", id.0.as_str()),
-            ])
-            .send()
-            .await
-            .context("get channel")?
-            .json::<Value>()
-            .await
-            .context("read body")?;
-        trace!("resp: {:#?}", resp);
-        let items = &resp["items"].as_array().context("parse items")?;
+        let value = self
+            .call_yt(
+                self.client
+                    .get(format!("{}/youtube/v3/channels/", self.base_url))
+                    .query(&[("part", "snippet,contentDetails"), ("id", id.0.as_str())]),
+            )
+            .await?;
+        let items = &value["items"].as_array().context("parse items")?;
         if items.len() > 1 {
             warn!("More than one channel for id {:?}", id);
         }
@@ -102,22 +83,15 @@ impl YoutubeClient {
     }
 
     pub async fn videos(&self, id: &PlaylistId) -> Result<Vec<Video>> {
-        let resp = self
-            .client
-            .get(format!("{}/youtube/v3/playlistItems/", self.base_url))
-            .query(&[
-                ("key", self.key.as_str()),
-                ("part", "snippet"),
-                ("playlistId", id.0.as_str()),
-            ])
-            .send()
-            .await
-            .context("get playlist items")?
-            .json::<Value>()
-            .await
-            .context("read body")?;
-        trace!("resp: {:#?}", resp);
-        let videos = resp["items"]
+        let value = self
+            .call_yt(
+                self.client
+                    .get(format!("{}/youtube/v3/playlistItems/", self.base_url))
+                    .query(&[("part", "snippet"), ("playlistId", id.0.as_str())]),
+            )
+            .await?;
+
+        let videos = value["items"]
             .as_array()
             .context("no items")?
             .into_iter()
@@ -137,6 +111,26 @@ impl YoutubeClient {
             })
             .collect::<Vec<_>>();
         Ok(videos)
+    }
+
+    async fn call_yt(&self, builder: RequestBuilder) -> Result<Value> {
+        let response = builder
+            .query(&[("key", self.key.as_str())])
+            .send()
+            .await
+            .context("Call youtube api")?;
+
+        if !response.status().is_success() {
+            error!("YT call failed: {:?}", response);
+            let body = response.text().await.context("unwrap error")?;
+            if body.to_lowercase().contains("quotaexceeded") {
+                bail!("Quota Exceeded");
+            }
+            bail!("other failure: {}", body);
+        }
+        let value = response.json::<Value>().await.context("read body")?;
+        trace!("Response: {value:?}");
+        Ok(value)
     }
 }
 
