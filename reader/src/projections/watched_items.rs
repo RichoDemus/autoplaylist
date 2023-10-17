@@ -4,9 +4,9 @@ use std::sync::Mutex;
 use once_cell::sync::Lazy;
 
 use crate::event::events::Event;
-use crate::types::{FeedId, ItemId, UserId};
+use crate::types::{ChannelId, UserId, VideoId};
 
-static WATCHED_ITEMS: Lazy<Mutex<HashMap<(UserId, FeedId), HashSet<ItemId>>>> =
+static WATCHED_ITEMS: Lazy<Mutex<HashMap<(UserId, ChannelId), HashSet<VideoId>>>> =
     Lazy::new(|| Mutex::new(HashMap::new()));
 
 pub fn process_event(event: &Event) {
@@ -43,7 +43,7 @@ pub fn process_event(event: &Event) {
     }
 }
 
-pub fn get_watched_items(key: &(UserId, FeedId)) -> HashSet<ItemId> {
+pub fn get_watched_items(key: &(UserId, ChannelId)) -> HashSet<VideoId> {
     WATCHED_ITEMS
         .lock()
         .unwrap()

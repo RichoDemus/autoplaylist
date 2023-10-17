@@ -1,4 +1,4 @@
-use crate::types::{FeedId, FeedName, FeedUrl};
+use crate::types::{ChannelId, ChannelName, YoutubeChannelUrl};
 use anyhow::{bail, Context, Result};
 use log::{info, warn};
 use reqwest::Client;
@@ -21,8 +21,11 @@ impl YoutubeClient {
         }
     }
 
-    pub async fn feed_id(&self, feed_url: FeedUrl) -> Result<(FeedId, FeedName)> {
-        if feed_url.starts_with("https://www.youtube.com/channel") {
+    pub async fn channel_id(
+        &self,
+        channel_urll: YoutubeChannelUrl,
+    ) -> Result<(ChannelId, ChannelName)> {
+        if channel_urll.starts_with("https://www.youtube.com/channel") {
             bail!("https://www.youtube.com/channel urls are not supported right now")
         }
         let resp = self
@@ -32,7 +35,7 @@ impl YoutubeClient {
                 ("key", self.key.as_str()),
                 ("part", "snippet"),
                 ("type", "channel"),
-                ("q", feed_url.0.as_str()),
+                ("q", channel_urll.0.as_str()),
             ])
             .send()
             .await
@@ -43,7 +46,7 @@ impl YoutubeClient {
 
         let items = &resp["items"].as_array().context("items")?;
         if items.len() > 1 {
-            warn!("More than one channel for url {:?}", feed_url);
+            warn!("More than one channel for url {:?}", channel_urll);
         }
         let channel = items.get(0).context("no channel")?;
         let title = channel["snippet"]["channelTitle"]
@@ -53,11 +56,13 @@ impl YoutubeClient {
             .as_str()
             .context("no title")?;
 
-        let id = FeedId(id.to_string());
-        let name = FeedName(title.to_string());
-        info!("{} -> {} [{}]", *feed_url, *name, *id);
+        let id = ChannelId(id.to_string());
+        let name = ChannelName(title.to_string());
+        info!("{} -> {} [{}]", *channel_urll, *name, *id);
         Ok((id, name))
     }
+
+    // pub async fn videos(&self, playlist_id: PlaylistId) -> Result<Vec<Video>>
 }
 
 #[cfg(test)]
@@ -79,43 +84,43 @@ mod tests {
 
         assert_eq!(
             client
-                .feed_id(FeedUrl(
+                .channel_id(YoutubeChannelUrl(
                     "https://www.youtube.com/@BrightWorksTV".to_string()
                 ))
                 .await
                 .unwrap(),
             (
-                FeedId("UCIZi8VWcokrX4hG377au_FA".to_string()),
-                FeedName("BrightWorksGaming".to_string())
+                ChannelId("UCIZi8VWcokrX4hG377au_FA".to_string()),
+                ChannelName("BrightWorksGaming".to_string())
             )
         );
         assert_eq!(
             client
-                .feed_id(FeedUrl(
+                .channel_id(YoutubeChannelUrl(
                     "https://www.youtube.com/user/richodemus".to_string()
                 ))
                 .await
                 .unwrap(),
             (
-                FeedId("UCyPvQQ-dZmKzh_PrpWmTJkw".to_string()),
-                FeedName("RichoDemus".to_string())
+                ChannelId("UCyPvQQ-dZmKzh_PrpWmTJkw".to_string()),
+                ChannelName("RichoDemus".to_string())
             )
         );
         assert_eq!(
             client
-                .feed_id(FeedUrl(
+                .channel_id(YoutubeChannelUrl(
                     "https://www.youtube.com/c/ImagingbySony".to_string()
                 ))
                 .await
                 .unwrap(),
             (
-                FeedId("UC7McIsZ7v-RdLedtk6d6zRg".to_string()),
-                FeedName("Sony | Camera Channel".to_string())
+                ChannelId("UC7McIsZ7v-RdLedtk6d6zRg".to_string()),
+                ChannelName("Sony | Camera Channel".to_string())
             )
         );
         assert_eq!(
             client
-                .feed_id(FeedUrl(
+                .channel_id(YoutubeChannelUrl(
                     "https://www.youtube.com/channel/UCyPvQQ-dZmKzh_PrpWmTJkw".to_string()
                 ))
                 .await

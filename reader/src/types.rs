@@ -11,16 +11,16 @@ pub struct EventId(pub Uuid);
 pub struct UserId(pub Uuid);
 
 #[derive(Hash, NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
-pub struct FeedId(pub String);
+pub struct ChannelId(pub String);
 
 #[derive(Hash, NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
-pub struct FeedUrl(pub String);
+pub struct YoutubeChannelUrl(pub String);
 
 #[derive(Hash, NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
-pub struct FeedName(pub String);
+pub struct ChannelName(pub String);
 
 #[derive(Hash, NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
-pub struct ItemId(pub String);
+pub struct VideoId(pub String);
 
 #[derive(Hash, NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct Username(pub String);
@@ -35,9 +35,9 @@ pub struct LabelId(pub Uuid);
 pub struct LabelName(pub String);
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
-pub struct FeedWithoutItem {
-    pub(crate) id: FeedId,
-    pub(crate) name: FeedName,
+pub struct ChannelWithoutVideos {
+    pub(crate) id: ChannelId,
+    pub(crate) name: ChannelName,
     #[serde(rename = "numberOfAvailableItems")]
     pub(crate) number_of_available_items: usize,
 }
@@ -48,14 +48,14 @@ pub struct UserSession {
     username: Username,
 }
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
-pub struct Feed {
-    pub(crate) id: FeedId,
-    pub(crate) name: FeedName,
-    pub(crate) items: Vec<Item>,
+pub struct Channel {
+    pub(crate) id: ChannelId,
+    pub(crate) name: ChannelName,
+    pub(crate) items: Vec<Video>,
 }
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
-pub struct Item {
-    pub(crate) id: ItemId,
+pub struct Video {
+    pub(crate) id: VideoId,
     pub(crate) title: String,
     pub(crate) description: String,
     pub(crate) upload_date: String,

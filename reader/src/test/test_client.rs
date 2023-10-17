@@ -1,4 +1,4 @@
-use crate::types::{Feed, FeedId, FeedWithoutItem};
+use crate::types::{Channel, ChannelId, ChannelWithoutVideos};
 use anyhow::{bail, Context, Result};
 use reqwest::Client;
 use serde_json::json;
@@ -120,7 +120,7 @@ impl MainPage {
         }
     }
 
-    pub async fn get_feeds(&self) -> Result<Vec<FeedWithoutItem>> {
+    pub async fn get_feeds(&self) -> Result<Vec<ChannelWithoutVideos>> {
         let response = self
             .client
             .get(format!("http://localhost:{}/v1/feeds", self.port))
@@ -128,7 +128,7 @@ impl MainPage {
             .send()
             .await?;
         if response.status().is_success() {
-            let feeds: Vec<FeedWithoutItem> = response
+            let feeds: Vec<ChannelWithoutVideos> = response
                 .json()
                 .await
                 .context("Parse feedwithoutitems json")?;
@@ -138,7 +138,7 @@ impl MainPage {
         }
     }
 
-    pub async fn get_feed(&self, feed_id: FeedId) -> Result<Feed> {
+    pub async fn get_feed(&self, feed_id: ChannelId) -> Result<Channel> {
         let response = self
             .client
             .get(format!(
@@ -149,7 +149,7 @@ impl MainPage {
             .send()
             .await?;
         if response.status().is_success() {
-            let feed: Feed = response.json().await.context("Parse feed json")?;
+            let feed: Channel = response.json().await.context("Parse feed json")?;
             Ok(feed)
         } else {
             bail!("Failed to get feed {:?}", response.error_for_status())

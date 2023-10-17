@@ -43,22 +43,22 @@ impl DiskCache {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{Feed, FeedId, FeedName};
+    use crate::types::{Channel, ChannelId, ChannelName};
     use uuid::Uuid;
 
     #[test]
     fn test_cache() {
         let cache = DiskCache::new("test");
-        let id = FeedId(Uuid::new_v4().to_string());
-        let name = FeedName(Uuid::new_v4().to_string());
-        let feed = Feed {
+        let id = ChannelId(Uuid::new_v4().to_string());
+        let name = ChannelName(Uuid::new_v4().to_string());
+        let feed = Channel {
             id: id.clone(),
             name,
             items: vec![],
         };
 
-        assert!(cache.get::<FeedId, Feed>(id.clone()).is_none());
+        assert!(cache.get::<ChannelId, Channel>(id.clone()).is_none());
         cache.insert(id.clone(), feed.clone());
-        assert_eq!(cache.get::<FeedId, Feed>(id), Some(feed));
+        assert_eq!(cache.get::<ChannelId, Channel>(id), Some(feed));
     }
 }

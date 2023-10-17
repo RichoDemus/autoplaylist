@@ -1,5 +1,5 @@
 use crate::service::Services;
-use crate::types::{FeedId, FeedUrl, FeedWithoutItem, UserId};
+use crate::types::{ChannelId, ChannelWithoutVideos, UserId, YoutubeChannelUrl};
 use actix_http::StatusCode;
 use actix_session::{Session, SessionGetError};
 use actix_web::web::{Data, Json, Path};
@@ -24,7 +24,7 @@ pub async fn get_all_feeds(session: Session, services: Data<Services>) -> HttpRe
     return HttpResponse::Ok().json(build_feeds(user_id, services));
 }
 
-fn build_feeds(user: UserId, services: Data<Services>) -> Vec<FeedWithoutItem> {
+fn build_feeds(user: UserId, services: Data<Services>) -> Vec<ChannelWithoutVideos> {
     let feeds = services
         .subscriptions_service
         .lock()
@@ -34,7 +34,7 @@ fn build_feeds(user: UserId, services: Data<Services>) -> Vec<FeedWithoutItem> {
     feeds
         .iter()
         .flat_map(|feed_id| feed_service.feed(feed_id))
-        .map(|feed| FeedWithoutItem {
+        .map(|feed| ChannelWithoutVideos {
             id: feed.id,
             name: feed.name,
             number_of_available_items: feed.items.len(),
@@ -46,7 +46,7 @@ fn build_feeds(user: UserId, services: Data<Services>) -> Vec<FeedWithoutItem> {
 pub async fn get_feed(
     session: Session,
     services: Data<Services>,
-    feed_id: Path<FeedId>,
+    feed_id: Path<ChannelId>,
 ) -> HttpResponse {
     info!("get feed {feed_id:?}");
     let feed = services
@@ -75,7 +75,7 @@ pub async fn add_feed(
         warn!("No session cookie");
         return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
     };
-    let url = FeedUrl(json.as_str().unwrap().to_string());
+    let url = YoutubeChannelUrl(json.as_str().unwrap().to_string());
     let (id, _) = services
         .feed_service
         .lock()

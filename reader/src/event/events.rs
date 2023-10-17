@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::types::{EventId, FeedId, ItemId, LabelId, LabelName, Password, UserId, Username};
+use crate::types::{ChannelId, EventId, LabelId, LabelName, Password, UserId, Username, VideoId};
 
 // todo normalize field names
 
@@ -26,7 +26,7 @@ pub enum Event {
         #[serde(rename = "userId")] // wat
         user_id: UserId,
         #[serde(rename = "feedId")]
-        feed_id: FeedId,
+        feed_id: ChannelId,
     },
     #[serde(rename = "USER_WATCHED_ITEM")]
     UserWatchedItem {
@@ -35,9 +35,9 @@ pub enum Event {
         #[serde(rename = "userId")]
         user_id: UserId,
         #[serde(rename = "feedId")]
-        feed_id: FeedId,
+        feed_id: ChannelId,
         #[serde(rename = "itemId")]
-        item_id: ItemId,
+        item_id: VideoId,
     },
     #[serde(rename = "USER_UNWATCHED_ITEM")]
     UserUnwatchedItem {
@@ -46,9 +46,9 @@ pub enum Event {
         #[serde(rename = "userId")]
         user_id: UserId,
         #[serde(rename = "feedId")]
-        feed_id: FeedId,
+        feed_id: ChannelId,
         #[serde(rename = "itemId")]
-        item_id: ItemId,
+        item_id: VideoId,
     },
     #[serde(rename = "LABEL_CREATED")]
     LabelCreated {
@@ -68,6 +68,6 @@ pub enum Event {
         #[serde(rename = "labelId")]
         label_id: LabelId,
         #[serde(rename = "feedId")]
-        feed_id: FeedId,
+        feed_id: ChannelId,
     },
 }

@@ -1,6 +1,6 @@
 use crate::event::event_store::EventStore;
 use crate::event::events::Event;
-use crate::types::{FeedId, UserId};
+use crate::types::{ChannelId, UserId};
 use anyhow::Result;
 use log::{error, info};
 use std::collections::HashMap;
@@ -9,12 +9,12 @@ use tokio::sync::broadcast::error::RecvError;
 
 pub struct SubscriptionsService {
     event_store: Arc<EventStore>,
-    subscriptions: Arc<Mutex<HashMap<UserId, Vec<FeedId>>>>,
+    subscriptions: Arc<Mutex<HashMap<UserId, Vec<ChannelId>>>>,
 }
 
 impl SubscriptionsService {
     pub fn new(event_store: Arc<EventStore>) -> Self {
-        let subscriptions: Arc<Mutex<HashMap<UserId, Vec<FeedId>>>> = Default::default();
+        let subscriptions: Arc<Mutex<HashMap<UserId, Vec<ChannelId>>>> = Default::default();
         let subscriptions_spawn = subscriptions.clone();
         let mut receiver = event_store.receiver();
         actix_rt::spawn(async move {
@@ -53,7 +53,7 @@ impl SubscriptionsService {
             subscriptions,
         }
     }
-    pub fn subscribe(&mut self, user_id: UserId, feed_id: FeedId) -> Result<()> {
+    pub fn subscribe(&mut self, user_id: UserId, feed_id: ChannelId) -> Result<()> {
         self.event_store.publish_event(Event::UserSubscribedToFeed {
             id: Default::default(),
             timestamp: Default::default(),
@@ -62,7 +62,7 @@ impl SubscriptionsService {
         })
     }
 
-    pub fn get_feeds(&self, user: &UserId) -> Vec<FeedId> {
+    pub fn get_feeds(&self, user: &UserId) -> Vec<ChannelId> {
         self.subscriptions
             .lock()
             .unwrap()
