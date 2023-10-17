@@ -172,7 +172,7 @@ impl MainPage {
             .client
             .get(format!(
                 "http://localhost:{}/v1/feeds/{}/items",
-                self.port, feed_id.0
+                self.port, *feed_id
             ))
             .header("Cookie", self.cookie.as_str())
             .send()
@@ -190,7 +190,7 @@ impl MainPage {
             .client
             .post(format!(
                 "http://localhost:{}/v1/feeds/{}/items/{}",
-                self.port, feed_id.0, item_id.0
+                self.port, *feed_id, *item_id
             ))
             .header("Cookie", self.cookie.as_str())
             .body(r#"{"action":"MARK_READ"}"#)
@@ -208,7 +208,7 @@ impl MainPage {
             .client
             .post(format!(
                 "http://localhost:{}/v1/feeds/{}/items/{}",
-                self.port, feed_id.0, item_id.0
+                self.port, *feed_id, *item_id
             ))
             .header("Cookie", self.cookie.as_str())
             .body(r#"{"action":"MARK_UNREAD"}"#)

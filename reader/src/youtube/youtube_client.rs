@@ -36,7 +36,7 @@ impl YoutubeClient {
                     .query(&[
                         ("part", "snippet"),
                         ("type", "channel"),
-                        ("q", channel_urll.0.as_str()),
+                        ("q", &*channel_urll),
                     ]),
             )
             .await?;
@@ -62,7 +62,7 @@ impl YoutubeClient {
             .call_yt(
                 self.client
                     .get(format!("{}/youtube/v3/channels/", self.base_url))
-                    .query(&[("part", "snippet,contentDetails"), ("id", id.0.as_str())]),
+                    .query(&[("part", "snippet,contentDetails"), ("id", &*id)]),
             )
             .await?;
         let items = &value["items"].as_array().context("parse items")?;
@@ -87,7 +87,7 @@ impl YoutubeClient {
             .call_yt(
                 self.client
                     .get(format!("{}/youtube/v3/playlistItems/", self.base_url))
-                    .query(&[("part", "snippet"), ("playlistId", id.0.as_str())]),
+                    .query(&[("part", "snippet"), ("playlistId", &*id)]),
             )
             .await?;
 
