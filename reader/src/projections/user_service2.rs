@@ -31,6 +31,7 @@ impl UserService2 {
                             password,
                         } = event
                         {
+                            let username = Username(username.to_lowercase());
                             users_spawn
                                 .lock()
                                 .unwrap()
@@ -64,6 +65,7 @@ impl UserService2 {
     }
 
     pub fn is_password_valid(&self, username: &Username, password_input: &Password) -> bool {
+        let username = Username(username.to_lowercase());
         if let Some((_userid, password)) = self.users.lock().unwrap().get(&username) {
             password == password_input
         } else {
@@ -72,10 +74,11 @@ impl UserService2 {
     }
 
     pub fn get_user_id(&self, username: &Username) -> Option<UserId> {
+        let username = Username(username.to_lowercase());
         self.users
             .lock()
             .unwrap()
-            .get(username)
+            .get(&username)
             .map(|(id, _pass)| id.clone())
     }
 }

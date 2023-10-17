@@ -60,6 +60,35 @@ impl LoginPage {
         }
     }
 
+    pub async fn login_upper_case_username(self) -> Result<MainPage> {
+        let response = self
+            .client
+            .post(format!("http://localhost:{}/v1/sessions", self.port))
+            .json(&json!({"username":"COOL-USER", "password":"a-password"}))
+            .send()
+            .await?;
+
+        if response.status().is_client_error() {
+            bail!("Failed to log in")
+        }
+
+        assert!(
+            response.headers().get("set-cookie").is_some(),
+            "No session cookie"
+        );
+
+        let cookie_str = response
+            .headers()
+            .get("set-cookie")
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string();
+        let split = cookie_str.split(";").collect::<Vec<_>>();
+        let cookie = split.get(0).unwrap();
+        Ok(MainPage::new(self.port, cookie.to_string(), self.client))
+    }
+
     pub async fn create_user(&self) -> Result<()> {
         let response = self
             .client

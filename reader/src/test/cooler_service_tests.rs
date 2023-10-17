@@ -35,6 +35,16 @@ async fn login_should_fail_if_wrong_password() {
 }
 
 #[actix_rt::test]
+async fn username_should_be_case_insensitive() {
+    let service = TestService::new();
+
+    let client = service.client();
+
+    let _result = client.create_user().await.unwrap();
+    let _main_page = client.login_upper_case_username().await.unwrap();
+}
+
+#[actix_rt::test]
 async fn downloaded_feeds_should_be_in_feed_response() {
     let service = TestService::new();
 
@@ -93,3 +103,15 @@ async fn downloaded_feeds_should_be_in_feed_response() {
         ]
     );
 }
+
+#[actix_rt::test]
+async fn should_not_contain_item_marked_as_read() {}
+
+#[actix_rt::test]
+async fn should_mark_item_as_unread() {}
+
+#[actix_rt::test]
+async fn create_label() {}
+
+#[actix_rt::test]
+async fn should_add_feed_to_label() {}
