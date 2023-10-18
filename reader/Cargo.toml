@@ -29,6 +29,7 @@ actix-rt = "2.9.0"
 async-once-cell = "0.5.3"
 static-files = "0.2.3"
 actix-test = "0.1.2"
+# todo try out compression for sled
 sled = "0.34.7"
 
 [dev-dependencies]
