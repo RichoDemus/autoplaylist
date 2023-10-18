@@ -32,7 +32,7 @@ fn build_feeds(user: UserId, services: Data<Services>) -> Vec<ChannelWithoutVide
         .get_feeds(&user);
     let feed_service = services.feed_service.lock().unwrap();
     feeds
-        .iter()
+        .into_iter()
         .flat_map(|feed_id| feed_service.channel(feed_id))
         .map(|feed| ChannelWithoutVideos {
             id: feed.id,
@@ -49,7 +49,8 @@ pub async fn get_videos(
     feed_id: Path<ChannelId>,
 ) -> HttpResponse {
     info!("get videos {feed_id:?}");
-    let feed = services.feed_service.lock().unwrap().videos(&feed_id);
+    let channel_id: ChannelId = feed_id.into_inner();
+    let feed = services.feed_service.lock().unwrap().videos(channel_id);
 
     HttpResponse::Ok().json(feed)
 }

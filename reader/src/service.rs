@@ -2,8 +2,10 @@ use crate::event::event_store::EventStore;
 use crate::projections::feed_service::FeedService;
 use crate::projections::subscriptions::SubscriptionsService;
 use crate::projections::user_service2::UserService2;
+use crate::sled_wrapper::DiskCache;
 use crate::youtube::youtube_client::YoutubeClient;
 use std::sync::{Arc, Mutex};
+use uuid::Uuid;
 
 pub struct Services {
     pub user_service: Arc<Mutex<UserService2>>,
@@ -22,6 +24,8 @@ impl Default for Services {
             feed_service: Arc::new(Mutex::new(FeedService::new(
                 event_store.clone(),
                 YoutubeClient::new(),
+                DiskCache::new(format!("{}/channels", Uuid::new_v4().to_string()).as_str()),
+                DiskCache::new(format!("{}/videos", Uuid::new_v4().to_string()).as_str()),
             ))),
         }
     }

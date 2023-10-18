@@ -4,26 +4,23 @@ use crate::sled_wrapper::DiskCache;
 use crate::types::{Channel, ChannelId, ChannelName, Video, YoutubeChannelUrl};
 use crate::youtube::youtube_client::YoutubeClient;
 use anyhow::{Context, Result};
-use log::{error, info, trace, warn};
-use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
-use std::future::Future;
-use std::sync::{Arc, Mutex};
+use log::{error, info, warn};
+use std::sync::Arc;
 use tokio::sync::broadcast::error::RecvError;
 
 pub struct FeedService {
-    // event_store: Arc<EventStore>,
-    // ids: Arc<Mutex<HashSet<ChannelId>>>,
-    channels: Arc<Mutex<HashMap<ChannelId, Channel>>>,
-    videos: Arc<Mutex<HashMap<ChannelId, Vec<Video>>>>,
+    channels: DiskCache<ChannelId, Channel>,
+    videos: DiskCache<ChannelId, Vec<Video>>,
     client: YoutubeClient,
 }
 
 impl FeedService {
-    pub fn new(event_store: Arc<EventStore>, client: YoutubeClient) -> Self {
-        // let ids: Arc<Mutex<HashSet<ChannelId>>> = Default::default();
-        // let ids_spawn = ids.clone();
-        let channels: Arc<Mutex<HashMap<ChannelId, Channel>>> = Default::default();
+    pub fn new(
+        event_store: Arc<EventStore>,
+        client: YoutubeClient,
+        channels: DiskCache<ChannelId, Channel>,
+        videos: DiskCache<ChannelId, Vec<Video>>,
+    ) -> Self {
         let channels_spawn = channels.clone();
         let client_spawn = client.clone();
         let mut receiver = event_store.receiver();
@@ -56,25 +53,15 @@ impl FeedService {
         Self {
             channels,
             client,
-            videos: Default::default(),
+            videos,
         }
     }
-    pub fn channel(&self, channel_id: &ChannelId) -> Option<Channel> {
-        let guard = self.channels.lock().unwrap();
-        let feed = guard.get(channel_id);
-        if feed.is_none() {
-            warn!("Feed {feed:?} not found");
-        }
-        feed.cloned()
+    pub fn channel(&self, channel_id: ChannelId) -> Option<Channel> {
+        self.channels.get(channel_id)
     }
 
-    pub fn videos(&self, id: &ChannelId) -> Vec<Video> {
-        self.videos
-            .lock()
-            .unwrap()
-            .get(id)
-            .cloned()
-            .unwrap_or_default()
+    pub fn videos(&self, id: ChannelId) -> Vec<Video> {
+        self.videos.get(id).unwrap_or_default()
     }
 
     pub async fn url_to_id(&self, url: YoutubeChannelUrl) -> Result<(ChannelId, ChannelName)> {
@@ -83,33 +70,25 @@ impl FeedService {
 
     pub async fn download(&self) -> Result<()> {
         info!("Synchronizing all data with youtube");
-        for (id, channel) in self.channels.lock().unwrap().iter() {
+        for channel in self.channels.values() {
             let videos = self
                 .client
                 .videos(&channel.playlist)
                 .await
                 .with_context(|| format!("download {:?} ({:?})", channel.name, channel.id))?;
-            self.videos.lock().unwrap().insert(id.clone(), videos);
+            self.videos.insert(channel.id, videos);
         }
         info!("Done synchronizing data!");
-        trace!("Videos: {:?}", self.videos.lock().unwrap());
         Ok(())
     }
 }
 
-fn register_channel(
-    client: YoutubeClient,
-    channels: Arc<Mutex<HashMap<ChannelId, Channel>>>,
-    id: ChannelId,
-) {
+fn register_channel(client: YoutubeClient, channels: DiskCache<ChannelId, Channel>, id: ChannelId) {
     actix_rt::spawn(async move {
         match client.channel(&id).await {
             Err(e) => warn!("Get channel failed for {id:?}: {:?}", e),
             Ok((name, playlist)) => {
-                channels
-                    .lock()
-                    .unwrap()
-                    .insert(id.clone(), Channel { id, name, playlist });
+                channels.insert(id.clone(), Channel { id, name, playlist });
             }
         }
     });
