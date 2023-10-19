@@ -82,15 +82,29 @@ impl YoutubeClient {
         Ok((name, playlist))
     }
 
-    pub async fn videos(&self, id: &PlaylistId) -> Result<Vec<Video>> {
+    pub async fn videos(
+        &self,
+        id: &PlaylistId,
+        page_token: Option<String>,
+    ) -> Result<(Vec<Video>, Option<String>)> {
+        let mut query = vec![
+            ("part", "snippet"),
+            ("maxResults", "5"),
+            ("playlistId", &*id),
+        ];
+        if let Some(ref token) = page_token {
+            query.push(("page_token", token));
+        }
+
         let value = self
             .call_yt(
                 self.client
                     .get(format!("{}/youtube/v3/playlistItems/", self.base_url))
-                    .query(&[("part", "snippet"), ("playlistId", &*id)]),
+                    .query(query.as_slice()),
             )
             .await?;
 
+        let next_page_token = value["nextPageToken"].as_str().map(|s| s.to_string());
         let videos = value["items"]
             .as_array()
             .context("no items")?
@@ -110,7 +124,7 @@ impl YoutubeClient {
                 }
             })
             .collect::<Vec<_>>();
-        Ok(videos)
+        Ok((videos, next_page_token))
     }
 
     async fn call_yt(&self, builder: RequestBuilder) -> Result<Value> {
@@ -129,7 +143,7 @@ impl YoutubeClient {
             bail!("other failure: {}", body);
         }
         let value = response.json::<Value>().await.context("read body")?;
-        trace!("Response: {value:?}");
+        trace!("Response: {value:#?}");
         Ok(value)
     }
 }
@@ -239,10 +253,22 @@ mod tests {
 
         let client = YoutubeClient::new();
 
-        let videos = client
-            .videos(&PlaylistId("UUIZi8VWcokrX4hG377au_FA".to_string()))
+        let (videos, page_token) = client
+            .videos(&PlaylistId("UUIZi8VWcokrX4hG377au_FA".to_string()), None)
             .await
             .unwrap();
-        println!("{:?}", videos);
+        let titles1 = videos.into_iter().map(|v| v.title).collect::<Vec<_>>();
+
+        let (videos, page_token) = client
+            .videos(
+                &PlaylistId("UUIZi8VWcokrX4hG377au_FA".to_string()),
+                page_token,
+            )
+            .await
+            .unwrap();
+        let titles2 = videos.into_iter().map(|v| v.title).collect::<Vec<_>>();
+
+        println!("res :{:#?}", titles1);
+        println!("res :{:#?}", titles2);
     }
 }

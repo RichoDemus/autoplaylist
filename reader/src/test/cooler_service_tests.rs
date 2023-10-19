@@ -1,6 +1,7 @@
 use crate::test::service::TestService;
 use crate::types::{Video, VideoId};
 use itertools::assert_equal;
+use pretty_assertions::{assert_eq, assert_ne};
 use std::future::Future;
 use std::time::{Duration, Instant};
 
@@ -99,7 +100,21 @@ async fn downloaded_feeds_should_be_in_feed_response() {
                 description: "video2-desc".into(),
                 upload_date: "2022-10-15T00:59:50Z".into(),
                 url: "https://www.youtube.com/watch?v=video2-id".into(),
-            }
+            },
+            Video {
+                id: VideoId("video3-id".into()),
+                title: "video3-title".into(),
+                description: "video3-desc".into(),
+                upload_date: "2013-10-15T00:59:50Z".into(),
+                url: "https://www.youtube.com/watch?v=video3-id".into(),
+            },
+            Video {
+                id: VideoId("video4-id".into()),
+                title: "video4-title".into(),
+                description: "video4-desc".into(),
+                upload_date: "2012-10-15T00:59:50Z".into(),
+                url: "https://www.youtube.com/watch?v=video4-id".into(),
+            },
         ]
     );
 }

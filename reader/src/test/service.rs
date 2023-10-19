@@ -3,6 +3,7 @@ use crate::endpoints::feeds::{add_feed, get_all_feeds, get_videos};
 use crate::endpoints::user::{create_user, login};
 use crate::service::Services;
 use crate::test::test_client::LoginPage;
+use crate::test::youtube_mock::setup_youtube_mock;
 use actix_cors::Cors;
 use actix_session::storage::CookieSessionStore;
 use actix_session::SessionMiddleware;
@@ -68,63 +69,4 @@ impl TestService {
     pub fn client(&self) -> LoginPage {
         LoginPage::new(self.service.addr().port())
     }
-}
-
-fn setup_youtube_mock(mock_server: &MockServer) {
-    env::set_var("YOUTUBE_API_KEY", "YT_KEY".to_string());
-    env::set_var("YOUTUBE_BASE_DIR", mock_server.base_url());
-
-    // todo add proper checks to mocks, like query params
-    mock_server.mock(|when, then| {
-        when.method(GET).path("/youtube/v3/search/");
-        then.status(200).json_body(json!({
-            "items": [{
-                "snippet": {
-                    "channelTitle": "richo-channel-name",
-                    "channelId": "richo-channel-id",
-                }
-            }]
-        }));
-    });
-
-    mock_server.mock(|when, then| {
-        when.method(GET).path("/youtube/v3/channels/");
-        then.status(200).json_body(json!({
-            "items": [{
-                "snippet": {
-                    "title": "richo-channel-name",
-                },
-                "contentDetails": {
-                    "relatedPlaylists": {
-                        "uploads" : "uploads-playlist-id",
-                    }
-                }
-            }]
-        }));
-    });
-
-    mock_server.mock(|when, then| {
-        when.method(GET).path("/youtube/v3/playlistItems/");
-        then.status(200).json_body(json!({
-            "items": [{
-                "snippet": {
-                    "resourceId": {
-                        "videoId": "video1-id"
-                    },
-                    "title": "video1-title",
-                    "description": "video1-desc",
-                    "publishedAt": "2023-10-15T00:59:50Z"
-                }
-            },{
-                "snippet": {
-                    "resourceId": {
-                        "videoId": "video2-id"
-                    },
-                    "title": "video2-title",
-                    "description": "video2-desc",
-                    "publishedAt": "2022-10-15T00:59:50Z"
-                }
-            }]
-        }));
-    });
 }
