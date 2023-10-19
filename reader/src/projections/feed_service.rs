@@ -1,5 +1,6 @@
 use crate::event::event_store::EventStore;
 use crate::event::events::Event;
+use crate::projections::feed_service_download::download_channel;
 use crate::sled_wrapper::DiskCache;
 use crate::types::{Channel, ChannelId, ChannelName, Video, YoutubeChannelUrl};
 use crate::youtube::youtube_client::YoutubeClient;
@@ -71,12 +72,7 @@ impl FeedService {
     pub async fn download(&self) -> Result<()> {
         info!("Synchronizing all data with youtube");
         for channel in self.channels.values() {
-            let videos = self
-                .client
-                .videos(&channel.playlist)
-                .await
-                .with_context(|| format!("download {:?} ({:?})", channel.name, channel.id))?;
-            self.videos.insert(channel.id, videos);
+            download_channel(&self.client, &self.videos, channel).await?;
         }
         info!("Done synchronizing data!");
         Ok(())
