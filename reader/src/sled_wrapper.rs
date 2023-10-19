@@ -138,10 +138,10 @@ mod tests {
         cache.insert(ChannelName("1".into()), "one".into());
         cache.insert(ChannelName("2".into()), "two".into());
 
-        let result = cache.values().collect::<Vec<_>>();
+        let result = cache.values().map(|s| s.to_uppercase()).collect::<Vec<_>>();
         assert_eq!(
             result,
-            vec!["zero".to_string(), "one".to_string(), "two".to_string()]
+            vec!["ZERO".to_string(), "ONE".to_string(), "TWO".to_string()]
         );
     }
 }
