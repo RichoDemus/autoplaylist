@@ -177,27 +177,6 @@ async fn playlist_items(query: Query<QueryParams>, state: Data<State>) -> HttpRe
              }],
                 "nextPageToken": "second-dl-page-three",
         }),
-        Some("second-dl-page-three") => json!({
-                "items": [{
-                    "snippet": {
-                        "resourceId": {
-                            "videoId": "video2-id"
-                        },
-                        "title": "video2-title",
-                        "description": "video2-desc",
-                        "publishedAt": "2002-01-01T00:00:00Z"
-                    }
-                },{
-                    "snippet": {
-                        "resourceId": {
-                            "videoId": "video1-id"
-                        },
-                        "title": "video1-title",
-                        "description": "video1-desc",
-                        "publishedAt": "2001-01-01T00:00:00Z"
-                    }
-                }],
-        }),
         _ => todo!("not implemented"),
     })
 }
