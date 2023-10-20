@@ -95,29 +95,3 @@ pub fn expected_videos2() -> Vec<Video> {
         },
     ]
 }
-
-pub struct MoreVidsContainer {
-    id: Uuid,
-    more_vids: bool,
-}
-
-impl MoreVidsContainer {
-    pub fn new() -> Self {
-        Self {
-            id: Uuid::new_v4(),
-            more_vids: false,
-        }
-    }
-    pub fn fals(&mut self, reason: &str) {
-        trace!("{:?} setting to false: {reason}", self.id);
-        self.more_vids = false
-    }
-    pub fn tru(&mut self) {
-        trace!("{:?} setting to true", self.id);
-        self.more_vids = true
-    }
-    pub fn get(&self) -> bool {
-        trace!("{:?} getting {}", self.id, self.more_vids);
-        self.more_vids
-    }
-}

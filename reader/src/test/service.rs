@@ -27,7 +27,6 @@ impl TestService {
             .try_init();
 
         let mut youtube_mock = YoutubeMock::default();
-        youtube_mock.init();
 
         let secret_key = Key::from(&[0; 64]);
         let state = web::Data::new(Services::new(Some(youtube_mock.base_url())));
@@ -68,9 +67,5 @@ impl TestService {
 
     pub fn client(&self) -> LoginPage {
         LoginPage::new(self.service.addr().port())
-    }
-
-    pub fn setup_mocks_for_additional_videos(&mut self) {
-        self.youtube_mock.setup_youtube_mock_additional_videos();
     }
 }
