@@ -20,10 +20,11 @@ impl YoutubeMock {
         self.setup_youtube_mock();
     }
 
-    pub fn setup_youtube_mock(&self) {
-        env::set_var("YOUTUBE_API_KEY", "YT_KEY".to_string());
-        env::set_var("YOUTUBE_BASE_DIR", self.mock_server.base_url());
+    pub fn base_url(&self) -> String {
+        self.mock_server.base_url()
+    }
 
+    pub fn setup_youtube_mock(&self) {
         // todo add proper checks to mocks, like query params
         self.mock_server.mock(|when, then| {
             when.method(GET)

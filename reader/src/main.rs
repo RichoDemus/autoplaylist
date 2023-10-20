@@ -39,7 +39,7 @@ async fn main() -> anyhow::Result<()> {
 
     // event_store::init().await?;
     let secret_key = Key::from(&[0; 64]); // todo use proper key
-    let state = web::Data::new(Services::default());
+    let state = web::Data::new(Services::new(None));
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())

@@ -13,12 +13,11 @@ pub struct YoutubeClient {
 }
 
 impl YoutubeClient {
-    pub fn new() -> Self {
+    pub fn new(base_url: Option<String>, key: String) -> Self {
         Self {
             client: Default::default(),
-            key: env::var("YOUTUBE_API_KEY").expect("Missing env YOUTUBE_API_KEY"),
-            base_url: env::var("YOUTUBE_BASE_DIR")
-                .unwrap_or("https://www.googleapis.com".to_string()),
+            key,
+            base_url: base_url.unwrap_or("https://www.googleapis.com".to_string()),
         }
     }
 
@@ -163,7 +162,7 @@ mod tests {
             .filter_module("reader", LevelFilter::Trace)
             .try_init();
 
-        let client = YoutubeClient::new();
+        let client = YoutubeClient::new(None, env::var("YOUTUBE_API_KEY").unwrap());
 
         assert_eq!(
             client
@@ -223,7 +222,7 @@ mod tests {
             .filter_module("reader", LevelFilter::Trace)
             .try_init();
 
-        let client = YoutubeClient::new();
+        let client = YoutubeClient::new(None, env::var("YOUTUBE_API_KEY").unwrap());
 
         // let (name, id) = client
         //     .channel(&ChannelId("UCIZi8VWcokrX4hG377au_FA".to_string()))
@@ -251,7 +250,7 @@ mod tests {
             .filter_module("reader", LevelFilter::Trace)
             .try_init();
 
-        let client = YoutubeClient::new();
+        let client = YoutubeClient::new(None, env::var("YOUTUBE_API_KEY").unwrap());
 
         let (videos, page_token) = client
             .videos(&PlaylistId("UUIZi8VWcokrX4hG377au_FA".to_string()), None)

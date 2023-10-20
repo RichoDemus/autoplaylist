@@ -30,7 +30,7 @@ impl TestService {
         youtube_mock.init();
 
         let secret_key = Key::from(&[0; 64]);
-        let state = web::Data::new(Services::default());
+        let state = web::Data::new(Services::new(Some(youtube_mock.base_url())));
 
         Self {
             service: actix_test::start(move || {

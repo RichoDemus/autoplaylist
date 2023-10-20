@@ -13,8 +13,8 @@ pub struct Services {
     pub feed_service: Arc<Mutex<FeedService>>,
 }
 
-impl Default for Services {
-    fn default() -> Self {
+impl Services {
+    pub(crate) fn new(youtube_base_url: Option<String>) -> Self {
         let event_store = Arc::new(EventStore::new());
         Self {
             user_service: Arc::new(Mutex::new(UserService2::new(event_store.clone()))),
@@ -23,7 +23,7 @@ impl Default for Services {
             ))),
             feed_service: Arc::new(Mutex::new(FeedService::new(
                 event_store.clone(),
-                YoutubeClient::new(),
+                YoutubeClient::new(youtube_base_url, "YT_KEY".to_string()),
                 DiskCache::new(format!("{}/channels", Uuid::new_v4().to_string()).as_str()),
                 DiskCache::new(format!("{}/videos", Uuid::new_v4().to_string()).as_str()),
             ))),
