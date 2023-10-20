@@ -108,13 +108,13 @@ async fn should_not_continue_downoading_once_caught_up() {
 
     await_videos(&main_page, feed.id.clone(), 4).await;
     //videos downloaded, add new and download again
-    //     service.setup_mocks_for_additional_videos();
-    //     actix_rt::time::sleep(Duration::from_millis(200)).await;
-    //     main_page.download_feeds().await.unwrap();
-    //     await_videos(&main_page, feed.id.clone(), 5).await;
-    //     let videos = main_page.get_videos(feed.id.clone()).await.unwrap();
-    //     trace!("new videos: {:?}", videos);
-    //     assert_eq!(videos, expected_videos2());
+    service.setup_mocks_for_additional_videos();
+    actix_rt::time::sleep(Duration::from_millis(200)).await;
+    main_page.download_feeds().await.unwrap();
+    await_videos(&main_page, feed.id.clone(), 5).await;
+    let videos = main_page.get_videos(feed.id.clone()).await.unwrap();
+    trace!("new videos: {:?}", videos);
+    assert_eq!(videos, expected_videos2());
 }
 
 #[actix_rt::test]
