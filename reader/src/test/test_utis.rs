@@ -17,32 +17,32 @@ pub async fn await_videos(main_page: &MainPage, id: ChannelId, count: usize) {
 pub fn expected_videos() -> Vec<Video> {
     vec![
         Video {
-            id: VideoId("video1-id".into()),
-            title: "video1-title".into(),
-            description: "video1-desc".into(),
-            upload_date: "2023-10-15T00:59:50Z".into(),
-            url: "https://www.youtube.com/watch?v=video1-id".into(),
-        },
-        Video {
-            id: VideoId("video2-id".into()),
-            title: "video2-title".into(),
-            description: "video2-desc".into(),
-            upload_date: "2022-10-15T00:59:50Z".into(),
-            url: "https://www.youtube.com/watch?v=video2-id".into(),
+            id: VideoId("video4-id".into()),
+            title: "video4-title".into(),
+            description: "video4-desc".into(),
+            upload_date: "2004-01-01T00:00:00Z".into(),
+            url: "https://www.youtube.com/watch?v=video4-id".into(),
         },
         Video {
             id: VideoId("video3-id".into()),
             title: "video3-title".into(),
             description: "video3-desc".into(),
-            upload_date: "2013-10-15T00:59:50Z".into(),
+            upload_date: "2003-01-01T00:00:00Z".into(),
             url: "https://www.youtube.com/watch?v=video3-id".into(),
         },
         Video {
-            id: VideoId("video4-id".into()),
-            title: "video4-title".into(),
-            description: "video4-desc".into(),
-            upload_date: "2012-10-15T00:59:50Z".into(),
-            url: "https://www.youtube.com/watch?v=video4-id".into(),
+            id: VideoId("video2-id".into()),
+            title: "video2-title".into(),
+            description: "video2-desc".into(),
+            upload_date: "2002-01-01T00:00:00Z".into(),
+            url: "https://www.youtube.com/watch?v=video2-id".into(),
+        },
+        Video {
+            id: VideoId("video1-id".into()),
+            title: "video1-title".into(),
+            description: "video1-desc".into(),
+            upload_date: "2001-01-01T00:00:00Z".into(),
+            url: "https://www.youtube.com/watch?v=video1-id".into(),
         },
     ]
 }

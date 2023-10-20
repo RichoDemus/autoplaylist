@@ -1,7 +1,7 @@
+use std::env;
+
 use httpmock::prelude::*;
-use log::trace;
 use serde_json::json;
-use std::{env, mem};
 
 pub struct YoutubeMock {
     mock_server: MockServer,
@@ -76,25 +76,25 @@ impl YoutubeMock {
                         .any(|(h, _v)| h == "page_token")
                 });
             then.status(200).json_body(json!({
-                "items": [{
-                    "snippet": {
-                        "resourceId": {
-                            "videoId": "video1-id"
-                        },
-                        "title": "video1-title",
-                        "description": "video1-desc",
-                        "publishedAt": "2023-10-15T00:59:50Z"
-                    }
-                },{
-                    "snippet": {
-                        "resourceId": {
-                            "videoId": "video2-id"
-                        },
-                        "title": "video2-title",
-                        "description": "video2-desc",
-                        "publishedAt": "2022-10-15T00:59:50Z"
-                    }
-                }],
+             "items": [{
+                 "snippet": {
+                     "resourceId": {
+                         "videoId": "video4-id"
+                     },
+                     "title": "video4-title",
+                     "description": "video4-desc",
+                     "publishedAt": "2004-01-01T00:00:00Z"
+                 }
+             },{
+                 "snippet": {
+                     "resourceId": {
+                         "videoId": "video3-id"
+                     },
+                     "title": "video3-title",
+                     "description": "video3-desc",
+                     "publishedAt": "2003-01-01T00:00:00Z"
+                 }
+             }],
                 "nextPageToken": "page-two",
             }));
         });
@@ -110,20 +110,20 @@ impl YoutubeMock {
                 "items": [{
                     "snippet": {
                         "resourceId": {
-                            "videoId": "video3-id"
+                            "videoId": "video2-id"
                         },
-                        "title": "video3-title",
-                        "description": "video3-desc",
-                        "publishedAt": "2013-10-15T00:59:50Z"
+                        "title": "video2-title",
+                        "description": "video2-desc",
+                        "publishedAt": "2002-01-01T00:00:00Z"
                     }
                 },{
                     "snippet": {
                         "resourceId": {
-                            "videoId": "video4-id"
+                            "videoId": "video1-id"
                         },
-                        "title": "video4-title",
-                        "description": "video4-desc",
-                        "publishedAt": "2012-10-15T00:59:50Z"
+                        "title": "video1-title",
+                        "description": "video1-desc",
+                        "publishedAt": "2001-01-01T00:00:00Z"
                     }
                 }],
             }));
