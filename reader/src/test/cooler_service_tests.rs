@@ -1,6 +1,11 @@
 use crate::test::service::TestService;
-use crate::types::{Video, VideoId};
+use crate::test::test_client::MainPage;
+use crate::test::test_utis::expected_videos;
+use crate::test::test_utis::{await_videos, expected_videos2};
+use crate::types::{ChannelId, Video, VideoId};
 use itertools::assert_equal;
+use log::info;
+use log::trace;
 use pretty_assertions::{assert_eq, assert_ne};
 use std::future::Future;
 use std::time::{Duration, Instant};
@@ -65,58 +70,51 @@ async fn downloaded_feeds_should_be_in_feed_response() {
     main_page.download_feeds().await.unwrap();
 
     let feeds = main_page.get_feeds().await.unwrap();
-    println!("got feed: {:?}", feeds);
     assert_eq!(feeds.len(), 1, "Should be subscribed to one feed");
     let feed = feeds.get(0).unwrap();
     assert_eq!(*feed.id, "richo-channel-id");
     assert_eq!(*feed.name, "richo-channel-name");
 
-    let mut videos = vec![];
-    let deadline = Instant::now() + Duration::from_secs(1);
-    loop {
-        videos = main_page.get_videos(feed.id.clone()).await.unwrap();
-        if !videos.is_empty() {
-            break;
-        }
-        if Instant::now() > deadline {
-            panic!("Timeout exceeded getting videos");
-        }
-        actix_rt::time::sleep(Duration::from_millis(10)).await;
-    }
-    println!("res videos: {:?}", videos);
-    assert_eq!(
-        videos,
-        vec![
-            Video {
-                id: VideoId("video1-id".into()),
-                title: "video1-title".into(),
-                description: "video1-desc".into(),
-                upload_date: "2023-10-15T00:59:50Z".into(),
-                url: "https://www.youtube.com/watch?v=video1-id".into(),
-            },
-            Video {
-                id: VideoId("video2-id".into()),
-                title: "video2-title".into(),
-                description: "video2-desc".into(),
-                upload_date: "2022-10-15T00:59:50Z".into(),
-                url: "https://www.youtube.com/watch?v=video2-id".into(),
-            },
-            Video {
-                id: VideoId("video3-id".into()),
-                title: "video3-title".into(),
-                description: "video3-desc".into(),
-                upload_date: "2013-10-15T00:59:50Z".into(),
-                url: "https://www.youtube.com/watch?v=video3-id".into(),
-            },
-            Video {
-                id: VideoId("video4-id".into()),
-                title: "video4-title".into(),
-                description: "video4-desc".into(),
-                upload_date: "2012-10-15T00:59:50Z".into(),
-                url: "https://www.youtube.com/watch?v=video4-id".into(),
-            },
-        ]
-    );
+    await_videos(&main_page, feed.id.clone(), 4).await;
+    let videos = main_page.get_videos(feed.id.clone()).await.unwrap();
+
+    assert_eq!(videos, expected_videos());
+}
+
+#[actix_rt::test]
+async fn should_not_continue_downoading_once_caught_up() {
+    let mut service = TestService::new();
+
+    let client = service.client();
+
+    let _result = client.create_user().await.unwrap();
+    let main_page = client.login().await.unwrap();
+
+    // no feeds
+    assert!(main_page.get_feeds().await.unwrap().is_empty());
+
+    main_page
+        .add_feed("https://www.youtube.com/user/richodemus")
+        .await
+        .unwrap();
+    actix_rt::time::sleep(Duration::from_millis(200)).await;
+    main_page.download_feeds().await.unwrap();
+
+    let feeds = main_page.get_feeds().await.unwrap();
+    assert_eq!(feeds.len(), 1, "Should be subscribed to one feed");
+    let feed = feeds.get(0).unwrap();
+    assert_eq!(*feed.id, "richo-channel-id");
+    assert_eq!(*feed.name, "richo-channel-name");
+
+    await_videos(&main_page, feed.id.clone(), 4).await;
+    //videos downloaded, add new and download again
+    //     service.setup_mocks_for_additional_videos();
+    //     actix_rt::time::sleep(Duration::from_millis(200)).await;
+    //     main_page.download_feeds().await.unwrap();
+    //     await_videos(&main_page, feed.id.clone(), 5).await;
+    //     let videos = main_page.get_videos(feed.id.clone()).await.unwrap();
+    //     trace!("new videos: {:?}", videos);
+    //     assert_eq!(videos, expected_videos2());
 }
 
 #[actix_rt::test]

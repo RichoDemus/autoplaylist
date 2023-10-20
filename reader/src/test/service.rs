@@ -3,7 +3,7 @@ use crate::endpoints::feeds::{add_feed, get_all_feeds, get_videos};
 use crate::endpoints::user::{create_user, login};
 use crate::service::Services;
 use crate::test::test_client::LoginPage;
-use crate::test::youtube_mock::setup_youtube_mock;
+use crate::test::youtube_mock::YoutubeMock;
 use actix_cors::Cors;
 use actix_session::storage::CookieSessionStore;
 use actix_session::SessionMiddleware;
@@ -18,7 +18,7 @@ use std::env;
 
 pub struct TestService {
     pub service: TestServer,
-    mock_server: MockServer,
+    youtube_mock: YoutubeMock,
 }
 impl TestService {
     pub fn new() -> Self {
@@ -26,8 +26,8 @@ impl TestService {
             .filter_module("reader", LevelFilter::Trace)
             .try_init();
 
-        let mock_server = MockServer::start();
-        setup_youtube_mock(&mock_server);
+        let mut youtube_mock = YoutubeMock::default();
+        youtube_mock.init();
 
         let secret_key = Key::from(&[0; 64]);
         let state = web::Data::new(Services::default());
@@ -62,11 +62,15 @@ impl TestService {
                     .service(add_feed)
                     .service(download)
             }),
-            mock_server,
+            youtube_mock,
         }
     }
 
     pub fn client(&self) -> LoginPage {
         LoginPage::new(self.service.addr().port())
+    }
+
+    pub fn setup_mocks_for_additional_videos(&mut self) {
+        self.youtube_mock.setup_youtube_mock_additional_videos();
     }
 }
