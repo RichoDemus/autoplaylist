@@ -56,6 +56,25 @@ pub fn expected_videos() -> Vec<Video> {
     ]
 }
 
+pub fn expected_videos_read() -> Vec<Video> {
+    vec![
+        Video {
+            id: VideoId("video4-id".into()),
+            title: "video4-title".into(),
+            description: "video4-desc".into(),
+            upload_date: "2004-01-01T00:00:00Z".into(),
+            url: "https://www.youtube.com/watch?v=video4-id".into(),
+        },
+        Video {
+            id: VideoId("video3-id".into()),
+            title: "video3-title".into(),
+            description: "video3-desc".into(),
+            upload_date: "2003-01-01T00:00:00Z".into(),
+            url: "https://www.youtube.com/watch?v=video3-id".into(),
+        },
+    ]
+}
+
 pub fn expected_videos2() -> Vec<Video> {
     vec![
         Video {

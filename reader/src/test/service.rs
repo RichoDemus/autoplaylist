@@ -1,5 +1,5 @@
 use crate::endpoints::admin::download;
-use crate::endpoints::feeds::{add_feed, get_all_feeds, get_videos};
+use crate::endpoints::feeds::{add_feed, feed_operation, get_all_feeds, get_videos};
 use crate::endpoints::user::{create_user, login};
 use crate::service::Services;
 use crate::test::test_client::LoginPage;
@@ -59,6 +59,7 @@ impl TestService {
                     .service(get_all_feeds)
                     .service(get_videos)
                     .service(add_feed)
+                    .service(feed_operation)
                     .service(download)
             }),
             youtube_mock,

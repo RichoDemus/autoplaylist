@@ -1,7 +1,9 @@
+use crate::endpoints::endpoint_types::Operation;
 use crate::service::Services;
-use crate::types::{ChannelId, ChannelWithoutVideos, UserId, YoutubeChannelUrl};
+use crate::types::{ChannelId, ChannelWithoutVideos, UserId, VideoId, YoutubeChannelUrl};
 use actix_http::StatusCode;
 use actix_session::{Session, SessionGetError};
+use actix_web::web::Bytes;
 use actix_web::web::{Data, Json, Path};
 use actix_web::{get, post, HttpResponse};
 use anyhow::anyhow;
@@ -49,8 +51,20 @@ pub async fn get_videos(
     feed_id: Path<ChannelId>,
 ) -> HttpResponse {
     info!("get videos {feed_id:?}");
+    let user_id = if let Ok(user_id) = session.try_into() {
+        user_id
+    } else {
+        warn!("No session cookie");
+        return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
+    };
     let channel_id: ChannelId = feed_id.into_inner();
-    let feed = services.feed_service.lock().unwrap().videos(channel_id);
+    let watched_videos = services
+        .watched_videos_service
+        .lock()
+        .unwrap()
+        .watched_items(&user_id, &channel_id);
+    let mut feed = services.feed_service.lock().unwrap().videos(channel_id);
+    feed.retain(|video| !watched_videos.contains(&video.id));
 
     HttpResponse::Ok().json(feed)
 }
@@ -86,4 +100,46 @@ pub async fn add_feed(
         .subscribe(user_id, id)
         .unwrap();
     return HttpResponse::Ok().into();
+}
+
+#[post("/v1/feeds/{feed}/items/{item}")]
+pub async fn feed_operation(
+    session: Session,
+    services: Data<Services>,
+    feed_id: Path<(ChannelId, VideoId)>,
+    body: Bytes,
+) -> HttpResponse {
+    let body = String::from_utf8(body.to_vec()).unwrap();
+    info!("login: {}", body);
+    let mut json: Value = serde_json::from_str(body.as_str()).unwrap();
+    info!("json: {:?}", json);
+
+    let operation: Operation = serde_json::from_value(json["action"].take()).unwrap();
+
+    info!("Feed operation: {:?}  {:?}", feed_id, operation);
+
+    let user_id = if let Ok(user_id) = session.try_into() {
+        user_id
+    } else {
+        warn!("No session cookie");
+        return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
+    };
+
+    let (channel_id, video_id) = feed_id.into_inner();
+    match operation {
+        Operation::MARK_READ => services
+            .watched_videos_service
+            .lock()
+            .unwrap()
+            .watch_item(user_id, channel_id, video_id)
+            .unwrap(),
+        Operation::MARK_UNREAD => services
+            .watched_videos_service
+            .lock()
+            .unwrap()
+            .unwatch_item(user_id, channel_id, video_id)
+            .unwrap(),
+    }
+
+    HttpResponse::Ok().into()
 }

@@ -1,7 +1,7 @@
 extern crate core;
 
 use crate::endpoints::admin::download;
-use crate::endpoints::feeds::{add_feed, get_all_feeds, get_videos};
+use crate::endpoints::feeds::{add_feed, feed_operation, get_all_feeds, get_videos};
 use crate::endpoints::serve_assets::static_fie;
 use actix_cors::Cors;
 use actix_session::storage::CookieSessionStore;
@@ -65,6 +65,7 @@ async fn main() -> anyhow::Result<()> {
             .service(get_all_feeds)
             .service(get_videos)
             .service(add_feed)
+            .service(feed_operation)
             .service(download)
             .route("/{filename:.*}", web::get().to(static_fie))
     })
