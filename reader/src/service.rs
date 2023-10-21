@@ -4,7 +4,7 @@ use crate::projections::label_service::LabelService;
 use crate::projections::subscriptions::SubscriptionsService;
 use crate::projections::user_service2::UserService2;
 use crate::projections::watched_items::WatchedVideosService;
-use crate::sled_wrapper::DiskCache;
+use crate::sled_wrapper::{DiskCache, Mode};
 use crate::youtube::youtube_client::YoutubeClient;
 use std::sync::{Arc, Mutex};
 use uuid::Uuid;
@@ -18,7 +18,7 @@ pub struct Services {
 }
 
 impl Services {
-    pub(crate) fn new(youtube_base_url: Option<String>, youtube_key: String) -> Self {
+    pub(crate) fn new(youtube_base_url: Option<String>, youtube_key: String, mode: Mode) -> Self {
         let event_store = Arc::new(EventStore::new());
         Self {
             user_service: Arc::new(Mutex::new(UserService2::new(event_store.clone()))),
@@ -31,8 +31,8 @@ impl Services {
             feed_service: Arc::new(Mutex::new(FeedService::new(
                 event_store.clone(),
                 YoutubeClient::new(youtube_base_url, youtube_key),
-                DiskCache::new(format!("{}/channels", Uuid::new_v4().to_string()).as_str()),
-                DiskCache::new(format!("{}/videos", Uuid::new_v4().to_string()).as_str()),
+                DiskCache::new("channels", mode),
+                DiskCache::new("videos", mode),
             ))),
             label_service: Arc::new(Mutex::new(LabelService::new(event_store.clone()))),
         }

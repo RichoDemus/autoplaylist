@@ -17,6 +17,7 @@ use std::env;
 use crate::endpoints::user::{create_user, login};
 use crate::event::event_store;
 use crate::service::Services;
+use crate::sled_wrapper::Mode;
 
 pub mod endpoints;
 pub mod event;
@@ -42,8 +43,8 @@ async fn main() -> anyhow::Result<()> {
 
     // event_store::init().await?;
     let secret_key = Key::from(&[0; 64]); // todo use proper key
-    let youtube_key = env::var("YOUTUBE_KEY").context("Missing ENV YOUTUBE_KEY")?;
-    let state = web::Data::new(Services::new(None, youtube_key));
+    let youtube_key = env::var("YOUTUBE_API_KEY").context("Missing ENV YOUTUBE_API_KEY")?;
+    let state = web::Data::new(Services::new(None, youtube_key, Mode::Prod));
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
@@ -76,7 +77,7 @@ async fn main() -> anyhow::Result<()> {
             .service(add_video_to_label)
             .route("/{filename:.*}", web::get().to(static_fie))
     })
-    .bind(("0.0.0.0", 8080))?
+    .bind(("0.0.0.0", 8081))?
     .run()
     .await?;
 

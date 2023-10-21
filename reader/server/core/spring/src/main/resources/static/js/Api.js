@@ -39,7 +39,7 @@ var Api = (function()
 			url: "v1/feeds/" + feedId + "/items/" + itemId,
 			type: "POST",
 			data: JSON.stringify({ action: "MARK_READ" }),
-			dataType: "json",
+//			dataType: "json",
 			contentType: "application/json; charset=utf-8",
 			headers: { 'x-token-jwt': Authentication.token.raw },
 			success: function(){
@@ -59,7 +59,7 @@ var Api = (function()
 			url: "v1/feeds/" + feedId + "/items/" + itemId,
 			type: "POST",
 			data: JSON.stringify({ action: "MARK_OLDER_ITEMS_AS_READ" }),
-			dataType: "json",
+//			dataType: "json",
 			contentType: "application/json; charset=utf-8",
 			headers: { 'x-token-jwt': Authentication.token.raw },
 			success: function(){
@@ -79,7 +79,7 @@ var Api = (function()
 			url: "v1/feeds/" + feedId + "/items/" + itemId,
 			type: "POST",
 			data: JSON.stringify({ action: "MARK_UNREAD" }),
-			dataType: "json",
+//			dataType: "json",
 			contentType: "application/json; charset=utf-8",
 			headers: { 'x-token-jwt': Authentication.token.raw },
 			success: function(){
@@ -98,7 +98,7 @@ var Api = (function()
 			url: "v1/feeds",
 			type: "POST",
 			data: JSON.stringify(feedName),
-			dataType: "json",
+//			dataType: "json",
 			contentType: "application/json; charset=utf-8",
 			success: function(){
 				//

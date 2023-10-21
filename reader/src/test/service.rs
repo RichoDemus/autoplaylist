@@ -3,6 +3,7 @@ use crate::endpoints::feeds::{add_feed, feed_operation, get_all_feeds, get_video
 use crate::endpoints::labels::{add_video_to_label, create_label};
 use crate::endpoints::user::{create_user, login};
 use crate::service::Services;
+use crate::sled_wrapper::Mode;
 use crate::test::test_client::LoginPage;
 use crate::test::youtube_mock::YoutubeMock;
 use actix_cors::Cors;
@@ -33,6 +34,7 @@ impl TestService {
         let state = web::Data::new(Services::new(
             Some(youtube_mock.base_url()),
             "YT_KEY".to_string(),
+            Mode::Test,
         ));
 
         Self {

@@ -62,8 +62,9 @@ pub struct Video {
     pub(crate) id: VideoId,
     pub(crate) title: String,
     pub(crate) description: String,
+    #[serde(rename = "uploadDate")]
     pub(crate) upload_date: String,
     pub(crate) url: String,
-    pub(crate) duration: Duration,
+    pub(crate) duration: String,
     pub(crate) views: u64,
 }
