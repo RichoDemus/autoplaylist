@@ -64,6 +64,6 @@ pub struct Video {
     pub(crate) description: String,
     pub(crate) upload_date: String,
     pub(crate) url: String,
-    // pub(crate) duration: Duration,
-    // pub(crate) views: u64,
+    pub(crate) duration: Duration,
+    pub(crate) views: u64,
 }

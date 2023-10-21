@@ -120,6 +120,8 @@ impl YoutubeClient {
                     description: item["snippet"]["description"].as_str().unwrap().to_string(),
                     upload_date: item["snippet"]["publishedAt"].as_str().unwrap().to_string(),
                     url: format!("https://www.youtube.com/watch?v={}", id),
+                    duration: Default::default(),
+                    views: 0,
                 }
             })
             .collect::<Vec<_>>();
