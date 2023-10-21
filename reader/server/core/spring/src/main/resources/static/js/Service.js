@@ -82,9 +82,9 @@ var Service = (function()
 
 		const feed = document.getElementById(feedId);
 		feed.style.backgroundColor = "#ff8e90";
-		Api.getFeed(feedId, function(feed)
+		Api.getFeed(feedId, function(items)
 		{
-			selectedFeed.items = feed.items;
+			selectedFeed.items = items;
 			Service.updateEverything();
 		});
 	};

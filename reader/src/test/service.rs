@@ -1,4 +1,4 @@
-use crate::endpoints::admin::download;
+use crate::endpoints::admin::{download, get_status};
 use crate::endpoints::feeds::{add_feed, feed_operation, get_all_feeds, get_videos};
 use crate::endpoints::labels::{add_video_to_label, create_label};
 use crate::endpoints::user::{create_user, login};
@@ -30,7 +30,10 @@ impl TestService {
         let mut youtube_mock = YoutubeMock::default();
 
         let secret_key = Key::from(&[0; 64]);
-        let state = web::Data::new(Services::new(Some(youtube_mock.base_url())));
+        let state = web::Data::new(Services::new(
+            Some(youtube_mock.base_url()),
+            "YT_KEY".to_string(),
+        ));
 
         Self {
             service: actix_test::start(move || {
@@ -62,6 +65,7 @@ impl TestService {
                     .service(add_feed)
                     .service(feed_operation)
                     .service(download)
+                    .service(get_status)
                     .service(create_label)
                     .service(add_video_to_label)
             }),

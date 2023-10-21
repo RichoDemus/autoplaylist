@@ -3,10 +3,20 @@ use crate::types::UserId;
 use actix_http::StatusCode;
 use actix_session::Session;
 use actix_web::web::Data;
-use actix_web::{post, HttpResponse};
+use actix_web::{get, post, HttpResponse};
 use log::{error, info, warn};
+use serde_json::json;
 
-#[post("/admin/download")]
+#[get("/v1/admin/download")]
+pub async fn get_status() -> HttpResponse {
+    HttpResponse::Ok().json(json!({
+        "lastRun": "1900-01-01",
+        "running": false,
+        "lastRunOutCome": "OK",
+    }))
+}
+
+#[post("/v1/admin/download")]
 pub async fn download(session: Session, services: Data<Services>) -> HttpResponse {
     info!("Session status: {:?}", session.status());
     info!("Session entries: {:?}", session.entries());

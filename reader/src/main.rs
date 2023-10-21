@@ -1,6 +1,6 @@
 extern crate core;
 
-use crate::endpoints::admin::download;
+use crate::endpoints::admin::{download, get_status};
 use crate::endpoints::feeds::{add_feed, feed_operation, get_all_feeds, get_videos};
 use crate::endpoints::labels::{add_video_to_label, create_label};
 use crate::endpoints::serve_assets::static_fie;
@@ -10,7 +10,9 @@ use actix_session::SessionMiddleware;
 use actix_web::cookie::Key;
 use actix_web::middleware::Logger;
 use actix_web::{cookie, web, App, HttpServer};
+use anyhow::Context;
 use log::LevelFilter;
+use std::env;
 
 use crate::endpoints::user::{create_user, login};
 use crate::event::event_store;
@@ -40,7 +42,8 @@ async fn main() -> anyhow::Result<()> {
 
     // event_store::init().await?;
     let secret_key = Key::from(&[0; 64]); // todo use proper key
-    let state = web::Data::new(Services::new(None));
+    let youtube_key = env::var("YOUTUBE_KEY").context("Missing ENV YOUTUBE_KEY")?;
+    let state = web::Data::new(Services::new(None, youtube_key));
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
@@ -68,6 +71,7 @@ async fn main() -> anyhow::Result<()> {
             .service(add_feed)
             .service(feed_operation)
             .service(download)
+            .service(get_status)
             .service(create_label)
             .service(add_video_to_label)
             .route("/{filename:.*}", web::get().to(static_fie))

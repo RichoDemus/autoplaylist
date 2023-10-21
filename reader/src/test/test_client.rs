@@ -139,7 +139,7 @@ impl MainPage {
     pub async fn download_feeds(&self) -> Result<()> {
         let response = self
             .client
-            .post(format!("http://localhost:{}/admin/download", self.port))
+            .post(format!("http://localhost:{}/v1/admin/download", self.port))
             .header("Cookie", self.cookie.as_str())
             .send()
             .await?;

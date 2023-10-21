@@ -27,7 +27,7 @@ var Api = (function()
 		console.log("Getting feed " + feedId + " for " + Authentication.username);
 		$.ajax(
 			{
-				url: "v1/feeds/" + feedId,
+				url: "v1/feeds/" + feedId + "/items",
 				type: "GET"
 			}).done(callback);
 	};
@@ -36,7 +36,7 @@ var Api = (function()
 	{
 		console.log("Marking item " + itemId + " in feed " + feedId + " as read");
 		jQuery.ajax ({
-			url: "v1/feeds/" + feedId + "/items/" + itemId + "/",
+			url: "v1/feeds/" + feedId + "/items/" + itemId,
 			type: "POST",
 			data: JSON.stringify({ action: "MARK_READ" }),
 			dataType: "json",
@@ -56,7 +56,7 @@ var Api = (function()
 	{
 		console.log("Marking items in feed " + feedId + " older than item " + itemId + " as read");
 		jQuery.ajax ({
-			url: "v1/feeds/" + feedId + "/items/" + itemId + "/",
+			url: "v1/feeds/" + feedId + "/items/" + itemId,
 			type: "POST",
 			data: JSON.stringify({ action: "MARK_OLDER_ITEMS_AS_READ" }),
 			dataType: "json",
@@ -76,7 +76,7 @@ var Api = (function()
 	{
 		console.log("Marking item " + itemId + " in feed " + feedId + " as unread");
 		jQuery.ajax ({
-			url: "v1/feeds/" + feedId + "/items/" + itemId + "/",
+			url: "v1/feeds/" + feedId + "/items/" + itemId,
 			type: "POST",
 			data: JSON.stringify({ action: "MARK_UNREAD" }),
 			dataType: "json",

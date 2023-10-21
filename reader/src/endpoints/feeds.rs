@@ -1,6 +1,6 @@
 use crate::endpoints::endpoint_types::{AllFeedsAndLabelsResponse, Operation};
 use crate::service::Services;
-use crate::types::{ChannelId, ChannelWithoutVideos, UserId, VideoId, YoutubeChannelUrl};
+use crate::types::{ChannelId, ChannelWithoutVideos, UserId, Video, VideoId, YoutubeChannelUrl};
 use actix_http::StatusCode;
 use actix_session::{Session, SessionGetError};
 use actix_web::web::Bytes;
@@ -69,7 +69,7 @@ pub async fn get_videos(
         .lock()
         .unwrap()
         .watched_items(&user_id, &channel_id);
-    let mut feed = services.feed_service.lock().unwrap().videos(channel_id);
+    let mut feed: Vec<Video> = services.feed_service.lock().unwrap().videos(channel_id);
     feed.retain(|video| !watched_videos.contains(&video.id));
 
     HttpResponse::Ok().json(feed)
