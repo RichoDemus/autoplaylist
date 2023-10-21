@@ -1,5 +1,6 @@
 use crate::event::event_store::EventStore;
 use crate::projections::feed_service::FeedService;
+use crate::projections::label_service::LabelService;
 use crate::projections::subscriptions::SubscriptionsService;
 use crate::projections::user_service2::UserService2;
 use crate::projections::watched_items::WatchedVideosService;
@@ -13,6 +14,7 @@ pub struct Services {
     pub subscriptions_service: Arc<Mutex<SubscriptionsService>>,
     pub feed_service: Arc<Mutex<FeedService>>,
     pub watched_videos_service: Arc<Mutex<WatchedVideosService>>,
+    pub label_service: Arc<Mutex<LabelService>>,
 }
 
 impl Services {
@@ -32,6 +34,7 @@ impl Services {
                 DiskCache::new(format!("{}/channels", Uuid::new_v4().to_string()).as_str()),
                 DiskCache::new(format!("{}/videos", Uuid::new_v4().to_string()).as_str()),
             ))),
+            label_service: Arc::new(Mutex::new(LabelService::new(event_store.clone()))),
         }
     }
 }

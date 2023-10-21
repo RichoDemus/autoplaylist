@@ -1,4 +1,4 @@
-use crate::endpoints::endpoint_types::Operation;
+use crate::endpoints::endpoint_types::{AllFeedsAndLabelsResponse, Operation};
 use crate::service::Services;
 use crate::types::{ChannelId, ChannelWithoutVideos, UserId, VideoId, YoutubeChannelUrl};
 use actix_http::StatusCode;
@@ -23,7 +23,13 @@ pub async fn get_all_feeds(session: Session, services: Data<Services>) -> HttpRe
         return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
     };
     info!("cool session cooke, userid: {user_id:?}");
-    return HttpResponse::Ok().json(build_feeds(user_id, services));
+    let labels = services.label_service.lock().unwrap().get_labels(&user_id);
+    let channels = build_feeds(user_id, services);
+
+    return HttpResponse::Ok().json(AllFeedsAndLabelsResponse {
+        feeds: channels,
+        labels,
+    });
 }
 
 fn build_feeds(user: UserId, services: Data<Services>) -> Vec<ChannelWithoutVideos> {

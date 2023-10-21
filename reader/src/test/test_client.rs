@@ -1,4 +1,5 @@
-use crate::types::{Channel, ChannelId, ChannelWithoutVideos, Video, VideoId};
+use crate::endpoints::endpoint_types::AllFeedsAndLabelsResponse;
+use crate::types::{Channel, ChannelId, ChannelWithoutVideos, LabelId, Video, VideoId};
 use anyhow::{bail, Context, Result};
 use reqwest::Client;
 use serde_json::json;
@@ -149,7 +150,7 @@ impl MainPage {
         }
     }
 
-    pub async fn get_feeds(&self) -> Result<Vec<ChannelWithoutVideos>> {
+    pub async fn get_feeds(&self) -> Result<AllFeedsAndLabelsResponse> {
         let response = self
             .client
             .get(format!("http://localhost:{}/v1/feeds", self.port))
@@ -157,7 +158,7 @@ impl MainPage {
             .send()
             .await?;
         if response.status().is_success() {
-            let feeds: Vec<ChannelWithoutVideos> = response
+            let feeds: AllFeedsAndLabelsResponse = response
                 .json()
                 .await
                 .context("Parse feedwithoutitems json")?;
@@ -218,6 +219,42 @@ impl MainPage {
             Ok(())
         } else {
             bail!("Failed to mark as read")
+        }
+    }
+
+    pub async fn create_label(&self, name: &str) -> Result<()> {
+        let response = self
+            .client
+            .post(format!("http://localhost:{}/v1/labels", self.port))
+            .header("Cookie", self.cookie.as_str())
+            .json(&json!(name))
+            .send()
+            .await?;
+        if response.status().is_success() {
+            Ok(())
+        } else {
+            bail!("Failed to create label {:?}", response.error_for_status())
+        }
+    }
+
+    pub async fn add_feed_to_label(&self, channel: ChannelId, label: LabelId) -> Result<()> {
+        let response = self
+            .client
+            .post(format!(
+                "http://localhost:{}/v1/labels/{}",
+                self.port, *label,
+            ))
+            .header("Cookie", self.cookie.as_str())
+            .json(&json!(channel))
+            .send()
+            .await?;
+        if response.status().is_success() {
+            Ok(())
+        } else {
+            bail!(
+                "Failed to add video to label {:?}",
+                response.error_for_status()
+            )
         }
     }
 }

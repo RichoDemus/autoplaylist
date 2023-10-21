@@ -1,15 +1,17 @@
 use crate::types::{ChannelId, ChannelWithoutVideos, LabelId, LabelName};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Label {
     pub id: LabelId,
     pub name: LabelName,
     pub feeds: Vec<ChannelId>,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct AllFeedsAndLabelsResponse {
-    feeds: Vec<ChannelWithoutVideos>,
-    labels: Vec<Label>,
+    pub feeds: Vec<ChannelWithoutVideos>,
+    pub labels: Vec<Label>,
 }
 
 #[derive(Deserialize, Debug)]
