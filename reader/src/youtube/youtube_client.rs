@@ -88,7 +88,7 @@ impl YoutubeClient {
     ) -> Result<(Vec<Video>, Option<String>)> {
         let mut query = vec![
             ("part", "snippet"),
-            ("maxResults", "5"),
+            ("maxResults", "50"),
             ("playlistId", &*id),
         ];
         if let Some(ref token) = page_token {

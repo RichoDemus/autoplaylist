@@ -31,6 +31,8 @@ static-files = "0.2.3"
 actix-test = "0.1.2"
 # todo try out compression for sled
 sled = "0.34.7"
+tokio-channel = "0.1.0"
+futures = "0.3.28"
 
 [dev-dependencies]
 httpmock = "0.6"

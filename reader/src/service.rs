@@ -19,7 +19,7 @@ pub struct Services {
 
 impl Services {
     pub(crate) fn new(youtube_base_url: Option<String>, youtube_key: String, mode: Mode) -> Self {
-        let event_store = Arc::new(EventStore::new());
+        let event_store = Arc::new(Mutex::new(EventStore::new()));
         Self {
             user_service: Arc::new(Mutex::new(UserService2::new(event_store.clone()))),
             subscriptions_service: Arc::new(Mutex::new(SubscriptionsService::new(

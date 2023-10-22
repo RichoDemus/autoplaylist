@@ -77,7 +77,7 @@ async fn main() -> anyhow::Result<()> {
             .service(add_video_to_label)
             .route("/{filename:.*}", web::get().to(static_fie))
     })
-    .bind(("0.0.0.0", 8081))?
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await?;
 

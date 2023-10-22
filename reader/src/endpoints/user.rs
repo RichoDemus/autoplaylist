@@ -10,8 +10,8 @@ use crate::types::{Password, Username};
 
 #[post("/v1/users")]
 pub async fn create_user(json: web::Json<Value>, services: web::Data<Services>) -> HttpResponse {
-    // #[cfg(not(test))]
-    // return HttpResponse::Forbidden().into();
+    #[cfg(not(test))]
+    return HttpResponse::Forbidden().into();
     let username = json["username"].as_str().unwrap();
     let password = json["password"].as_str().unwrap();
 
@@ -24,6 +24,7 @@ pub async fn create_user(json: web::Json<Value>, services: web::Data<Services>) 
         .lock()
         .unwrap()
         .create_user(username, password)
+        .await
     {
         Ok(()) => HttpResponse::Ok().into(),
         Err(e) => {

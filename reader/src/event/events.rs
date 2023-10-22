@@ -52,7 +52,7 @@ pub enum Event {
     },
     #[serde(rename = "LABEL_CREATED")]
     LabelCreated {
-        id: String,
+        id: EventId,
         timestamp: DateTime<Utc>,
         #[serde(rename = "userId")] // wat
         user_id: UserId,
@@ -70,4 +70,17 @@ pub enum Event {
         #[serde(rename = "feedId")]
         feed_id: ChannelId,
     },
+}
+
+impl Event {
+    pub fn id(&self) -> EventId {
+        match self {
+            Event::UserCreated { id, .. } => id.clone(),
+            Event::UserSubscribedToFeed { id, .. } => id.clone(),
+            Event::UserWatchedItem { id, .. } => id.clone(),
+            Event::UserUnwatchedItem { id, .. } => id.clone(),
+            Event::LabelCreated { id, .. } => id.clone(),
+            Event::FeedAddedToLabel { id, .. } => id.clone(),
+        }
+    }
 }

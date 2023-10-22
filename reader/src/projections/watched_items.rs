@@ -8,64 +8,52 @@ use std::sync::{Arc, Mutex};
 use tokio::sync::broadcast::error::RecvError;
 
 pub struct WatchedVideosService {
-    event_store: Arc<EventStore>,
+    event_store: Arc<Mutex<EventStore>>,
     watched_items: Arc<Mutex<HashMap<UserId, HashMap<ChannelId, HashSet<VideoId>>>>>,
 }
 
 impl WatchedVideosService {
-    pub fn new(event_store: Arc<EventStore>) -> Self {
+    pub fn new(event_store: Arc<Mutex<EventStore>>) -> Self {
         let watched_items: Arc<Mutex<HashMap<UserId, HashMap<ChannelId, HashSet<VideoId>>>>> =
             Default::default();
         let watched_items_spawn = watched_items.clone();
-        let mut receiver = event_store.receiver();
+        let mut receiver = event_store.lock().unwrap().receiver();
         actix_rt::spawn(async move {
-            loop {
-                match receiver.recv().await {
-                    Ok(event) => {
-                        info!("Received event {event:?}");
-                        match event {
-                            Event::UserWatchedItem {
-                                id,
-                                timestamp,
-                                user_id,
-                                feed_id,
-                                item_id,
-                            } => {
-                                watched_items_spawn
-                                    .lock()
-                                    .unwrap()
-                                    .entry(user_id)
-                                    .or_default()
-                                    .entry(feed_id)
-                                    .or_default()
-                                    .insert(item_id);
-                            }
-                            Event::UserUnwatchedItem {
-                                id,
-                                timestamp,
-                                user_id,
-                                feed_id,
-                                item_id,
-                            } => {
-                                watched_items_spawn
-                                    .lock()
-                                    .unwrap()
-                                    .entry(user_id)
-                                    .or_default()
-                                    .entry(feed_id)
-                                    .or_default()
-                                    .remove(&item_id);
-                            }
-                            _ => {}
-                        }
+            while let Some(event) = receiver.recv().await {
+                match event {
+                    Event::UserWatchedItem {
+                        id,
+                        timestamp,
+                        user_id,
+                        feed_id,
+                        item_id,
+                    } => {
+                        watched_items_spawn
+                            .lock()
+                            .unwrap()
+                            .entry(user_id)
+                            .or_default()
+                            .entry(feed_id)
+                            .or_default()
+                            .insert(item_id);
                     }
-                    Err(RecvError::Closed) => {
-                        info!("closed");
-                        break;
+                    Event::UserUnwatchedItem {
+                        id,
+                        timestamp,
+                        user_id,
+                        feed_id,
+                        item_id,
+                    } => {
+                        watched_items_spawn
+                            .lock()
+                            .unwrap()
+                            .entry(user_id)
+                            .or_default()
+                            .entry(feed_id)
+                            .or_default()
+                            .remove(&item_id);
                     }
-                    Err(RecvError::Lagged(x)) => {
-                        error!("lagged {x}, very bad!");
-                    }
+                    _ => {}
                 }
             }
         });
@@ -75,29 +63,42 @@ impl WatchedVideosService {
         }
     }
 
-    pub fn watch_item(&self, user_id: UserId, feed_id: ChannelId, item_id: VideoId) -> Result<()> {
-        self.event_store.publish_event(Event::UserWatchedItem {
-            id: Default::default(),
-            timestamp: Default::default(),
-            user_id,
-            feed_id,
-            item_id,
-        })
-    }
-
-    pub fn unwatch_item(
+    pub async fn watch_item(
         &self,
         user_id: UserId,
         feed_id: ChannelId,
         item_id: VideoId,
     ) -> Result<()> {
-        self.event_store.publish_event(Event::UserUnwatchedItem {
-            id: Default::default(),
-            timestamp: Default::default(),
-            user_id,
-            feed_id,
-            item_id,
-        })
+        self.event_store
+            .lock()
+            .unwrap()
+            .publish_event(Event::UserWatchedItem {
+                id: Default::default(),
+                timestamp: Default::default(),
+                user_id,
+                feed_id,
+                item_id,
+            })
+            .await
+    }
+
+    pub async fn unwatch_item(
+        &self,
+        user_id: UserId,
+        feed_id: ChannelId,
+        item_id: VideoId,
+    ) -> Result<()> {
+        self.event_store
+            .lock()
+            .unwrap()
+            .publish_event(Event::UserUnwatchedItem {
+                id: Default::default(),
+                timestamp: Default::default(),
+                user_id,
+                feed_id,
+                item_id,
+            })
+            .await
     }
 
     pub fn watched_items(&self, user: &UserId, channel: &ChannelId) -> HashSet<VideoId> {

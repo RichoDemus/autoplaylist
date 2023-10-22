@@ -27,6 +27,7 @@ pub async fn create_label(session: Session, body: Bytes, services: Data<Services
         .lock()
         .unwrap()
         .create_label(user_id, label_name)
+        .await
         .unwrap();
 
     HttpResponse::Ok().into()
@@ -56,6 +57,7 @@ pub async fn add_video_to_label(
         .lock()
         .unwrap()
         .add_channel_to_label(channel, label_id.into_inner())
+        .await
         .unwrap();
     HttpResponse::Ok().into()
 }

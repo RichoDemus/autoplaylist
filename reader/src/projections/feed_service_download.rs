@@ -12,7 +12,7 @@ pub async fn download_channel(
     videos: &DiskCache<ChannelId, Vec<Video>>,
     channel: Channel,
 ) -> Result<()> {
-    info!("Downloading {:?}", channel.name);
+    info!("Downloading {}", *channel.name);
     let mut already_downloaded_videos = videos.get(channel.id.clone()).unwrap_or_default();
     let already_downloaded_ids = already_downloaded_videos
         .iter()
@@ -29,7 +29,7 @@ pub async fn download_channel(
         .videos(&channel.playlist, None)
         .await
         .with_context(|| format!("download {:?} ({:?})", channel.name, channel.id))?;
-    info!(
+    trace!(
         "Downloaded {} videos, token: {:?}",
         res.len(),
         next_page_token
@@ -53,7 +53,7 @@ pub async fn download_channel(
                     .videos(&channel.playlist, Some(token))
                     .await
                     .with_context(|| format!("download {:?} ({:?})", channel.name, channel.id))?;
-                info!(
+                trace!(
                     "Downloaded {} videos, token: {:?}",
                     res.len(),
                     next_page_token

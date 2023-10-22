@@ -104,6 +104,7 @@ pub async fn add_feed(
         .lock()
         .unwrap()
         .subscribe(user_id, id)
+        .await
         .unwrap();
     return HttpResponse::Ok().into();
 }
@@ -138,12 +139,14 @@ pub async fn feed_operation(
             .lock()
             .unwrap()
             .watch_item(user_id, channel_id, video_id)
+            .await
             .unwrap(),
         Operation::MARK_UNREAD => services
             .watched_videos_service
             .lock()
             .unwrap()
             .unwatch_item(user_id, channel_id, video_id)
+            .await
             .unwrap(),
     }
 

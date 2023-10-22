@@ -5,9 +5,10 @@ use crate::sled_wrapper::DiskCache;
 use crate::types::{Channel, ChannelId, ChannelName, Video, YoutubeChannelUrl};
 use crate::youtube::youtube_client::YoutubeClient;
 use anyhow::{Context, Result};
-use log::{error, info, warn};
-use std::sync::Arc;
-use tokio::sync::broadcast::error::RecvError;
+use itertools::Itertools;
+use log::{error, info, trace, warn};
+use std::sync::{Arc, Mutex};
+use tokio::sync::mpsc::Receiver;
 
 pub struct FeedService {
     channels: DiskCache<ChannelId, Channel>,
@@ -17,37 +18,25 @@ pub struct FeedService {
 
 impl FeedService {
     pub fn new(
-        event_store: Arc<EventStore>,
+        mut event_store: Arc<Mutex<EventStore>>,
         client: YoutubeClient,
         channels: DiskCache<ChannelId, Channel>,
         videos: DiskCache<ChannelId, Vec<Video>>,
     ) -> Self {
         let channels_spawn = channels.clone();
         let client_spawn = client.clone();
-        let mut receiver = event_store.receiver();
+        let mut receiver: Receiver<Event> = event_store.lock().unwrap().receiver();
         actix_rt::spawn(async move {
-            loop {
-                match receiver.recv().await {
-                    Ok(event) => {
-                        info!("Received event {event:?}");
-                        if let Event::UserSubscribedToFeed {
-                            id: _,
-                            timestamp: _,
-                            user_id: _,
-                            feed_id,
-                        } = event
-                        {
-                            register_channel(client_spawn.clone(), channels_spawn.clone(), feed_id);
-                        }
-                    }
-
-                    Err(RecvError::Closed) => {
-                        info!("closed");
-                        break;
-                    }
-                    Err(RecvError::Lagged(x)) => {
-                        error!("lagged {x}, very bad!");
-                    }
+            while let Some(event) = receiver.recv().await {
+                trace!("Received event {event:?}");
+                if let Event::UserSubscribedToFeed {
+                    id: _,
+                    timestamp: _,
+                    user_id: _,
+                    feed_id,
+                } = event
+                {
+                    register_channel(client_spawn.clone(), channels_spawn.clone(), feed_id);
                 }
             }
         });
@@ -71,8 +60,14 @@ impl FeedService {
 
     pub async fn download(&self) -> Result<()> {
         info!("Synchronizing all data with youtube");
-        for channel in self.channels.values() {
-            download_channel(&self.client, &self.videos, channel).await?;
+        for channel in self
+            .channels
+            .values()
+            .sorted_unstable_by(|a, b| Ord::cmp(&a.name.0, &b.name.0))
+        {
+            if let Err(e) = download_channel(&self.client, &self.videos, channel.clone()).await {
+                warn!("Channel {} failed: {:?}", &*channel.name, e);
+            }
         }
         info!("Done synchronizing data!");
         Ok(())
