@@ -1,7 +1,6 @@
 use derive_newtype::NewType;
 use serde::Deserialize;
 use serde::Serialize;
-use std::time::Duration;
 use uuid::Uuid;
 
 #[derive(NewType, Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
@@ -50,6 +49,7 @@ pub struct UserSession {
     user_id: UserId,
     username: Username,
 }
+
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct Channel {
     pub(crate) id: ChannelId,
@@ -57,6 +57,7 @@ pub struct Channel {
     pub(crate) playlist: PlaylistId,
     // pub(crate) items: Vec<Video>,
 }
+
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct Video {
     pub(crate) id: VideoId,

@@ -1,9 +1,11 @@
-use actix_web::web;
-use anyhow::{Context, Result};
 use std::fs;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
+
+use actix_web::web;
+use anyhow::{Context, Result};
+
 pub async fn read_file(filename: String) -> Option<Vec<u8>> {
     web::block(move || {
         let mut file = File::open(format!("data/{}", filename)).ok()?;

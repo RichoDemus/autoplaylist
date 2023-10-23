@@ -1,16 +1,12 @@
-use crate::endpoints::endpoint_types::Label;
 use crate::test::service::TestService;
-use crate::test::test_client::MainPage;
+use crate::test::test_utis::await_videos;
 use crate::test::test_utis::expected_videos;
+use crate::test::test_utis::expected_videos2;
 use crate::test::test_utis::expected_videos_read;
-use crate::test::test_utis::{await_videos, expected_videos2};
-use crate::types::{ChannelId, Video, VideoId};
-use itertools::assert_equal;
-use log::info;
+use crate::types::ChannelId;
+use crate::types::VideoId;
 use log::trace;
-use pretty_assertions::{assert_eq, assert_ne};
-use std::future::Future;
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 #[actix_rt::test]
 async fn login_should_fail_if_no_user_exists() {

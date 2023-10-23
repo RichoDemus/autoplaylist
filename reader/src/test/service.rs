@@ -1,3 +1,11 @@
+use actix_cors::Cors;
+use actix_session::storage::CookieSessionStore;
+use actix_session::SessionMiddleware;
+use actix_test::TestServer;
+use actix_web::cookie::Key;
+use actix_web::{web, App};
+use log::LevelFilter;
+
 use crate::endpoints::admin::{download, get_status};
 use crate::endpoints::feeds::{add_feed, feed_operation, get_all_feeds, get_videos};
 use crate::endpoints::labels::{add_video_to_label, create_label};
@@ -6,22 +14,12 @@ use crate::service::Services;
 use crate::sled_wrapper::Mode;
 use crate::test::test_client::LoginPage;
 use crate::test::youtube_mock::YoutubeMock;
-use actix_cors::Cors;
-use actix_session::storage::CookieSessionStore;
-use actix_session::SessionMiddleware;
-use actix_test::TestServer;
-use actix_web::cookie::Key;
-use actix_web::{web, App};
-use httpmock::prelude::*;
-use httpmock::MockServer;
-use log::LevelFilter;
-use serde_json::json;
-use std::env;
 
 pub struct TestService {
     pub service: TestServer,
     youtube_mock: YoutubeMock,
 }
+
 impl TestService {
     pub fn new() -> Self {
         let _ = env_logger::builder()

@@ -1,8 +1,9 @@
-use crate::endpoints::endpoint_types::AllFeedsAndLabelsResponse;
-use crate::types::{Channel, ChannelId, ChannelWithoutVideos, LabelId, Video, VideoId};
 use anyhow::{bail, Context, Result};
 use reqwest::Client;
 use serde_json::json;
+
+use crate::endpoints::endpoint_types::AllFeedsAndLabelsResponse;
+use crate::types::{ChannelId, LabelId, Video, VideoId};
 
 #[derive(Debug)]
 pub struct LoginPage {

@@ -1,5 +1,6 @@
-use crate::types::{ChannelId, ChannelWithoutVideos, LabelId, LabelName};
 use serde::{Deserialize, Serialize};
+
+use crate::types::{ChannelId, ChannelWithoutVideos, LabelId, LabelName};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Label {

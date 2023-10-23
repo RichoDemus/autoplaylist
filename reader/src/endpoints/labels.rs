@@ -1,12 +1,11 @@
-use crate::service::Services;
-use crate::types::{ChannelId, LabelId, LabelName, UserId};
 use actix_http::StatusCode;
 use actix_session::Session;
-use actix_web::web::{Bytes, Data, Json, Path};
+use actix_web::web::{Bytes, Data, Path};
 use actix_web::{post, HttpResponse};
-use log::{info, trace, warn};
-use reqwest::Body;
-use serde_json::Value;
+use log::{trace, warn};
+
+use crate::service::Services;
+use crate::types::{ChannelId, LabelId, LabelName, UserId};
 
 #[post("/v1/labels")] // todo make sure no endpoint ends with /
 pub async fn create_label(session: Session, body: Bytes, services: Data<Services>) -> HttpResponse {

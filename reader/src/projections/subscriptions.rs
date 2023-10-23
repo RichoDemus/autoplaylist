@@ -1,11 +1,11 @@
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
+
+use anyhow::Result;
+
 use crate::event::event_store::EventStore;
 use crate::event::events::Event;
 use crate::types::{ChannelId, UserId};
-use anyhow::Result;
-use log::{error, info};
-use std::collections::HashMap;
-use std::sync::{Arc, Mutex};
-use tokio::sync::broadcast::error::RecvError;
 
 pub struct SubscriptionsService {
     event_store: Arc<Mutex<EventStore>>,

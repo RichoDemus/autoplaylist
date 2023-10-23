@@ -5,7 +5,6 @@ use std::sync::atomic::{AtomicBool, AtomicUsize};
 use std::sync::Arc;
 use std::time::Duration;
 
-use crate::gcs::filesystem::{read_file, write_file};
 use anyhow::{Context, Result};
 use async_once_cell::OnceCell;
 use google_cloud_storage::client::google_cloud_auth::credentials::CredentialsFile;
@@ -17,6 +16,8 @@ use google_cloud_storage::http::objects::get::GetObjectRequest;
 use google_cloud_storage::http::objects::list::ListObjectsRequest;
 use google_cloud_storage::http::objects::upload::{Media, UploadObjectRequest, UploadType};
 use log::info;
+
+use crate::gcs::filesystem::{read_file, write_file};
 
 // const CLIENT = Arc::pin(Lazy::new(||async {
 //     let cred: CredentialsFile = CredentialsFile::new_from_file("google-service-key.json".into()).await.unwrap();
@@ -183,19 +184,22 @@ pub async fn get_all_events() -> Result<Vec<Vec<u8>>> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use actix_rt::time::sleep;
-    use log::LevelFilter;
     use std::sync::atomic::AtomicBool;
     use std::sync::atomic::AtomicUsize;
     use std::sync::Arc;
     use std::time::Duration;
+
+    use actix_rt::time::sleep;
+    use log::LevelFilter;
+
+    use super::*;
 
     #[actix_web::test]
     async fn read_all_events_from_disk() {
         let result = load_events_from_gcs_and_disk().await.unwrap();
         println!("{:#?}", String::from_utf8(result[0].clone()));
     }
+
     // #[actix_web::test]
     async fn test() {
         let _ = env_logger::builder()

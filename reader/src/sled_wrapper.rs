@@ -1,9 +1,10 @@
-use log::{error, warn};
-use serde::{Deserialize, Serialize};
-use sled::{Db, Iter};
 use std::fmt::Debug;
 use std::marker::PhantomData;
 use std::ops::Deref;
+
+use log::{error, warn};
+use serde::{Deserialize, Serialize};
+use sled::Db;
 use uuid::Uuid;
 
 #[derive(Clone)]
@@ -78,10 +79,13 @@ pub enum Mode {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::types::{Channel, ChannelId, ChannelName, PlaylistId};
     use std::sync::Arc;
+
     use uuid::Uuid;
+
+    use crate::types::{Channel, ChannelId, ChannelName, PlaylistId};
+
+    use super::*;
 
     #[test]
     fn test_cache() {

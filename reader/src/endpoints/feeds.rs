@@ -1,14 +1,14 @@
-use crate::endpoints::endpoint_types::{AllFeedsAndLabelsResponse, Operation};
-use crate::service::Services;
-use crate::types::{ChannelId, ChannelWithoutVideos, UserId, Video, VideoId, YoutubeChannelUrl};
 use actix_http::StatusCode;
-use actix_session::{Session, SessionGetError};
+use actix_session::Session;
 use actix_web::web::Bytes;
 use actix_web::web::{Data, Json, Path};
 use actix_web::{get, post, HttpResponse};
-use anyhow::anyhow;
 use log::{info, warn};
 use serde_json::Value;
+
+use crate::endpoints::endpoint_types::{AllFeedsAndLabelsResponse, Operation};
+use crate::service::Services;
+use crate::types::{ChannelId, ChannelWithoutVideos, UserId, Video, VideoId, YoutubeChannelUrl};
 
 #[get("/v1/feeds")]
 pub async fn get_all_feeds(session: Session, services: Data<Services>) -> HttpResponse {

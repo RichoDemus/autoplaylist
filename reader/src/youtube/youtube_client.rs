@@ -1,9 +1,11 @@
-use crate::types::{ChannelId, ChannelName, PlaylistId, Video, VideoId, YoutubeChannelUrl};
+use std::env;
+
 use anyhow::{bail, Context, Result};
 use log::{error, info, trace, warn};
-use reqwest::{Client, RequestBuilder, StatusCode};
+use reqwest::{Client, RequestBuilder};
 use serde_json::Value;
-use std::env;
+
+use crate::types::{ChannelId, ChannelName, PlaylistId, Video, VideoId, YoutubeChannelUrl};
 
 #[derive(Clone)]
 pub struct YoutubeClient {
@@ -153,6 +155,7 @@ impl YoutubeClient {
 mod tests {
     use super::*;
     use log::LevelFilter;
+    use std::env;
 
     #[actix_web::test]
     async fn test_parse_different_ur_types() {

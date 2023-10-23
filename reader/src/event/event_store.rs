@@ -1,7 +1,8 @@
-use anyhow::{Context, Result};
-use log::{error, info};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
+
+use anyhow::{Context, Result};
+use log::info;
 use tokio::sync::mpsc::{Receiver, Sender};
 
 use crate::event::events::Event;
@@ -118,7 +119,6 @@ fn event_to_bytes(event: &Event) -> Vec<u8> {
 mod tests {
     use super::*;
     use crate::gcs::filesystem;
-    use std::time::Duration;
 
     #[actix_rt::test]
     async fn test_streams() {

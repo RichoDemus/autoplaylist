@@ -1,8 +1,10 @@
+use std::path::PathBuf;
+
 use actix_web::http::header;
 use actix_web::{HttpRequest, HttpResponse, Responder};
 use log::trace;
 use once_cell::unsync::Lazy;
-use std::path::PathBuf;
+
 include!(concat!(env!("OUT_DIR"), "/generated.rs"));
 
 pub async fn static_fie(req: HttpRequest) -> impl Responder {

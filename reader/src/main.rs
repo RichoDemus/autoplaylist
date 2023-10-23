@@ -1,9 +1,7 @@
 extern crate core;
 
-use crate::endpoints::admin::{download, get_status};
-use crate::endpoints::feeds::{add_feed, feed_operation, get_all_feeds, get_videos};
-use crate::endpoints::labels::{add_video_to_label, create_label};
-use crate::endpoints::serve_assets::static_fie;
+use std::env;
+
 use actix_cors::Cors;
 use actix_session::storage::CookieSessionStore;
 use actix_session::SessionMiddleware;
@@ -12,10 +10,12 @@ use actix_web::middleware::Logger;
 use actix_web::{cookie, web, App, HttpServer};
 use anyhow::Context;
 use log::LevelFilter;
-use std::env;
 
+use crate::endpoints::admin::{download, get_status};
+use crate::endpoints::feeds::{add_feed, feed_operation, get_all_feeds, get_videos};
+use crate::endpoints::labels::{add_video_to_label, create_label};
+use crate::endpoints::serve_assets::static_fie;
 use crate::endpoints::user::{create_user, login};
-use crate::event::event_store;
 use crate::service::Services;
 use crate::sled_wrapper::Mode;
 

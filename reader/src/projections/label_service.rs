@@ -1,14 +1,13 @@
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
+
+use anyhow::Result;
+use uuid::Uuid;
+
 use crate::endpoints::endpoint_types::Label;
 use crate::event::event_store::EventStore;
-use crate::event::events::Event;
 use crate::event::events::Event::{FeedAddedToLabel, LabelCreated};
-use crate::types::{ChannelId, LabelId, LabelName, UserId, Video, VideoId};
-use anyhow::Result;
-use log::{error, info};
-use std::collections::{HashMap, HashSet};
-use std::sync::{Arc, Mutex};
-use tokio::sync::broadcast::error::RecvError;
-use uuid::Uuid;
+use crate::types::{ChannelId, LabelId, LabelName, UserId};
 
 pub struct LabelService {
     event_store: Arc<Mutex<EventStore>>,

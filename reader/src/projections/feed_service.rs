@@ -1,14 +1,16 @@
+use std::sync::{Arc, Mutex};
+
+use anyhow::Result;
+use itertools::Itertools;
+use log::{info, trace, warn};
+use tokio::sync::mpsc::Receiver;
+
 use crate::event::event_store::EventStore;
 use crate::event::events::Event;
 use crate::projections::feed_service_download::download_channel;
 use crate::sled_wrapper::DiskCache;
 use crate::types::{Channel, ChannelId, ChannelName, Video, YoutubeChannelUrl};
 use crate::youtube::youtube_client::YoutubeClient;
-use anyhow::{Context, Result};
-use itertools::Itertools;
-use log::{error, info, trace, warn};
-use std::sync::{Arc, Mutex};
-use tokio::sync::mpsc::Receiver;
 
 pub struct FeedService {
     channels: DiskCache<ChannelId, Channel>,

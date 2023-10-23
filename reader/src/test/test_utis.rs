@@ -1,9 +1,10 @@
-use crate::test::test_client::MainPage;
-use crate::types::{ChannelId, Video, VideoId};
+use std::time::{Duration, Instant};
+
 use actix_rt::time::sleep;
 use log::trace;
-use std::time::{Duration, Instant};
-use uuid::Uuid;
+
+use crate::test::test_client::MainPage;
+use crate::types::{ChannelId, Video, VideoId};
 
 pub async fn await_videos(main_page: &MainPage, id: ChannelId, count: usize) {
     let deadline = Instant::now() + Duration::from_secs(1);

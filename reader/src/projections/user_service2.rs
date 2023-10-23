@@ -1,13 +1,14 @@
-use crate::event::event_store::EventStore;
-use crate::event::events::Event;
-use crate::types::{EventId, Password, UserId, Username};
-use anyhow::Result;
-use log::{error, info};
 use std::collections::HashMap;
 use std::env;
 use std::sync::{Arc, Mutex};
-use tokio::sync::broadcast::error::RecvError;
+
+use anyhow::Result;
+use log::info;
 use uuid::Uuid;
+
+use crate::event::event_store::EventStore;
+use crate::event::events::Event;
+use crate::types::{EventId, Password, UserId, Username};
 
 pub struct UserService2 {
     event_store: Arc<Mutex<EventStore>>,

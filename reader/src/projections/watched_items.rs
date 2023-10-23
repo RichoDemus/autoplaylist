@@ -1,11 +1,11 @@
-use crate::event::event_store::EventStore;
-use crate::event::events::Event;
-use crate::types::{ChannelId, UserId, Video, VideoId};
-use anyhow::Result;
-use log::{error, info};
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
-use tokio::sync::broadcast::error::RecvError;
+
+use anyhow::Result;
+
+use crate::event::event_store::EventStore;
+use crate::event::events::Event;
+use crate::types::{ChannelId, UserId, VideoId};
 
 pub struct WatchedVideosService {
     event_store: Arc<Mutex<EventStore>>,

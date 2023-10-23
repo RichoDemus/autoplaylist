@@ -1,11 +1,13 @@
-use crate::sled_wrapper::DiskCache;
-use crate::types::{Channel, ChannelId, Video};
-use crate::youtube::youtube_client::YoutubeClient;
+use std::collections::HashSet;
+
 use anyhow::Context;
 use anyhow::Result;
 use itertools::Itertools;
 use log::{info, trace};
-use std::collections::HashSet;
+
+use crate::sled_wrapper::DiskCache;
+use crate::types::{Channel, ChannelId, Video};
+use crate::youtube::youtube_client::YoutubeClient;
 
 pub async fn download_channel(
     client: &YoutubeClient,

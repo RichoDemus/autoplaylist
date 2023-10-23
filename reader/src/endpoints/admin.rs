@@ -1,11 +1,12 @@
-use crate::service::Services;
-use crate::types::UserId;
 use actix_http::StatusCode;
 use actix_session::Session;
 use actix_web::web::Data;
 use actix_web::{get, post, HttpResponse};
 use log::{error, info, warn};
 use serde_json::json;
+
+use crate::service::Services;
+use crate::types::UserId;
 
 #[get("/v1/admin/download")]
 pub async fn get_status() -> HttpResponse {

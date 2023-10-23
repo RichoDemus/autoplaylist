@@ -1,6 +1,7 @@
-use crate::types::UserId;
 use actix_session::{Session, SessionGetError};
 use anyhow::anyhow;
+
+use crate::types::UserId;
 
 impl TryFrom<Session> for UserId {
     type Error = SessionGetError;
