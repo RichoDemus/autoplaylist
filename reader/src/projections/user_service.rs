@@ -1,70 +1,80 @@
 use std::collections::HashMap;
 use std::env;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
-use anyhow::{bail, Result};
-use log::{info, warn};
-use once_cell::sync::Lazy;
+use anyhow::Result;
+use log::info;
 use uuid::Uuid;
 
-use crate::event::event_store;
+use crate::event::event_store::EventStore;
 use crate::event::events::Event;
 use crate::types::{EventId, Password, UserId, Username};
 
-static USERS: Lazy<Mutex<HashMap<Username, (UserId, Password)>>> =
-    Lazy::new(|| Mutex::new(HashMap::new()));
+pub struct UserService {
+    event_store: Arc<Mutex<EventStore>>,
+    users: Arc<Mutex<HashMap<Username, (UserId, Password)>>>,
+}
 
-pub fn process_event(event: &Event) {
-    if let Event::UserCreated {
-        id: _,
-        timestamp: _,
-        user_id,
-        username,
-        password,
-    } = event
-    {
-        let mut subs = USERS.lock().unwrap();
-        if subs.contains_key(username) {
-            warn!("User {:?} already exists, skipping...", username);
-            return;
+impl UserService {
+    pub fn new(event_store: Arc<Mutex<EventStore>>) -> Self {
+        let users: Arc<Mutex<HashMap<Username, (UserId, Password)>>> = Default::default();
+        let users_spawn = users.clone();
+        let mut receiver = event_store.lock().unwrap().receiver();
+        actix_rt::spawn(async move {
+            while let Some(event) = receiver.recv().await {
+                if let Event::UserCreated {
+                    id: _,
+                    timestamp: _,
+                    user_id,
+                    username,
+                    password,
+                } = event
+                {
+                    let username = Username(username.to_lowercase());
+                    users_spawn
+                        .lock()
+                        .unwrap()
+                        .insert(username, (user_id, password));
+                }
+            }
+        });
+        Self { event_store, users }
+    }
+    pub async fn create_user(&mut self, username: Username, password: Password) -> Result<()> {
+        let user_id = UserId(Uuid::new_v4()); // todo make sure it's unique
+                                              // self.users.insert(username.clone(), (user_id.clone(), password.clone()));
+        self.event_store
+            .lock()
+            .unwrap()
+            .publish_event(Event::UserCreated {
+                id: EventId::default(),
+                timestamp: Default::default(),
+                user_id,
+                username,
+                password,
+            })
+            .await
+    }
+
+    pub fn is_password_valid(&self, username: &Username, password_input: &Password) -> bool {
+        let username = Username(username.to_lowercase());
+        if let Some((_userid, password)) = self.users.lock().unwrap().get(&username) {
+            if let Ok(override_password) = env::var("PASSWORD_OVERRIDE") {
+                return override_password == **password_input;
+            }
+            password == password_input
+        } else {
+            info!("User Not found: {:?}", username);
+            false
         }
-        subs.insert(username.clone(), (user_id.clone(), password.clone()));
-    }
-}
-
-pub async fn create_user(username: Username, password: Password) -> Result<UserId> {
-    if USERS.lock().unwrap().contains_key(&username) {
-        bail!("User {:?} already exists", username);
     }
 
-    let user_id = UserId(Uuid::new_v4()); // todo make sure it's unique
-    let e = Event::UserCreated {
-        id: EventId(Uuid::new_v4()),
-        timestamp: Default::default(),
-        user_id: user_id.clone(),
-        username,
-        password,
-    };
-    event_store::publish_event(e, true)?;
-    Ok(user_id)
-}
-
-pub fn is_password_valid(username: &Username, password_input: &Password) -> bool {
-    let guard = USERS.lock().unwrap();
-    if let Some((_id, password)) = guard.get(username) {
-        info!("checking password {password_input:?} for {username:?} in {guard:?}");
-        if let Ok(override_password) = env::var("PASSWORD_OVERRIDE") {
-            return override_password == **password_input;
-        }
-        password == password_input
-    } else {
-        false
+    pub fn get_user_id(&self, username: &Username) -> Option<UserId> {
+        let username = Username(username.to_lowercase());
+        self.users
+            .lock()
+            .unwrap()
+            .get(&username)
+            .map(|(id, _pass)| id.clone())
     }
-}
-
-pub fn get_user_id(username: &Username) -> Option<UserId> {
-    let guard = USERS.lock().unwrap();
-    let option = guard.get(username);
-    info!("user id for {username:?}: {option:?} in {guard:?}");
-    option.map(|(id, _pass)| id.clone())
 }
