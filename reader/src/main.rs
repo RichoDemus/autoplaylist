@@ -38,7 +38,7 @@ async fn main() -> anyhow::Result<()> {
 
     let secret_key = Key::from(&[0; 64]); // todo use proper key
     let youtube_key = env::var("YOUTUBE_API_KEY").context("Missing ENV YOUTUBE_API_KEY")?;
-    let state = web::Data::new(Services::new(None, youtube_key, Mode::Prod));
+    let state = web::Data::new(Services::new(None, youtube_key, Mode::Prod, true));
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())

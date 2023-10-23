@@ -1,5 +1,4 @@
 use core::sync::atomic::Ordering;
-use std::fs;
 use std::sync::atomic::Ordering::SeqCst;
 use std::sync::atomic::{AtomicBool, AtomicUsize};
 use std::sync::Arc;
@@ -39,19 +38,7 @@ async fn client() -> Client {
         .clone()
 }
 
-pub async fn load_events_from_gcs_and_disk() -> Result<Vec<Vec<u8>>> {
-    let mut result = vec![];
-    for entry in fs::read_dir("data/events/v2")? {
-        if let Ok(entry) = entry {
-            result.push(fs::read(entry.path())?)
-        }
-    }
-    Ok(result)
-}
-
 pub async fn save_event(name: i32, bytes: Vec<u8>) -> Result<()> {
-    #[cfg(test)]
-    panic!("no saving during tests");
     info!("Saving event {}", name);
     let client = client().await;
     client
@@ -113,25 +100,8 @@ pub async fn get_all_events() -> Result<Vec<Vec<u8>>> {
         info!("{} events, page token: {:?}", event_names.len(), page_token);
     }
 
-    // info!("{:#?}", event_names.iter().sorted_by_key(|name| {
-    //     name.split("/").collect::<Vec<_>>()[2].parse::<i32>().unwrap()
-    // }));
     info!("{} events", event_names.len());
     make_sure_no_events_missing(event_names.clone());
-
-    // info!("{:?}", res);
-    // list.items.unwrap().into_iter().for_each(|item|{
-    // info!("{}", item.name);
-    // });
-
-    // for x in 0..10 {
-    //     let obj = client.download_object(&GetObjectRequest {
-    //         bucket: "richo-reader".into(),
-    //         object: format!("events/v2/{x}"),
-    //         ..Default::default()
-    //     }, &Range::default()).await.unwrap();
-    //     error!("{:?}", String::from_utf8(obj));
-    // }
 
     let total_events = event_names.len();
     let finished_downloads = Arc::new(AtomicUsize::new(0));
@@ -158,19 +128,6 @@ pub async fn get_all_events() -> Result<Vec<Vec<u8>>> {
     for name in event_names {
         downloaded.push(download(name, &client).await?);
     }
-
-    // let futures = event_names.into_iter().map(|name| {
-    //     async {
-    //         let result = download(name, &client).await;
-    //         let _old = finished_downloads.fetch_add(1, Ordering::SeqCst);
-    //         result
-    //     }
-    // })
-    //     // }).map(|bytes|String::from_utf8(bytes).unwrap())
-    //     .collect::<Vec<_>>();
-    //
-    //
-    // let downloaded = join_all(futures).await;
 
     downloading.store(false, SeqCst);
     Ok(downloaded)
@@ -205,13 +162,8 @@ mod tests {
 
     use super::*;
 
-    #[actix_web::test]
-    async fn read_all_events_from_disk() {
-        let result = load_events_from_gcs_and_disk().await.unwrap();
-        println!("{:#?}", String::from_utf8(result[0].clone()));
-    }
-
     // #[actix_web::test]
+    #[allow(dead_code)]
     async fn test() {
         let _ = env_logger::builder()
             .filter_module("reader::gcs::gcs_client", LevelFilter::Info)

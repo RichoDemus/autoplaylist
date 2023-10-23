@@ -14,49 +14,52 @@ use crate::gcs::gcs_client;
 pub struct EventStore {
     senders: Arc<Mutex<Vec<Sender<Event>>>>,
     next_event_id: Arc<Mutex<i32>>,
+    use_gcs: bool,
 }
 
 impl EventStore {
-    pub fn new() -> Self {
+    pub fn new(use_gcs: bool) -> Self {
         let senders: Arc<Mutex<Vec<Sender<Event>>>> = Default::default();
         let senders_spawn = senders.clone();
         let next_event_id = Arc::new(Mutex::new(0));
         let next_event_id_spawn = next_event_id.clone();
-        #[cfg(not(test))]
-        actix_rt::spawn(async move {
-            loop {
-                let senders = senders_spawn.lock().unwrap();
-                if senders.len() < 5 {
-                    info!("Not enough senders: {}", senders.len());
-                }
-                info!("Got all senders");
+        if use_gcs {
+            actix_rt::spawn(async move {
+                loop {
+                    let senders = senders_spawn.lock().unwrap();
+                    if senders.len() < 5 {
+                        info!("Not enough senders: {}", senders.len());
+                    }
+                    info!("Got all senders");
 
-                break;
-            }
-            let events = gcs_client::get_all_events().await.unwrap();
-            info!("Loaded {} events", events.len());
-            let mut num_events = 0;
-            for bytes in events {
-                num_events += 1;
-                let event = String::from_utf8(bytes).unwrap();
-                let (_id, event) = event.split_once(',').unwrap();
-                let event = parse::parse(event).unwrap();
-                for sender in &*senders_spawn.lock().unwrap() {
-                    while let Err(e) = sender.try_send(event.clone()) {
-                        info!("send err: {:?}", e);
-                        actix_rt::time::sleep(Duration::from_millis(10)).await;
+                    break;
+                }
+                let events = gcs_client::get_all_events().await.unwrap();
+                info!("Loaded {} events", events.len());
+                let mut num_events = 0;
+                for bytes in events {
+                    num_events += 1;
+                    let event = String::from_utf8(bytes).unwrap();
+                    let (_id, event) = event.split_once(',').unwrap();
+                    let event = parse::parse(event).unwrap();
+                    for sender in &*senders_spawn.lock().unwrap() {
+                        while let Err(e) = sender.try_send(event.clone()) {
+                            info!("send err: {:?}", e);
+                            actix_rt::time::sleep(Duration::from_millis(10)).await;
+                        }
                     }
                 }
-            }
-            *next_event_id_spawn.lock().unwrap() = num_events;
-            info!(
-                "All old events sent, next event: {:?}",
-                next_event_id_spawn.lock().unwrap()
-            );
-        });
+                *next_event_id_spawn.lock().unwrap() = num_events;
+                info!(
+                    "All old events sent, next event: {:?}",
+                    next_event_id_spawn.lock().unwrap()
+                );
+            });
+        }
         Self {
             senders,
             next_event_id,
+            use_gcs,
         }
     }
     pub fn receiver(&mut self) -> Receiver<Event> {
@@ -75,12 +78,11 @@ impl EventStore {
             serde_json::from_str::<chrono::DateTime<Utc>>("\"1970-01-01T00:00:00Z\"").unwrap(),
             "no bad timestamps allowed"
         );
-        #[cfg(not(test))]
-        {
-            let bytes = event_to_bytes(&event);
+        let bytes = event_to_bytes(&event);
+        if self.use_gcs {
             gcs_client::save_event(*self.next_event_id.lock().unwrap(), bytes).await?;
-            *self.next_event_id.lock().unwrap() += 1;
         }
+        *self.next_event_id.lock().unwrap() += 1;
         for sender in self.senders.lock().unwrap().iter_mut() {
             while let Err(e) = sender.try_send(event.clone()) {
                 info!("send err: {:?}", e);

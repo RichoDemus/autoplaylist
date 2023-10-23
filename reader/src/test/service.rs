@@ -33,6 +33,7 @@ impl TestService {
             Some(youtube_mock.base_url()),
             "YT_KEY".to_string(),
             Mode::Test,
+            false,
         ));
 
         Self {
