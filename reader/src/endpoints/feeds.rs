@@ -117,9 +117,7 @@ pub async fn feed_operation(
     body: Bytes,
 ) -> HttpResponse {
     let body = String::from_utf8(body.to_vec()).unwrap();
-    info!("login: {}", body);
     let mut json: Value = serde_json::from_str(body.as_str()).unwrap();
-    info!("json: {:?}", json);
 
     let operation: Operation = serde_json::from_value(json["action"].take()).unwrap();
 

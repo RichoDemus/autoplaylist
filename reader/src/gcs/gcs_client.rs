@@ -15,15 +15,10 @@ use google_cloud_storage::http::objects::download::Range;
 use google_cloud_storage::http::objects::get::GetObjectRequest;
 use google_cloud_storage::http::objects::list::ListObjectsRequest;
 use google_cloud_storage::http::objects::upload::{Media, UploadObjectRequest, UploadType};
-use log::info;
+use itertools::Itertools;
+use log::{info, warn};
 
 use crate::gcs::filesystem::{read_file, write_file};
-
-// const CLIENT = Arc::pin(Lazy::new(||async {
-//     let cred: CredentialsFile = CredentialsFile::new_from_file("google-service-key.json".into()).await.unwrap();
-//     let config = ClientConfig::default().with_credentials(cred).await.unwrap();
-//     Client::new(config)
-// }));
 
 const CLIENT: OnceCell<Client> = OnceCell::new();
 
@@ -122,6 +117,7 @@ pub async fn get_all_events() -> Result<Vec<Vec<u8>>> {
     //     name.split("/").collect::<Vec<_>>()[2].parse::<i32>().unwrap()
     // }));
     info!("{} events", event_names.len());
+    make_sure_no_events_missing(event_names.clone());
 
     // info!("{:?}", res);
     // list.items.unwrap().into_iter().for_each(|item|{
@@ -176,10 +172,25 @@ pub async fn get_all_events() -> Result<Vec<Vec<u8>>> {
     //
     // let downloaded = join_all(futures).await;
 
-    info!("First {:?}", downloaded.get(0));
-    info!("Last {:?}", downloaded.get(downloaded.len() - 1));
     downloading.store(false, SeqCst);
     Ok(downloaded)
+}
+
+fn make_sure_no_events_missing(events: Vec<String>) {
+    actix_rt::spawn(async move {
+        let events = events
+            .into_iter()
+            .map(|name| name.replace("events/v2/", ""))
+            .flat_map(|id| id.parse::<usize>().ok())
+            .sorted_unstable()
+            .collect::<Vec<_>>();
+        for (x, event_id) in events.into_iter().enumerate() {
+            if x != event_id {
+                warn!("Missing event {x}");
+            }
+        }
+        info!("Done validating events")
+    });
 }
 
 #[cfg(test)]
