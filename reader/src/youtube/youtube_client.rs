@@ -61,7 +61,7 @@ impl YoutubeClient {
             .call_yt(
                 self.client
                     .get(format!("{}/youtube/v3/channels/", self.base_url))
-                    .query(&[("part", "snippet,contentDetails"), ("id", &*id)]),
+                    .query(&[("part", "snippet,contentDetails"), ("id", &**id)]),
             )
             .await?;
         let items = &value["items"].as_array().context("parse items")?;
@@ -89,7 +89,7 @@ impl YoutubeClient {
         let mut query = vec![
             ("part", "snippet"),
             ("maxResults", "50"),
-            ("playlistId", &*id),
+            ("playlistId", &**id),
         ];
         if let Some(ref token) = page_token {
             query.push(("page_token", token));
@@ -107,7 +107,7 @@ impl YoutubeClient {
         let videos = value["items"]
             .as_array()
             .context("no items")?
-            .into_iter()
+            .iter()
             .map(|item| {
                 trace!("Parsing: {item:#?}");
                 let id = item["snippet"]["resourceId"]["videoId"]

@@ -18,7 +18,7 @@ impl<K: Deref<Target = String>, V: Serialize + Debug + for<'a> Deserialize<'a>> 
     pub fn new(name: &str, mode: Mode) -> Self {
         let path = match mode {
             Mode::Prod => format!("data/db/{}", name),
-            Mode::Test => format!("target/data/{}/{}_db", Uuid::new_v4().to_string(), name),
+            Mode::Test => format!("target/data/{}/{}_db", Uuid::new_v4(), name),
         };
         Self {
             sled: sled::open(path).unwrap(),
@@ -30,7 +30,7 @@ impl<K: Deref<Target = String>, V: Serialize + Debug + for<'a> Deserialize<'a>> 
         self.sled
             .get(key.deref())
             .expect("Failed to read from disk")
-            .map(|ivec| {
+            .and_then(|ivec| {
                 let vec = ivec.to_vec();
                 let res = serde_json::from_slice(vec.as_slice());
                 if res.is_err() {
@@ -39,7 +39,6 @@ impl<K: Deref<Target = String>, V: Serialize + Debug + for<'a> Deserialize<'a>> 
 
                 res.ok()
             })
-            .flatten()
     }
 
     pub fn insert(&self, key: K, value: V) {
@@ -58,7 +57,7 @@ impl<K: Deref<Target = String>, V: Serialize + Debug + for<'a> Deserialize<'a>> 
                 }
                 value.ok()
             })
-            .map(|ivec| {
+            .filter_map(|ivec| {
                 let vec = ivec.to_vec();
                 let res = serde_json::from_slice(vec.as_slice());
                 if res.is_err() {
@@ -67,7 +66,6 @@ impl<K: Deref<Target = String>, V: Serialize + Debug + for<'a> Deserialize<'a>> 
 
                 res.ok()
             })
-            .flatten()
     }
 }
 

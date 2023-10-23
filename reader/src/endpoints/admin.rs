@@ -26,7 +26,7 @@ pub async fn download(session: Session, services: Data<Services>) -> HttpRespons
         user_id
     } else {
         warn!("No session cookie");
-        return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
+        return HttpResponse::new(StatusCode::UNAUTHORIZED);
     };
     info!("cool session cooke, userid: {user_id:?}");
     info!("Downloading feeds");
@@ -34,5 +34,5 @@ pub async fn download(session: Session, services: Data<Services>) -> HttpRespons
         error!("Failed to download: {e:?}");
         return HttpResponse::InternalServerError().into();
     }
-    return HttpResponse::Ok().into();
+    HttpResponse::Ok().into()
 }

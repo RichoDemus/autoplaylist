@@ -20,16 +20,16 @@ pub async fn get_all_feeds(session: Session, services: Data<Services>) -> HttpRe
         user_id
     } else {
         warn!("No session cookie");
-        return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
+        return HttpResponse::new(StatusCode::UNAUTHORIZED);
     };
     info!("cool session cooke, userid: {user_id:?}");
     let labels = services.label_service.lock().unwrap().get_labels(&user_id);
     let channels = build_feeds(user_id, services);
 
-    return HttpResponse::Ok().json(AllFeedsAndLabelsResponse {
+    HttpResponse::Ok().json(AllFeedsAndLabelsResponse {
         feeds: channels,
         labels,
-    });
+    })
 }
 
 fn build_feeds(user: UserId, services: Data<Services>) -> Vec<ChannelWithoutVideos> {
@@ -61,7 +61,7 @@ pub async fn get_videos(
         user_id
     } else {
         warn!("No session cookie");
-        return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
+        return HttpResponse::new(StatusCode::UNAUTHORIZED);
     };
     let channel_id: ChannelId = feed_id.into_inner();
     let watched_videos = services
@@ -89,7 +89,7 @@ pub async fn add_feed(
         user_id
     } else {
         warn!("No session cookie");
-        return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
+        return HttpResponse::new(StatusCode::UNAUTHORIZED);
     };
     let url = YoutubeChannelUrl(json.as_str().unwrap().to_string());
     let (id, _) = services
@@ -106,7 +106,7 @@ pub async fn add_feed(
         .subscribe(user_id, id)
         .await
         .unwrap();
-    return HttpResponse::Ok().into();
+    HttpResponse::Ok().into()
 }
 
 #[post("/v1/feeds/{feed}/items/{item}")]
@@ -127,7 +127,7 @@ pub async fn feed_operation(
         user_id
     } else {
         warn!("No session cookie");
-        return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
+        return HttpResponse::new(StatusCode::UNAUTHORIZED);
     };
 
     let (channel_id, video_id) = feed_id.into_inner();

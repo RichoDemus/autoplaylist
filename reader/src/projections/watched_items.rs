@@ -107,8 +107,7 @@ impl WatchedVideosService {
             .lock()
             .unwrap()
             .get(user)
-            .map(|channels| channels.get(channel).cloned())
-            .flatten()
+            .and_then(|channels| channels.get(channel).cloned())
             .unwrap_or_default()
     }
 }

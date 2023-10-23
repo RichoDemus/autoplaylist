@@ -18,7 +18,7 @@ pub async fn create_label(session: Session, body: Bytes, services: Data<Services
         user_id
     } else {
         warn!("No session cookie");
-        return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
+        return HttpResponse::new(StatusCode::UNAUTHORIZED);
     };
 
     services
@@ -47,7 +47,7 @@ pub async fn add_video_to_label(
         user_id
     } else {
         warn!("No session cookie");
-        return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
+        return HttpResponse::new(StatusCode::UNAUTHORIZED);
     };
     let _user_id: UserId = user_id;
     // todo user_id is not checked, label should be owned by user

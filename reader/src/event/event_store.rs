@@ -29,6 +29,8 @@ impl EventStore {
                     let senders = senders_spawn.lock().unwrap();
                     if senders.len() < 5 {
                         info!("Not enough senders: {}", senders.len());
+                        actix_rt::time::sleep(Duration::from_millis(10)).await;
+                        continue;
                     }
                     info!("Got all senders");
 
@@ -95,7 +97,7 @@ impl EventStore {
 
 fn event_to_bytes(event: &Event) -> Vec<u8> {
     let event_str_res = serde_json::to_string(&event).unwrap();
-    let event_str_res = format!("{},{}", event.id().0.to_string(), event_str_res);
+    let event_str_res = format!("{},{}", event.id().0, event_str_res);
 
     let bytes_res = event_str_res.as_bytes().to_vec();
     bytes_res

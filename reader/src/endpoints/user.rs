@@ -36,9 +36,7 @@ pub async fn create_user(json: web::Json<Value>, services: web::Data<Services>) 
 #[post("/v1/sessions")]
 pub async fn login(session: Session, body: Bytes, services: web::Data<Services>) -> HttpResponse {
     let body = String::from_utf8(body.to_vec()).unwrap();
-    info!("login: {}", body);
     let json: Value = serde_json::from_str(body.as_str()).unwrap();
-    info!("json: {:?}", json);
     let username = json["username"].as_str().unwrap();
     let password = json["password"].as_str().unwrap();
     let username = Username(username.to_string());
@@ -57,25 +55,5 @@ pub async fn login(session: Session, body: Bytes, services: web::Data<Services>)
             return HttpResponse::Ok().into();
         }
     }
-    HttpResponse::new(StatusCode::UNAUTHORIZED).into()
-    // session.insert("username", &json["username"]).unwrap();
-    // session.insert("user_id", UserId(uuid!("00000000-0000-0000-0000-000000000000"))).unwrap();
-    // HttpResponse::Ok().into()
-    // let username = json["username"].as_str().unwrap();
-    // let password = json["password"].as_str().unwrap();
-    // info!("body: {:?}. {username}/{password}", json);
-    // let username = Username(username.to_string());
-    // let password = Password(password.to_string());
-    // let user_exists = user_service::is_password_valid(&username, &password);
-    // info!("User {username:?} exists: {user_exists}");
-    // if user_exists {
-    //     let maybe_user_id = user_service::get_user_id(&username);
-    //     let user_id = maybe_user_id.unwrap();
-    //     info!("logged in {username:?} ({user_id:?}");
-    //     session.insert("username", username).unwrap();
-    //     session.insert("user_id", user_id).unwrap();
-    //     HttpResponse::Ok().into()
-    // } else {
-    //     HttpResponse::new(StatusCode::UNAUTHORIZED).into()
-    // }
+    HttpResponse::new(StatusCode::UNAUTHORIZED)
 }

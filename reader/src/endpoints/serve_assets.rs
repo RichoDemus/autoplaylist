@@ -8,7 +8,7 @@ use once_cell::unsync::Lazy;
 include!(concat!(env!("OUT_DIR"), "/generated.rs"));
 
 pub async fn static_fie(req: HttpRequest) -> impl Responder {
-    let assets = Lazy::new(|| generate());
+    let assets = Lazy::new(generate);
 
     let path = req
         .match_info()

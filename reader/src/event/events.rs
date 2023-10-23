@@ -85,12 +85,12 @@ impl Event {
     }
     pub fn timestamp(&self) -> DateTime<Utc> {
         match self {
-            Event::UserCreated { timestamp, .. } => timestamp.clone(),
-            Event::UserSubscribedToFeed { timestamp, .. } => timestamp.clone(),
-            Event::UserWatchedItem { timestamp, .. } => timestamp.clone(),
-            Event::UserUnwatchedItem { timestamp, .. } => timestamp.clone(),
-            Event::LabelCreated { timestamp, .. } => timestamp.clone(),
-            Event::FeedAddedToLabel { timestamp, .. } => timestamp.clone(),
+            Event::UserCreated { timestamp, .. } => *timestamp,
+            Event::UserSubscribedToFeed { timestamp, .. } => *timestamp,
+            Event::UserWatchedItem { timestamp, .. } => *timestamp,
+            Event::UserUnwatchedItem { timestamp, .. } => *timestamp,
+            Event::LabelCreated { timestamp, .. } => *timestamp,
+            Event::FeedAddedToLabel { timestamp, .. } => *timestamp,
         }
     }
 }

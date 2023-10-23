@@ -60,6 +60,6 @@ impl SubscriptionsService {
             .unwrap()
             .get(user)
             .cloned()
-            .unwrap_or_else(|| vec![])
+            .unwrap_or_else(Vec::new)
     }
 }
