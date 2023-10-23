@@ -1,5 +1,6 @@
 use actix_web::http::header;
 use actix_web::{HttpRequest, HttpResponse, Responder};
+use log::trace;
 use once_cell::unsync::Lazy;
 use std::path::PathBuf;
 include!(concat!(env!("OUT_DIR"), "/generated.rs"));
@@ -23,7 +24,7 @@ pub async fn static_fie(req: HttpRequest) -> impl Responder {
     match static_file {
         Some(file) => {
             let file: &static_files::Resource = file;
-            println!("Loading file {:?}", file.mime_type);
+            trace!("Loading file {:?}", file.mime_type);
             HttpResponse::Ok()
                 .insert_header((header::CONTENT_TYPE, file.mime_type))
                 .body(file.data)

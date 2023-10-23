@@ -7,7 +7,7 @@ use crate::endpoints::serve_assets::static_fie;
 use actix_cors::Cors;
 use actix_session::storage::CookieSessionStore;
 use actix_session::SessionMiddleware;
-use actix_web::cookie::Key;
+use actix_web::cookie::{Key, SameSite};
 use actix_web::middleware::Logger;
 use actix_web::{cookie, web, App, HttpServer};
 use anyhow::Context;
@@ -52,6 +52,7 @@ async fn main() -> anyhow::Result<()> {
             .wrap(
                 SessionMiddleware::builder(CookieSessionStore::default(), secret_key.clone())
                     .cookie_secure(false)
+                    .cookie_same_site(SameSite::Strict)
                     .session_lifecycle(
                         actix_session::config::PersistentSession::default()
                             .session_ttl(cookie::time::Duration::days(365)),
