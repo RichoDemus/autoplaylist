@@ -83,4 +83,14 @@ impl Event {
             Event::FeedAddedToLabel { id, .. } => id.clone(),
         }
     }
+    pub fn timestamp(&self) -> DateTime<Utc> {
+        match self {
+            Event::UserCreated { timestamp, .. } => timestamp.clone(),
+            Event::UserSubscribedToFeed { timestamp, .. } => timestamp.clone(),
+            Event::UserWatchedItem { timestamp, .. } => timestamp.clone(),
+            Event::UserUnwatchedItem { timestamp, .. } => timestamp.clone(),
+            Event::LabelCreated { timestamp, .. } => timestamp.clone(),
+            Event::FeedAddedToLabel { timestamp, .. } => timestamp.clone(),
+        }
+    }
 }

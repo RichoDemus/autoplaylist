@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
 use anyhow::Result;
+use chrono::Utc;
 use uuid::Uuid;
 
 use crate::endpoints::endpoint_types::Label;
@@ -15,7 +16,7 @@ pub struct LabelService {
 }
 
 impl LabelService {
-    pub fn new(mut event_store: Arc<Mutex<EventStore>>) -> Self {
+    pub fn new(event_store: Arc<Mutex<EventStore>>) -> Self {
         let labels: Arc<Mutex<HashMap<UserId, Vec<Label>>>> = Default::default();
         let labels_spawn = labels.clone();
         let mut receiver = event_store.lock().unwrap().receiver();
@@ -23,8 +24,8 @@ impl LabelService {
             while let Some(event) = receiver.recv().await {
                 match event {
                     LabelCreated {
-                        id,
-                        timestamp,
+                        id: _,
+                        timestamp: _,
                         user_id,
                         label_id,
                         label_name,
@@ -39,13 +40,13 @@ impl LabelService {
                             feeds: vec![],
                         }),
                     FeedAddedToLabel {
-                        id,
-                        timestamp,
+                        id: _,
+                        timestamp: _,
                         label_id,
                         feed_id,
                     } => {
-                        for mut labels in labels_spawn.lock().unwrap().values_mut() {
-                            for mut label in labels.iter_mut() {
+                        for labels in labels_spawn.lock().unwrap().values_mut() {
+                            for label in labels.iter_mut() {
                                 if label.id == label_id {
                                     label.feeds.push(feed_id.clone());
                                 }
@@ -68,7 +69,7 @@ impl LabelService {
             .unwrap()
             .publish_event(LabelCreated {
                 id: Default::default(),
-                timestamp: Default::default(),
+                timestamp: Utc::now(),
                 user_id,
                 label_id: LabelId(Uuid::new_v4()), // todo impl default
                 label_name,
@@ -95,7 +96,7 @@ impl LabelService {
             .unwrap()
             .publish_event(FeedAddedToLabel {
                 id: Default::default(),
-                timestamp: Default::default(),
+                timestamp: Utc::now(),
                 label_id,
                 feed_id,
             })

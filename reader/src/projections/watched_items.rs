@@ -2,6 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
 
 use anyhow::Result;
+use chrono::Utc;
 
 use crate::event::event_store::EventStore;
 use crate::event::events::Event;
@@ -22,8 +23,8 @@ impl WatchedVideosService {
             while let Some(event) = receiver.recv().await {
                 match event {
                     Event::UserWatchedItem {
-                        id,
-                        timestamp,
+                        id: _,
+                        timestamp: _,
                         user_id,
                         feed_id,
                         item_id,
@@ -38,8 +39,8 @@ impl WatchedVideosService {
                             .insert(item_id);
                     }
                     Event::UserUnwatchedItem {
-                        id,
-                        timestamp,
+                        id: _,
+                        timestamp: _,
                         user_id,
                         feed_id,
                         item_id,
@@ -74,7 +75,7 @@ impl WatchedVideosService {
             .unwrap()
             .publish_event(Event::UserWatchedItem {
                 id: Default::default(),
-                timestamp: Default::default(),
+                timestamp: Utc::now(),
                 user_id,
                 feed_id,
                 item_id,
@@ -93,7 +94,7 @@ impl WatchedVideosService {
             .unwrap()
             .publish_event(Event::UserUnwatchedItem {
                 id: Default::default(),
-                timestamp: Default::default(),
+                timestamp: Utc::now(),
                 user_id,
                 feed_id,
                 item_id,

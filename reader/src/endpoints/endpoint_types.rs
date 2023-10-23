@@ -17,6 +17,8 @@ pub struct AllFeedsAndLabelsResponse {
 
 #[derive(Deserialize, Debug)]
 pub enum Operation {
-    MARK_READ,
-    MARK_UNREAD,
+    #[serde(rename = "MARK_READ")]
+    MarkRead,
+    #[serde(rename = "MARK_UNREAD")]
+    MarkUnread,
 }

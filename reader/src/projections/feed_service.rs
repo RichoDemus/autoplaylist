@@ -20,7 +20,7 @@ pub struct FeedService {
 
 impl FeedService {
     pub fn new(
-        mut event_store: Arc<Mutex<EventStore>>,
+        event_store: Arc<Mutex<EventStore>>,
         client: YoutubeClient,
         channels: DiskCache<ChannelId, Channel>,
         videos: DiskCache<ChannelId, Vec<Video>>,

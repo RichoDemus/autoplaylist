@@ -17,7 +17,7 @@ use crate::test::youtube_mock::YoutubeMock;
 
 pub struct TestService {
     pub service: TestServer,
-    youtube_mock: YoutubeMock,
+    _youtube_mock: YoutubeMock,
 }
 
 impl TestService {
@@ -26,7 +26,7 @@ impl TestService {
             .filter_module("reader", LevelFilter::Trace)
             .try_init();
 
-        let mut youtube_mock = YoutubeMock::default();
+        let youtube_mock = YoutubeMock::default();
 
         let secret_key = Key::from(&[0; 64]);
         let state = web::Data::new(Services::new(
@@ -69,7 +69,7 @@ impl TestService {
                     .service(create_label)
                     .service(add_video_to_label)
             }),
-            youtube_mock,
+            _youtube_mock: youtube_mock,
         }
     }
 

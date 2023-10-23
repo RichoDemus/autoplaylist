@@ -49,7 +49,7 @@ pub async fn add_video_to_label(
         warn!("No session cookie");
         return HttpResponse::new(StatusCode::UNAUTHORIZED).into();
     };
-    let user_id: UserId = user_id;
+    let _user_id: UserId = user_id;
     // todo user_id is not checked, label should be owned by user
     services
         .label_service

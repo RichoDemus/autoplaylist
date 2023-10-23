@@ -81,7 +81,7 @@ async fn downloaded_feeds_should_be_in_feed_response() {
 
 #[actix_rt::test]
 async fn should_not_continue_downoading_once_caught_up() {
-    let mut service = TestService::new();
+    let service = TestService::new();
 
     let client = service.client();
 

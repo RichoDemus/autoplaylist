@@ -134,14 +134,14 @@ pub async fn feed_operation(
 
     let (channel_id, video_id) = feed_id.into_inner();
     match operation {
-        Operation::MARK_READ => services
+        Operation::MarkRead => services
             .watched_videos_service
             .lock()
             .unwrap()
             .watch_item(user_id, channel_id, video_id)
             .await
             .unwrap(),
-        Operation::MARK_UNREAD => services
+        Operation::MarkUnread => services
             .watched_videos_service
             .lock()
             .unwrap()

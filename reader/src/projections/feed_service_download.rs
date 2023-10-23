@@ -2,7 +2,6 @@ use std::collections::HashSet;
 
 use anyhow::Context;
 use anyhow::Result;
-use itertools::Itertools;
 use log::{info, trace};
 
 use crate::sled_wrapper::DiskCache;

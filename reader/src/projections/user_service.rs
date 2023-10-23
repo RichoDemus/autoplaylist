@@ -3,6 +3,7 @@ use std::env;
 use std::sync::{Arc, Mutex};
 
 use anyhow::Result;
+use chrono::Utc;
 use log::info;
 use uuid::Uuid;
 
@@ -48,7 +49,7 @@ impl UserService {
             .unwrap()
             .publish_event(Event::UserCreated {
                 id: EventId::default(),
-                timestamp: Default::default(),
+                timestamp: Utc::now(),
                 user_id,
                 username,
                 password,

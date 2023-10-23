@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
 use anyhow::Result;
+use chrono::Utc;
 
 use crate::event::event_store::EventStore;
 use crate::event::events::Event;
@@ -46,7 +47,7 @@ impl SubscriptionsService {
             .unwrap()
             .publish_event(Event::UserSubscribedToFeed {
                 id: Default::default(),
-                timestamp: Default::default(),
+                timestamp: Utc::now(),
                 user_id,
                 feed_id,
             })

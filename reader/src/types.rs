@@ -3,8 +3,13 @@ use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
-#[derive(NewType, Serialize, Deserialize, Default, Debug, Eq, PartialEq, Clone)]
+#[derive(NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct EventId(pub Uuid);
+impl Default for EventId {
+    fn default() -> Self {
+        Self(Uuid::new_v4())
+    }
+}
 
 #[derive(Hash, NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct UserId(pub Uuid);

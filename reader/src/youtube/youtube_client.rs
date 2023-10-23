@@ -1,5 +1,3 @@
-use std::env;
-
 use anyhow::{bail, Context, Result};
 use log::{error, info, trace, warn};
 use reqwest::{Client, RequestBuilder};
@@ -263,7 +261,7 @@ mod tests {
             .unwrap();
         let titles1 = videos.into_iter().map(|v| v.title).collect::<Vec<_>>();
 
-        let (videos, page_token) = client
+        let (videos, _page_token) = client
             .videos(
                 &PlaylistId("UUIZi8VWcokrX4hG377au_FA".to_string()),
                 page_token,

@@ -1,41 +1,15 @@
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-use anyhow::{Context, Result};
+use anyhow::Result;
+use chrono::Utc;
 use log::info;
 use tokio::sync::mpsc::{Receiver, Sender};
+use uuid::uuid;
 
 use crate::event::events::Event;
 use crate::event::parse;
 use crate::gcs::gcs_client;
-
-pub async fn init() -> Result<()> {
-    let events = gcs_client::load_events_from_gcs_and_disk().await?;
-
-    info!("Loaded {} events", events.len());
-    for event in events {
-        let event = String::from_utf8(event)?;
-        let (_id, event) = event.split_once(',').unwrap();
-
-        // println!("{id} - {event}");
-        let event = parse::parse(event)?;
-        // publish_event(event, false)?;
-        todo!()
-    }
-
-    Ok(())
-}
-
-// pub fn publish_event(event: Event, _also_persist: bool) -> Result<()> {
-//     todo!();
-// todo save
-// subscriptions::process_event(&event);
-// watched_items::process_event(&event);
-// user_service::process_event(&event);
-// Ok(())
-// }
-
-//// NEW HERE
 
 pub struct EventStore {
     senders: Arc<Mutex<Vec<Sender<Event>>>>,
@@ -91,13 +65,23 @@ impl EventStore {
         receiver
     }
     pub async fn publish_event(&mut self, event: Event) -> Result<()> {
+        assert_ne!(
+            event.id().0,
+            uuid!("00000000-0000-0000-0000-000000000000"),
+            "no zero uuids allowed"
+        );
+        assert_ne!(
+            event.timestamp(),
+            serde_json::from_str::<chrono::DateTime<Utc>>("\"1970-01-01T00:00:00Z\"").unwrap(),
+            "no bad timestamps allowed"
+        );
         #[cfg(not(test))]
         {
             let bytes = event_to_bytes(&event);
             gcs_client::save_event(*self.next_event_id.lock().unwrap(), bytes).await?;
             *self.next_event_id.lock().unwrap() += 1;
         }
-        for mut sender in self.senders.lock().unwrap().iter_mut() {
+        for sender in self.senders.lock().unwrap().iter_mut() {
             while let Err(e) = sender.try_send(event.clone()) {
                 info!("send err: {:?}", e);
                 actix_rt::time::sleep(Duration::from_millis(10)).await;
@@ -163,7 +147,7 @@ mod tests {
         let event_str_res = serde_json::to_string(&event).unwrap();
         let event_str_res = format!("{},{}", event.id().0.to_string(), event_str_res);
 
-        let bytes_res = event_str_res.as_bytes().to_vec();
+        let _bytes_res = event_str_res.as_bytes().to_vec();
 
         // assert_eq!(event_str, event_str_res);
         // assert_eq!(bytes_res, bytes);
