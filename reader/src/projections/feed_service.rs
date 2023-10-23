@@ -67,7 +67,9 @@ impl FeedService {
             .values()
             .sorted_unstable_by(|a, b| Ord::cmp(&a.name.0, &b.name.0))
         {
-            if let Err(e) = download_channel(&self.client, &self.videos, channel.clone()).await {
+            if let Err(e) =
+                download_channel(self.client.clone(), &self.videos, channel.clone()).await
+            {
                 warn!("Channel {} failed: {:?}", &*channel.name, e);
             }
         }
