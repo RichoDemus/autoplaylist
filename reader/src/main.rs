@@ -9,6 +9,7 @@ use actix_web::cookie::{Key, SameSite};
 use actix_web::middleware::Logger;
 use actix_web::{cookie, web, App, HttpServer};
 use anyhow::Context;
+use clap::Parser;
 use log::LevelFilter;
 
 use crate::endpoints::admin::{download, get_status};
@@ -30,15 +31,35 @@ pub mod test;
 pub mod types;
 pub mod youtube;
 
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    /// Name of the person to greet
+    #[arg(short, long)]
+    youtube_api_key: String,
+
+    /// Number of times to greet
+    #[arg(short, long)]
+    password_override: Option<String>,
+}
+
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
     let _ = env_logger::builder()
         .filter_module("reader", LevelFilter::Info)
         .try_init();
 
+    let args = Args::parse();
+
     let secret_key = Key::from(&[0; 64]); // todo use proper key
-    let youtube_key = env::var("YOUTUBE_API_KEY").context("Missing ENV YOUTUBE_API_KEY")?;
-    let state = web::Data::new(Services::new(None, youtube_key, Mode::Prod, true));
+    let youtube_key = args.youtube_api_key;
+    let state = web::Data::new(Services::new(
+        None,
+        youtube_key,
+        Mode::Prod,
+        true,
+        args.password_override,
+    ));
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())

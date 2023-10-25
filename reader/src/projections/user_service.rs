@@ -14,10 +14,11 @@ use crate::types::{EventId, Password, UserId, Username};
 pub struct UserService {
     event_store: Arc<Mutex<EventStore>>,
     users: Arc<Mutex<HashMap<Username, (UserId, Password)>>>,
+    password_override: Option<String>,
 }
 
 impl UserService {
-    pub fn new(event_store: Arc<Mutex<EventStore>>) -> Self {
+    pub fn new(event_store: Arc<Mutex<EventStore>>, password_override: Option<String>) -> Self {
         let users: Arc<Mutex<HashMap<Username, (UserId, Password)>>> = Default::default();
         let users_spawn = users.clone();
         let mut receiver = event_store.lock().unwrap().receiver();
@@ -39,7 +40,11 @@ impl UserService {
                 }
             }
         });
-        Self { event_store, users }
+        Self {
+            event_store,
+            users,
+            password_override,
+        }
     }
     pub async fn create_user(&mut self, username: Username, password: Password) -> Result<()> {
         let user_id = UserId(Uuid::new_v4()); // todo make sure it's unique
@@ -60,8 +65,8 @@ impl UserService {
     pub fn is_password_valid(&self, username: &Username, password_input: &Password) -> bool {
         let username = Username(username.to_lowercase());
         if let Some((_userid, password)) = self.users.lock().unwrap().get(&username) {
-            if let Ok(override_password) = env::var("PASSWORD_OVERRIDE") {
-                return override_password == **password_input;
+            if let Some(override_password) = self.password_override.as_ref() {
+                return *override_password == **password_input;
             }
             password == password_input
         } else {

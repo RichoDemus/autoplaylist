@@ -31,6 +31,7 @@ async-once-cell = "0.5.3"
 # todo try out compression for sled
 sled = "0.34.7"
 futures = "0.3.28"
+clap = { version = "4.4.7", features = ["derive"] }
 
 [dev-dependencies]
 httpmock = "0.6"
