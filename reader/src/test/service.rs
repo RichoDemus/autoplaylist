@@ -9,7 +9,7 @@ use log::LevelFilter;
 use crate::endpoints::admin::{download, get_status};
 use crate::endpoints::feeds::{add_feed, feed_operation, get_all_feeds, get_videos};
 use crate::endpoints::labels::{add_video_to_label, create_label};
-use crate::endpoints::user::{create_user, login};
+use crate::endpoints::user::{check_session, create_user, login};
 use crate::service::Services;
 use crate::sled_wrapper::Mode;
 use crate::test::test_client::LoginPage;
@@ -61,6 +61,7 @@ impl TestService {
                             .allow_any_header(),
                     )
                     .service(login)
+                    .service(check_session)
                     .service(create_user)
                     .service(get_all_feeds)
                     .service(get_videos)

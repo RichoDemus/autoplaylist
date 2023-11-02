@@ -100,22 +100,22 @@ var Service = (function()
 
 	function restoreSession()
 	{
-		const session = Persistence.restoreSession();
-		console.log("got session: " + JSON.stringify(session));
-		if(!session)
+//		const session = Persistence.restoreSession();
+//		console.log("got session: " + JSON.stringify(session));
+//		if(!session)
+//		{
+//			console.log("No session stored");
+//			Authentication.username = null;
+//			Authentication.token = null;
+//			return;
+//		}
+//		console.log("found session: " + session.username + "/" + session.token);
+		Api.refreshSession(function(newSession)
 		{
-			console.log("No session stored");
-			Authentication.username = null;
-			Authentication.token = null;
-			return;
-		}
-		console.log("found session: " + session.username + "/" + session.token);
-		Api.refreshSession(session, function(newSession)
-		{
-			console.log("got new session: " + newSession.username + "/" + newSession.token);
+			console.log("got new session: " + newSession);
 			if(newSession)
 			{
-				loggedIn(session);
+				loggedIn(newSession);
 			}
 		});
 	}
@@ -125,7 +125,6 @@ var Service = (function()
 		"use strict";
 		feeds.forEach(feed =>
 		{
-			console.log("Added availableItems method to feed " + feed.id);
 			feed.availableItems = () =>
 			{
 				if (feed.items && feed.items.length > 0)

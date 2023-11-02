@@ -142,13 +142,15 @@ var Api = (function()
 			});
 	};
 
-	pub.refreshSession = function(session, callback)
+	pub.refreshSession = function(callback)
 	{
-		console.log("Refreshing session");
+		console.log("Refreshing session, callback:", callback);
 		$.ajax({
 			url: "v1/sessions",
 			type: "GET",
-			success: callback,
+			success: function() {
+                callback("fake-session")
+            },
 			error: function()
 			{
 				console.log("Unable to refresh session");

@@ -1,12 +1,12 @@
 use actix_session::Session;
 use actix_web::http::StatusCode;
 use actix_web::web::Bytes;
-use actix_web::{post, web, HttpResponse};
-use log::{info, warn};
+use actix_web::{get, post, web, HttpResponse};
+use log::{info, trace, warn};
 use serde_json::Value;
 
 use crate::service::Services;
-use crate::types::{Password, Username};
+use crate::types::{Password, UserId, Username};
 
 #[post("/v1/users")]
 pub async fn create_user(json: web::Json<Value>, services: web::Data<Services>) -> HttpResponse {
@@ -56,4 +56,17 @@ pub async fn login(session: Session, body: Bytes, services: web::Data<Services>)
         }
     }
     HttpResponse::new(StatusCode::UNAUTHORIZED)
+}
+
+#[get("/v1/sessions")]
+pub async fn check_session(session: Session) -> HttpResponse {
+    let user_id = if let Ok(user_id) = session.try_into() {
+        user_id
+    } else {
+        warn!("No session cookie");
+        return HttpResponse::new(StatusCode::UNAUTHORIZED);
+    };
+    let user_id: UserId = user_id;
+    trace!("Valid session for {user_id:?}");
+    HttpResponse::Ok().into()
 }

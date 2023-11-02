@@ -12,7 +12,7 @@ use std::time::Duration;
 async fn login_should_fail_if_no_user_exists() {
     let service = TestService::new();
 
-    let client = service.client();
+    let mut client = service.client();
 
     let result = client.login().await;
     assert_eq!("Failed to log in", result.unwrap_err().to_string());
@@ -22,7 +22,7 @@ async fn login_should_fail_if_no_user_exists() {
 async fn should_create_user_and_login() {
     let service = TestService::new();
 
-    let client = service.client();
+    let mut client = service.client();
 
     let _result = client.create_user().await.unwrap();
     let _main_page = client.login().await.unwrap();
@@ -49,13 +49,37 @@ async fn username_should_be_case_insensitive() {
 }
 
 #[actix_rt::test]
-async fn downloaded_feeds_should_be_in_feed_response() {
+async fn session_endpoint_should_fail_when_not_logged_in() {
     let service = TestService::new();
 
     let client = service.client();
 
+    let result = client.has_session().await;
+    assert_eq!(result, false);
+}
+
+#[actix_rt::test]
+async fn session_endpoint_should_succeed_when_logged_in() {
+    let service = TestService::new();
+
+    let mut client = service.client();
+
     let _result = client.create_user().await.unwrap();
-    let main_page = client.login().await.unwrap();
+    client.login().await.unwrap();
+
+    let result = client.has_session().await;
+    assert!(result);
+}
+
+#[actix_rt::test]
+async fn downloaded_feeds_should_be_in_feed_response() {
+    let service = TestService::new();
+
+    let mut client = service.client();
+
+    let _result = client.create_user().await.unwrap();
+    client.login().await.unwrap();
+    let main_page = client.main_page();
 
     // no feeds
     assert!(main_page.get_feeds().await.unwrap().feeds.is_empty());
@@ -83,10 +107,11 @@ async fn downloaded_feeds_should_be_in_feed_response() {
 async fn should_not_continue_downoading_once_caught_up() {
     let service = TestService::new();
 
-    let client = service.client();
+    let mut client = service.client();
 
     let _result = client.create_user().await.unwrap();
-    let main_page = client.login().await.unwrap();
+    client.login().await.unwrap();
+    let main_page = client.main_page();
 
     // no feeds
     assert!(main_page.get_feeds().await.unwrap().feeds.is_empty());
@@ -118,10 +143,11 @@ async fn should_not_continue_downoading_once_caught_up() {
 async fn should_not_contain_item_marked_as_read() {
     let service = TestService::new();
 
-    let client = service.client();
+    let mut client = service.client();
 
     let _result = client.create_user().await.unwrap();
-    let main_page = client.login().await.unwrap();
+    client.login().await.unwrap();
+    let main_page = client.main_page();
 
     // no feeds
     assert!(main_page.get_feeds().await.unwrap().feeds.is_empty());
@@ -170,9 +196,10 @@ async fn should_not_contain_item_marked_as_read() {
 async fn should_not_be_any_labels() {
     // generic setup
     let service = TestService::new();
-    let client = service.client();
+    let mut client = service.client();
     let _result = client.create_user().await.unwrap();
-    let main_page = client.login().await.unwrap();
+    client.login().await.unwrap();
+    let main_page = client.main_page();
     main_page
         .add_feed("https://www.youtube.com/user/richodemus")
         .await
@@ -187,9 +214,10 @@ async fn should_not_be_any_labels() {
 async fn create_label() {
     // generic setup
     let service = TestService::new();
-    let client = service.client();
+    let mut client = service.client();
     let _result = client.create_user().await.unwrap();
-    let main_page = client.login().await.unwrap();
+    client.login().await.unwrap();
+    let main_page = client.main_page();
     main_page
         .add_feed("https://www.youtube.com/user/richodemus")
         .await
@@ -208,9 +236,10 @@ async fn create_label() {
 async fn should_add_feed_to_label() {
     // generic setup
     let service = TestService::new();
-    let client = service.client();
+    let mut client = service.client();
     let _result = client.create_user().await.unwrap();
-    let main_page = client.login().await.unwrap();
+    client.login().await.unwrap();
+    let main_page = client.main_page();
     main_page
         .add_feed("https://www.youtube.com/user/richodemus")
         .await

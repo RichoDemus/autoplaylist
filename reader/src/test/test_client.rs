@@ -9,6 +9,7 @@ use crate::types::{ChannelId, LabelId, Video, VideoId};
 pub struct LoginPage {
     port: u16,
     client: Client,
+    cookie: Option<String>,
 }
 
 impl LoginPage {
@@ -16,9 +17,10 @@ impl LoginPage {
         Self {
             port,
             client: Client::new(),
+            cookie: None,
         }
     }
-    pub async fn login(self) -> Result<MainPage> {
+    pub async fn login(&mut self) -> Result<()> {
         let response = self
             .client
             .post(format!("http://localhost:{}/v1/sessions", self.port))
@@ -44,7 +46,8 @@ impl LoginPage {
             .to_string();
         let split = cookie_str.split(";").collect::<Vec<_>>();
         let cookie = split.get(0).unwrap();
-        Ok(MainPage::new(self.port, cookie.to_string(), self.client))
+        self.cookie = Some(cookie.to_string());
+        Ok(())
     }
 
     pub async fn login_wrong_password(self) -> Result<()> {
@@ -104,6 +107,30 @@ impl LoginPage {
         }
 
         Ok(())
+    }
+
+    pub async fn has_session(&self) -> bool {
+        if let Ok(response) = self
+            .client
+            .get(format!("http://localhost:{}/v1/sessions", self.port))
+            .header(
+                "Cookie",
+                self.cookie.as_ref().unwrap_or(&"bad-token".to_string()),
+            )
+            .send()
+            .await
+        {
+            return if response.status().is_client_error() {
+                false
+            } else {
+                true
+            };
+        }
+        false
+    }
+
+    pub fn main_page(self) -> MainPage {
+        MainPage::new(self.port, self.cookie.unwrap(), self.client)
     }
 }
 
