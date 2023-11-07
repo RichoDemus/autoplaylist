@@ -101,6 +101,10 @@ pub async fn get_all_events() -> Result<Vec<Vec<u8>>> {
     }
 
     info!("{} events", event_names.len());
+    event_names.sort_unstable_by_key(|e| {
+        let id = e.replace("events/v2/", "");
+        id.parse::<usize>().expect("this should be ints")
+    });
     make_sure_no_events_missing(event_names.clone());
 
     let total_events = event_names.len();
