@@ -1,7 +1,7 @@
 use std::sync::{Arc, Mutex};
 
 use crate::event::event_store::EventStore;
-use crate::projections::feed_service::FeedService;
+use crate::projections::feed_service::feed_service::FeedService;
 use crate::projections::label_service::LabelService;
 use crate::projections::subscriptions::SubscriptionsService;
 use crate::projections::user_service::UserService;

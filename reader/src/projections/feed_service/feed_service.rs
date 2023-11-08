@@ -7,7 +7,8 @@ use tokio::sync::mpsc::Receiver;
 
 use crate::event::event_store::EventStore;
 use crate::event::events::Event;
-use crate::projections::feed_service_download::download_channel;
+use crate::projections::feed_service::feed_service_download::download_channel;
+use crate::projections::feed_service::feed_service_statistics::update_statistics;
 use crate::sled_wrapper::DiskCache;
 use crate::types::{Channel, ChannelId, ChannelName, Video, YoutubeChannelUrl};
 use crate::youtube::youtube_client::YoutubeClient;
@@ -74,6 +75,7 @@ impl FeedService {
             }
         }
         info!("Done synchronizing data!");
+        update_statistics(self.client.clone(), &self.videos).await;
         Ok(())
     }
 }
