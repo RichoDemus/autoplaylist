@@ -3,7 +3,7 @@ use std::time::Duration;
 
 use anyhow::Result;
 use chrono::Utc;
-use log::info;
+use log::{info, trace};
 use tokio::sync::mpsc::{Receiver, Sender};
 use uuid::uuid;
 
@@ -46,7 +46,7 @@ impl EventStore {
                     let event = parse::parse(event).unwrap();
                     for sender in &*senders_spawn.lock().unwrap() {
                         while let Err(e) = sender.try_send(event.clone()) {
-                            info!("send err: {:?}", e);
+                            trace!("send err: {:?}", e);
                             actix_rt::time::sleep(Duration::from_millis(10)).await;
                         }
                     }
@@ -87,7 +87,7 @@ impl EventStore {
         *self.next_event_id.lock().unwrap() += 1;
         for sender in self.senders.lock().unwrap().iter_mut() {
             while let Err(e) = sender.try_send(event.clone()) {
-                info!("send err: {:?}", e);
+                trace!("send err: {:?}", e);
                 actix_rt::time::sleep(Duration::from_millis(10)).await;
             }
         }
