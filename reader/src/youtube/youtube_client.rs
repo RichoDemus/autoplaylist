@@ -1,9 +1,13 @@
 use anyhow::{bail, Context, Result};
+use chrono::{TimeZone, Utc};
 use log::{error, info, trace, warn};
 use reqwest::{Client, RequestBuilder};
 use serde_json::Value;
+use std::collections::HashMap;
 
-use crate::types::{ChannelId, ChannelName, PlaylistId, Video, VideoId, YoutubeChannelUrl};
+use crate::types::{
+    ChannelId, ChannelName, PlaylistId, Video, VideoDuration, VideoId, ViewCount, YoutubeChannelUrl,
+};
 
 #[derive(Clone)]
 pub struct YoutubeClient {
@@ -119,13 +123,49 @@ impl YoutubeClient {
                     title: item["snippet"]["title"].as_str().unwrap().to_string(),
                     description: item["snippet"]["description"].as_str().unwrap().to_string(),
                     upload_date: item["snippet"]["publishedAt"].as_str().unwrap().to_string(),
+                    last_updated: Utc.timestamp_nanos(0),
                     url: format!("https://www.youtube.com/watch?v={}", id),
-                    duration: "13:37".to_string(),
-                    views: 1234,
+                    duration: VideoDuration("0".to_string()),
+                    views: ViewCount(0),
                 }
             })
             .collect::<Vec<_>>();
         Ok((videos, next_page_token))
+    }
+
+    pub async fn statistics(
+        &self,
+        _videos: Vec<VideoId>,
+    ) -> Result<HashMap<String, (ViewCount, VideoDuration)>> {
+        let value = self
+            .call_yt(
+                self.client
+                    .get(format!("{}/youtube/v3/videos/", self.base_url))
+                    .query(&[
+                        ("part", "statistics,contentDetails"),
+                        ("maxResults", "50"),
+                        ("id", "9qH8krCX4f0,bNCJgh4XMtQ"),
+                    ]),
+            )
+            .await?;
+
+        let stats = value["items"]
+            .as_array()
+            .context("no items")?
+            .iter()
+            .map(|item| {
+                let id = item["id"].as_str().unwrap().to_string();
+                let duration = item["contentDetails"]["duration"].as_str().unwrap().into();
+                let views = item["statistics"]["viewCount"]
+                    .as_str()
+                    .unwrap()
+                    .parse::<u64>()
+                    .unwrap();
+                ((id), (ViewCount(views), duration))
+            })
+            .collect::<HashMap<_, _>>();
+
+        Ok(stats)
     }
 
     async fn call_yt(&self, builder: RequestBuilder) -> Result<Value> {
@@ -272,5 +312,34 @@ mod tests {
 
         println!("res :{:#?}", titles1);
         println!("res :{:#?}", titles2);
+    }
+
+    #[actix_web::test]
+    async fn test_get_statistics() {
+        if env::var("YOUTUBE_API_KEY").is_err() {
+            //no key, skip test
+            return;
+        }
+        let _ = env_logger::builder()
+            .filter_module("reader", LevelFilter::Trace)
+            .try_init();
+
+        let client = YoutubeClient::new(None, env::var("YOUTUBE_API_KEY").unwrap());
+
+        let result = client
+            .statistics(vec![
+                VideoId("9qH8krCX4f0".to_string()),
+                VideoId("bNCJgh4XMtQ".to_string()),
+            ])
+            .await
+            .unwrap();
+
+        println!("res :{:#?}", result);
+
+        assert_eq!(result.get("9qH8krCX4f0").unwrap().0 .0, 35);
+        assert_eq!(result.get("9qH8krCX4f0").unwrap().1 .0, "00:00:22");
+
+        assert_eq!(result.get("bNCJgh4XMtQ").unwrap().0 .0, 38171);
+        assert_eq!(result.get("bNCJgh4XMtQ").unwrap().1 .0, "11:54:58");
     }
 }

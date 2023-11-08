@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use derive_newtype::NewType;
 use serde::Deserialize;
 use serde::Serialize;
@@ -64,13 +65,46 @@ pub struct Channel {
 }
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
+pub struct ViewCount(pub u64);
+
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
+pub struct VideoDuration(pub String);
+
+impl From<&str> for VideoDuration {
+    fn from(value: &str) -> Self {
+        let duration = value
+            .parse::<iso8601_duration::Duration>()
+            .unwrap()
+            .to_std()
+            .unwrap();
+        let seconds = duration.as_secs() % 60;
+        let minutes = (duration.as_secs() / 60) % 60;
+        let hours = (duration.as_secs() / 60) / 60;
+        Self(format!("{:0>2}:{:0>2}:{:0>2}", hours, minutes, seconds))
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct Video {
     pub(crate) id: VideoId,
     pub(crate) title: String,
     pub(crate) description: String,
     #[serde(rename = "uploadDate")]
     pub(crate) upload_date: String,
+    #[serde(rename = "lastUpdated")]
+    pub(crate) last_updated: DateTime<Utc>,
     pub(crate) url: String,
-    pub(crate) duration: String,
-    pub(crate) views: u64,
+    pub(crate) duration: VideoDuration,
+    pub(crate) views: ViewCount,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_video_duration() {
+        assert_eq!(VideoDuration("00:00:22".to_string()), "PT22S".into());
+        assert_eq!(VideoDuration("11:54:58".to_string()), "PT11H54M58S".into());
+    }
 }

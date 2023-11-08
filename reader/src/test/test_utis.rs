@@ -1,10 +1,11 @@
 use std::time::{Duration, Instant};
 
 use actix_rt::time::sleep;
+use chrono::{TimeZone, Utc};
 use log::trace;
 
 use crate::test::test_client::MainPage;
-use crate::types::{ChannelId, Video, VideoId};
+use crate::types::{ChannelId, Video, VideoDuration, VideoId, ViewCount};
 
 pub async fn await_videos(main_page: &MainPage, id: ChannelId, count: usize) {
     let deadline = Instant::now() + Duration::from_secs(1);
@@ -31,36 +32,40 @@ pub fn expected_videos() -> Vec<Video> {
             title: "video4-title".into(),
             description: "video4-desc".into(),
             upload_date: "2004-01-01T00:00:00Z".into(),
+            last_updated: Utc.timestamp_nanos(0),
             url: "https://www.youtube.com/watch?v=video4-id".into(),
-            duration: "13:37".to_string(),
-            views: 1234,
+            duration: VideoDuration("0".to_string()),
+            views: ViewCount(0),
         },
         Video {
             id: VideoId("video3-id".into()),
             title: "video3-title".into(),
             description: "video3-desc".into(),
             upload_date: "2003-01-01T00:00:00Z".into(),
+            last_updated: Utc.timestamp_nanos(0),
             url: "https://www.youtube.com/watch?v=video3-id".into(),
-            duration: "13:37".to_string(),
-            views: 1234,
+            duration: VideoDuration("0".to_string()),
+            views: ViewCount(0),
         },
         Video {
             id: VideoId("video2-id".into()),
             title: "video2-title".into(),
             description: "video2-desc".into(),
             upload_date: "2002-01-01T00:00:00Z".into(),
+            last_updated: Utc.timestamp_nanos(0),
             url: "https://www.youtube.com/watch?v=video2-id".into(),
-            duration: "13:37".to_string(),
-            views: 1234,
+            duration: VideoDuration("0".to_string()),
+            views: ViewCount(0),
         },
         Video {
             id: VideoId("video1-id".into()),
             title: "video1-title".into(),
             description: "video1-desc".into(),
             upload_date: "2001-01-01T00:00:00Z".into(),
+            last_updated: Utc.timestamp_nanos(0),
             url: "https://www.youtube.com/watch?v=video1-id".into(),
-            duration: "13:37".to_string(),
-            views: 1234,
+            duration: VideoDuration("0".to_string()),
+            views: ViewCount(0),
         },
     ]
 }
@@ -72,18 +77,20 @@ pub fn expected_videos_read() -> Vec<Video> {
             title: "video4-title".into(),
             description: "video4-desc".into(),
             upload_date: "2004-01-01T00:00:00Z".into(),
+            last_updated: Utc.timestamp_nanos(0),
             url: "https://www.youtube.com/watch?v=video4-id".into(),
-            duration: "13:37".to_string(),
-            views: 1234,
+            duration: VideoDuration("0".to_string()),
+            views: ViewCount(0),
         },
         Video {
             id: VideoId("video3-id".into()),
             title: "video3-title".into(),
             description: "video3-desc".into(),
             upload_date: "2003-01-01T00:00:00Z".into(),
+            last_updated: Utc.timestamp_nanos(0),
             url: "https://www.youtube.com/watch?v=video3-id".into(),
-            duration: "13:37".to_string(),
-            views: 1234,
+            duration: VideoDuration("0".to_string()),
+            views: ViewCount(0),
         },
     ]
 }
@@ -95,45 +102,50 @@ pub fn expected_videos2() -> Vec<Video> {
             title: "video5-title".into(),
             description: "video5-desc".into(),
             upload_date: "2005-01-01T00:00:00Z".into(),
+            last_updated: Utc.timestamp_nanos(0),
             url: "https://www.youtube.com/watch?v=video5-id".into(),
-            duration: "13:37".to_string(),
-            views: 1234,
+            duration: VideoDuration("0".to_string()),
+            views: ViewCount(0),
         },
         Video {
             id: VideoId("video4-id".into()),
             title: "video4-title".into(),
             description: "video4-desc".into(),
             upload_date: "2004-01-01T00:00:00Z".into(),
+            last_updated: Utc.timestamp_nanos(0),
             url: "https://www.youtube.com/watch?v=video4-id".into(),
-            duration: "13:37".to_string(),
-            views: 1234,
+            duration: VideoDuration("0".to_string()),
+            views: ViewCount(0),
         },
         Video {
             id: VideoId("video3-id".into()),
             title: "video3-title".into(),
             description: "video3-desc".into(),
             upload_date: "2003-01-01T00:00:00Z".into(),
+            last_updated: Utc.timestamp_nanos(0),
             url: "https://www.youtube.com/watch?v=video3-id".into(),
-            duration: "13:37".to_string(),
-            views: 1234,
+            duration: VideoDuration("0".to_string()),
+            views: ViewCount(0),
         },
         Video {
             id: VideoId("video2-id".into()),
             title: "video2-title".into(),
             description: "video2-desc".into(),
             upload_date: "2002-01-01T00:00:00Z".into(),
+            last_updated: Utc.timestamp_nanos(0),
             url: "https://www.youtube.com/watch?v=video2-id".into(),
-            duration: "13:37".to_string(),
-            views: 1234,
+            duration: VideoDuration("0".to_string()),
+            views: ViewCount(0),
         },
         Video {
             id: VideoId("video1-id".into()),
             title: "video1-title".into(),
             description: "video1-desc".into(),
             upload_date: "2001-01-01T00:00:00Z".into(),
+            last_updated: Utc.timestamp_nanos(0),
             url: "https://www.youtube.com/watch?v=video1-id".into(),
-            duration: "13:37".to_string(),
-            views: 1234,
+            duration: VideoDuration("0".to_string()),
+            views: ViewCount(0),
         },
     ]
 }
