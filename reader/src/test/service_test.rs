@@ -1,8 +1,8 @@
 use crate::test::service::TestService;
-use crate::test::test_utis::await_videos;
-use crate::test::test_utis::expected_videos;
-use crate::test::test_utis::expected_videos2;
-use crate::test::test_utis::expected_videos_read;
+use crate::test::test_utils::await_videos;
+use crate::test::test_utils::expected_videos;
+use crate::test::test_utils::expected_videos2;
+use crate::test::test_utils::expected_videos_read;
 use crate::types::ChannelId;
 use crate::types::VideoId;
 use log::trace;

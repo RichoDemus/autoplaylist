@@ -1,5 +1,5 @@
-mod cooler_service_tests;
+mod service_test;
 mod service;
 mod test_client;
-mod test_utis;
+mod test_utils;
 mod youtube_mock;

@@ -1,7 +1,6 @@
 use std::time::{Duration, Instant};
 
 use actix_rt::time::sleep;
-use chrono::{TimeZone, Utc};
 use log::trace;
 
 use crate::test::test_client::MainPage;
