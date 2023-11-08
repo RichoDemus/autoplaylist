@@ -1,5 +1,4 @@
 use crate::projections::feed_service::feed_service_types;
-use chrono::{DateTime, Utc};
 use derive_newtype::NewType;
 use serde::Deserialize;
 use serde::Serialize;

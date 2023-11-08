@@ -1,6 +1,7 @@
 use crate::projections::feed_service::feed_service_types::Video;
 use anyhow::{bail, Context, Result};
 use chrono::{DateTime, TimeZone, Utc};
+use itertools::Itertools;
 use log::{error, info, trace, warn};
 use reqwest::{Client, RequestBuilder};
 use serde_json::Value;
@@ -139,8 +140,8 @@ impl YoutubeClient {
 
     pub async fn statistics(
         &self,
-        _videos: Vec<VideoId>,
-    ) -> Result<HashMap<String, (ViewCount, VideoDuration)>> {
+        videos: Vec<VideoId>,
+    ) -> Result<HashMap<VideoId, (ViewCount, VideoDuration)>> {
         let value = self
             .call_yt(
                 self.client
@@ -148,7 +149,7 @@ impl YoutubeClient {
                     .query(&[
                         ("part", "statistics,contentDetails"),
                         ("maxResults", "50"),
-                        ("id", "9qH8krCX4f0,bNCJgh4XMtQ"),
+                        ("id", &videos.iter().map(|v| v.0.as_str()).join(",")),
                     ]),
             )
             .await?;
@@ -158,7 +159,7 @@ impl YoutubeClient {
             .context("no items")?
             .iter()
             .map(|item| {
-                let id = item["id"].as_str().unwrap().to_string();
+                let id = VideoId(item["id"].as_str().unwrap().to_string());
                 let duration = item["contentDetails"]["duration"].as_str().unwrap().into();
                 let views = item["statistics"]["viewCount"]
                     .as_str()
@@ -340,10 +341,38 @@ mod tests {
 
         println!("res :{:#?}", result);
 
-        assert_eq!(result.get("9qH8krCX4f0").unwrap().0 .0, 35);
-        assert_eq!(result.get("9qH8krCX4f0").unwrap().1 .0, "00:00:22");
+        assert_eq!(
+            result
+                .get(&VideoId("9qH8krCX4f0".to_string()))
+                .unwrap()
+                .0
+                 .0,
+            36
+        );
+        assert_eq!(
+            result
+                .get(&VideoId("9qH8krCX4f0".to_string()))
+                .unwrap()
+                .1
+                 .0,
+            "00:00:22"
+        );
 
-        assert_eq!(result.get("bNCJgh4XMtQ").unwrap().0 .0, 38171);
-        assert_eq!(result.get("bNCJgh4XMtQ").unwrap().1 .0, "11:54:58");
+        assert_eq!(
+            result
+                .get(&VideoId("bNCJgh4XMtQ".to_string()))
+                .unwrap()
+                .0
+                 .0,
+            47621
+        );
+        assert_eq!(
+            result
+                .get(&VideoId("bNCJgh4XMtQ".to_string()))
+                .unwrap()
+                .1
+                 .0,
+            "11:54:58"
+        );
     }
 }

@@ -14,7 +14,11 @@ pub struct DiskCache<K, V> {
     value_type: PhantomData<V>,
 }
 
-impl<K: Deref<Target = String>, V: Serialize + Debug + for<'a> Deserialize<'a>> DiskCache<K, V> {
+impl<
+        K: Deref<Target = String> + From<String> + Debug,
+        V: Serialize + Debug + for<'a> Deserialize<'a>,
+    > DiskCache<K, V>
+{
     pub fn new(name: &str, mode: Mode) -> Self {
         let path = match mode {
             Mode::Prod => format!("data/db/{}", name),
@@ -47,6 +51,26 @@ impl<K: Deref<Target = String>, V: Serialize + Debug + for<'a> Deserialize<'a>> 
             .insert(key.deref(), serde_json::to_vec(&value).unwrap());
     }
 
+    pub fn keys(&self) -> impl Iterator<Item = K> {
+        self.sled
+            .iter()
+            .keys()
+            .flat_map(|value| {
+                if let Err(ref e) = value {
+                    error!("failed to read from sled: {:?}", e);
+                }
+                value.ok()
+            })
+            .filter_map(|ivec| {
+                let res = String::from_utf8(ivec.to_vec()).map(|k| k.into());
+                if res.is_err() {
+                    warn!("Failed to read from disk: {:?}", res);
+                }
+
+                res.ok()
+            })
+    }
+
     pub fn values(&self) -> impl Iterator<Item = V> {
         self.sled
             .iter()
@@ -77,6 +101,7 @@ pub enum Mode {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashSet;
     use std::sync::Arc;
 
     use uuid::Uuid;
@@ -155,6 +180,25 @@ mod tests {
         assert_eq!(
             result,
             vec!["ZERO".to_string(), "ONE".to_string(), "TWO".to_string()]
+        );
+    }
+
+    #[test]
+    fn test_iterate_keys() {
+        let cache: DiskCache<ChannelName, String> = DiskCache::new("test5", Mode::Test);
+        cache.insert(ChannelName("zero".into()), "0".into());
+        cache.insert(ChannelName("one".into()), "1".into());
+        cache.insert(ChannelName("two".into()), "2".into());
+
+        let result = cache
+            .keys()
+            .map(|s| s.to_uppercase())
+            .collect::<HashSet<_>>();
+        assert_eq!(
+            result,
+            vec!["ZERO".to_string(), "ONE".to_string(), "TWO".to_string()]
+                .into_iter()
+                .collect::<HashSet<_>>()
         );
     }
 }
