@@ -1,12 +1,13 @@
-use crate::projections::feed_service::feed_service_types::Video;
+use std::collections::HashMap;
+
 use anyhow::{bail, Context, Result};
 use chrono::{DateTime, TimeZone, Utc};
 use itertools::Itertools;
 use log::{error, info, trace, warn};
 use reqwest::{Client, RequestBuilder};
 use serde_json::Value;
-use std::collections::HashMap;
 
+use crate::projections::feed_service::feed_service_types::Video;
 use crate::types::{
     ChannelId, ChannelName, PlaylistId, VideoDuration, VideoId, ViewCount, YoutubeChannelUrl,
 };

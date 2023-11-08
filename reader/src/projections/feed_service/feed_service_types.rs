@@ -1,6 +1,7 @@
-use crate::types::{VideoDuration, VideoId, ViewCount};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+
+use crate::types::{VideoDuration, VideoId, ViewCount};
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct Video {

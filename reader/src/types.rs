@@ -1,11 +1,13 @@
-use crate::projections::feed_service::feed_service_types;
 use derive_newtype::NewType;
 use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
+use crate::projections::feed_service::feed_service_types;
+
 #[derive(NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct EventId(pub Uuid);
+
 impl Default for EventId {
     fn default() -> Self {
         Self(Uuid::new_v4())
