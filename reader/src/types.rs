@@ -80,7 +80,11 @@ impl From<&str> for VideoDuration {
         let seconds = duration.as_secs() % 60;
         let minutes = (duration.as_secs() / 60) % 60;
         let hours = (duration.as_secs() / 60) / 60;
-        Self(format!("{:0>2}:{:0>2}:{:0>2}", hours, minutes, seconds))
+        if hours == 0 {
+            Self(format!("{:0>2}:{:0>2}", minutes, seconds))
+        } else {
+            Self(format!("{:0>2}:{:0>2}:{:0>2}", hours, minutes, seconds))
+        }
     }
 }
 
@@ -117,7 +121,7 @@ mod tests {
 
     #[test]
     fn parse_video_duration() {
-        assert_eq!(VideoDuration("00:00:22".to_string()), "PT22S".into());
+        assert_eq!(VideoDuration("00:22".to_string()), "PT22S".into());
         assert_eq!(VideoDuration("11:54:58".to_string()), "PT11H54M58S".into());
     }
 }
