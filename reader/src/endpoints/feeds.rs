@@ -69,7 +69,14 @@ pub async fn get_videos(
         .lock()
         .unwrap()
         .watched_items(&user_id, &channel_id);
-    let mut feed: Vec<Video> = services.feed_service.lock().unwrap().videos(channel_id);
+    let mut feed: Vec<Video> = services
+        .feed_service
+        .lock()
+        .unwrap()
+        .videos(channel_id)
+        .into_iter()
+        .map(|video| video.into())
+        .collect();
     feed.retain(|video| !watched_videos.contains(&video.id));
 
     HttpResponse::Ok().json(feed)

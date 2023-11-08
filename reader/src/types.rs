@@ -1,3 +1,4 @@
+use crate::projections::feed_service::feed_service_types;
 use chrono::{DateTime, Utc};
 use derive_newtype::NewType;
 use serde::Deserialize;
@@ -91,11 +92,24 @@ pub struct Video {
     pub(crate) description: String,
     #[serde(rename = "uploadDate")]
     pub(crate) upload_date: String,
-    #[serde(rename = "lastUpdated")]
-    pub(crate) last_updated: DateTime<Utc>,
     pub(crate) url: String,
     pub(crate) duration: VideoDuration,
     pub(crate) views: ViewCount,
+}
+
+impl From<feed_service_types::Video> for Video {
+    fn from(value: feed_service_types::Video) -> Self {
+        let url = format!("https://www.youtube.com/watch?v={}", *value.id);
+        Self {
+            id: value.id,
+            title: value.title,
+            description: value.description,
+            upload_date: value.upload_date.to_string(),
+            url,
+            duration: value.duration,
+            views: value.views,
+        }
+    }
 }
 
 #[cfg(test)]

@@ -9,8 +9,9 @@ use crate::event::event_store::EventStore;
 use crate::event::events::Event;
 use crate::projections::feed_service::feed_service_download::download_channel;
 use crate::projections::feed_service::feed_service_statistics::update_statistics;
+use crate::projections::feed_service::feed_service_types::Video;
 use crate::sled_wrapper::DiskCache;
-use crate::types::{Channel, ChannelId, ChannelName, Video, YoutubeChannelUrl};
+use crate::types::{Channel, ChannelId, ChannelName, YoutubeChannelUrl};
 use crate::youtube::youtube_client::YoutubeClient;
 
 pub struct FeedService {

@@ -1,12 +1,13 @@
+use crate::projections::feed_service::feed_service_types::Video;
 use anyhow::{bail, Context, Result};
-use chrono::{TimeZone, Utc};
+use chrono::{DateTime, TimeZone, Utc};
 use log::{error, info, trace, warn};
 use reqwest::{Client, RequestBuilder};
 use serde_json::Value;
 use std::collections::HashMap;
 
 use crate::types::{
-    ChannelId, ChannelName, PlaylistId, Video, VideoDuration, VideoId, ViewCount, YoutubeChannelUrl,
+    ChannelId, ChannelName, PlaylistId, VideoDuration, VideoId, ViewCount, YoutubeChannelUrl,
 };
 
 #[derive(Clone)]
@@ -122,9 +123,12 @@ impl YoutubeClient {
                     id: VideoId(id.clone()),
                     title: item["snippet"]["title"].as_str().unwrap().to_string(),
                     description: item["snippet"]["description"].as_str().unwrap().to_string(),
-                    upload_date: item["snippet"]["publishedAt"].as_str().unwrap().to_string(),
+                    upload_date: DateTime::parse_from_rfc3339(
+                        item["snippet"]["publishedAt"].as_str().unwrap(),
+                    )
+                    .unwrap()
+                    .with_timezone(&Utc),
                     last_updated: Utc.timestamp_nanos(0),
-                    url: format!("https://www.youtube.com/watch?v={}", id),
                     duration: VideoDuration("0".to_string()),
                     views: ViewCount(0),
                 }

@@ -1,5 +1,6 @@
 use std::collections::{HashSet, VecDeque};
 
+use crate::projections::feed_service::feed_service_types::Video;
 use anyhow::Result;
 use futures::Stream;
 use futures::StreamExt;
@@ -7,7 +8,7 @@ use log::{info, trace, warn};
 use tokio::pin;
 
 use crate::sled_wrapper::DiskCache;
-use crate::types::{Channel, ChannelId, PlaylistId, Video};
+use crate::types::{Channel, ChannelId, PlaylistId};
 use crate::youtube::youtube_client::YoutubeClient;
 
 pub async fn download_channel(
