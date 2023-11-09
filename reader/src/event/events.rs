@@ -2,7 +2,9 @@ use chrono::{DateTime, Utc};
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::types::{ChannelId, EventId, LabelId, LabelName, Password, UserId, Username, VideoId};
+use crate::types::{
+    ChannelId, EventId, HashedPassword, LabelId, LabelName, UserId, Username, VideoId,
+};
 
 // todo normalize field names
 
@@ -17,7 +19,7 @@ pub enum Event {
         #[serde(rename = "userId")] // wat
         user_id: UserId,
         username: Username,
-        password: Password,
+        password: HashedPassword,
     },
     #[serde(rename = "USER_SUBSCRIBED_TO_FEED")]
     UserSubscribedToFeed {

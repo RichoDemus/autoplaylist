@@ -34,7 +34,6 @@ impl TestService {
             "YT_KEY".to_string(),
             Mode::Test,
             false,
-            None,
         ));
 
         Self {

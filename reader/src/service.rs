@@ -23,14 +23,10 @@ impl Services {
         youtube_key: String,
         mode: Mode,
         use_gcs: bool,
-        password_override: Option<String>,
     ) -> Self {
         let event_store = Arc::new(Mutex::new(EventStore::new(use_gcs)));
         Self {
-            user_service: Arc::new(Mutex::new(UserService::new(
-                event_store.clone(),
-                password_override,
-            ))),
+            user_service: Arc::new(Mutex::new(UserService::new(event_store.clone()))),
             subscriptions_service: Arc::new(Mutex::new(SubscriptionsService::new(
                 event_store.clone(),
             ))),

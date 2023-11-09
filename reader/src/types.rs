@@ -39,6 +39,9 @@ pub struct Username(pub String);
 pub struct Password(pub String);
 
 #[derive(NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
+pub struct HashedPassword(pub String);
+
+#[derive(NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct LabelId(pub Uuid);
 
 #[derive(NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]

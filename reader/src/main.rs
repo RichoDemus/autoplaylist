@@ -34,10 +34,6 @@ struct Args {
     /// Name of the person to greet
     #[arg(short, long)]
     youtube_api_key: String,
-
-    /// Number of times to greet
-    #[arg(short, long)]
-    password_override: Option<String>,
 }
 
 #[actix_web::main]
@@ -50,13 +46,7 @@ async fn main() -> anyhow::Result<()> {
 
     let secret_key = Key::from(&[0; 64]); // todo use proper key
     let youtube_key = args.youtube_api_key;
-    let state = web::Data::new(Services::new(
-        None,
-        youtube_key,
-        Mode::Prod,
-        true,
-        args.password_override,
-    ));
+    let state = web::Data::new(Services::new(None, youtube_key, Mode::Prod, true));
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())
