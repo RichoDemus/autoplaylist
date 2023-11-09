@@ -1,8 +1,8 @@
-use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
 use anyhow::Result;
 use chrono::Utc;
+use dashmap::DashMap;
 
 use crate::event::event_store::EventStore;
 use crate::event::events::Event;
@@ -10,12 +10,12 @@ use crate::types::{ChannelId, UserId};
 
 pub struct SubscriptionsService {
     event_store: Arc<Mutex<EventStore>>,
-    subscriptions: Arc<Mutex<HashMap<UserId, Vec<ChannelId>>>>,
+    subscriptions: Arc<DashMap<UserId, Vec<ChannelId>>>,
 }
 
 impl SubscriptionsService {
     pub fn new(event_store: Arc<Mutex<EventStore>>) -> Self {
-        let subscriptions: Arc<Mutex<HashMap<UserId, Vec<ChannelId>>>> = Default::default();
+        let subscriptions: Arc<DashMap<UserId, Vec<ChannelId>>> = Default::default();
         let subscriptions_spawn = subscriptions.clone();
         let mut receiver = event_store.lock().unwrap().receiver();
         actix_rt::spawn(async move {
@@ -28,8 +28,6 @@ impl SubscriptionsService {
                 } = event
                 {
                     subscriptions_spawn
-                        .lock()
-                        .unwrap()
                         .entry(user_id)
                         .or_default()
                         .push(feed_id);
@@ -56,10 +54,8 @@ impl SubscriptionsService {
 
     pub fn get_feeds(&self, user: &UserId) -> Vec<ChannelId> {
         self.subscriptions
-            .lock()
-            .unwrap()
             .get(user)
-            .cloned()
+            .map(|v| v.value().clone())
             .unwrap_or_else(Vec::new)
     }
 }

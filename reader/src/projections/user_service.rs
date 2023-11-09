@@ -1,9 +1,9 @@
-use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
 use anyhow::Result;
 use bcrypt::{hash, verify, DEFAULT_COST};
 use chrono::Utc;
+use dashmap::DashMap;
 use log::info;
 use uuid::Uuid;
 
@@ -13,12 +13,12 @@ use crate::types::{EventId, HashedPassword, Password, UserId, Username};
 
 pub struct UserService {
     event_store: Arc<Mutex<EventStore>>,
-    users: Arc<Mutex<HashMap<Username, (UserId, HashedPassword)>>>,
+    users: Arc<DashMap<Username, (UserId, HashedPassword)>>,
 }
 
 impl UserService {
     pub fn new(event_store: Arc<Mutex<EventStore>>) -> Self {
-        let users: Arc<Mutex<HashMap<Username, (UserId, HashedPassword)>>> = Default::default();
+        let users: Arc<DashMap<Username, (UserId, HashedPassword)>> = Default::default();
         let users_spawn = users.clone();
         let mut receiver = event_store.lock().unwrap().receiver();
         actix_rt::spawn(async move {
@@ -32,10 +32,7 @@ impl UserService {
                 } = event
                 {
                     let username = Username(username.to_lowercase());
-                    users_spawn
-                        .lock()
-                        .unwrap()
-                        .insert(username, (user_id, password));
+                    users_spawn.insert(username, (user_id, password));
                 }
             }
         });
@@ -61,7 +58,8 @@ impl UserService {
 
     pub fn is_password_valid(&self, username: &Username, password_input: &Password) -> bool {
         let username = Username(username.to_lowercase());
-        if let Some((_userid, password)) = self.users.lock().unwrap().get(&username) {
+        if let Some(r) = self.users.get(&username) {
+            let (_name, password) = r.value();
             verify(password_input.0.as_str(), password).unwrap()
         } else {
             info!("User Not found: {:?}", username);
@@ -72,9 +70,8 @@ impl UserService {
     pub fn get_user_id(&self, username: &Username) -> Option<UserId> {
         let username = Username(username.to_lowercase());
         self.users
-            .lock()
-            .unwrap()
             .get(&username)
-            .map(|(id, _pass)| id.clone())
+            .map(|v| v.value().clone())
+            .map(|(id, _pass)| id)
     }
 }

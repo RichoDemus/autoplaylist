@@ -3,6 +3,7 @@ use std::sync::{Arc, Mutex};
 
 use anyhow::Result;
 use chrono::Utc;
+use dashmap::DashMap;
 
 use crate::event::event_store::EventStore;
 use crate::event::events::Event;
@@ -10,12 +11,12 @@ use crate::types::{ChannelId, UserId, VideoId};
 
 pub struct WatchedVideosService {
     event_store: Arc<Mutex<EventStore>>,
-    watched_items: Arc<Mutex<HashMap<UserId, HashMap<ChannelId, HashSet<VideoId>>>>>,
+    watched_items: Arc<DashMap<UserId, HashMap<ChannelId, HashSet<VideoId>>>>,
 }
 
 impl WatchedVideosService {
     pub fn new(event_store: Arc<Mutex<EventStore>>) -> Self {
-        let watched_items: Arc<Mutex<HashMap<UserId, HashMap<ChannelId, HashSet<VideoId>>>>> =
+        let watched_items: Arc<DashMap<UserId, HashMap<ChannelId, HashSet<VideoId>>>> =
             Default::default();
         let watched_items_spawn = watched_items.clone();
         let mut receiver = event_store.lock().unwrap().receiver();
@@ -30,8 +31,6 @@ impl WatchedVideosService {
                         item_id,
                     } => {
                         watched_items_spawn
-                            .lock()
-                            .unwrap()
                             .entry(user_id)
                             .or_default()
                             .entry(feed_id)
@@ -46,8 +45,6 @@ impl WatchedVideosService {
                         item_id,
                     } => {
                         watched_items_spawn
-                            .lock()
-                            .unwrap()
                             .entry(user_id)
                             .or_default()
                             .entry(feed_id)
@@ -104,8 +101,6 @@ impl WatchedVideosService {
 
     pub fn watched_items(&self, user: &UserId, channel: &ChannelId) -> HashSet<VideoId> {
         self.watched_items
-            .lock()
-            .unwrap()
             .get(user)
             .and_then(|channels| channels.get(channel).cloned())
             .unwrap_or_default()
