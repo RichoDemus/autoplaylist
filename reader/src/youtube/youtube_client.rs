@@ -155,19 +155,29 @@ impl YoutubeClient {
             )
             .await?;
 
-        let stats = value["items"]
+        let stats: HashMap<VideoId, (ViewCount, VideoDuration)> = value["items"]
             .as_array()
             .context("no items")?
             .iter()
-            .map(|item| {
-                let id = VideoId(item["id"].as_str().unwrap().to_string());
-                let duration = item["contentDetails"]["duration"].as_str().unwrap().into();
+            .flat_map(|item| {
+                let id = item["id"].as_str().map(|s| s.to_string());
+                let duration = item["contentDetails"]["duration"]
+                    .as_str()
+                    .map(|s| s.to_string());
                 let views = item["statistics"]["viewCount"]
                     .as_str()
-                    .unwrap()
-                    .parse::<u64>()
-                    .unwrap();
-                ((id), (ViewCount(views), duration))
+                    .map(|s| s.parse::<u64>().ok())
+                    .flatten();
+
+                match (id.clone(), duration, views) {
+                    (Some(id), Some(duration), Some(views)) => {
+                        Some(((VideoId(id)), (ViewCount(views), duration.as_str().into())))
+                    }
+                    _ => {
+                        warn!("Failed to get stats for video {id:?}");
+                        None
+                    }
+                }
             })
             .collect::<HashMap<_, _>>();
 
