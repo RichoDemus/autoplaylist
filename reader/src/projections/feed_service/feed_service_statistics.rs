@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use chrono::{DateTime, Datelike, Utc};
+use chrono::{DateTime, Datelike, TimeZone, Utc};
 use log::{error, info};
 
 use crate::projections::feed_service::feed_service_types::Video;
@@ -55,6 +55,11 @@ pub async fn update_statistics(client: YoutubeClient, videos: &DiskCache<Channel
 }
 
 fn prioritize_videos_to_update(vids: Vec<VideoDates>) -> Vec<VideoId> {
+    let vids_without_stats = vids
+        .iter()
+        .filter(|v| v.last_updated == Utc.timestamp_nanos(0))
+        .count();
+    info!("There are {vids_without_stats} without stats");
     let now = Utc::now();
     let (new_things, older_things): (Vec<VideoDates>, Vec<VideoDates>) = vids
         .into_iter()
