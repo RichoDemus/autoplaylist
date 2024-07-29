@@ -49,6 +49,7 @@ impl FeedService {
                 }
             }
         });
+        setup_periodic_download(channels.clone(), videos.clone(), client.clone());
         Self {
             channels,
             client,
@@ -164,4 +165,52 @@ async fn do_download(
         .await?;
     }
     Ok(())
+}
+
+fn setup_periodic_download(
+    channels: DiskCache<ChannelId, Channel>,
+    videos: DiskCache<ChannelId, Vec<Video>>,
+    client: YoutubeClient,
+) {
+    spawn(async move {
+        info!("Periodic downoader setup");
+        sleep(Duration::from_secs(60)).await;
+        loop {
+            let last_updated = filesystem::read_file("last_updated.txt".to_string())
+                .await
+                .map(String::from_utf8)
+                .map(Result::ok)
+                .flatten()
+                .map(|txt| DateTime::parse_from_rfc3339(txt.as_str()).ok())
+                .flatten()
+                .map(|d| d.with_timezone(&Utc));
+            info!("{last_updated:?}");
+            if let Some(last_updated) = last_updated {
+                let diff: chrono::Duration = Utc::now() - last_updated;
+                if diff > chrono::Duration::hours(4) {
+                    info!("More than 4 hours ago");
+                    let channels = channels.clone();
+                    let videos = videos.clone();
+                    let client = client.clone();
+                    spawn(async move {
+                        if let Err(e) = do_download(channels, videos, client).await {
+                            warn!("Failed to do feed triggered DL(2): {e:?}");
+                        }
+                    });
+                }
+            } else {
+                info!("No last updated file");
+                let channels = channels.clone();
+                let videos = videos.clone();
+                let client = client.clone();
+                spawn(async move {
+                    if let Err(e) = do_download(channels, videos, client).await {
+                        warn!("Failed to do feed triggered DL(2): {e:?}");
+                    }
+                });
+            }
+
+            sleep(Duration::from_secs(60 * 60)).await;
+        }
+    });
 }
