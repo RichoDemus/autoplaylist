@@ -12,7 +12,7 @@ actix-cors = "0.7"
 actix-session = { version = "0.10", features = ["cookie-session"] }
 actix-http = "3.2"
 actix-rt = "2.9"
-static-files = "0.2"
+static-files = "0.3"
 actix-test = "0.1"
 anyhow = "1"
 chrono = { version = "0.4", features = ["serde"] }
@@ -41,4 +41,4 @@ httpmock = "0.7"
 pretty_assertions = "1.4"
 
 [build-dependencies]
-static-files = "0.2"
+static-files = "0.3"
