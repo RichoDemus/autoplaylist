@@ -1,6 +1,6 @@
 var Table = ((()=>
 {
-    var pub = {},
+    var pub = { },
     //Private property
     itemListTableSelector = $('#itemListTable');
 
@@ -26,6 +26,10 @@ var Table = ((()=>
         if (order) {
             itemListTableSelector.DataTable().order(order).draw();
         }
+
+        $('#datePicker').on('change', function() {
+            pub.addItemsToTable();
+        });
     };
 
     pub.addFeedToTable = feed=>
@@ -43,11 +47,26 @@ var Table = ((()=>
 
     pub.addItemsToTable = ()=>
     {
+        itemListTableSelector.dataTable().fnClearTable();
+        var minDateString = $('#datePicker').val();
+        var minDate;
+
+        if (minDateString) {
+            var minDateParts = minDateString.split('-');
+            minDate = new Date(
+                parseInt(minDateParts[0], 10),
+                parseInt(minDateParts[1], 10) - 1, // Month is 0-indexed
+                parseInt(minDateParts[2], 10)
+            );
+        }
+
         if (selectedFeed) {
             var feed = feeds.find(function(f) { return f.id === selectedFeed; });
             if (feed) {
                 feed.items.forEach(function(item) {
-                    addItemToTable(feed.id, item);
+                    if (shouldAddItem(item, minDate)) {
+                        addItemToTable(feed.id, item);
+                    }
                 });
             }
         }
@@ -77,7 +96,9 @@ var Table = ((()=>
             // Add items from all feeds that belong to the selected label
             feedsToShow.forEach(function(feed) {
                 feed.items.forEach(function(item) {
-                    addItemToTable(feed.id, item);
+                    if (shouldAddItem(item, minDate)) {
+                        addItemToTable(feed.id, item);
+                    }
                 });
             });
         }
@@ -85,6 +106,34 @@ var Table = ((()=>
         // Redraw the table once after all rows have been added.
         itemListTableSelector.DataTable().draw();
     };
+
+    function shouldAddItem(item, minDate) {
+        if (!minDate) {
+            return true;
+        }
+
+        var itemDateString = item.uploadDate;
+        if (!itemDateString) {
+            return false;
+        }
+
+        var itemDateParts = itemDateString.substring(0, 10).split('-');
+        if (itemDateParts.length < 3 || isNaN(parseInt(itemDateParts[0],10))) {
+            return false;
+        }
+
+        var itemDate = new Date(
+            parseInt(itemDateParts[0], 10),
+            parseInt(itemDateParts[1], 10) - 1,
+            parseInt(itemDateParts[2], 10)
+        );
+
+        if (isNaN(itemDate.getTime())) {
+            return false;
+        }
+
+        return itemDate >= minDate;
+    }
 
     function addItemToTable (feedId, item)
     {
