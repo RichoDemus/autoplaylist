@@ -27,7 +27,13 @@ var Table = ((()=>
             itemListTableSelector.DataTable().order(order).draw();
         }
 
+        const savedDate = localStorage.getItem('datePicker');
+        if (savedDate) {
+            $('#datePicker').val(savedDate);
+        }
+
         $('#datePicker').on('change', function() {
+            localStorage.setItem('datePicker', $(this).val());
             pub.addItemsToTable();
         });
     };
