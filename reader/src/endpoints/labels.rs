@@ -1,7 +1,7 @@
 use actix_http::StatusCode;
 use actix_session::Session;
 use actix_web::web::{Bytes, Data, Path};
-use actix_web::{post, HttpResponse};
+use actix_web::{HttpResponse, post};
 use log::{trace, warn};
 
 use crate::service::Services;

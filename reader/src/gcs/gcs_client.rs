@@ -1,14 +1,14 @@
 use core::sync::atomic::Ordering;
+use std::sync::Arc;
 use std::sync::atomic::Ordering::SeqCst;
 use std::sync::atomic::{AtomicBool, AtomicUsize};
-use std::sync::Arc;
 use std::time::Duration;
 
 use anyhow::{Context, Result};
 use async_once_cell::OnceCell;
-use google_cloud_storage::client::google_cloud_auth::credentials::CredentialsFile;
 use google_cloud_storage::client::Client;
 use google_cloud_storage::client::ClientConfig;
+use google_cloud_storage::client::google_cloud_auth::credentials::CredentialsFile;
 use google_cloud_storage::http::buckets::list::ListBucketsRequest;
 use google_cloud_storage::http::objects::download::Range;
 use google_cloud_storage::http::objects::get::GetObjectRequest;
@@ -156,9 +156,9 @@ fn make_sure_no_events_missing(events: Vec<String>) {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
     use std::sync::atomic::AtomicBool;
     use std::sync::atomic::AtomicUsize;
-    use std::sync::Arc;
     use std::time::Duration;
 
     use actix_rt::time::sleep;

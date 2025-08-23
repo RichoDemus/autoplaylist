@@ -1,9 +1,9 @@
 use actix_cors::Cors;
-use actix_session::storage::CookieSessionStore;
 use actix_session::SessionMiddleware;
+use actix_session::storage::CookieSessionStore;
 use actix_test::TestServer;
 use actix_web::cookie::Key;
-use actix_web::{web, App};
+use actix_web::{App, web};
 use log::LevelFilter;
 
 use crate::endpoints::admin::{download, get_status};

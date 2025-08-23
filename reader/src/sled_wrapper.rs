@@ -15,9 +15,9 @@ pub struct DiskCache<K, V> {
 }
 
 impl<
-        K: Deref<Target = String> + From<String> + Debug,
-        V: Serialize + Debug + for<'a> Deserialize<'a>,
-    > DiskCache<K, V>
+    K: Deref<Target = String> + From<String> + Debug,
+    V: Serialize + Debug + for<'a> Deserialize<'a>,
+> DiskCache<K, V>
 {
     pub fn new(name: &str, mode: Mode) -> Self {
         let path = match mode {

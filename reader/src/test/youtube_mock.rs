@@ -3,7 +3,7 @@ use std::sync::Mutex;
 
 use actix_test::TestServer;
 use actix_web::web::{Data, Query};
-use actix_web::{get, App, HttpResponse};
+use actix_web::{App, HttpResponse, get};
 use log::trace;
 use serde::Deserialize;
 use serde_json::json;

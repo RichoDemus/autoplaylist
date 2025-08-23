@@ -1,7 +1,7 @@
 use actix_http::StatusCode;
 use actix_session::Session;
 use actix_web::web::Data;
-use actix_web::{get, post, HttpResponse};
+use actix_web::{HttpResponse, get, post};
 use log::{error, info, warn};
 use serde_json::json;
 

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use chrono::{DateTime, TimeZone, Utc};
 use itertools::Itertools;
 use log::{error, info, trace, warn};
@@ -353,36 +353,20 @@ mod tests {
         println!("res :{:#?}", result);
 
         assert_eq!(
-            result
-                .get(&VideoId("9qH8krCX4f0".to_string()))
-                .unwrap()
-                .0
-                 .0,
+            result.get(&VideoId("9qH8krCX4f0".to_string())).unwrap().0.0,
             36
         );
         assert_eq!(
-            result
-                .get(&VideoId("9qH8krCX4f0".to_string()))
-                .unwrap()
-                .1
-                 .0,
+            result.get(&VideoId("9qH8krCX4f0".to_string())).unwrap().1.0,
             "00:00:22"
         );
 
         assert_eq!(
-            result
-                .get(&VideoId("bNCJgh4XMtQ".to_string()))
-                .unwrap()
-                .0
-                 .0,
+            result.get(&VideoId("bNCJgh4XMtQ".to_string())).unwrap().0.0,
             47621
         );
         assert_eq!(
-            result
-                .get(&VideoId("bNCJgh4XMtQ".to_string()))
-                .unwrap()
-                .1
-                 .0,
+            result.get(&VideoId("bNCJgh4XMtQ".to_string())).unwrap().1.0,
             "11:54:58"
         );
     }

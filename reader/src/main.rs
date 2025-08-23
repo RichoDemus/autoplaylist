@@ -1,11 +1,11 @@
 extern crate core;
 
 use actix_cors::Cors;
-use actix_session::storage::CookieSessionStore;
 use actix_session::SessionMiddleware;
+use actix_session::storage::CookieSessionStore;
 use actix_web::cookie::{Key, SameSite};
 use actix_web::middleware::Logger;
-use actix_web::{cookie, web, App, HttpServer};
+use actix_web::{App, HttpServer, cookie, web};
 use clap::Parser;
 use log::LevelFilter;
 
