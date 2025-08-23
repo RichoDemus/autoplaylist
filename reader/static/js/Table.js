@@ -43,17 +43,47 @@ var Table = ((()=>
 
     pub.addItemsToTable = ()=>
     {
-        if (!selectedFeed) {
-            console.log("No feed selected");
-            return;
-        }
-        feeds.forEach(feed=>
-        {
-            if (feed.id === selectedFeed) {
-                feed.items.forEach(item=>addItemToTable(feed.id, item));
-                itemListTableSelector.DataTable().draw();
+        if (selectedFeed) {
+            var feed = feeds.find(function(f) { return f.id === selectedFeed; });
+            if (feed) {
+                feed.items.forEach(function(item) {
+                    addItemToTable(feed.id, item);
+                });
             }
-        });
+        }
+       else if (selectedLabel) {
+            var feedsToShow = [];
+
+            // Handle the special "All Feeds" label
+            if (selectedLabel === ALL_LABEL) {
+                feedsToShow = feeds;
+            }
+            // Handle the special "Unlabeled" label
+            else if (selectedLabel.id === UNLABELED_LABEL.id) {
+                var labeledFeedIds = new Set();
+                labels.forEach(function(label) {
+                    if (label.id !== UNLABELED_LABEL.id) {
+                        label.feeds.forEach(function(feedId) { labeledFeedIds.add(feedId); });
+                    }
+                });
+                feedsToShow = feeds.filter(function(feed) { return !labeledFeedIds.has(feed.id); });
+            }
+            // Handle a standard label
+            else {
+                var feedIdsInLabel = new Set(selectedLabel.feeds);
+                feedsToShow = feeds.filter(function(feed) { return feedIdsInLabel.has(feed.id); });
+            }
+
+            // Add items from all feeds that belong to the selected label
+            feedsToShow.forEach(function(feed) {
+                feed.items.forEach(function(item) {
+                    addItemToTable(feed.id, item);
+                });
+            });
+        }
+
+        // Redraw the table once after all rows have been added.
+        itemListTableSelector.DataTable().draw();
     };
 
     function addItemToTable (feedId, item)

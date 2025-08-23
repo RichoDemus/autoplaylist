@@ -72,22 +72,63 @@ var Buttons = (function()
 		});
 	};
 
-	pub.labelClicked = function(label)
-	{
-		const newSelectedLabelLong = label.getAttribute("data-label-id");
-		if(newSelectedLabelLong == ALL_LABEL.id)
-		{
-			selectedLabel = ALL_LABEL;
-			Service.updateEverything();
-			return;
-		}
-		const newSelectedLabel = labels.filter(function(e) {return e.id == newSelectedLabelLong;})[0];
-		console.log(newSelectedLabel);
-		selectedLabel = newSelectedLabel;
-		console.log(selectedLabel);
-		console.log("Now only showing feeds beloning to label: " + selectedLabel.name);
-		Service.updateEverything();
-	};
+    pub.labelClicked = function(label) {
+        selectedFeed = null; // Clear any previously selected feed
+        const newSelectedLabelLong = label.getAttribute("data-label-id");
+        let newSelectedLabel;
+
+        if (newSelectedLabelLong == ALL_LABEL.id) {
+            newSelectedLabel = ALL_LABEL;
+        } else {
+            // Using filter()...[0] to match existing code style
+            newSelectedLabel = labels.filter(function(e) { return e.id == newSelectedLabelLong; })[0];
+        }
+
+        selectedLabel = newSelectedLabel;
+        console.log("Label clicked:", selectedLabel.name);
+
+        // 1. Determine which feeds we need to display for the selected label
+        let feedsToShow;
+        if (selectedLabel === ALL_LABEL) {
+            feedsToShow = feeds;
+        } else if (selectedLabel.id === UNLABELED_LABEL.id) {
+            const labeledFeedIds = new Set();
+            labels.forEach(function(l) {
+                if (l.id !== UNLABELED_LABEL.id) {
+                    l.feeds.forEach(function(feedId) { labeledFeedIds.add(feedId); });
+                }
+            });
+            feedsToShow = feeds.filter(function(feed) { return !labeledFeedIds.has(feed.id); });
+        } else {
+            const feedIdsInLabel = new Set(selectedLabel.feeds);
+            feedsToShow = feeds.filter(function(feed) { return feedIdsInLabel.has(feed.id); });
+        }
+
+        // 2. Create a list of promises to fetch items for each feed if they aren't loaded yet
+        const promises = feedsToShow.map(function(feed) {
+            // The `items` property is where the videos for a feed are stored.
+            // If it's undefined, it means we need to fetch them.
+            if (typeof feed.items === 'undefined') {
+                return new Promise(function(resolve) {
+                    // Use the existing Api.getFeed function which fetches items
+                    Api.getFeed(feed.id, function(items) {
+                        feed.items = items; // Attach the fetched items to the feed object
+                        resolve();
+                    });
+                });
+            } else {
+                // If items are already loaded, we don't need to do anything.
+                return Promise.resolve();
+            }
+        });
+
+        // 3. Wait for all the item-fetching promises to complete
+        Promise.all(promises).then(function() {
+            // 4. Now that all necessary data is loaded, update the entire UI.
+            console.log("All items fetched for label, updating UI.");
+            Service.updateEverything();
+        });
+    };
 
 	pub.filterFeedButtonClicked = function(feed)
 	{
