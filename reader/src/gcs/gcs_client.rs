@@ -61,8 +61,7 @@ pub async fn get_all_events() -> Result<Vec<Vec<u8>>> {
             project: "richo-main".into(),
             ..Default::default()
         })
-        .await
-        .unwrap();
+        .await?;
 
     let mut event_names = vec![];
 
@@ -71,8 +70,7 @@ pub async fn get_all_events() -> Result<Vec<Vec<u8>>> {
             bucket: "richo-reader".into(),
             ..Default::default()
         })
-        .await
-        .unwrap();
+        .await?;
 
     for item in list.items.unwrap_or_default() {
         if item.name.starts_with("events/v2/") {
@@ -88,8 +86,7 @@ pub async fn get_all_events() -> Result<Vec<Vec<u8>>> {
                 page_token: page_token.clone(),
                 ..Default::default()
             })
-            .await
-            .unwrap();
+            .await?;
 
         for item in list.items.unwrap_or_default() {
             if item.name.starts_with("events/v2/") {
@@ -131,6 +128,7 @@ pub async fn get_all_events() -> Result<Vec<Vec<u8>>> {
     let mut downloaded = vec![];
     for name in event_names {
         downloaded.push(download(name, &client).await?);
+        finished_downloads.fetch_add(1, Ordering::SeqCst);
     }
 
     downloading.store(false, SeqCst);

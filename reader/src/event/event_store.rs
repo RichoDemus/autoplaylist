@@ -36,7 +36,13 @@ impl EventStore {
 
                     break;
                 }
-                let events = gcs_client::get_all_events().await.unwrap();
+                let events = match gcs_client::get_all_events().await {
+                    Ok(events) => events,
+                    Err(e) => {
+                        log::error!("Failed to get events: {:?}", e);
+                        return;
+                    }
+                };
                 info!("Loaded {} events", events.len());
                 let mut num_events = 0;
                 for bytes in events {
