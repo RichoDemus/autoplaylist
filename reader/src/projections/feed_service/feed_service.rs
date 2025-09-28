@@ -93,7 +93,7 @@ impl FeedService {
 fn register_channel(client: YoutubeClient, channels: DiskCache<ChannelId, Channel>, id: ChannelId) {
     spawn(async move {
         match client.channel(&id).await {
-            Err(e) => warn!("Get channel failed for {id:?}: {:?}", e),
+            Err(_e) => warn!("Get channel failed for {id:?}"),
             Ok((name, playlist)) => {
                 channels.insert(id.clone(), Channel { id, name, playlist });
             }
@@ -151,7 +151,7 @@ async fn do_download(
         .sorted_unstable_by(|a, b| Ord::cmp(&a.name.0, &b.name.0))
     {
         if let Err(e) = download_channel(client.clone(), &videos, channel.clone()).await {
-            warn!("Channel {} failed: {:?}", &*channel.name, e);
+            warn!("Channel {} failed: {:?}", &*channel.name, e.to_string());
         }
     }
     info!("Done synchronizing data!");

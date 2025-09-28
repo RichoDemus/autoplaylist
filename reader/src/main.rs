@@ -6,6 +6,7 @@ use actix_session::storage::CookieSessionStore;
 use actix_web::cookie::{Key, SameSite};
 use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer, cookie, web};
+use anyhow::bail;
 use clap::Parser;
 use log::LevelFilter;
 
@@ -46,6 +47,9 @@ async fn main() -> anyhow::Result<()> {
 
     let secret_key = Key::from(&[0; 64]); // todo use proper key
     let youtube_key = args.youtube_api_key;
+    if youtube_key.starts_with('"') || youtube_key.ends_with('"') {
+        bail!("YouTube API key should not be surrounded by quotes");
+    }
     let state = web::Data::new(Services::new(None, youtube_key, Mode::Prod, true));
     HttpServer::new(move || {
         App::new()

@@ -23,7 +23,7 @@ impl YoutubeClient {
     pub fn new(base_url: Option<String>, key: String) -> Self {
         Self {
             client: Default::default(),
-            key,
+            key: key.trim().to_string(),
             base_url: base_url.unwrap_or("https://www.googleapis.com".to_string()),
         }
     }
@@ -71,7 +71,9 @@ impl YoutubeClient {
                     .query(&[("part", "snippet,contentDetails"), ("id", &**id)]),
             )
             .await?;
-        let items = &value["items"].as_array().context("parse items")?;
+        let items = &value["items"]
+            .as_array()
+            .with_context(|| format!("parse items from {value:?}"))?;
         if items.len() > 1 {
             warn!("More than one channel for id {:?}", id);
         }
@@ -185,15 +187,32 @@ impl YoutubeClient {
     }
 
     async fn call_yt(&self, builder: RequestBuilder) -> Result<Value> {
+        debug_assert!(!self.key.is_empty(), "YT key is empty");
         let response = builder
             .query(&[("key", self.key.as_str())])
             .send()
             .await
-            .context("Call youtube api")?;
+            .context("Call youtube api");
+
+        let response = match response {
+            Ok(r) => r,
+            Err(e) => {
+                error!("YT call failed: {:?}", e);
+                bail!("YT call failed: {:?}", e);
+            }
+        };
 
         if !response.status().is_success() {
             error!("YT call failed: {:?}", response);
+            let status = response.status().as_u16();
             let body = response.text().await.context("unwrap error")?;
+            if status == 403 {
+                warn!("YT call got 403, probably quota exceeded");
+            } else if status == 400 {
+                warn!("YT call got 400, probably bad request: {}", body);
+            } else {
+                warn!("YT call got unexpected status: {}", status);
+            }
             if body.to_lowercase().contains("quotaexceeded") {
                 bail!("Quota Exceeded");
             }
