@@ -15,7 +15,7 @@ use crate::gcs::filesystem;
 use crate::projections::feed_service::feed_service_download::download_channel;
 use crate::projections::feed_service::feed_service_statistics::update_statistics;
 use crate::projections::feed_service::feed_service_types::Video;
-use crate::sled_wrapper::DiskCache;
+use crate::disk_cache::DiskCache;
 use crate::types::{Channel, ChannelId, ChannelName, YoutubeChannelUrl};
 use crate::youtube::youtube_client::YoutubeClient;
 

@@ -7,7 +7,7 @@ use log::{info, trace, warn};
 use tokio::pin;
 
 use crate::projections::feed_service::feed_service_types::Video;
-use crate::sled_wrapper::DiskCache;
+use crate::disk_cache::DiskCache;
 use crate::types::{Channel, ChannelId, PlaylistId};
 use crate::youtube::youtube_client::YoutubeClient;
 

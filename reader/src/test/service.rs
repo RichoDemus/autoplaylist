@@ -11,7 +11,7 @@ use crate::endpoints::feeds::{add_feed, feed_operation, get_all_feeds, get_video
 use crate::endpoints::labels::{add_video_to_label, create_label};
 use crate::endpoints::user::{check_session, create_user, login};
 use crate::service::Services;
-use crate::sled_wrapper::Mode;
+use crate::disk_cache::Mode;
 use crate::test::test_client::LoginPage;
 use crate::test::youtube_mock::YoutubeMock;
 

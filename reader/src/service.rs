@@ -6,7 +6,7 @@ use crate::projections::label_service::LabelService;
 use crate::projections::subscriptions::SubscriptionsService;
 use crate::projections::user_service::UserService;
 use crate::projections::watched_items::WatchedVideosService;
-use crate::sled_wrapper::{DiskCache, Mode};
+use crate::disk_cache::{DiskCache, Mode};
 use crate::youtube::youtube_client::YoutubeClient;
 
 pub struct Services {

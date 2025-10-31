@@ -16,14 +16,14 @@ use crate::endpoints::labels::{add_video_to_label, create_label};
 use crate::endpoints::serve_assets::static_fie;
 use crate::endpoints::user::{check_session, create_user, login};
 use crate::service::Services;
-use crate::sled_wrapper::Mode;
+use crate::disk_cache::Mode;
 
 pub mod endpoints;
 pub mod event;
 mod gcs;
 pub mod projections;
 pub mod service;
-pub mod sled_wrapper;
+pub mod disk_cache;
 #[cfg(test)]
 pub mod test;
 pub mod types;

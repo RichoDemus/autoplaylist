@@ -4,7 +4,7 @@ use chrono::{DateTime, Datelike, TimeZone, Utc};
 use log::{error, info};
 
 use crate::projections::feed_service::feed_service_types::Video;
-use crate::sled_wrapper::DiskCache;
+use crate::disk_cache::DiskCache;
 use crate::types::{ChannelId, VideoId};
 use crate::youtube::youtube_client::YoutubeClient;
 
