@@ -23,7 +23,6 @@ impl Services {
         youtube_key: String,
         mode: Mode,
         use_gcs: bool,
-        data_dir: Option<String>,
     ) -> Self {
         let event_store = Arc::new(Mutex::new(EventStore::new(use_gcs)));
         Self {
@@ -37,8 +36,8 @@ impl Services {
             feed_service: Arc::new(Mutex::new(FeedService::new(
                 event_store.clone(),
                 YoutubeClient::new(youtube_base_url, youtube_key),
-                DiskCache::new("channels", mode, data_dir.clone()),
-                DiskCache::new("videos", mode, data_dir),
+                DiskCache::new("channels", mode),
+                DiskCache::new("videos", mode),
             ))),
             label_service: Arc::new(Mutex::new(LabelService::new(event_store.clone()))),
         }

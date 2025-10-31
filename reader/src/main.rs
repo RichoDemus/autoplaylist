@@ -32,12 +32,9 @@ pub mod youtube;
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
-    /// YouTube API key
+    /// Name of the person to greet
     #[arg(short, long)]
     youtube_api_key: String,
-    /// Directory to store data
-    #[arg(long)]
-    data_dir: Option<String>,
 }
 
 #[actix_web::main]
@@ -53,7 +50,7 @@ async fn main() -> anyhow::Result<()> {
     if youtube_key.starts_with('"') || youtube_key.ends_with('"') {
         bail!("YouTube API key should not be surrounded by quotes");
     }
-    let state = web::Data::new(Services::new(None, youtube_key, Mode::Prod, true, args.data_dir));
+    let state = web::Data::new(Services::new(None, youtube_key, Mode::Prod, true));
     HttpServer::new(move || {
         App::new()
             .app_data(state.clone())

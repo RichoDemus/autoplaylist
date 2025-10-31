@@ -19,12 +19,9 @@ impl<
     V: Serialize + Debug + for<'a> Deserialize<'a>,
 > DiskCache<K, V>
 {
-    pub fn new(name: &str, mode: Mode, data_dir: Option<String>) -> Self {
+    pub fn new(name: &str, mode: Mode) -> Self {
         let path = match mode {
-            Mode::Prod => {
-                let base_dir = data_dir.unwrap_or_else(|| "data".to_string());
-                format!("{}/db/{}", base_dir, name)
-            }
+            Mode::Prod => format!("data/db/{}", name),
             Mode::Test => format!("target/data/{}/{}_db", Uuid::new_v4(), name),
         };
         Self {
@@ -115,7 +112,7 @@ mod tests {
 
     #[test]
     fn test_cache() {
-        let cache: DiskCache<ChannelId, Channel> = DiskCache::new("test", Mode::Test, None);
+        let cache: DiskCache<ChannelId, Channel> = DiskCache::new("test", Mode::Test);
         let id = ChannelId(Uuid::new_v4().to_string());
         let name = ChannelName(Uuid::new_v4().to_string());
         let playlist = PlaylistId(Uuid::new_v4().to_string());
@@ -132,7 +129,7 @@ mod tests {
 
     #[test]
     fn test_arc() {
-        let cache: DiskCache<ChannelId, Channel> = DiskCache::new("test2", Mode::Test, None);
+        let cache: DiskCache<ChannelId, Channel> = DiskCache::new("test2", Mode::Test);
         let id = ChannelId(Uuid::new_v4().to_string());
         let name = ChannelName(Uuid::new_v4().to_string());
         let playlist = PlaylistId(Uuid::new_v4().to_string());
@@ -153,7 +150,7 @@ mod tests {
 
     #[test]
     fn test_clone() {
-        let cache: DiskCache<ChannelId, Channel> = DiskCache::new("test3", Mode::Test, None);
+        let cache: DiskCache<ChannelId, Channel> = DiskCache::new("test3", Mode::Test);
         let id = ChannelId(Uuid::new_v4().to_string());
         let name = ChannelName(Uuid::new_v4().to_string());
         let playlist = PlaylistId(Uuid::new_v4().to_string());
@@ -174,7 +171,7 @@ mod tests {
 
     #[test]
     fn test_iterate_values() {
-        let cache: DiskCache<ChannelName, String> = DiskCache::new("test4", Mode::Test, None);
+        let cache: DiskCache<ChannelName, String> = DiskCache::new("test4", Mode::Test);
         cache.insert(ChannelName("0".into()), "zero".into());
         cache.insert(ChannelName("1".into()), "one".into());
         cache.insert(ChannelName("2".into()), "two".into());
@@ -188,7 +185,7 @@ mod tests {
 
     #[test]
     fn test_iterate_keys() {
-        let cache: DiskCache<ChannelName, String> = DiskCache::new("test5", Mode::Test, None);
+        let cache: DiskCache<ChannelName, String> = DiskCache::new("test5", Mode::Test);
         cache.insert(ChannelName("zero".into()), "0".into());
         cache.insert(ChannelName("one".into()), "1".into());
         cache.insert(ChannelName("two".into()), "2".into());
