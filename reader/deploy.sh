@@ -7,7 +7,6 @@ if [ -z "$1" ]; then
 fi
 
 YOUTUBE_API_KEY=$1
-DATA_DIR="/home/richo/reader-data"
 INSTALL_DIR="/usr/local/bin"
 SERVICE_NAME="reader"
 BINARY_NAME="reader"
@@ -17,9 +16,6 @@ git pull
 
 echo "Building release binary..."
 cargo build --release
-
-echo "Creating data directory..."
-mkdir -p $DATA_DIR
 
 echo "Installing binary..."
 sudo cp target/release/$BINARY_NAME $INSTALL_DIR
@@ -34,7 +30,7 @@ After=network.target
 User=$(whoami)
 Group=$(id -gn)
 WorkingDirectory=$(pwd)
-ExecStart=$INSTALL_DIR/$BINARY_NAME --youtube-api-key $YOUTUBE_API_KEY --data-dir $DATA_DIR
+ExecStart=$INSTALL_DIR/$BINARY_NAME --youtube-api-key $YOUTUBE_API_KEY
 Restart=on-failure
 
 [Install]
