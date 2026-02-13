@@ -155,7 +155,7 @@ impl YoutubeClient {
                         ("id", &videos.iter().map(|v| v.0.as_str()).join(",")),
                     ]),
             )
-            .await?;
+            .await.context("Getting statistics from yt")?;
 
         let stats: HashMap<VideoId, (ViewCount, VideoDuration)> = value["items"]
             .as_array()
@@ -274,8 +274,8 @@ mod tests {
                 .await
                 .unwrap(),
             (
-                ChannelId("UC7McIsZ7v-RdLedtk6d6zRg".to_string()),
-                ChannelName("Sony | Camera Channel".to_string())
+                ChannelId("UCvvHDvF2ZYf_eYKspP-Fvsw".to_string()),
+                ChannelName("Hansom's Repairs".to_string())
             )
         );
         assert_eq!(
@@ -373,16 +373,16 @@ mod tests {
 
         assert_eq!(
             result.get(&VideoId("9qH8krCX4f0".to_string())).unwrap().0.0,
-            36
+            37
         );
         assert_eq!(
             result.get(&VideoId("9qH8krCX4f0".to_string())).unwrap().1.0,
-            "00:00:22"
+            "00:22"
         );
 
         assert_eq!(
             result.get(&VideoId("bNCJgh4XMtQ".to_string())).unwrap().0.0,
-            47621
+            480065
         );
         assert_eq!(
             result.get(&VideoId("bNCJgh4XMtQ".to_string())).unwrap().1.0,
