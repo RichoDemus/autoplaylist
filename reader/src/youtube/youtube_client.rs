@@ -216,7 +216,7 @@ impl YoutubeClient {
             if body.to_lowercase().contains("quotaexceeded") {
                 bail!("Quota Exceeded");
             }
-            bail!("other failure: {}", body);
+            bail!("Call to youtube failed: {status}: {}", body);
         }
         let value = response.json::<Value>().await.context("read body")?;
         trace!("Response: {value:#?}");
