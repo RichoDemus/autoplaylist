@@ -18,7 +18,7 @@ use crate::endpoints::serve_assets::static_fie;
 use crate::endpoints::user::{check_session, create_user, login};
 use crate::service::Services;
 
-pub mod disk_cache;
+mod disk_cache;
 pub mod endpoints;
 pub mod event;
 mod gcs;
