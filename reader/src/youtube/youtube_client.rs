@@ -5,12 +5,41 @@ use chrono::{DateTime, TimeZone, Utc};
 use itertools::Itertools;
 use log::{error, info, trace, warn};
 use reqwest::{Client, RequestBuilder};
-use serde_json::Value;
+use serde::Deserialize;
+use serde_json::{Value, from_value};
 
 use crate::projections::feed_service::feed_service_types::Video;
 use crate::types::{
     ChannelId, ChannelName, PlaylistId, VideoDuration, VideoId, ViewCount, YoutubeChannelUrl,
 };
+
+#[derive(Deserialize, Debug)]
+struct YtPlaylistItemListResponse {
+    items: Vec<YtPlaylistItem>,
+    #[serde(rename = "nextPageToken")]
+    next_page_token: Option<String>,
+}
+
+#[derive(Deserialize, Debug)]
+struct YtPlaylistItem {
+    snippet: YtSnippet,
+}
+
+#[derive(Deserialize, Debug)]
+struct YtSnippet {
+    title: String,
+    description: String,
+    #[serde(rename = "publishedAt")]
+    published_at: DateTime<Utc>,
+    #[serde(rename = "resourceId")]
+    resource_id: YtResourceId,
+}
+
+#[derive(Deserialize, Debug)]
+struct YtResourceId {
+    #[serde(rename = "videoId")]
+    video_id: String,
+}
 
 #[derive(Clone)]
 pub struct YoutubeClient {
@@ -32,8 +61,10 @@ impl YoutubeClient {
         &self,
         channel_urll: YoutubeChannelUrl,
     ) -> Result<(ChannelId, ChannelName)> {
-        if channel_urll.starts_with("https://www.youtube.com/channel") {
-            bail!("https://www.youtube.com/channel urls are not supported right now")
+        if let Some(id_str) = channel_urll.strip_prefix("https://www.youtube.com/channel/") {
+            let id = ChannelId(id_str.to_string());
+            let (name, _) = self.channel(&id).await?;
+            return Ok((id, name));
         }
         let value = self
             .call_yt(
@@ -112,33 +143,23 @@ impl YoutubeClient {
             )
             .await?;
 
-        let next_page_token = value["nextPageToken"].as_str().map(|s| s.to_string());
-        let videos = value["items"]
-            .as_array()
-            .context("no items")?
-            .iter()
+        let response: YtPlaylistItemListResponse = from_value(value).context("Failed to parse playlist items")?;
+
+        let videos = response.items
+            .into_iter()
             .map(|item| {
-                trace!("Parsing: {item:#?}");
-                let id = item["snippet"]["resourceId"]["videoId"]
-                    .as_str()
-                    .unwrap()
-                    .to_string();
                 Video {
-                    id: VideoId(id.clone()),
-                    title: item["snippet"]["title"].as_str().unwrap().to_string(),
-                    description: item["snippet"]["description"].as_str().unwrap().to_string(),
-                    upload_date: DateTime::parse_from_rfc3339(
-                        item["snippet"]["publishedAt"].as_str().unwrap(),
-                    )
-                    .unwrap()
-                    .with_timezone(&Utc),
+                    id: VideoId(item.snippet.resource_id.video_id),
+                    title: item.snippet.title,
+                    description: item.snippet.description,
+                    upload_date: item.snippet.published_at,
                     last_updated: Utc.timestamp_nanos(0),
                     duration: VideoDuration("0".to_string()),
                     views: ViewCount(0),
                 }
             })
             .collect::<Vec<_>>();
-        Ok((videos, next_page_token))
+        Ok((videos, response.next_page_token))
     }
 
     pub async fn statistics(
@@ -284,9 +305,11 @@ mod tests {
                     "https://www.youtube.com/channel/UCyPvQQ-dZmKzh_PrpWmTJkw".to_string()
                 ))
                 .await
-                .unwrap_err()
-                .to_string(),
-            "https://www.youtube.com/channel urls are not supported right now"
+                .unwrap(),
+            (
+                ChannelId("UCyPvQQ-dZmKzh_PrpWmTJkw".to_string()),
+                ChannelName("RichoDemus".to_string())
+            )
         );
     }
 
