@@ -143,20 +143,20 @@ impl YoutubeClient {
             )
             .await?;
 
-        let response: YtPlaylistItemListResponse = from_value(value).context("Failed to parse playlist items")?;
+        let response: YtPlaylistItemListResponse =
+            from_value(value).context("Failed to parse playlist items")?;
 
-        let videos = response.items
+        let videos = response
+            .items
             .into_iter()
-            .map(|item| {
-                Video {
-                    id: VideoId(item.snippet.resource_id.video_id),
-                    title: item.snippet.title,
-                    description: item.snippet.description,
-                    upload_date: item.snippet.published_at,
-                    last_updated: Utc.timestamp_nanos(0),
-                    duration: VideoDuration("0".to_string()),
-                    views: ViewCount(0),
-                }
+            .map(|item| Video {
+                id: VideoId(item.snippet.resource_id.video_id),
+                title: item.snippet.title,
+                description: item.snippet.description,
+                upload_date: item.snippet.published_at,
+                last_updated: Utc.timestamp_nanos(0),
+                duration: VideoDuration("0".to_string()),
+                views: ViewCount(0),
             })
             .collect::<Vec<_>>();
         Ok((videos, response.next_page_token))
@@ -176,7 +176,8 @@ impl YoutubeClient {
                         ("id", &videos.iter().map(|v| v.0.as_str()).join(",")),
                     ]),
             )
-            .await.context("Getting statistics from yt")?;
+            .await
+            .context("Getting statistics from yt")?;
 
         let stats: HashMap<VideoId, (ViewCount, VideoDuration)> = value["items"]
             .as_array()

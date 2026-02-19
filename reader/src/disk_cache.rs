@@ -41,7 +41,9 @@ impl<
         let write_txn = db.begin_write().unwrap();
         {
             // The table must be opened once to create it.
-            let _ = write_txn.open_table(TableDefinition::<&str, &[u8]>::new(&table_name)).unwrap();
+            let _ = write_txn
+                .open_table(TableDefinition::<&str, &[u8]>::new(&table_name))
+                .unwrap();
         }
         write_txn.commit().unwrap();
 
@@ -54,21 +56,24 @@ impl<
     }
 
     pub fn get(&self, key: K) -> Option<V> {
-        let read_txn = self.db.begin_read().expect("Failed to begin read transaction");
+        let read_txn = self
+            .db
+            .begin_read()
+            .expect("Failed to begin read transaction");
         let table = read_txn
-            .open_table(TableDefinition::<&str, &[u8]>::new(self.table_name.as_str()))
+            .open_table(TableDefinition::<&str, &[u8]>::new(
+                self.table_name.as_str(),
+            ))
             .expect("Failed to open table");
 
         match table.get(key.deref().as_str()) {
-            Ok(Some(value)) => {
-                match serde_json::from_slice(value.value()) {
-                    Ok(v) => Some(v),
-                    Err(e) => {
-                        warn!("Failed to deserialize value from disk: {:?}", e);
-                        None
-                    }
+            Ok(Some(value)) => match serde_json::from_slice(value.value()) {
+                Ok(v) => Some(v),
+                Err(e) => {
+                    warn!("Failed to deserialize value from disk: {:?}", e);
+                    None
                 }
-            }
+            },
             Ok(None) => None,
             Err(e) => {
                 warn!("Failed to read from disk: {:?}", e);
@@ -81,17 +86,23 @@ impl<
         let write_txn = self.db.begin_write().unwrap();
         {
             let mut table = write_txn
-                .open_table(TableDefinition::<&str, &[u8]>::new(self.table_name.as_str()))
+                .open_table(TableDefinition::<&str, &[u8]>::new(
+                    self.table_name.as_str(),
+                ))
                 .unwrap();
             let value_bytes = serde_json::to_vec(&value).unwrap();
-            table.insert(key.deref().as_str(), value_bytes.as_slice()).unwrap();
+            table
+                .insert(key.deref().as_str(), value_bytes.as_slice())
+                .unwrap();
         }
         write_txn.commit().unwrap();
     }
 
     pub fn keys(&self) -> impl Iterator<Item = K> {
         let read_txn = self.db.begin_read().unwrap();
-        let table = read_txn.open_table(TableDefinition::<&str, &[u8]>::new(&self.table_name)).unwrap();
+        let table = read_txn
+            .open_table(TableDefinition::<&str, &[u8]>::new(&self.table_name))
+            .unwrap();
 
         let collected_keys: Vec<K> = table
             .iter()
@@ -107,7 +118,9 @@ impl<
 
     pub fn values(&self) -> impl Iterator<Item = V> {
         let read_txn = self.db.begin_read().unwrap();
-        let table = read_txn.open_table(TableDefinition::<&str, &[u8]>::new(&self.table_name)).unwrap();
+        let table = read_txn
+            .open_table(TableDefinition::<&str, &[u8]>::new(&self.table_name))
+            .unwrap();
 
         let collected_values: Vec<V> = table
             .iter()
@@ -209,7 +222,7 @@ mod tests {
         let mut expected = vec!["ZERO".to_string(), "ONE".to_string(), "TWO".to_string()];
         expected.sort();
         assert_eq!(result, expected);
-    } 
+    }
 
     #[test]
     fn test_iterate_keys() {

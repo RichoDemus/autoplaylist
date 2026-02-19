@@ -10,20 +10,20 @@ use anyhow::bail;
 use clap::Parser;
 use log::LevelFilter;
 
+use crate::disk_cache::Mode;
 use crate::endpoints::admin::{download, get_status};
 use crate::endpoints::feeds::{add_feed, feed_operation, get_all_feeds, get_videos};
 use crate::endpoints::labels::{add_video_to_label, create_label};
 use crate::endpoints::serve_assets::static_fie;
 use crate::endpoints::user::{check_session, create_user, login};
 use crate::service::Services;
-use crate::disk_cache::Mode;
 
+pub mod disk_cache;
 pub mod endpoints;
 pub mod event;
 mod gcs;
 pub mod projections;
 pub mod service;
-pub mod disk_cache;
 #[cfg(test)]
 pub mod test;
 pub mod types;

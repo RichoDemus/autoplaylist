@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use chrono::{DateTime, Datelike, TimeZone, Utc};
 use log::{error, info};
 
-use crate::projections::feed_service::feed_service_types::Video;
 use crate::disk_cache::DiskCache;
+use crate::projections::feed_service::feed_service_types::Video;
 use crate::types::{ChannelId, VideoId};
 use crate::youtube::youtube_client::YoutubeClient;
 
