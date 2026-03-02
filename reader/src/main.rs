@@ -7,9 +7,9 @@ use actix_web::cookie::{Key, SameSite};
 use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer, cookie, web};
 use anyhow::bail;
-use clap::Parser;
 use log::LevelFilter;
 
+use crate::config::Config;
 use crate::disk_cache::Mode;
 use crate::endpoints::admin::{download, get_status};
 use crate::endpoints::feeds::{add_feed, feed_operation, get_all_feeds, get_videos};
@@ -18,6 +18,7 @@ use crate::endpoints::serve_assets::static_fie;
 use crate::endpoints::user::{check_session, create_user, login};
 use crate::service::Services;
 
+mod config;
 mod disk_cache;
 pub mod endpoints;
 pub mod event;
@@ -29,24 +30,16 @@ pub mod test;
 pub mod types;
 pub mod youtube;
 
-#[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
-struct Args {
-    /// Name of the person to greet
-    #[arg(short, long)]
-    youtube_api_key: String,
-}
-
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
     let _ = env_logger::builder()
         .filter_module("reader", LevelFilter::Info)
         .try_init();
 
-    let args = Args::parse();
+    let config = Config::from_file("config.toml")?;
 
     let secret_key = Key::from(&[0; 64]); // todo use proper key
-    let youtube_key = args.youtube_api_key;
+    let youtube_key = config.youtube_api_key;
     if youtube_key.starts_with('"') || youtube_key.ends_with('"') {
         bail!("YouTube API key should not be surrounded by quotes");
     }

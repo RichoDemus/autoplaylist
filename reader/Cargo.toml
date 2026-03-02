@@ -29,11 +29,11 @@ uuid = { version = "1", features = ["v4", "serde"] }
 google-cloud-storage = "0.24"
 async-once-cell = "0.5"
 futures = "0.3"
-clap = { version = "4", features = ["derive"] }
 iso8601-duration = "0.2"
 bcrypt = "0.17"
 dashmap = "6"
 zstd = "0.13.3"
+toml = "0.8"
 
 [dev-dependencies]
 httpmock = "0.7"
