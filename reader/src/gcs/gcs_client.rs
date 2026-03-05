@@ -1,15 +1,9 @@
-use core::sync::atomic::Ordering;
-use std::sync::Arc;
-use std::sync::atomic::Ordering::SeqCst;
-use std::sync::atomic::{AtomicBool, AtomicUsize};
-use std::time::Duration;
-
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, bail};
 use async_once_cell::OnceCell;
 use futures::future::try_join_all;
 use google_cloud_storage::client::{Storage, StorageControl};
 use itertools::Itertools;
-use log::{info, warn};
+use log::info;
 
 use crate::gcs::filesystem::{read_file, write_file};
 
@@ -94,58 +88,34 @@ pub async fn get_all_events() -> Result<Vec<Vec<u8>>> {
         let id = e.replace("events/v2/", "");
         id.parse::<usize>().expect("this should be ints")
     });
-    make_sure_no_events_missing(event_names.clone());
+    make_sure_no_events_missing(event_names.clone())?;
 
-    let total_events = event_names.len();
-    let finished_downloads = Arc::new(AtomicUsize::new(0));
-    let finished_downloads_print = finished_downloads.clone();
-    let downloading = Arc::new(AtomicBool::new(true));
-    let downloading_spawn = downloading.clone();
-
-    actix_rt::spawn(async move {
-        let mut events_at_last_print = 0;
-        while downloading_spawn.load(Ordering::SeqCst) {
-            let downloaded = finished_downloads_print.load(Ordering::SeqCst);
-            info!(
-                "Events downloaded {}/{}. {} e/s",
-                downloaded,
-                total_events,
-                (downloaded - events_at_last_print)
-            );
-            events_at_last_print = downloaded;
-            actix_rt::time::sleep(Duration::from_millis(1000)).await;
-        }
-    });
-
-    let mut futures = vec![];
-    for name in event_names {
-        futures.push(download(name, &clients.storage));
-        // finished_downloads.fetch_add(1, Ordering::SeqCst);
-    }
+    let futures = event_names
+        .into_iter()
+        .map(|name| download(name, &clients.storage))
+        .collect::<Vec<_>>();
 
     let downloaded = try_join_all(futures)
         .await
         .context("Awaiting all download futures")?;
 
-    downloading.store(false, SeqCst);
     Ok(downloaded)
 }
 
-fn make_sure_no_events_missing(events: Vec<String>) {
-    actix_rt::spawn(async move {
-        let events = events
-            .into_iter()
-            .map(|name| name.replace("events/v2/", ""))
-            .flat_map(|id| id.parse::<usize>().ok())
-            .sorted_unstable()
-            .collect::<Vec<_>>();
-        for (x, event_id) in events.into_iter().enumerate() {
-            if x != event_id {
-                warn!("Missing event {x}");
-            }
+fn make_sure_no_events_missing(events: Vec<String>) -> Result<()> {
+    let events = events
+        .into_iter()
+        .map(|name| name.replace("events/v2/", ""))
+        .flat_map(|id| id.parse::<usize>().ok())
+        .sorted_unstable()
+        .collect::<Vec<_>>();
+    for (x, event_id) in events.into_iter().enumerate() {
+        if x != event_id {
+            bail!("Missing event {x}");
         }
-        info!("Done validating events")
-    });
+    }
+    info!("Done validating events");
+    Ok(())
 }
 
 async fn download(filename: String, client: &Storage) -> Result<Vec<u8>> {

@@ -1,16 +1,12 @@
-use std::collections::HashSet;
 use std::fmt::Debug;
 use std::fs;
 use std::marker::PhantomData;
 use std::ops::Deref;
 use std::path::PathBuf;
-use std::sync::Arc;
 
 use log::warn;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-
-use crate::types::{Channel, ChannelId, ChannelName, PlaylistId};
 
 #[derive(Clone)]
 pub struct DiskCache<K, V> {
@@ -149,6 +145,9 @@ pub enum Mode {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::types::{Channel, ChannelId, ChannelName, PlaylistId};
+    use std::collections::HashSet;
+    use std::sync::Arc;
 
     #[test]
     fn test_cache() {
