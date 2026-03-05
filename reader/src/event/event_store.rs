@@ -88,7 +88,7 @@ impl EventStore {
         );
         let bytes = event_to_bytes(&event);
         if self.use_gcs {
-            gcs_client::save_event(*self.next_event_id.lock().unwrap(), bytes).await?;
+            gcs_client::save_event(*self.next_event_id.lock().unwrap(), &bytes).await?;
         }
         *self.next_event_id.lock().unwrap() += 1;
         for sender in self.senders.lock().unwrap().iter_mut() {
