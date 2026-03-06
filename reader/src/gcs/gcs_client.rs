@@ -6,6 +6,7 @@ use itertools::Itertools;
 use log::info;
 
 use crate::gcs::filesystem::{read_file, write_file};
+use crate::types::Filename;
 
 static CLIENT: OnceCell<Clients> = OnceCell::new();
 
@@ -118,14 +119,15 @@ fn make_sure_no_events_missing(events: Vec<String>) -> Result<()> {
     Ok(())
 }
 
-async fn download(filename: String, client: &Storage) -> Result<Vec<u8>> {
+async fn download(event_name: String, client: &Storage) -> Result<Vec<u8>> {
+    let filename = Filename(event_name);
     if let Some(bytes) = read_file(filename.clone()).await {
         // info!("Already downloaded {filename}");
         Ok(bytes)
     } else {
         info!("Need to download {filename}");
         let mut resp = client
-            .read_object("projects/_/buckets/richo-reader", &filename)
+            .read_object("projects/_/buckets/richo-reader", &filename.0)
             .send()
             .await
             .with_context(|| format!("Download {filename}"))?;

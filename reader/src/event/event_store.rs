@@ -143,7 +143,7 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_serde() {
-        let bytes = filesystem::read_file("events/v2/0".to_string())
+        let bytes = filesystem::read_file("events/v2/0".to_string().into())
             .await
             .unwrap();
 

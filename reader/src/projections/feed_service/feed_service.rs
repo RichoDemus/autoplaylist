@@ -108,7 +108,7 @@ async fn maybe_download(
 ) -> Result<()> {
     #[cfg(not(test))]
     {
-        let last_updated = filesystem::read_file("last_updated.txt".to_string())
+        let last_updated = filesystem::read_file("last_updated.txt".to_string().into())
             .await
             .map(String::from_utf8)
             .map(Result::ok)
@@ -159,7 +159,7 @@ async fn do_download(
     #[cfg(not(test))]
     {
         filesystem::write_file(
-            "last_updated.txt".to_string(),
+            "last_updated.txt".to_string().into(),
             Utc::now().to_rfc3339().into_bytes(),
         )
         .await?;
@@ -176,7 +176,7 @@ fn setup_periodic_download(
         info!("Periodic downoader setup");
         sleep(Duration::from_secs(60)).await;
         loop {
-            let last_updated = filesystem::read_file("last_updated.txt".to_string())
+            let last_updated = filesystem::read_file("last_updated.txt".to_string().into())
                 .await
                 .map(String::from_utf8)
                 .map(Result::ok)

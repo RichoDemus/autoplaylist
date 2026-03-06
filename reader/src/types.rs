@@ -1,6 +1,7 @@
 use derive_newtype::NewType;
 use serde::Deserialize;
 use serde::Serialize;
+use std::fmt::{Display, Formatter};
 use uuid::Uuid;
 
 use crate::projections::feed_service::feed_service_types;
@@ -46,6 +47,14 @@ pub struct LabelId(pub Uuid);
 
 #[derive(NewType, Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct LabelName(pub String);
+
+#[derive(NewType, Debug, Eq, PartialEq, Clone)]
+pub struct Filename(pub String);
+impl Display for Filename {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Clone)]
 pub struct ChannelWithoutVideos {

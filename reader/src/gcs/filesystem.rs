@@ -3,12 +3,13 @@ use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
 
+use crate::types::Filename;
 use actix_web::web;
 use anyhow::{Context, Result};
 
-pub async fn read_file(filename: String) -> Option<Vec<u8>> {
+pub async fn read_file(filename: Filename) -> Option<Vec<u8>> {
     web::block(move || {
-        let mut file = File::open(format!("data/{}", filename)).ok()?;
+        let mut file = File::open(format!("data/{}", filename.0)).ok()?;
 
         let mut buffer = vec![];
         file.read_to_end(&mut buffer).ok()?;
@@ -19,12 +20,12 @@ pub async fn read_file(filename: String) -> Option<Vec<u8>> {
     .ok()?
 }
 
-pub async fn write_file(filename: String, bytes: Vec<u8>) -> Result<()> {
+pub async fn write_file(filename: Filename, bytes: Vec<u8>) -> Result<()> {
     web::block(move || {
         if !Path::new("data/events/v2/").exists() {
             fs::create_dir_all("data/events/v2")?;
         }
-        let mut file = File::create(format!("data/{}", filename))
+        let mut file = File::create(format!("data/{}", filename.0))
             .context("Failed to open event disk file handler")?;
 
         file.write_all(bytes.as_slice())
