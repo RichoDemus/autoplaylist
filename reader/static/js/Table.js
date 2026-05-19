@@ -3,6 +3,7 @@ var Table = ((()=>
     var pub = { },
     //Private property
     itemListTableSelector = $('#itemListTable');
+    var thumbnailPopup = null; // To store the popup element
 
     //Public property
     //pub.ingredient = "Bacon Strips";
@@ -15,7 +16,7 @@ var Table = ((()=>
             "searching": false,
             "ordering": true,
             "autoWidth": true,
-            "order": [[3, "desc"]]
+            "order": [[4, "desc"]] // Changed from 3 to 4 because of new column
         });
         itemListTableSelector.on('order.dt', ()=>
         {
@@ -145,6 +146,7 @@ var Table = ((()=>
     {
         itemListTableSelector.DataTable().row.add([
             Table.getMarkAsReadToggleButton(feedId, item),
+            Table.getThumbnail(item), // Added thumbnail
             Table.getTitle(feedId, item),
             item.description.substring(0, 10),
             item.uploadDate,
@@ -211,6 +213,36 @@ var Table = ((()=>
 
     pub.getTitle = (feedId, item)=>"<a id=\"" + item.id + "\" data-feed-id=\"" + feedId + "\" data-id=\"" + item.id + "\" href=\"" + item.url +
     "\" target=\"_blank\" onClick=\"Buttons.itemTitleClicked(this)\">" + item.title + "</a>";
+
+    pub.getThumbnail = (item)=>"<img src=\"https://i.ytimg.com/vi/" + item.id + "/default_live.jpg\" alt=\"Thumbnail\" width=\"120\" height=\"90\" " +
+        "onmouseover=\"Table.showThumbnailPopup(event, '" + item.id + "')\" onmouseout=\"Table.hideThumbnailPopup()\">";
+
+    pub.showThumbnailPopup = (event, videoId) => {
+        if (thumbnailPopup) {
+            pub.hideThumbnailPopup();
+        }
+
+        thumbnailPopup = $('<div>')
+            .css({
+                'position': 'absolute',
+                'z-index': '1000',
+                'border': '1px solid #ccc',
+                'background-color': '#fff',
+                'padding': '5px',
+                'box-shadow': '0 2px 10px rgba(0,0,0,0.2)',
+                'left': event.pageX + 10 + 'px',
+                'top': event.pageY + 10 + 'px'
+            })
+            .append('<img src="https://i.ytimg.com/vi/' + videoId + '/hqdefault_live.jpg" alt="Large Thumbnail">')
+            .appendTo('body');
+    };
+
+    pub.hideThumbnailPopup = () => {
+        if (thumbnailPopup) {
+            thumbnailPopup.remove();
+            thumbnailPopup = null;
+        }
+    };
 
     //Private method
     function getMarkOlderItemsAsReadButton(feedId, item)
