@@ -44,8 +44,12 @@ pub async fn update_statistics(client: YoutubeClient, videos: &DiskCache<Channel
             for vid in &mut vids {
                 if let Some((views, duration)) = updates.get(&vid.id) {
                     vid.last_updated = Utc::now();
-                    vid.views = views.clone();
-                    vid.duration = duration.clone();
+                    if let Some(views) = views {
+                        vid.views = views.clone();
+                    }
+                    if let Some(duration) = duration {
+                        vid.duration = duration.clone();
+                    }
                 }
             }
             videos.insert(id, vids);

@@ -165,7 +165,7 @@ impl YoutubeClient {
     pub async fn statistics(
         &self,
         videos: Vec<VideoId>,
-    ) -> Result<HashMap<VideoId, (ViewCount, VideoDuration)>> {
+    ) -> Result<HashMap<VideoId, (Option<ViewCount>, Option<VideoDuration>)>> {
         let value = self
             .call_yt(
                 self.client
@@ -179,28 +179,25 @@ impl YoutubeClient {
             .await
             .context("Getting statistics from yt")?;
 
-        let stats: HashMap<VideoId, (ViewCount, VideoDuration)> = value["items"]
+        let stats: HashMap<VideoId, (Option<ViewCount>, Option<VideoDuration>)> = value["items"]
             .as_array()
             .context("no items")?
             .iter()
             .flat_map(|item| {
                 let id = item["id"].as_str().map(|s| s.to_string());
-                let duration = item["contentDetails"]["duration"]
+                let duration: Option<VideoDuration> = item["contentDetails"]["duration"]
                     .as_str()
-                    .map(|s| s.to_string());
+                    .map(|s| s.to_string())
+                    .map(|s| s.as_str().into());
                 let views = item["statistics"]["viewCount"]
                     .as_str()
                     .map(|s| s.parse::<u64>().ok())
-                    .flatten();
+                    .flatten()
+                    .map(|u| ViewCount(u));
 
-                match (id.clone(), duration, views) {
-                    (Some(id), Some(duration), Some(views)) => {
-                        Some(((VideoId(id)), (ViewCount(views), duration.as_str().into())))
-                    }
-                    (id2, duration, views) => {
-                        warn!("Failed to get stats for video {id:?}: id:{id2:?}, duration: {duration:?}, views: {views:?}");
-                        None
-                    }
+                match id {
+                    Some(id) => Some((VideoId(id), (views, duration))),
+                    _ => None,
                 }
             })
             .collect::<HashMap<_, _>>();
@@ -396,20 +393,44 @@ mod tests {
         println!("res :{:#?}", result);
 
         assert_eq!(
-            result.get(&VideoId("9qH8krCX4f0".to_string())).unwrap().0.0,
+            result
+                .get(&VideoId("9qH8krCX4f0".to_string()))
+                .unwrap()
+                .0
+                .clone()
+                .unwrap()
+                .0,
             37
         );
         assert_eq!(
-            result.get(&VideoId("9qH8krCX4f0".to_string())).unwrap().1.0,
+            result
+                .get(&VideoId("9qH8krCX4f0".to_string()))
+                .unwrap()
+                .1
+                .clone()
+                .unwrap()
+                .0,
             "00:22"
         );
 
         assert_eq!(
-            result.get(&VideoId("bNCJgh4XMtQ".to_string())).unwrap().0.0,
+            result
+                .get(&VideoId("bNCJgh4XMtQ".to_string()))
+                .unwrap()
+                .0
+                .clone()
+                .unwrap()
+                .0,
             480065
         );
         assert_eq!(
-            result.get(&VideoId("bNCJgh4XMtQ".to_string())).unwrap().1.0,
+            result
+                .get(&VideoId("bNCJgh4XMtQ".to_string()))
+                .unwrap()
+                .1
+                .clone()
+                .unwrap()
+                .0,
             "11:54:58"
         );
     }
