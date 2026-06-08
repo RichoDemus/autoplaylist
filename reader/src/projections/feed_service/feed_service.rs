@@ -183,7 +183,6 @@ fn setup_periodic_download(
                 .map(|txt| DateTime::parse_from_rfc3339(txt.as_str()).ok())
                 .flatten()
                 .map(|d| d.with_timezone(&Utc));
-            info!("{last_updated:?}");
             if let Some(last_updated) = last_updated {
                 let diff: chrono::Duration = Utc::now() - last_updated;
                 if diff > chrono::Duration::hours(4) {
@@ -196,6 +195,8 @@ fn setup_periodic_download(
                             warn!("Failed to do feed triggered DL(2): {e:?}");
                         }
                     });
+                } else {
+                    info!("Updated less than 4 hours ago")
                 }
             } else {
                 info!("No last updated file");
