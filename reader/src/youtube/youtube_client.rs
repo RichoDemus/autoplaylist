@@ -197,8 +197,8 @@ impl YoutubeClient {
                     (Some(id), Some(duration), Some(views)) => {
                         Some(((VideoId(id)), (ViewCount(views), duration.as_str().into())))
                     }
-                    _ => {
-                        warn!("Failed to get stats for video {id:?}");
+                    (id2, duration, views) => {
+                        warn!("Failed to get stats for video {id:?}: id:{id2:?}, duration: {duration:?}, views: {views:?}");
                         None
                     }
                 }
